@@ -166,4 +166,12 @@ public class RedisKeys {
     public static String getUnloadKey(Long taskId) {
         return CJYC + I + UNLOAD_LOCK_TASK_KEY + I + taskId;
     }
+
+    public static String getCarrierPayKey(Long waybillId){
+        return "cjyc:carrier:pay:"+waybillId;
+    }
+
+    public static String getOrderRefundKey(Long orderId){
+        return "cjyc:order:refund:"+orderId;
+    }
 }

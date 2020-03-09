@@ -48,6 +48,7 @@ import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 /**
@@ -380,6 +381,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public ResultVo allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+        String lockKey = RedisKeys.getCarrierPayKey(waybillId);
+        if(lockKey!=null&&redisUtils.hasKey(lockKey)){//判断缓存是否存在相同运单
+            return BaseResultUtil.fail("请勿重复发起支付");
+        }else{
+            redisUtils.setEx(lockKey,String.valueOf(waybillId),86400, TimeUnit.SECONDS);
+        }
+
         Waybill waybill = waybillDao.selectById(waybillId);
         try{
             if(waybill != null){
@@ -393,10 +401,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     }
 
                     if(waybill.getFreightPayState()==2){
+                        redisUtils.delete(lockKey);
                         log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费正在支付,请勿重复支付");
                     }
                     if(waybill.getFreightPayState()==1){
+                        redisUtils.delete(lockKey);
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                     }
@@ -408,16 +418,19 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             TradeBill tradeBill = tradeBills.get(0);
                             if(tradeBill != null){
                                 if(tradeBill.getState()==1){
+                                    redisUtils.delete(lockKey);
                                     log.error("运费正在支付中,请勿重复支付 waybillId = {}", waybillId);
                                     return BaseResultUtil.fail("运费正在支付中,请勿重复支付");
                                 }
                                 if(tradeBill.getState()==2){
+                                    redisUtils.delete(lockKey);
                                     log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                                     return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                                 }
 
                             }
                         }else if(tradeBills.size()>1){
+                            redisUtils.delete(lockKey);
                             log.error("【自动打款模式，通联代付支付运费】账单数据异常 waybillId = {}", waybillId);
                             addPaymentErrorLog("auto allinpay 账单数据异常 waybillId ="+waybillId);
                             tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
@@ -469,6 +482,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                             tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");
                                             cStransactionService.saveTransactions(transfer, "1");
                                         }else{
+                                            redisUtils.delete(lockKey);
                                             log.error("【对外支付模式，通联代付支付运费】打款金额有误 waybillId = {}", waybillId);
                                             addPaymentErrorLog("external allinpay 打款金额有误 waybillId ="+waybillId);
                                             tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
@@ -476,21 +490,24 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                         }
 
                                     }else{
+                                        redisUtils.delete(lockKey);
                                         log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
                                         addPaymentErrorLog("auto allinpay 收款人信息不全 waybillId ="+waybillId);
-                                        tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+                                        tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                         return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                                     }
                                 }else{
+                                    redisUtils.delete(lockKey);
                                     log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                     addPaymentErrorLog("auto allinpay 收款人为账期用户 waybillId = "+waybillId);
-                                    tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+                                    tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                     return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                                 }
                             }else{
+                                redisUtils.delete(lockKey);
                                 log.error("【自动打款模式，通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
                                 addPaymentErrorLog("auto allinpay 收款人不存在 waybillId = "+waybillId);
-                                tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+                                tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                 return BaseResultUtil.fail("通联代付失败,收款人不存在");
                             }
 
@@ -506,10 +523,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             }
         }catch (Exception e){
+            redisUtils.delete(lockKey);
             log.error("【自动打款模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
             log.error(e.getMessage(), e);
             addPaymentErrorLog("【自动打款模式，通联代付支付运费】运单"+waybill.getNo()+"，支付运费支付失败");
-            tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-1");//付款失败
+            tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
             return BaseResultUtil.fail("通联代付失败");
         }
 
@@ -558,6 +576,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public ResultVo allinpayToCarrierNew(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+        String lockKey = RedisKeys.getCarrierPayKey(waybillId);
+        if(lockKey!=null&&redisUtils.hasKey(lockKey)){//判断缓存是否存在相同运单
+            return BaseResultUtil.fail("请勿重复发起支付");
+        }else{
+            redisUtils.setEx(lockKey,String.valueOf(waybillId),86400, TimeUnit.SECONDS);
+        }
         Waybill waybill = waybillDao.selectById(waybillId);
         try{
             if(waybill != null){
@@ -570,10 +594,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         return BaseResultUtil.success("运单ID {} 不需要支付");
                     }
                     if(waybill.getFreightPayState()==2){
+                        redisUtils.delete(lockKey);
                         log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费正在支付,请勿重复支付");
                     }
                     if(waybill.getFreightPayState()==1){
+                        redisUtils.delete(lockKey);
                         log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                     }
@@ -585,16 +611,19 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             TradeBill tradeBill = tradeBills.get(0);
                             if(tradeBill != null){
                                 if(tradeBill.getState()==1){
+                                    redisUtils.delete(lockKey);
                                     log.error("运费正在支付中,请勿重复支付 waybillId = {}", waybillId);
                                     return BaseResultUtil.fail("运费正在支付中,请勿重复支付");
                                 }
                                 if(tradeBill.getState()==2){
+                                    redisUtils.delete(lockKey);
                                     log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
                                     return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                                 }
 
                             }
                         }else if(tradeBills.size()>1){
+                            redisUtils.delete(lockKey);
                             log.error("【对外支付模式，通联代付支付运费】账单数据异常 waybillId = {}", waybillId);
                             addPaymentErrorLog("external allinpay 账单数据异常 waybillId ="+waybillId);
                             tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
@@ -620,6 +649,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                         tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");//打款中
                                         cStransactionService.saveTransactions(transfer, "1");
                                     }else{
+                                        redisUtils.delete(lockKey);
                                         log.error("【对外支付模式，通联代付支付运费】打款金额有误 waybillId = {}", waybillId);
                                         addPaymentErrorLog("external allinpay 打款金额有误 waybillId ="+waybillId);
                                         tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
@@ -627,18 +657,21 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     }
 
                                 }else{
+                                    redisUtils.delete(lockKey);
                                     log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
                                     addPaymentErrorLog("external allinpay 收款人信息不全 waybillId ="+waybillId);
                                     tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                     return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                                 }
                             }else{
+                                redisUtils.delete(lockKey);
                                 log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                 addPaymentErrorLog("external allinpay 收款人为账期用户 waybillId = "+waybillId);
                                 tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                 return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                             }
                         }else{
+                            redisUtils.delete(lockKey);
                             log.error("【对外支付模式，通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
                             addPaymentErrorLog("external allinpay 收款人不存在 waybillId = "+waybillId);
                             tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
@@ -655,6 +688,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             }
         }catch (Exception e){
+            redisUtils.delete(lockKey);
             log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
             log.error(e.getMessage(), e);
             addPaymentErrorLog("external allinpay 运单"+waybill.getNo()+"，支付运费支付失败");
@@ -1071,6 +1105,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public void cancelOrderRefund(Long orderId) {
+        String lockKey = RedisKeys.getOrderRefundKey(orderId);
+        if(lockKey!=null&&redisUtils.hasKey(lockKey)){//判断缓存是否存在相同运单
+            throw new CommonException("订单已发起退款");
+        }else{
+            redisUtils.setEx(lockKey,String.valueOf(orderId),86400, TimeUnit.SECONDS);
+        }
         log.info("cancelOrderRefund 退款，orderId = {}",orderId);
         lock.lock();
         try{
@@ -1086,13 +1126,16 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             Refund refund = orderRefundDao.selectByOrderCode(orderNo);
             if(refund!=null){
                 if(refund.getState()==2){
+                    redisUtils.delete(lockKey);
                     log.error("已退款 orderNo={}",orderNo);
                 }else if(refund.getState()==0){
+                    redisUtils.delete(lockKey);
                     log.error("已申请退款，请勿重复操作 orderNo={}",orderNo);
                 }
             }else{
                 String description = "订单号：" + orderNo + "，退款";
                 if(StringUtils.isBlank(description)){
+                    redisUtils.delete(lockKey);
                     log.error("退款异常，description不能为空。");
                 }else{
                     log.info("退款 start，orderId = {}",orderId);
