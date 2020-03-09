@@ -68,7 +68,7 @@ public class TrunkCarDetailExportVo implements Serializable {
     private String startAreaCode;
 
     @ApiModelProperty(value = "装车地址")
-    @Excel(name = "提车地址", orderNum = "17",width = 20)
+    @Excel(name = "提车地址", orderNum = "17",width = 40)
     private String startAddress;
 
     @ApiModelProperty(value = "出发地业务中心名称")
@@ -103,7 +103,7 @@ public class TrunkCarDetailExportVo implements Serializable {
     private String endAreaCode;
 
     @ApiModelProperty(value = "卸车地址")
-    @Excel(name = "交付地址", orderNum = "23",width = 20)
+    @Excel(name = "交付地址", orderNum = "23",width = 40)
     private String endAddress;
 
     @ApiModelProperty(value = "目的地业务中心名称")

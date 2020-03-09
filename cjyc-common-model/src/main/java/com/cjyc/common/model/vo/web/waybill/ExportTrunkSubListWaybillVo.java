@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class ExportTrunkSubListWaybillVo implements Serializable {
     private static final long serialVersionUID = -3929877068505317681L;
     @Excel(name = "运单单号", orderNum = "0",width = 20)
-    private String no;
+    private String wtNo;
     @Excel(name = "状态", orderNum = "1",width = 15)
     private String outterState;
     @Excel(name = "指导线路", orderNum = "2",width = 20)
