@@ -2,6 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
@@ -33,6 +34,7 @@ import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
+import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -98,6 +100,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsPingPayService csPingPayService;
     @Resource
     private ICsPushMsgService csPushMsgService;
+    @Resource
+    private ICsSmsService csSmsService;
     @Resource
     private ICsOrderChangeLogService csOrderChangeLogService;
 
@@ -1124,6 +1128,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Order order = orderDao.selectById(orderId);
         if (order.getState() >= OrderStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("订单已完结，不能修改价格");
+        }
+        if (PayStateEnum.PAID.code == order.getWlPayState()){
+            BigDecimal subtract = MoneyUtil.nullToZero(order.getTotalFee()).subtract(paramsDto.getTotalFee());
+            LogUtil.warn("【订单改价】已支付订单改价，原始金额{}，修改后金额{}, 差价{}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
+            if(subtract.compareTo(BigDecimal.ZERO) > 0){
+                csSmsService.send(paramsDto.getLoginPhone(), "已支付订单修改订单金额，原始金额{0}，修改后金额{1}, 差价{2}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
+            }
         }
         //记录历史数据
         FullOrder oldOrder = getFullOrder(order);

@@ -24,4 +24,5 @@ public interface ICsSmsService {
      * @param clientEnum 客户端类型
      */
     ResultVo send(String phone, CaptchaTypeEnum captchaTypeEnum, ClientEnum clientEnum);
+    void send(String phone, String msg, Object... args);
 }

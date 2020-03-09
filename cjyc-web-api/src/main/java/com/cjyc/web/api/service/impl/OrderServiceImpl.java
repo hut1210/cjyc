@@ -10,6 +10,7 @@ import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.entity.defined.FullCity;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
 import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
@@ -844,7 +845,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         order.setBackContactName(dto.getDeliveryPerson());
         order.setBackContactPhone(dto.getDeliveryPhone());
         //订单来源：1WEB管理后台
-        order.setSource(1);
+        order.setSource(ClientEnum.WEB_SERVER.code);
         order.setCarNum(carNum);
         order.setEndArea(dto.getEndArea());
         order.setEndAreaCode(dto.getEndAreaCode());
