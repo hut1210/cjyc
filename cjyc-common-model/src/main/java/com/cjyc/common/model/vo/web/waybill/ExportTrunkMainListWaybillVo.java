@@ -40,7 +40,7 @@ public class ExportTrunkMainListWaybillVo implements Serializable {
     private String createUser;
     public String getCreateTime(){
         if(createTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATE);
         }
         return "";
     }

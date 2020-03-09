@@ -28,7 +28,7 @@ public class UnLoadTaskDto {
 
     @NotNull(message = "taskId不能为空")
     @ApiModelProperty(value = "任务ID")
-    private String taskId;
+    private Long taskId;
 
     @NotEmpty(message = "taskCarIdList不能为空")
     @ApiModelProperty(value = "任务车辆ID",required = true)

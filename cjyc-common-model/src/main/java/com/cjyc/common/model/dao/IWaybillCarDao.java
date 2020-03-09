@@ -218,4 +218,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int updateLoadImgsNull(Long id);
 
     int countActiveWaybill(@Param("orderCarId") Long orderCarId, @Param("type") int type);
+
 }

@@ -66,7 +66,11 @@ public class CsStoreServiceImpl implements ICsStoreService {
      */
     @Override
     public Store getOneBelongByAreaCode(String areaCode) {
-        return storeDao.findOneBelongByAreaCode(areaCode);
+        Store store = storeDao.findByAreaScope(areaCode);
+        if(store == null){
+            store = storeDao.findOneBelongByAreaCode(areaCode);
+        }
+        return store;
     }
 
     /**

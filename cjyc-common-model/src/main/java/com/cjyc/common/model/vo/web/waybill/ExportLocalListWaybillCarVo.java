@@ -19,7 +19,7 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     private String waybillNo;
     @Excel(name = "运单类型", orderNum = "2",width = 15)
     private Integer type;
-    @Excel(name = "车辆编号", orderNum = "3",width = 15)
+    @Excel(name = "车辆编号", orderNum = "3",width = 20)
     private String orderCarNo;
     @Excel(name = "VIN码", orderNum = "4",width = 15)
     private String vin;
@@ -45,9 +45,9 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     private String vehiclePlateNo;
     @Excel(name = "提送车业务中心", orderNum = "15",width = 20)
     private String startStoreName;
-    @Excel(name = "提车地址", orderNum = "16",width = 30)
+    @Excel(name = "提车地址", orderNum = "16",width = 35)
     private String startAddress;
-    @Excel(name = "交付地址", orderNum = "17",width = 20)
+    @Excel(name = "交付地址", orderNum = "17",width = 35)
     private String endAddress;
     @Excel(name = "订单编号", orderNum = "18",width = 20)
     private String orderNo;
@@ -67,7 +67,7 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     public String getFreightFee() { return MoneyUtil.fenToYuan(freightFee, MoneyUtil.PATTERN_TWO); }
     public String getUnloadTime(){
         if(unloadTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(unloadTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(unloadTime), TimePatternConstant.DATE);
         }
         return "";
     }
@@ -79,43 +79,53 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     }
     public String getType() {
         //运单类型：1提车运单，2干线运单，3送车运单
-        if(type != null){
-            if(type == 1){
-                return "提车运单";
-            }else if(type == 2){
-                return "干线运单";
-            }else if(type == 3){
-                return "送车运单";
-            }
+        if(type == null){
+            return "";
         }
-        return "";
+        String str = null;
+        switch (type){
+            case 1:
+                str = "提车运单";break;
+            case 2:
+                str = "干线运单";break;
+            case 3:
+                str = "送车运单";break;
+        }
+        return str;
     }
     public String getIsNew() {
-        if(isNew != null){
-            if(isNew == 0){
-                return "否";
-            }else{
-                return "是";
-            }
+        if(isNew == null){
+            return "";
         }
-        return "";
+        String str = null;
+        switch (isNew){
+            case 0:
+                str = "否";break;
+            case 1:
+                str = "是";break;
+
+        }
+        return str;
     }
     public String getCarrierType(){
-        if(carrierType != null){
-            if(carrierType == 1){
-                return "干线-个人承运商";
-            }else if(carrierType == 2){
-                return "干线-企业承运商";
-            }else if(carrierType == 3){
-                return "同城-业务员";
-            }else if(carrierType == 4){
-                return "同城-代驾";
-            }else if(carrierType == 5){
-                return "同城-拖车";
-            }else if(carrierType == 6){
-                return "客户自己";
-            }
+        if(carrierType == null){
+            return "";
         }
-        return "";
+        String str = null;
+        switch (carrierType){
+            case 1:
+                str = "干线-个人承运商";break;
+            case 2:
+                str = "干线-企业承运商";break;
+            case 3:
+                str = "同城-业务员";break;
+            case 4:
+                str = "同城-代驾";break;
+            case 5:
+                str = "同城-拖车";break;
+            case 6:
+                str = "客户自己";break;
+        }
+        return str;
     }
 }

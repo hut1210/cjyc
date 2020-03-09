@@ -221,25 +221,25 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     @Excel(name = "订单来源", orderNum = "21",width = 15)
     private String sourceStr;
     @Excel(name = "下单时间", orderNum = "27",width = 20)
-    private String expectStartDateStr;
+    private String createTimeStr;
     @Excel(name = "接单时间", orderNum = "29",width = 20)
-    private String expectEndDateStr;
+    private String checkTimeStr;
 
 
-    public String getExpectEndDateStr() {
-        Long date = getExpectEndDate();
+    public String getCreateTimeStr() {
+        Long date = getCreateTime();
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.COMPLEX_TIME_FORMAT);
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
-    public String getExpectStartDateStr() {
-        Long date = getExpectStartDate();
+    public String getCheckTimeStr() {
+        Long date = getCheckTime();
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.COMPLEX_TIME_FORMAT);
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getSourceStr() {

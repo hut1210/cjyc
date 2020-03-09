@@ -1,12 +1,15 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.web.waybill.*;
+import com.cjyc.common.model.entity.Order;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -39,6 +42,10 @@ public interface ICsWaybillService {
      * @param paramsDto
      */
     ResultVo<ListVo<BaseTipVo>> cancel(CancelWaybillDto paramsDto);
+
+    Order getOrderFromMap(Map<Long, Order> orderMap, Long orderId);
+
+    OrderCar getOrderCarFromMap(Map<Long, OrderCar> orderCarMap, Long orderCarId);
 
     String computeGuideLine(String startAreaCode, String endAreaCode, String defaultGuideLine, Integer carNum);
     String computeGuideLine(Set<String> startAreaCodeSet, Set<String> endAreaCodeSet, String defaultGuideLine, Integer carNum);

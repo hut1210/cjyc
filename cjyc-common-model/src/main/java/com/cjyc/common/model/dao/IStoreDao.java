@@ -52,4 +52,6 @@ public interface IStoreDao extends BaseMapper<Store> {
     Store findOneBelongByCityCode(String cityCode);
 
     List<Store> findList(StoreListLoopAdminDto dto);
+
+    Store findByAreaScope(String areaCode);
 }

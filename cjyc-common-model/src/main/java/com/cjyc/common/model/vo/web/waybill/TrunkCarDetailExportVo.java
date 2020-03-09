@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -67,7 +68,7 @@ public class TrunkCarDetailExportVo implements Serializable {
     private String startAreaCode;
 
     @ApiModelProperty(value = "装车地址")
-    @Excel(name = "提车地址", orderNum = "17",width = 20)
+    @Excel(name = "提车地址", orderNum = "17",width = 40)
     private String startAddress;
 
     @ApiModelProperty(value = "出发地业务中心名称")
@@ -102,7 +103,7 @@ public class TrunkCarDetailExportVo implements Serializable {
     private String endAreaCode;
 
     @ApiModelProperty(value = "卸车地址")
-    @Excel(name = "交付地址", orderNum = "23",width = 20)
+    @Excel(name = "交付地址", orderNum = "23",width = 40)
     private String endAddress;
 
     @ApiModelProperty(value = "目的地业务中心名称")
@@ -251,7 +252,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getUnloadTimeStr() {
@@ -259,7 +260,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getExpectEndTimeStr() {
@@ -267,7 +268,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getLoadTimeStr() {
@@ -275,7 +276,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getExpectStartTimeStr() {
@@ -283,7 +284,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getBackDetailAddr() {

@@ -593,12 +593,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         long currentTimeMillis = System.currentTimeMillis();
 
         Order order = orderDao.selectById(orderId);
-        if (order.getSource() != null && ClientEnum.APP_CUSTOMER.code == order.getSource() || ClientEnum.APPLET_CUSTOMER.code == order.getSource()) {
-            fillOrderStoreInfo(order, true);
-        }
-        if (order.getStartStoreId() == null && order.getEndStoreId() == null) {
-            fillOrderStoreInfo(order, true);
-        }
+        fillOrderStoreInfo(order, true);
         //验证必要信息是否完全
         validateOrderFeild(order);
 
@@ -765,30 +760,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public Order fillOrderStoreInfo(Order order, boolean isForceUpdate) {
-        if (order.getStartStoreId() != null && order.getStartStoreId() > 0) {
-            if (StringUtils.isBlank(order.getStartStoreName())) {
-                Store store = csStoreService.getById(order.getStartStoreId(), true);
-                if (store != null) {
-                    order.setStartStoreName(store.getName());
-                }
-            }
-            order.setStartBelongStoreId(order.getStartStoreId());
-        } else {
-            //查询地址所属业务中心
-            Store store = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
-            if (store != null) {
-                if (order.getStartStoreId() == null || order.getStartStoreId() == -5 || isForceUpdate) {
-                    //无主观操作
-                    order.setStartStoreId(store.getId());
-                    order.setStartStoreName(store.getName());
-                }
-                order.setStartBelongStoreId(store.getId());
-            } else {
-                order.setStartStoreId(0L);
-                order.setStartBelongStoreId(0L);
-            }
-        }
-        if (order.getEndStoreId() != null && order.getEndStoreId() > 0) {
+        fillOrderStartSotreInfo(order, isForceUpdate);
+        fillOrderEndSotreInfo(order, isForceUpdate);
+        return order;
+    }
+
+    private Order fillOrderEndSotreInfo(Order order, boolean isForceUpdate) {
+        if (order.getEndStoreId() != null && order.getEndStoreId() >= 0) {
             order.setEndBelongStoreId(order.getEndStoreId());
             if (StringUtils.isBlank(order.getEndStoreName())) {
                 Store store = csStoreService.getById(order.getEndStoreId(), true);
@@ -799,7 +777,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setStartBelongStoreId(order.getStartStoreId());
         } else {
             //查询地址所属业务中心
-            Store store = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
+            Store store = csStoreService.getOneBelongByAreaCode(order.getEndAreaCode());
+            //Store store = csStoreService.getOneBelongByCityCode(order.getEndCityCode());
             if (store != null) {
                 if (order.getEndStoreId() == null || order.getEndStoreId() == -5 || isForceUpdate) {
                     //无主观操作
@@ -810,6 +789,34 @@ public class CsOrderServiceImpl implements ICsOrderService {
             } else {
                 order.setEndStoreId(0L);
                 order.setEndBelongStoreId(0L);
+            }
+        }
+        return order;
+    }
+
+    private Order fillOrderStartSotreInfo(Order order, boolean isForceUpdate) {
+        if (order.getStartStoreId() != null && order.getStartStoreId() >= 0) {
+            if (StringUtils.isBlank(order.getStartStoreName())) {
+                Store store = csStoreService.getById(order.getStartStoreId(), true);
+                if (store != null) {
+                    order.setStartStoreName(store.getName());
+                }
+            }
+            order.setStartBelongStoreId(order.getStartStoreId());
+        } else {
+            //查询地址所属业务中心
+            //Store store = csStoreService.getOneBelongByCityCode(order.getStartCityCode());
+            Store store = csStoreService.getOneBelongByAreaCode(order.getStartAreaCode());
+            if (store != null) {
+                if (order.getStartStoreId() == null || order.getStartStoreId() == -5 || isForceUpdate) {
+                    //无主观操作
+                    order.setStartStoreId(store.getId());
+                    order.setStartStoreName(store.getName());
+                }
+                order.setStartBelongStoreId(store.getId());
+            } else {
+                order.setStartStoreId(0L);
+                order.setStartBelongStoreId(0L);
             }
         }
         return order;
@@ -1419,7 +1426,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         BigDecimal carTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            carTotalFee = getCarWlFee(oc);
+            carTotalFee = carTotalFee.add(getCarWlFee(oc));
         }
         if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return orderCarlist;
