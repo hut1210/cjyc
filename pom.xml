@@ -25,6 +25,7 @@
         <module>cjyc-server-pay</module>
         <module>cjyc-scheduler-finance</module>
         <module>cjyc-scheduler-report</module>
+        <module>cjyc-foreign-api</module>
     </modules>
 
     <properties>

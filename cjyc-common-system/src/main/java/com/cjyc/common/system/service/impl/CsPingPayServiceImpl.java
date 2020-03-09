@@ -388,6 +388,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
                     //校验运单支付状态
                     waybill = waybillDao.selectById(waybillId);
+                    if(waybill.getCarrierType()==null||waybill.getCarrierType()==3||waybill.getCarrierType()==6){
+                        return BaseResultUtil.success("运单ID {} 不需要支付");
+                    }
+
                     if(waybill.getFreightPayState()==2){
                         log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费正在支付,请勿重复支付");
@@ -562,6 +566,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
                     //校验运单支付状态
                     waybill = waybillDao.selectById(waybillId);
+                    if(waybill.getCarrierType()==null||waybill.getCarrierType()==3||waybill.getCarrierType()==6){
+                        return BaseResultUtil.success("运单ID {} 不需要支付");
+                    }
                     if(waybill.getFreightPayState()==2){
                         log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
                         return BaseResultUtil.fail("运费正在支付,请勿重复支付");

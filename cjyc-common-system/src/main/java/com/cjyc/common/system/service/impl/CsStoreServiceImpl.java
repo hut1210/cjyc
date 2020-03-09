@@ -2,14 +2,12 @@ package com.cjyc.common.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.ICityDao;
+import com.cjyc.common.model.dao.IStoreCityConDao;
 import com.cjyc.common.model.dao.IStoreDao;
 import com.cjyc.common.model.dao.IUserRoleDeptDao;
 import com.cjyc.common.model.dto.customer.freightBill.FindStoreDto;
 import com.cjyc.common.model.dto.salesman.StoreListLoopAdminDto;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.City;
-import com.cjyc.common.model.entity.Store;
-import com.cjyc.common.model.entity.UserRoleDept;
+import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CityLevelEnum;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -54,6 +52,8 @@ public class CsStoreServiceImpl implements ICsStoreService {
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private ICityDao cityDao;
+    @Resource
+    private IStoreCityConDao storeCityConDao;
     @Resource
     private ICsAdminService csAdminService;
 
@@ -248,6 +248,15 @@ public class CsStoreServiceImpl implements ICsStoreService {
 
     @Override
     public ResultVo<StoreListVo> findStore(FindStoreDto dto) {
+        //根据城市编码code获取区县
+        List<City> cityList = cityDao.selectList(new QueryWrapper<City>().lambda().eq(City::getParentCode, dto.getCityCode()));
+        if(!CollectionUtils.isEmpty(cityList)){
+            List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda().in(StoreCityCon::getAreaCode, cityList.stream().map(City::getCode).collect(Collectors.toList())));
+            if(!CollectionUtils.isEmpty(storeCityConList)){
+                Set<Long> storeIds = storeCityConList.stream().map(StoreCityCon::getStoreId).collect(Collectors.toSet());
+                dto.setStoreIds(storeIds);
+            }
+        }
         List<BusinessStoreVo> storeVos = storeDao.findStore(dto);
         StoreListVo storeVoList = new StoreListVo();
         storeVoList.setStoreVoList(storeVos);

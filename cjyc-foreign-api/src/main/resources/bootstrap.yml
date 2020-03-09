@@ -1,0 +1,13 @@
+spring:
+  #激活配置文件
+  profiles:
+    active: local
+  #应用名称
+  application:
+    name: cjyc-foreign-api
+  #nacos Data ID：yunche-api-${spring.profiles.active}.${file-extension}
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848 #本机
+

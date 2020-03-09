@@ -16,6 +16,7 @@ import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import com.cjyc.web.api.service.IWaybillService;
 import com.cjyc.web.api.util.WaybillValueToDesc;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -194,8 +195,13 @@ public class WaybillController {
             return;
         }
         try {
-            List<ExportLocalListWaybillCarVo> rsList = dealLocalListForExport(list);
-            ExcelUtil.exportExcel(rsList, "运单信息", "运单信息",
+            List<ExportLocalListWaybillCarVo> exportList =  Lists.newArrayList();
+            for(LocalListWaybillCarVo vo : list){
+                ExportLocalListWaybillCarVo excelVo = new ExportLocalListWaybillCarVo();
+                BeanUtils.copyProperties(vo,excelVo);
+                exportList.add(excelVo);
+            }
+            ExcelUtil.exportExcel(exportList, "运单信息", "运单信息",
                     ExportLocalListWaybillCarVo.class, System.currentTimeMillis() + "运单信息.xls", response);
             return;
         } catch (Exception e) {
@@ -246,8 +252,13 @@ public class WaybillController {
             return;
         }
         try {
-            List<ExportTrunkMainListWaybillVo> rsList = dealTrunkMainListForExport(list);
-            ExcelUtil.exportExcel(rsList, "运单信息-干线", "运单信息-干线",
+            List<ExportTrunkMainListWaybillVo> exportList = Lists.newArrayList();
+            for(TrunkMainListWaybillVo vo : list){
+                ExportTrunkMainListWaybillVo exportVo = new ExportTrunkMainListWaybillVo();
+                BeanUtils.copyProperties(vo,exportVo);
+                exportList.add(exportVo);
+            }
+            ExcelUtil.exportExcel(exportList, "运单信息-干线", "运单信息-干线",
                     ExportTrunkMainListWaybillVo.class, System.currentTimeMillis() + "运单信息-干线.xls", response);
             return;
         } catch (Exception e) {
@@ -309,8 +320,14 @@ public class WaybillController {
         }
         try {
 //            List<ExportTrunkMainListWaybillVo> rsList = dealTrunkSubListForExport(list);
-            ExcelUtil.exportExcel(list, "运单干线子运单信息", "运单干线子运单信息",
-                    TrunkSubListExportVo.class, System.currentTimeMillis() + "运单干线子运单信息.xls", response);
+            List<ExportTrunkSubListWaybillVo> exportSubList = Lists.newArrayList();
+            for(TrunkSubListExportVo vo : list){
+                ExportTrunkSubListWaybillVo exportSub = new  ExportTrunkSubListWaybillVo();
+                BeanUtils.copyProperties(vo,exportSub);
+                exportSubList.add(exportSub);
+            }
+            ExcelUtil.exportExcel(exportSubList, "运单干线子运单信息", "运单干线子运单信息",
+                    ExportTrunkSubListWaybillVo.class, System.currentTimeMillis() + "运单干线子运单信息.xls", response);
             return;
         } catch (Exception e) {
             LogUtil.error("导出全部运单干线子运单列表异常", e);
@@ -423,77 +440,6 @@ public class WaybillController {
             return false;
         }
         return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
-    }
-
-    /**
-     * 导出LocalListWaybillCarVo对象信息封装
-     *
-     * @param list
-     * @return
-     */
-    private List<ExportLocalListWaybillCarVo> dealLocalListForExport(List<LocalListWaybillCarVo> list) {
-        List<ExportLocalListWaybillCarVo> rsList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(list)) {
-            return null;
-        }
-        list.forEach(l -> {
-            ExportLocalListWaybillCarVo vo = new ExportLocalListWaybillCarVo();
-            BeanUtils.copyProperties(l, vo);
-            vo.setStateDesc(l.getState() == null ? null :
-                    WaybillValueToDesc.convertStateToDesc(l.getState()));
-            vo.setTypeDesc(l.getType() == null ? null :
-                    WaybillValueToDesc.convertTypeToDesc(l.getType()));
-            vo.setIsNewDesc(l.getIsNew() == null ? null :
-                    WaybillValueToDesc.convertIsNewDesc(l.getIsNew()));
-            rsList.add(vo);
-        });
-        return rsList;
-    }
-
-    /**
-     * 导出TrunkMainListWaybillVo对象信息封装
-     *
-     * @param list
-     * @return
-     */
-    private List<ExportTrunkMainListWaybillVo> dealTrunkMainListForExport(
-            List<TrunkMainListWaybillVo> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return null;
-        }
-        List<ExportTrunkMainListWaybillVo> rsList = new ArrayList<>();
-        list.forEach(l -> {
-            ExportTrunkMainListWaybillVo vo = new ExportTrunkMainListWaybillVo();
-            BeanUtils.copyProperties(l, vo);
-            vo.setCreateTimeDesc(l.getCreateTime() == null ? null :
-                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil
-                            .convertLongToLDT(l.getCreateTime()), "yyyy-MM-dd"));
-            rsList.add(vo);
-        });
-        return rsList;
-    }
-
-    /**
-     * 导出TrunkSubListWaybillVo对象信息封装
-     *
-     * @param list
-     * @return
-     */
-    private List<ExportTrunkMainListWaybillVo> dealTrunkSubListForExport(
-            List<TrunkSubListWaybillVo> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return null;
-        }
-        List<ExportTrunkMainListWaybillVo> rsList = new ArrayList<>();
-        list.forEach(l -> {
-            ExportTrunkMainListWaybillVo vo = new ExportTrunkMainListWaybillVo();
-            BeanUtils.copyProperties(l, vo);
-            vo.setCreateTimeDesc(l.getCreateTime() == null ? null :
-                    LocalDateTimeUtil.formatLDT(LocalDateTimeUtil
-                            .convertLongToLDT(l.getCreateTime()), "yyyy-MM-dd"));
-            rsList.add(vo);
-        });
-        return rsList;
     }
 
 
