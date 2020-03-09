@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -251,7 +252,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getUnloadTimeStr() {
@@ -259,7 +260,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getExpectEndTimeStr() {
@@ -267,7 +268,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getLoadTimeStr() {
@@ -275,7 +276,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getExpectStartTimeStr() {
@@ -283,7 +284,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
 
     public String getBackDetailAddr() {

@@ -96,14 +96,18 @@ public class ExcelListOrderCarVo implements Serializable {
     private String checkUserName;
 
     public String getWlPayState(){
-        if(wlPayState != null){
-            if(wlPayState == 0){
-                return "未支付";
-            }else if(wlPayState == 2){
-                return "已支付";
-            }
+        if(wlPayState == null){
+            return "";
         }
-        return "";
+        String str = null;
+        switch (wlPayState){
+            case 0:
+                str = "未支付";break;
+            case 2:
+                str = "已支付";break;
+            default:str = "";
+        }
+        return str;
     }
     public String getTotalFee() { return MoneyUtil.fenToYuan(totalFee, MoneyUtil.PATTERN_TWO); }
     public String getAddInsuranceFee() { return MoneyUtil.fenToYuan(addInsuranceFee, MoneyUtil.PATTERN_TWO); }
@@ -111,6 +115,9 @@ public class ExcelListOrderCarVo implements Serializable {
     public String getTrunkFee() { return MoneyUtil.fenToYuan(trunkFee, MoneyUtil.PATTERN_TWO); }
     public String getBackFee() { return MoneyUtil.fenToYuan(backFee, MoneyUtil.PATTERN_TWO); }
     public String getSource(){
+        if (source == null) {
+            return "";
+        }
        String str = null;
         switch (source) {
             case 1:
@@ -129,13 +136,13 @@ public class ExcelListOrderCarVo implements Serializable {
     }
     public String getExpectStartDate(){
         if(expectStartDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectStartDate), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectStartDate), TimePatternConstant.DATE);
         }
         return "";
     }
     public String getExpectEndDate(){
         if(expectEndDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectEndDate), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectEndDate), TimePatternConstant.DATE);
         }
         return "";
     }
@@ -152,6 +159,9 @@ public class ExcelListOrderCarVo implements Serializable {
         return "";
     }
     public String getPickType(){
+        if(pickType == null){
+            return "";
+        }
         String str = null;
         switch (pickType){
             case 1:
@@ -167,6 +177,9 @@ public class ExcelListOrderCarVo implements Serializable {
         return str;
     }
     public String getBackType(){
+        if(backType == null){
+            return "";
+        }
         String str = null;
         switch (backType){
             case 1:
@@ -182,6 +195,9 @@ public class ExcelListOrderCarVo implements Serializable {
         return str;
     }
     public String getPayType(){
+        if(payType == null){
+            return "";
+        }
         String str = null;
         switch (payType){
             case 0:
@@ -195,6 +211,9 @@ public class ExcelListOrderCarVo implements Serializable {
         return str;
     }
     public String getIsMove(){
+        if(isMove == null){
+            return "";
+        }
         String str = null;
         switch (isMove){
             case 0:
@@ -207,6 +226,9 @@ public class ExcelListOrderCarVo implements Serializable {
         return str;
     }
     public String getIsNew(){
+        if(isNew == null){
+            return "";
+        }
         String str = null;
         switch (isNew){
             case 0:
