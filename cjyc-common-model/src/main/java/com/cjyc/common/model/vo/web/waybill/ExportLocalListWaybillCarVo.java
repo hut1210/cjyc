@@ -19,7 +19,7 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     private String waybillNo;
     @Excel(name = "运单类型", orderNum = "2",width = 15)
     private Integer type;
-    @Excel(name = "车辆编号", orderNum = "3",width = 15)
+    @Excel(name = "车辆编号", orderNum = "3",width = 20)
     private String orderCarNo;
     @Excel(name = "VIN码", orderNum = "4",width = 15)
     private String vin;
@@ -45,9 +45,9 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     private String vehiclePlateNo;
     @Excel(name = "提送车业务中心", orderNum = "15",width = 20)
     private String startStoreName;
-    @Excel(name = "提车地址", orderNum = "16",width = 30)
+    @Excel(name = "提车地址", orderNum = "16",width = 35)
     private String startAddress;
-    @Excel(name = "交付地址", orderNum = "17",width = 20)
+    @Excel(name = "交付地址", orderNum = "17",width = 35)
     private String endAddress;
     @Excel(name = "订单编号", orderNum = "18",width = 20)
     private String orderNo;

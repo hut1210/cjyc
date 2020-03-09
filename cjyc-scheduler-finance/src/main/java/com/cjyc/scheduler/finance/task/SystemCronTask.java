@@ -1,4 +1,4 @@
-package com.cjyc.common.system.task;
+package com.cjyc.scheduler.finance.task;
 
 import com.cjyc.common.system.service.ICsCronTaskService;
 import org.springframework.context.annotation.Configuration;
