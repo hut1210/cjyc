@@ -1426,7 +1426,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         BigDecimal carTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            carTotalFee = getCarWlFee(oc);
+            carTotalFee = carTotalFee.add(getCarWlFee(oc));
         }
         if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return orderCarlist;
