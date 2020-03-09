@@ -1133,7 +1133,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             BigDecimal subtract = MoneyUtil.nullToZero(order.getTotalFee()).subtract(paramsDto.getTotalFee());
             LogUtil.warn("【订单改价】已支付订单改价，原始金额{}，修改后金额{}, 差价{}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
             if(subtract.compareTo(BigDecimal.ZERO) > 0){
-                csSmsService.send(paramsDto.getLoginPhone(), "已支付订单修改订单金额，原始金额{0}，修改后金额{1}, 差价{2}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
+                csSmsService.send(paramsDto.getLoginPhone(), "已支付订单改价，原始金额{0}，修改后金额{1}, 差价{2}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
             }
         }
         //记录历史数据
