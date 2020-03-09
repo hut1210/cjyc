@@ -1,6 +1,5 @@
 package com.cjyc.common.model.keys;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
@@ -22,15 +21,15 @@ public class RedisKeys {
      * 一级前缀
      */
     /**项目前缀：长久韵车首字母**/
-    private final static String PROJECT_PREFIX = "cjyc";
+    private final static String CJYC = "cjyc";
     /**项目前缀：web缩写**/
-    private final static String WEB_PREFIX = "cjyc:web";
+    private final static String CJYC_WEB = "cjyc:web";
     /**项目前缀：salesman缩写**/
-    private final static String SALESMAN_PREFIX = "cjyc:sale";
+    private final static String CJYC_SALESMAN = "cjyc:sale";
     /**业务项目前缀：driver缩写**/
-    private final static String DRIVER_PREFIX = "cjyc:drv";
+    private final static String CJYC_DRIVER = "cjyc:drv";
     /**业务项目前缀：customer缩写**/
-    private final static String CUSTOMER_PREFIX = "cjyc:csr";
+    private final static String CJYC_CUSTOMER = "cjyc:csr";
 
 
 
@@ -39,6 +38,7 @@ public class RedisKeys {
     private final static String SMS_COUNT_KEY = "sms:count";
 
     private final static String DISPATCH_LOCK_CAR_KEY = "dispatch:lock:car";
+    private final static String UNLOAD_LOCK_TASK_KEY = "dispatch:lock:car";
     private final static String DISPATCH_LOCK_ORDER_UPDATE = "dispatch:lock:order:update";
     private final static String ALLOT_CAR_LOCK_KEY = "allot:car:lock";
     private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
@@ -65,19 +65,22 @@ public class RedisKeys {
     }
 
     public static String getSmsCountKey(String date, String phone) {
-        return PROJECT_PREFIX + I + SMS_COUNT_KEY + I + date + I + phone;
+        return CJYC + I + SMS_COUNT_KEY + I + date + I + phone;
     }
 
     public static String getDispatchLock(String orderCarNo) {
-        return PROJECT_PREFIX + I + DISPATCH_LOCK_CAR_KEY + I + orderCarNo;
+        return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + orderCarNo;
+    }
+    public static String getDispatchLock(Long Id) {
+        return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + Id;
     }
 
     public static String getAllotTaskKey(Long waybillCarId) {
-        return PROJECT_PREFIX + I + ALLOT_CAR_LOCK_KEY + I + waybillCarId;
+        return CJYC + I + ALLOT_CAR_LOCK_KEY + I + waybillCarId;
     }
 
     public static String getUserKey(Long userId) {
-        return PROJECT_PREFIX + I + USER_KEY + I + userId;
+        return CJYC + I + USER_KEY + I + userId;
     }
 
     public static String getRoleBizScopeKey(ClientEnum clientEnum, Long roleId) {
@@ -85,22 +88,22 @@ public class RedisKeys {
     }
 
     public static String getNewTaskNoKey(String waybillNo) {
-        return PROJECT_PREFIX + I + NEW_TASK_NO_KEY + I + waybillNo;
+        return CJYC + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
     public static String getWlCollectPayLockKey(String carNo) {
-        return  PROJECT_PREFIX + I + WL_COLLECT_PAY_LOCK + I + carNo;
+        return  CJYC + I + WL_COLLECT_PAY_LOCK + I + carNo;
     }
     public static List<String> getWlCollectPayLockKeys(List<String> carNos) {
         List<String> list = Lists.newArrayList();
         for (String carNo : carNos) {
-            list.add(PROJECT_PREFIX + I + WL_COLLECT_PAY_LOCK + I + carNo);
+            list.add(CJYC + I + WL_COLLECT_PAY_LOCK + I + carNo);
         }
         return list;
     }
 
     public static String getWlPrePayLock(String orderNo) {
-        return PROJECT_PREFIX + I + WL_PRE_PAY_LOCK + I + orderNo;
+        return CJYC + I + WL_PRE_PAY_LOCK + I + orderNo;
     }
 
     /**
@@ -111,33 +114,33 @@ public class RedisKeys {
     private static String getPreixByCilent(ClientEnum clientEnum) {
         String prefix;
         if(clientEnum == ClientEnum.WEB_SERVER){
-            prefix = WEB_PREFIX;
+            prefix = CJYC_WEB;
         }else if(clientEnum == ClientEnum.APP_SALESMAN){
-            prefix = SALESMAN_PREFIX;
+            prefix = CJYC_SALESMAN;
         }else if(clientEnum == ClientEnum.APP_DRIVER){
-            prefix = DRIVER_PREFIX;
+            prefix = CJYC_DRIVER;
         }else if(clientEnum == ClientEnum.APP_CUSTOMER || clientEnum == ClientEnum.APPLET_CUSTOMER){
-            prefix = CUSTOMER_PREFIX;
+            prefix = CJYC_CUSTOMER;
         }else{
-            prefix = PROJECT_PREFIX;
+            prefix = CJYC;
         }
         return prefix;
     }
 
     public static String getDispatchLockForOrderUpdate(String orderNo) {
-        return PROJECT_PREFIX + I + DISPATCH_LOCK_ORDER_UPDATE + I + orderNo;
+        return CJYC + I + DISPATCH_LOCK_ORDER_UPDATE + I + orderNo;
     }
 
     public static String getLoopAllotAdminKey(Long startStoreId) {
-        return PROJECT_PREFIX + I + LOOP_ALLOT_ADMIN_KEY + I + startStoreId;
+        return CJYC + I + LOOP_ALLOT_ADMIN_KEY + I + startStoreId;
     }
 
     public static String getCarSeriesKey(String keyword){
-        return PROJECT_PREFIX + I + CAR_SERIES + I + keyword;
+        return CJYC + I + CAR_SERIES + I + keyword;
     }
 
     public static String getThreeCityKey(String keyword){
-        String key = PROJECT_PREFIX + I + THREE_CITY;
+        String key = CJYC + I + THREE_CITY;
         if(StringUtils.isNotBlank(keyword)){
             key = key + I + keyword;
         }
@@ -145,18 +148,22 @@ public class RedisKeys {
     }
 
     public static String getAppBankInfoKey(BankInfoDto dto){
-        return PROJECT_PREFIX + I + BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getKeyword();
+        return CJYC + I + BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getKeyword();
     }
 
     public static String getWebBankInfoKey(KeywordDto dto){
-        return PROJECT_PREFIX + I + BANK_INFO + I + dto.getKeyword();
+        return CJYC + I + BANK_INFO + I + dto.getKeyword();
     }
 
     public static String getCityTreeKey(Integer rootLevel, Integer minLeafLevel){
-        return PROJECT_PREFIX + I + CITY_TREE + I + rootLevel + I + minLeafLevel;
+        return CJYC + I + CITY_TREE + I + rootLevel + I + minLeafLevel;
     }
 
     public static String getKeywordCityTreeKey(String keyword){
-        return PROJECT_PREFIX + I + KEYWORD_CITY_TREE + I + keyword;
+        return CJYC + I + KEYWORD_CITY_TREE + I + keyword;
+    }
+
+    public static String getUnloadKey(Long taskId) {
+        return CJYC + I + UNLOAD_LOCK_TASK_KEY + I + taskId;
     }
 }

@@ -66,11 +66,11 @@
     <select id="findOneBelongByAreaCode" resultType="com.cjyc.common.model.entity.Store">
         select
         s.*
-        from s_store_city_con con
-        join s_store s on con.store_id = s.id
-        where con.area_code = #{areaCode}
+        from s_store s
+        where s.city_code = (
+          select city_code from s_city where area_code = #{areaCode}
+        )
         and is_delete = 0
-        limit 1
 
     </select>
     <select id="findAll" resultType="com.cjyc.common.model.entity.Store">
@@ -195,6 +195,15 @@
                 and `name` like concat('%', #{name},'%')
             </if>
         </where>
+    </select>
+    <select id="findByAreaScope" resultType="com.cjyc.common.model.entity.Store">
+        select
+        s.*
+        from s_store_city_con con
+        join s_store s on con.store_id = s.id
+        where con.area_code = #{areaCode}
+        and is_delete = 0
+        limit 1
     </select>
 
 
