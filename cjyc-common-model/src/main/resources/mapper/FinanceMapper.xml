@@ -494,7 +494,15 @@
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
         wt.driver_phone as driverPhone,
-        if(ww.freight_pay_state=0,'未付款','已付款') as state,
+        (
+            case
+                when ww.freight_pay_state=0 then '未付款'
+                when ww.freight_pay_state=1 then '已付款'
+                when ww.freight_pay_state=2 then '正在支付'
+                when ww.freight_pay_state=-1 then '支付失败'
+                when ww.freight_pay_state=-2 then '支付失败'
+            end
+        ) as state,
         wt.vehicle_plate_no as vehiclePlateNo,
         sbcb.card_name as cardName,
         sbcb.card_no as cardNo,
