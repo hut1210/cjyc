@@ -207,22 +207,22 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
     public void payToCooperator() {
         List<Long> orderIds = tradeBillDao.getNopayOrder();
         if(orderIds!=null){
-            log.info("orderIds "+orderIds.toString());
+            log.info("给合伙人付款 orderIds "+orderIds.toString());
         }
 
         for(int i=0;i<orderIds.size();i++){
             final Long orderId = orderIds.get(i);
-            executorService.execute(new Runnable() {
+            /*executorService.execute(new Runnable() {
                 @Override
-                public void run() {
+                public void run() {*/
                     try {
                         csPingPayService.allinpayToCooperator(orderId);
                     } catch (Exception e) {
                         log.error("定时任务付合伙人服务费失败 orderId= {}",orderId);
                         log.error(e.getMessage(),e);
                     }
-                }
-            });
+             /*   }
+            });*/
         }
     }
 
@@ -234,7 +234,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
         //订单为支付中
         List<Long> orderIds = tradeBillDao.getPayingOrder();
         if(orderIds!=null){
-            log.info("orderIds "+orderIds.toString());
+            log.info("订单为支付中 orderIds "+orderIds.toString());
         }
 
         for(int i=0;i<orderIds.size();i++){
