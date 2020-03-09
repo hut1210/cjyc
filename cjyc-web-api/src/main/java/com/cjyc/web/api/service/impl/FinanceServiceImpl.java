@@ -386,7 +386,7 @@ public class FinanceServiceImpl implements IFinanceService {
                     }
                 }
                 if(paymentVo.getType()==1){
-                    paymentVoList.add(paymentVo);
+                    paymentVos.add(paymentVo);
                 }
             }
         }
