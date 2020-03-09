@@ -78,48 +78,6 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
         }
     }
 
-    @Override
-    public void saveCustomerLine() {
-        System.out.println("保存前一天客户路线开始执行。。。。。");
-        List<Order> dayOrders = findBeforeDayOrder();
-        if(!CollectionUtils.isEmpty(dayOrders)){
-            for(Order order : dayOrders){
-                Long createId = null;
-                Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getUserId, order.getCreateUserId()));
-                Customer customer= customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getUserId,order.getCreateUserId()));
-                if(admin != null){
-                    createId = admin.getId();
-                }else if(customer != null){
-                    createId = customer.getId();
-                }
-                CustomerLine customerLine = customerLineDao.selectOne(new QueryWrapper<CustomerLine>().lambda()
-                        .eq(CustomerLine::getCustomerId, order.getCustomerId())
-                        .eq(CustomerLine::getOperateId, createId)
-                        .eq(CustomerLine::getStartAdress, order.getStartAddress())
-                        .eq(CustomerLine::getStartContactPhone, order.getPickContactPhone())
-                        .eq(CustomerLine::getStartContact, order.getPickContactName())
-                        .eq(CustomerLine::getEndAdress, order.getEndAddress())
-                        .eq(CustomerLine::getEndContact, order.getBackContactName())
-                        .eq(CustomerLine::getEndContactPhone, order.getBackContactPhone()));
-                if(customerLine == null){
-                    Line line = lineDao.selectOne(new QueryWrapper<Line>().lambda().eq(Line::getId, order.getLineId()));
-                    customerLine = new CustomerLine();
-                    BeanUtils.copyProperties(order,customerLine);
-                    customerLine.setLineCode(line == null ? "":line.getCode());
-                    customerLine.setOperateId(createId);
-                    customerLine.setStartContact(order.getPickContactName());
-                    customerLine.setStartContactPhone(order.getPickContactPhone());
-                    customerLine.setEndContact(order.getBackContactName());
-                    customerLine.setEndContactPhone(order.getBackContactPhone());
-                    customerLine.setCreateTime(NOW);
-                    customerLineDao.insert(customerLine);
-                }else{
-                    continue;
-                }
-            }
-        }
-    }
-
     /**
      * 获取前一天所有订单
      * @return
