@@ -17,6 +17,7 @@ import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
@@ -738,16 +739,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.info("支付合伙人服务费wlFee={},orderId ={}",wlFee,orderId);
                     //新增打款记录日志
                     savePaymentRecord(orderId);
-                    //TODO 金额空指针
-                    BigDecimal payableFee = new BigDecimal("0");
-                    try{
-                        payableFee = order.getTotalFee().subtract(wlFee).add(order.getCouponOffsetFee());//给合伙人费用
-                    }catch (Exception e){
-                        cStransactionService.updateOrderFlag(order.getNo(),"-2",System.currentTimeMillis());
-                        log.error("服务费用数据异常 orderId = {}", orderId);
-                        addPaymentErrorLog("服务费用数据异常 orderId = "+orderId);
-                        return BaseResultUtil.fail("服务费用数据异常");
-                    }
+                    BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));//给合伙人费用
 
                     log.info("支付合伙人服务费 payableFee={},orderId ={}",payableFee,orderId);
                     if(payableFee.compareTo(BigDecimal.ZERO)>0){
