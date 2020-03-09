@@ -799,4 +799,9 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         return paidNewVoList;
     }
+
+    @Override
+    public ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList() {
+        return null;
+    }
 }

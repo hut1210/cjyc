@@ -249,4 +249,10 @@ public class FinancePayableController {
         }
     }
 
+    @ApiOperation(value = "合伙人付款列表")
+    @PostMapping(value = "/getCooperatorPaidList")
+    public ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(){
+        return financeService.getCooperatorPaidList();
+    }
+
 }
