@@ -42,27 +42,27 @@ public class OrderCar implements Serializable {
     private Long orderId;
 
     @ApiModelProperty(value = "订单编号")
-    @Excel(name = "订单编号", orderNum = "20")
+    @Excel(name = "订单编号", orderNum = "20",width = 15)
     private String orderNo;
 
     @ApiModelProperty(value = "车辆编码")
-    @Excel(name = "车辆编码", orderNum = "5")
+    @Excel(name = "车辆编码", orderNum = "5",width = 15)
     private String no;
 
     @ApiModelProperty(value = "品牌")
-    @Excel(name = "品牌", orderNum = "9")
+    @Excel(name = "品牌", orderNum = "9",width = 15)
     private String brand;
 
     @ApiModelProperty(value = "型号")
-    @Excel(name = "车系", orderNum = "10")
+    @Excel(name = "车系", orderNum = "10",width = 15)
     private String model;
 
     @ApiModelProperty(value = "车牌号")
-    @Excel(name = "车牌号", orderNum = "11")
+    @Excel(name = "车牌号", orderNum = "11",width = 15)
     private String plateNo;
 
     @ApiModelProperty(value = "vin码")
-    @Excel(name = "vin码", orderNum = "6")
+    @Excel(name = "vin码", orderNum = "6",width = 15)
     private String vin;
 
     @ApiModelProperty(value = "是否能动 0-否 1-是")

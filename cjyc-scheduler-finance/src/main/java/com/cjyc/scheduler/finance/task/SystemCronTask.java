@@ -1,4 +1,4 @@
-package com.cjyc.common.system.task;
+package com.cjyc.scheduler.finance.task;
 
 import com.cjyc.common.system.service.ICsCronTaskService;
 import org.springframework.context.annotation.Configuration;
@@ -32,13 +32,4 @@ public class SystemCronTask {
     void saveDriverCar(){
         csCronTaskService.saveDriverCar();
     }
-
-    /**
-     * 每天凌晨三点执行
-     */
-   /* @Scheduled(cron = "0 0 3 * * ?")
-    //@Scheduled(cron = "0/5 * * * * ?")
-    void saveCustomerLine(){
-        csCronTaskService.saveCustomerLine();
-    }*/
 }

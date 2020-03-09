@@ -6,5 +6,4 @@ public interface ICsCronTaskService {
 
     void saveDriverCar();
 
-    void saveCustomerLine();
 }
