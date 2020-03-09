@@ -111,20 +111,21 @@ public class ExcelListOrderCarVo implements Serializable {
     public String getTrunkFee() { return MoneyUtil.fenToYuan(trunkFee, MoneyUtil.PATTERN_TWO); }
     public String getBackFee() { return MoneyUtil.fenToYuan(backFee, MoneyUtil.PATTERN_TWO); }
     public String getSource(){
-        if(source != null){
-            if(source == 1){
-                return "WEB管理后台";
-            }else if(source == 2){
-                return "业务员APP";
-            }else if(source == 4){
-                return "司机APP";
-            }else if(source == 6){
-                return "用户端APP";
-            }else if(source == 7){
-                return "用户端小程序";
-            }
+       String str = null;
+        switch (source) {
+            case 1:
+                str = "WEB管理后台"; break;
+            case 2:
+                str = "业务员APP"; break;
+            case 4:
+                str = "司机APP"; break;
+            case 6:
+                str = "用户端APP"; break;
+            case 7:
+                str = "用户端小程序"; break;
+                default:str = "";
         }
-        return "";
+        return str;
     }
     public String getExpectStartDate(){
         if(expectStartDate != null){
@@ -151,67 +152,69 @@ public class ExcelListOrderCarVo implements Serializable {
         return "";
     }
     public String getPickType(){
-        if(pickType != null){
-            if(pickType == 1){
-                return "自送";
-            }else if(pickType == 2){
-                return "代驾上门";
-            }else if(pickType == 3){
-                return "拖车上门";
-            }else if(pickType == 4){
-                return "物流上门";
-            }
+        String str = null;
+        switch (pickType){
+            case 1:
+                str = "自送";break;
+            case 2:
+                str = "代驾上门";break;
+            case 3:
+                str = "拖车上门";break;
+            case 4:
+                str = "物流上门";break;
+            default:str = "";
         }
-        return "";
+        return str;
     }
     public String getBackType(){
-        if(backType != null){
-            if(backType == 1){
-                return "自提";
-            }else if(backType == 2){
-                return "代驾上门";
-            }else if(backType == 3){
-                return "拖车上门";
-            }else if(backType == 4){
-                return "物流上门";
-            }
+        String str = null;
+        switch (backType){
+            case 1:
+                str = "自提";break;
+            case 2:
+                str = "代驾上门";break;
+            case 3:
+                str = "拖车上门";break;
+            case 4:
+                str = "物流上门";break;
+            default:str = "";
         }
-        return "";
+        return str;
     }
     public String getPayType(){
-        if(payType != null){
-            if(payType == 0){
-                return "到付";
-            }else if(payType == 1){
-                return "预付";
-            }else if(payType == 2){
-                return "账期";
-            }
+        String str = null;
+        switch (payType){
+            case 0:
+                str = "到付";break;
+            case 1:
+                str = "预付";break;
+            case 2:
+                str = "账期";break;
+            default:str = "";
         }
-        return "";
+        return str;
     }
     public String getIsMove(){
-        if(isMove != null){
-            if(isMove == 0){
-                return "否";
-            }else if(isMove == 1){
-                return "是";
-            }
+        String str = null;
+        switch (isMove){
+            case 0:
+                str = "否";break;
+            case 1:
+                str = "是";break;
+            default:str = "";
+
         }
-        return "";
+        return str;
     }
     public String getIsNew(){
-        if(isNew != null){
-            if(isNew == 0){
-                return "否";
-            }else if(isNew == 1){
-                return "是";
-            }
+        String str = null;
+        switch (isNew){
+            case 0:
+                str = "否";break;
+            case 1:
+                str = "是";break;
+            default:str = "";
         }
-        return "";
+        return str;
     }
-
-
-
-
 }
