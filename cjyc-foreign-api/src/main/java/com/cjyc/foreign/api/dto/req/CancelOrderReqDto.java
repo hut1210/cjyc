@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Data
 @ApiModel
 @Validated
-public class CancelOrderDto implements Serializable {
+public class CancelOrderReqDto implements Serializable {
     private static final long serialVersionUID = 1L;
     @NotEmpty(message = "订单编号不能为空")
     @ApiModelProperty(name = "订单编号")
