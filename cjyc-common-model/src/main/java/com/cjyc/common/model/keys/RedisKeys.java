@@ -177,28 +177,25 @@ public class RedisKeys {
         return "cjyc:order:refund:"+orderId;
     }
 
-    public static String getUnloadKey(Long taskId) {
+    public static String getLoadLockKey(Long id) {
+        return CJYC + I + LOAD_LOCK_KEY + I + id;
+    }
+    public static String getUnloadLockKey(Long taskId) {
         return CJYC + I + UNLOAD_LOCK_KEY + I + taskId;
     }
-    public static String getCancelKey(Long orderId) {
+    public static String getCancelLockKey(Long orderId) {
         return CJYC + I + CANCEL_LOCK_ORDER_KEY + I + orderId;
     }
 
-    public static String getInStoreKey(Long id) {
+    public static String getInStoreLockKey(Long id) {
         return CJYC + I + IN_STORE_LOCK_KEY + I + id;
     }
-    public static String getOutStoreKey(Long id) {
+    public static String getOutStoreLockKey(Long id) {
         return CJYC + I + OUT_STORE_LOCK_KEY + I + id;
     }
-
-    public static String getLoadKey(Long id) {
-        return CJYC + I + LOAD_LOCK_KEY + I + id;
-    }
-
-    public static String getReceiptKey(Object no) {
+    public static String getReceiptLockKey(Object no) {
         return CJYC + I + RECEIPT_LOCK_KEY + I + no;
     }
-
     public static String getOrderLockKey(Long id) {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
     }

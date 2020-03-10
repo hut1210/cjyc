@@ -34,7 +34,6 @@ import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
-import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -1113,7 +1112,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Override
     public ResultVo cancel(CancelOrderDto paramsDto) {
 
-        String lockKey = RedisKeys.getCancelKey(paramsDto.getOrderId());
+        String lockKey = RedisKeys.getCancelLockKey(paramsDto.getOrderId());
         try {
             if (!redisLock.lock(lockKey, 120000, 10, 200)) {
                 return BaseResultUtil.fail("当前订单{0}其他人正在操作，", paramsDto.getOrderId());

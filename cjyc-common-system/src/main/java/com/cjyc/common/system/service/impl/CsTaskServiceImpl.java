@@ -8,7 +8,6 @@ import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.*;
-import com.cjyc.common.model.dto.web.waybill.SaveTrunkWaybillCarDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.*;
 import com.cjyc.common.model.enums.*;
@@ -48,7 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
@@ -395,7 +393,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Map<Long, WaybillCar> waybillCarMap = Maps.newHashMap();
             Map<Long, Order> orderMap = Maps.newHashMap();
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-                String lockKey = RedisKeys.getLoadKey(taskCarId);
+                String lockKey = RedisKeys.getLoadLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车", taskCarId);
@@ -625,7 +623,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (taskCarId == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getUnloadKey(taskCarId);
+                String lockKey = RedisKeys.getUnloadLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车，请5秒后尝试", taskCarId);
@@ -805,7 +803,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (taskCarId == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getInStoreKey(taskCarId);
+                String lockKey = RedisKeys.getInStoreLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车, 请5秒后尝试", taskCarId);
@@ -973,7 +971,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Set<Long> orderIdSet = Sets.newHashSet();
             int count = 0;
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-                String lockKey = RedisKeys.getOutStoreKey(taskId);
+                String lockKey = RedisKeys.getOutStoreLockKey(taskId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车", taskId);
@@ -1115,7 +1113,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (taskCarId == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getReceiptKey(taskCarId);
+                String lockKey = RedisKeys.getReceiptLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}, 车辆正在交车，请5秒后重试", taskCarId);
@@ -1218,7 +1216,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (orderCar == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getReceiptKey(orderCar.getNo());
+                String lockKey = RedisKeys.getReceiptLockKey(orderCar.getNo());
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}, 车辆正在交车，请5秒后重试", orderCar.getNo());
