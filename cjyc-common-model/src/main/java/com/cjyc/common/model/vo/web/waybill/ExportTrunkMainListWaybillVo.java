@@ -3,6 +3,7 @@ package com.cjyc.common.model.vo.web.waybill;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -29,9 +30,11 @@ public class ExportTrunkMainListWaybillVo implements Serializable {
     @Excel(name = "司机电话", orderNum = "6",width = 20)
     private String driverPhone;
     @Excel(name = "车牌号", orderNum = "7",width = 20)
-    private String plateNo;
-    @Excel(name = "动态车位", orderNum = "8",width = 20)
-    private String occupiedCarNum;
+    private String vehiclePlateNo;
+    private Integer occupiedCarNum;
+    private Integer carryCarNum;
+    @Excel(name = "动态车位", orderNum = "8",width = 15)
+    private String dynamicCarryNum;
     @Excel(name = "备注信息", orderNum = "9",width = 15)
     private String remark;
     @Excel(name = "创建时间", orderNum = "10",width = 20)
@@ -43,5 +46,10 @@ public class ExportTrunkMainListWaybillVo implements Serializable {
             return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATE);
         }
         return "";
+    }
+    public String getDynamicCarryNum() {
+        Integer oc = getOccupiedCarNum();
+        Integer tc = getCarryCarNum();
+        return (oc == null?"0": oc+"") + "/" + (tc == null?"0": tc+"");
     }
 }
