@@ -57,13 +57,13 @@ public class FinanceServiceImpl implements IFinanceService {
     @Resource
     private IOrderService orderService;
 
-    @Autowired
+    @Resource
     private ICsPingPayService csPingPayService;
 
-    @Autowired
+    @Resource
     private IExternalPaymentDao externalPaymentDao;
 
-    @Autowired
+    @Resource
     private ICsAdminService csAdminService;
 
     @Resource
@@ -343,24 +343,55 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
+        List<PaymentVo> paymentVoList = new ArrayList<>();
         for(int i=0;i<financeVoList.size();i++){
             PaymentVo paymentVo = financeVoList.get(i);
             if(paymentVo!=null&&paymentVo.getType()!=null){
                 if(paymentVo.getType()==2){//企业
                     Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
-                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                    if(settleType!=null&&settleType==0){
+                        paymentVo.setPayModeName("时付");
+                        paymentVoList.add(paymentVo);
+                    }
                 }else if(paymentVo.getType()==3){//合伙人
                     Integer settleType = financeDao.getCustomerPartnerById(paymentVo.getCustomerId());
-                    paymentVo.setPayModeName(settleType!=null&&settleType==0?"时付":"账期");
+                    if(settleType!=null&&settleType==0){
+                        paymentVo.setPayModeName("时付");
+                        paymentVoList.add(paymentVo);
+                    }
+                }
+                if(paymentVo.getType()==1){
+                    paymentVoList.add(paymentVo);
                 }
             }
         }
-        PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
+        PageInfo<PaymentVo> pageInfo = new PageInfo<>(paymentVoList);
         FinanceQueryDto fqd = new FinanceQueryDto();
         List<PaymentVo> pv = financeDao.getPaymentList(fqd);
-        log.info("financeReceiptVoList = {}",pv.size());
+        List<PaymentVo> paymentVos = new ArrayList<>();
+        for(int j=0;j<pv.size();j++){
+            PaymentVo paymentVo = pv.get(j);
+            if(paymentVo!=null&&paymentVo.getType()!=null){
+                if(paymentVo.getType()==2){//企业
+                    Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
+                    if(settleType!=null&&settleType==0){
+                        paymentVo.setPayModeName("时付");
+                        paymentVos.add(paymentVo);
+                    }
+                }else if(paymentVo.getType()==3){//合伙人
+                    Integer settleType = financeDao.getCustomerPartnerById(paymentVo.getCustomerId());
+                    if(settleType!=null&&settleType==0){
+                        paymentVo.setPayModeName("时付");
+                        paymentVos.add(paymentVo);
+                    }
+                }
+                if(paymentVo.getType()==1){
+                    paymentVos.add(paymentVo);
+                }
+            }
+        }
         Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiptCount",pv.size());
+        countInfo.put("receiptCount",paymentVos.size());
         return BaseResultUtil.success(pageInfo,countInfo);
     }
 
@@ -798,5 +829,10 @@ public class FinanceServiceImpl implements IFinanceService {
             paidNewVo.setFreightFee(paidNewVo.getFreightFee()!=null?paidNewVo.getFreightFee().divide(new BigDecimal(100)):null);
         }
         return paidNewVoList;
+    }
+
+    @Override
+    public ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList() {
+        return null;
     }
 }

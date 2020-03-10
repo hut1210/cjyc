@@ -38,7 +38,8 @@ public class RedisKeys {
     private final static String SMS_COUNT_KEY = "sms:count";
 
     private final static String DISPATCH_LOCK_CAR_KEY = "dispatch:lock:car";
-    private final static String UNLOAD_LOCK_TASK_KEY = "dispatch:lock:car";
+    private final static String UNLOAD_LOCK_TASK_KEY = "unload:lock:task";
+    private final static String CANCEL_LOCK_ORDER_KEY = "cancel:lock:order";
     private final static String DISPATCH_LOCK_ORDER_UPDATE = "dispatch:lock:order:update";
     private final static String ALLOT_CAR_LOCK_KEY = "allot:car:lock";
     private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
@@ -165,5 +166,17 @@ public class RedisKeys {
 
     public static String getUnloadKey(Long taskId) {
         return CJYC + I + UNLOAD_LOCK_TASK_KEY + I + taskId;
+    }
+
+    public static String getCarrierPayKey(Long waybillId){
+        return "cjyc:carrier:pay:"+waybillId;
+    }
+
+    public static String getOrderRefundKey(Long orderId){
+        return "cjyc:order:refund:"+orderId;
+    }
+
+    public static String getCancelKey(Long orderId) {
+        return CJYC + I + CANCEL_LOCK_ORDER_KEY + I + orderId;
     }
 }

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.customer.api.service.IOrderService;
@@ -28,6 +29,7 @@ import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.Order;
 import com.pingplusplus.model.Refund;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -102,6 +104,12 @@ public class TransactionServiceImpl implements ITransactionService {
     @Resource
     private ICsPushMsgService csPushMsgService;
 
+    @Resource
+    private ICsSmsService csSmsService;
+
+    @Resource
+    private ICsAdminService csAdminService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int save(Object obj) {
@@ -153,31 +161,13 @@ public class TransactionServiceImpl implements ITransactionService {
                 if(chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_PREPAY_QRCODE.getCode()))||
                         chargeType.equals(String.valueOf(ChargeTypeEnum.SALES_PREPAY_QRCODE.getCode()))){
                     log.info("后台物流费预付回调，charge = {}",charge.toString());
-                    Integer payFee = charge.getAmount();
-                    BigDecimal amount = new BigDecimal(payFee.toString());
+
                     log.info("预付码回调"+chargeType);
                     String orderNo = pingxxMetaData.getOrderNo();
                     log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
-                    //校验订单金额是否有改变
-                    /*if(orderNo!=null){
-                        com.cjyc.common.model.entity.Order ord = orderDao.findByNo(orderNo);
-                        if(ord!=null){
-                            BigDecimal totalFee = ord.getTotalFee();
-
-                            if(totalFee.compareTo(amount)==0){//订单金额没有改变
-                                updateForPrePay(pingxxMetaData);
-                            }else{//订单金额不一致，退款
-                                log.info("物流费预付,订单金额不一致，退款 orderNo = ",orderNo);
-                                csPingPayService.cancelOrderRefund(ord.getId());
-                            }
-                        }else{
-                            log.error("物流费预付回调查询订单不存在，charge = {}",charge.toString());
-                        }
-
-                    }else{
-                        log.error("物流费预付回调订单编号为null，charge = {}",charge.toString());
-                    }*/
                     updateForPrePay(pingxxMetaData);
+                    //验证订单金额是否一致
+                    checkOrderFee(orderNo,charge.getAmount());
                 }
                 if(chargeType.equals(String.valueOf(ChargeTypeEnum.DRIVER_COLLECT_QRCODE.getCode()))
                         ||chargeType.equals(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()))
@@ -605,38 +595,51 @@ public class TransactionServiceImpl implements ITransactionService {
 
         }else if(chargeType == ChargeTypeEnum.PREPAY.getCode() || chargeType == ChargeTypeEnum.PREPAY_QRCODE.getCode()){
             log.info("物流费预付回调，order = {}",order.toString());
-            Integer payFee = order.getAmount();
-            BigDecimal amount = new BigDecimal(payFee.toString());
+
             PingxxMetaData pingxxMetaData = BeanMapUtil.mapToBean(metadata, new PingxxMetaData());
             //物流费预付
             String orderNo = pingxxMetaData.getOrderNo();
             log.info(chargeType+" 物流费预付 orderNo ="+orderNo);
+            updateForPrePay(pingxxMetaData);
+
+            String lockKey =getRandomNoKey(orderNo);
+            redisUtil.delete(lockKey);
+            //验证订单金额是否一致
+            checkOrderFee(orderNo,order.getAmount());
+
+        }
+
+    }
+
+    private void checkOrderFee(String orderNo,Integer payFee){
+        BigDecimal amount = new BigDecimal(payFee.toString());
+        try{
             //校验订单金额是否有改变
-            /*if(orderNo!=null){
+            if(orderNo!=null){
                 com.cjyc.common.model.entity.Order ord = orderDao.findByNo(orderNo);
                 if(ord!=null){
                     BigDecimal totalFee = ord.getTotalFee();
 
-                    if(totalFee.compareTo(amount)==0){//订单金额没有改变
-                        updateForPrePay(pingxxMetaData);
-                    }else{//订单金额不一致，退款
-                        log.info("物流费预付,订单金额不一致，退款 orderNo = ",orderNo);
-                        csPingPayService.cancelOrderRefund(ord.getId());
+                    if(MoneyUtil.nullToZero(totalFee).compareTo(amount)!=0){//订单金额不一致，退款
+                        log.warn("物流费预付,订单金额不一致orderNo = {},订单金额为{}，付款金额为{} ",orderNo,totalFee,amount);
+                        Long cui = ord.getCheckUserId();
+                        if(cui!=null){
+                            BigDecimal difference = MoneyUtil.nullToZero(totalFee).subtract(amount);
+                            Admin admin = csAdminService.getById(cui,true);
+                            csSmsService.send(admin.getPhone(),"订单编号{0}订单金额与付款金额不一致,差额为多{1}",orderNo,difference);
+                        }
+
                     }
                 }else{
-                    log.error("物流费预付回调查询订单不存在，order = {}",order.toString());
+                    log.error("物流费预付回调查询订单不存在");
                 }
 
             }else{
-                log.error("物流费预付回调订单编号为null，order = {}",order.toString());
-            }*/
-
-            updateForPrePay(pingxxMetaData);
-            String lockKey =getRandomNoKey(orderNo);
-            redisUtil.delete(lockKey);
-
+                log.error("物流费预付回调订单编号为空");
+            }
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
         }
-
     }
 
     private void updateForPrePay(PingxxMetaData pingxxMetaData){

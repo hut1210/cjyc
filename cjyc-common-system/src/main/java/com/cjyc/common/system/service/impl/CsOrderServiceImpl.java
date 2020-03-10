@@ -2,6 +2,7 @@ package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
+import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
@@ -33,6 +34,7 @@ import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
+import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -98,6 +100,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsPingPayService csPingPayService;
     @Resource
     private ICsPushMsgService csPushMsgService;
+    @Resource
+    private ICsSmsService csSmsService;
     @Resource
     private ICsOrderChangeLogService csOrderChangeLogService;
 
@@ -593,7 +597,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         long currentTimeMillis = System.currentTimeMillis();
 
         Order order = orderDao.selectById(orderId);
-        fillOrderStoreInfo(order, true);
+        fillOrderStoreInfo(order, false);
         //验证必要信息是否完全
         validateOrderFeild(order);
 
@@ -1056,41 +1060,50 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public ResultVo cancel(CancelOrderDto paramsDto) {
-        //取消订单
-        Order order = orderDao.selectById(paramsDto.getOrderId());
-        if (order == null) {
-            return BaseResultUtil.fail("订单不存在");
+
+        String lockKey = RedisKeys.getCancelKey(paramsDto.getOrderId());
+        try {
+            if (!redisLock.lock(lockKey, 120000, 100, 200)) {
+                return BaseResultUtil.fail("当前订单{0}其他人正在操作，", paramsDto.getOrderId());
+            }
+            //取消订单
+            Order order = orderDao.selectById(paramsDto.getOrderId());
+            if (order == null) {
+                return BaseResultUtil.fail("订单不存在");
+            }
+            if (order.getState() >= OrderStateEnum.TRANSPORTING.code) {
+                return BaseResultUtil.fail("订单运输中，不允许取消");
+            }
+            String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
+
+            order.setState(OrderStateEnum.F_CANCEL.code);
+            orderDao.updateById(order);
+
+            //取消所有调度
+            List<OrderCar> orderCars = orderCarDao.findListByOrderId(order.getId());
+            if (!CollectionUtils.isEmpty(orderCars)) {
+                List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
+                List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
+                waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
+            }
+            //退款
+            csPingPayService.cancelOrderRefund(order.getId());
+
+            //添加操作日志
+            orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
+                    new String[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
+                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
+
+            //记录订单日志
+            csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
+                    new String[]{OrderLogEnum.CANCEL.getOutterLog(),
+                            MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
+                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+            //TODO 发送消息
+            return BaseResultUtil.success();
+        } finally {
+            redisLock.releaseLock(lockKey);
         }
-        if (order.getState() >= OrderStateEnum.TRANSPORTING.code) {
-            return BaseResultUtil.fail("订单运输中，不允许取消");
-        }
-        String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
-
-        order.setState(OrderStateEnum.F_CANCEL.code);
-        orderDao.updateById(order);
-
-        //取消所有调度
-        List<OrderCar> orderCars = orderCarDao.findListByOrderId(order.getId());
-        if (!CollectionUtils.isEmpty(orderCars)) {
-            List<Long> collect = orderCars.stream().map(OrderCar::getId).collect(Collectors.toList());
-            List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
-            waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
-        }
-        //退款
-        csPingPayService.cancelOrderRefund(order.getId());
-
-        //添加操作日志
-        orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
-                new String[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
-                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
-
-        //记录订单日志
-        csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
-                new String[]{OrderLogEnum.CANCEL.getOutterLog(),
-                        MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
-        //TODO 发送消息
-        return BaseResultUtil.success();
     }
 
     @Override
@@ -1124,6 +1137,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
         Order order = orderDao.selectById(orderId);
         if (order.getState() >= OrderStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("订单已完结，不能修改价格");
+        }
+        if (PayStateEnum.PAID.code == order.getWlPayState()){
+            BigDecimal subtract = MoneyUtil.nullToZero(order.getTotalFee()).subtract(paramsDto.getTotalFee());
+            LogUtil.warn("【订单改价】已支付订单改价，原始金额{}，修改后金额{}, 差价{}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
+            if(subtract.compareTo(BigDecimal.ZERO) > 0){
+                csSmsService.send(paramsDto.getLoginPhone(), "已支付订单改价，原始金额{0}，修改后金额{1}, 差价{2}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
+            }
         }
         //记录历史数据
         FullOrder oldOrder = getFullOrder(order);

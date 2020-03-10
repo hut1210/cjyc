@@ -16,10 +16,12 @@ import com.cjyc.common.system.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
@@ -85,5 +87,18 @@ public class CsSmsServiceImpl implements ICsSmsService {
             redisUtils.expire(countKey, 1, TimeUnit.DAYS);
         }
         return BaseResultUtil.success("验证码已发送");
+    }
+
+    @Override
+    @Async
+    public void send(String phone, String msg, Object... args) {
+        //发送短信
+        try {
+            String message = MessageFormat.format(msg, args);
+            MiaoxinSmsUtil.send(phone, message);
+            log.info("【发送短信】向手机{}发送短信:{}", phone, message);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }
