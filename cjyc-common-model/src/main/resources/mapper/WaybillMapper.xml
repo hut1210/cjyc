@@ -479,12 +479,13 @@
         ) as tb on tb.waybill_id = w.id
         <where>
             exists (
-                select * from w_waybill_car wc
-                and wc.start_store_id in
+                select w.id
+                from w_waybill_car wc
+                where wc.start_belong_store_id in
                 <if test="paramsDto.bizScope != null">
                     <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
                         #{item}
-                    </foreach>)
+                    </foreach>
                 </if>
                 and wc.waybill_id = w.id
             )
@@ -541,14 +542,18 @@
         JOIN w_task t on w.id = t.waybill_id
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
-            w.type = 2
-            <if test="paramsDto.bizScope != null">
-                and (w.create_user_id = #{paramsDto.loginId}
-                or w.input_store_id in
-                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>)
-            </if>
+            exists (
+                select wc.id
+                from w_waybill_car wc
+                where wc.start_belong_store_id in
+                <if test="paramsDto.bizScope != null">
+                    <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                and wc.waybill_id = w.id
+            )
+            and w.type = 2
             <if test="paramsDto.state != null">
                 and t.state = #{paramsDto.state}
             </if>

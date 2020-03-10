@@ -7,9 +7,13 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.cjkj.log.monitor.LogUtil;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.order.OrderCarWaitDispatchVo;
 import com.google.common.collect.Lists;
 import lombok.Data;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +22,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -140,6 +147,31 @@ public class ExcelUtil {
             workbook.write(response.getOutputStream());
         }catch (Exception e) {
             LogUtil.error("响应信息异常", e);
+        }
+    }
+
+    public static <T> void print(ResultVo<List<T>> dispatchRs, String fileName, HttpServletResponse response) {
+
+        if (ResultEnum.SUCCESS.getCode() == dispatchRs.getCode()) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", dispatchRs.getMsg()),
+                    "导出异常.xls", response);
+            return;
+        }
+        List<T> dispatchList = dispatchRs.getData();
+        if (CollectionUtils.isEmpty(dispatchList)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),
+                    "结果为空.xls", response);
+            return;
+        }
+        dispatchList = dispatchList.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        try{
+            ExcelUtil.exportExcel(dispatchList, fileName, fileName,
+                    OrderCarWaitDispatchVo.class, System.currentTimeMillis() + fileName + ".xls", response);
+            return;
+        }catch (Exception e) {
+            LogUtil.error("导出信息" + fileName + "异常", e);
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出" + fileName + "异常: " + e.getMessage()),
+                    "导出异常.xls", response);
         }
     }
 }
