@@ -1,5 +1,7 @@
 package com.cjyc.common.system.util;
 
+import com.cjkj.common.redis.lock.RedisDistributedLock;
+import com.cjkj.log.monitor.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.connection.DataType;
@@ -7,8 +9,11 @@ import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +28,8 @@ public class RedisUtils {
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;
+	@Resource
+	private RedisDistributedLock redisLock;
 
 	public void setRedisTemplate(StringRedisTemplate redisTemplate) {
 		this.redisTemplate = redisTemplate;
@@ -1156,6 +1163,22 @@ public class RedisUtils {
 	 */
 	public void hset(String key, String field, Object value) {
 		redisTemplate.opsForHash().put(key, field, value);
+	}
+
+
+
+
+
+	@Async
+	public void delayDelete(Set<String> keys){
+		LogUtil.debug("【延时解锁】----------->开始" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
+		try {
+			Thread.sleep(2000);
+			delete(keys);
+		} catch (InterruptedException e) {
+			LogUtil.error("【延时解锁】失败");
+		}
+		LogUtil.debug("【延时解锁】----------->结束" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
 	}
 
 }

@@ -288,7 +288,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 /*for (String key : lockSet) {
                     redisLock.releaseLock(key);
                 }*/
-                redisUtil.del(lockSet.toArray(new String[0]));
+                redisUtils.delayDelete(lockSet);
             }
 
         }
@@ -516,7 +516,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 /*for (String key : lockSet) {
                     redisLock.releaseLock(key);
                 }*/
-                redisUtil.del(lockSet.toArray(new String[0]));
+                redisUtils.delayDelete(lockSet);
             }
         }
     }
@@ -955,7 +955,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 /*for (String key : lockSet) {
                     redisLock.releaseLock(key);
                 }*/
-                redisUtil.del(lockSet.toArray(new String[0]));
+                //redisUtil.del(lockSet.toArray(new String[0]));
+                redisUtils.delayDelete(lockSet);
             }
         }
     }
@@ -1199,7 +1200,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
-                redisUtil.del(lockSet.toArray(new String[0]));
+                redisUtils.delayDelete(lockSet);
+                //redisUtil.del(lockSet.toArray(new String[0]));
             }
         }
     }
