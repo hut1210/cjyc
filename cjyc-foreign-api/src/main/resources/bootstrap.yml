@@ -9,5 +9,6 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848 #本机
+        #server-addr: 127.0.0.1:8848 #本机
+        server-addr: 10.253.96.135:8848 #开发
 
