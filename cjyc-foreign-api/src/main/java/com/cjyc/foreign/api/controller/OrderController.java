@@ -1,6 +1,7 @@
 package com.cjyc.foreign.api.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -9,7 +10,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
-import com.cjyc.foreign.api.dto.req.CancelOrderDto;
+import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
 import com.cjyc.foreign.api.service.IOrderService;
 import com.cjyc.foreign.api.utils.LoginAccountUtil;
 import io.swagger.annotations.Api;
@@ -39,7 +40,7 @@ public class OrderController {
 
     @ApiOperation(value = "取消订单")
     @PostMapping("/cancelOrder")
-    public ResultVo<String> cancelOrder(@Valid @RequestBody CancelOrderDto reqDto) {
+    public ResultVo<String> cancelOrder(@Valid @RequestBody CancelOrderReqDto reqDto) {
         String account = LoginAccountUtil.getLoginAccount();
         if (StringUtils.isEmpty(account)) {
             return BaseResultUtil.fail("登录账号信息有误，请检查!");
@@ -55,8 +56,7 @@ public class OrderController {
             return BaseResultUtil.fail("用户信息有误，请检查!");
         }
         //请求信息封装
-        com.cjyc.common.model.dto.web.order.CancelOrderDto dto =
-                new com.cjyc.common.model.dto.web.order.CancelOrderDto();
+        CancelOrderDto dto = new CancelOrderDto();
         dto.setOrderId(order.getId());
         dto.setLoginId(customer.getId());
         dto.setLoginPhone(customer.getContactPhone());

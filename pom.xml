@@ -43,6 +43,7 @@
         <cjkj.ribbon.version>1.5.0</cjkj.ribbon.version>
         <cjkj.sentinel.version>1.5.0</cjkj.sentinel.version>
         <cjkj.swagger2.version>1.5.0</cjkj.swagger2.version>
+        <cjkj.mq.version>1.5.0</cjkj.mq.version>
         <!--文档-->
         <swagger2.version>2.7.0</swagger2.version>
         <swagger-bootstrap-ui.version>1.9.3</swagger-bootstrap-ui.version>
@@ -117,6 +118,12 @@
                 <groupId>com.cjkj</groupId>
                 <artifactId>cjkj-swagger2-spring-boot-starter</artifactId>
                 <version>${cjkj.swagger2.version}</version>
+            </dependency>
+            <!-- rabbit mq -->
+            <dependency>
+                <groupId>com.cjkj</groupId>
+                <artifactId>cjkj-mq-spring-boot-starter</artifactId>
+                <version>${cjkj.mq.version}</version>
             </dependency>
             <!--本地-->
             <dependency>
