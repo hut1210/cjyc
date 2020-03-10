@@ -1157,6 +1157,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             urd.setState(CommonStateEnum.REJECT.code);
             if(check != null){
                 check.setState(CommonStateEnum.REJECT.code);
+                check.setCheckUserId(dto.getLoginId());
+                check.setCheckTime(NOW);
             }
         }else if(dto.getFlag() == FlagEnum.FROZEN.code){
             //冻结
