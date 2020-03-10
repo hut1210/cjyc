@@ -1116,6 +1116,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 .eq(UserRoleDept::getUserId, dto.getId())
                 .eq(UserRoleDept::getDeptType, DeptTypeEnum.CUSTOMER.code)
                 .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
+        Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
+                .eq(Check::getUserId, dto.getId())
+                .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
+                .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
+                .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
         if(customer == null || urd == null){
             return BaseResultUtil.fail("该客户不存在，请检查");
         }
@@ -1124,19 +1129,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return BaseResultUtil.fail("角色不存在,请先添加角色");
         }
         //审核通过
-        Check check = null;
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
-            check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
-                    .eq(Check::getUserId, dto.getId())
-                    .eq(Check::getState, CommonStateEnum.IN_CHECK.code)
-                    .eq(Check::getType, CheckTypeEnum.UPGRADE_PARTNER.code)
-                    .eq(Check::getSource,CustomerSourceEnum.UPGRADE.code));
+            //合伙人更新结构组角色
+            ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
+            if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+                return BaseResultUtil.fail("更新组织下的所有角色失败");
+            }
             if(check != null){
-                //合伙人更新结构组角色
-                ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
-                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-                    return BaseResultUtil.fail("更新组织下的所有角色失败");
-                }
                 //更新成合伙人信息
                 customer.setName(check.getName());
                 customer.setContactMan(check.getContactMan());
@@ -1151,25 +1150,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 //更新关联表角色id
                 urd.setRoleId(role.getId());
             }
-            //合伙人或者是从用户端升级成为的合伙人(此时为c端客户状态为审核中)
-            /*if(customer.getType() == CustomerTypeEnum.COOPERATOR.code || (customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code)){
-                //合伙人更新结构组角色
-                ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
-                if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
-                    return BaseResultUtil.fail("更新组织下的所有角色失败");
-                }
-                customer.setType(CustomerTypeEnum.COOPERATOR.code);
-                urd.setRoleId(role.getId());
-            }*/
             customer.setState(CommonStateEnum.CHECKED.code);
             urd.setState(CommonStateEnum.CHECKED.code);
         }else if(dto.getFlag() == FlagEnum.AUDIT_REJECT.code){
             //审核拒绝
-            if(customer.getType() == CustomerTypeEnum.INDIVIDUAL.code && urd.getState() == CommonStateEnum.IN_CHECK.code){
-                //合伙人更新结构组角色
-                urd.setState(CommonStateEnum.CHECKED.code);
-            }else{
-                urd.setState(CommonStateEnum.REJECT.code);
+            urd.setState(CommonStateEnum.REJECT.code);
+            if(check != null){
+                check.setState(CommonStateEnum.REJECT.code);
             }
         }else if(dto.getFlag() == FlagEnum.FROZEN.code){
             //冻结
