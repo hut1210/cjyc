@@ -47,6 +47,4 @@ public interface ICsPingPayService {
     ResultVo unlockQrcode(String orderCarNo);
 
     void cancelOrderRefund(Long orderId);
-
-    BigDecimal contrastCooperatorAmount(Long customId);
 }

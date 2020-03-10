@@ -175,11 +175,11 @@
     </update>
 
     <select id="getWlFeeCount" resultType="java.math.BigDecimal">
-        select sum(freight_fee) from w_waybill where carrier_id = #{carrierId} and state = 100
+        select sum(IFNULL(freight_fee,0)) from w_waybill where carrier_id = #{carrierId} and state = 100 and (carrier_type !=3 or carrier_type!=6)
     </select>
 
     <select id="getReceiveFeeCount" resultType="java.math.BigDecimal">
-        select sum(freight_fee) from w_waybill where carrier_id = #{carrierId} and state = 100 and freight_pay_state =1
+        select sum(amount) from f_trade_bill where receiver_id = #{carrierId} and state = 2 and type=20
     </select>
 
     <select id="getCooperatorServiceFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
@@ -194,7 +194,7 @@
     </select>
 
     <select id="getCooperatorServiceReceiveFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
-        select sum(total_fee+coupon_offset_fee) from w_order where customer_id=#{customId} and customer_type=3 and state=100 and flag=2 and create_time>1583715600000;
+        select sum(amount) f_trade_bill where receiver_id = #{customId} and state = 2 and type=21
     </select>
 
     <select id="getCooperatorServiceReceiveCarFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
