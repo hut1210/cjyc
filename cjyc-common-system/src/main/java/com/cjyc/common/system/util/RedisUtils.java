@@ -1263,6 +1263,7 @@ public class RedisUtils {
         LogUtil.debug("【延时解锁】----------->结束" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
     }
 
+    @Async
     public void delayDelete(String key) {
         LogUtil.debug("【延时解锁】----------->开始" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
         try {
