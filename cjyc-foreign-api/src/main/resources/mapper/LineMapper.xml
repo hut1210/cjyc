@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ILineDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Line">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="from_province" property="fromProvince" />
+        <result column="from_province_code" property="fromProvinceCode" />
+        <result column="from_city" property="fromCity" />
+        <result column="from_code" property="fromCode" />
+        <result column="to_province" property="toProvince" />
+        <result column="to_province_code" property="toProvinceCode" />
+        <result column="to_city" property="toCity" />
+        <result column="to_code" property="toCode" />
+        <result column="level" property="level" />
+        <result column="kilometer" property="kilometer" />
+        <result column="days" property="days" />
+        <result column="state" property="state" />
+        <result column="default_wl_fee" property="defaultWlFee" />
+        <result column="default_freight_fee" property="defaultFreightFee" />
+        <result column="remark" property="remark" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, code, name, from_province, from_province_code, from_city, from_code, to_province, to_province_code, to_city, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_user_id, update_time
+    </sql>
+
+
+    <!-- 通过城市编码查看上游运价 -->
+    <select id="getLinePriceByCode" resultType="com.cjyc.common.model.entity.Line">
+        select
+          <include refid="Base_Column_List"/>
+        from s_line
+        <where>
+            <if test="fromCode != null and fromCode.trim() != ''">
+                from_code = #{fromCode}
+            </if>
+            <if test="toCode != null  and toCode.trim() != ''">
+                and to_code = #{toCode}
+            </if>
+            and state = 1 limit 1
+        </where>
+    </select>
+
+</mapper>
