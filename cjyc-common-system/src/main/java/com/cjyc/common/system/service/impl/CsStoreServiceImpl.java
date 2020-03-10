@@ -241,7 +241,7 @@ public class CsStoreServiceImpl implements ICsStoreService {
         if(storeId != null && storeId > 0){
             return storeId;
         }
-        Store store = storeDao.findOneBelongByAreaCode(areaCode);
+        Store store = getOneBelongByAreaCode(areaCode);
         if(store == null){
             return 0L;
         }

@@ -71,6 +71,7 @@
           select city_code from s_city where area_code = #{areaCode}
         )
         and is_delete = 0
+        limit 1
 
     </select>
     <select id="findAll" resultType="com.cjyc.common.model.entity.Store">
