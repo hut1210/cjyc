@@ -1102,7 +1102,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //TODO 发送消息
             return BaseResultUtil.success();
         } finally {
-            redisLock.releaseLock(lockKey);
+            redisUtils.delayDelete(lockKey);
         }
     }
 

@@ -138,7 +138,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 log.debug("缓存：key->{}", lockKey);
                 if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("车辆{0}，其他人正在调度", orderCarNo);
+                    return BaseResultUtil.fail("车辆{0}，其他人正在调度，请5秒后尝试", orderCarNo);
                 }
                 lockSet.add(lockKey);
                 if (!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())) {
@@ -431,7 +431,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //加锁
             String lockCarKey = RedisKeys.getDispatchLock(orderCarNo);
             if (!redisLock.lock(lockCarKey, 120000, 10, 150L)) {
-                return BaseResultUtil.fail("运单中车辆{0}，其他人正在调度", orderCarNo);
+                return BaseResultUtil.fail("运单中车辆{0}，其他人正在调度，请5秒后尝试", orderCarNo);
             }
             lockSet.add(lockCarKey);
 
@@ -819,7 +819,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
-                    return BaseResultUtil.fail("运单中车辆{0}，其他人正在调度", orderCarNo);
+                    return BaseResultUtil.fail("运单中车辆{0}，其他人正在调度，请5秒后尝试", orderCarNo);
                 }
                 lockSet.add(lockKey);
                 if (!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())) {
@@ -987,7 +987,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         //加锁
         String lockKey = RedisKeys.getDispatchLock(paramsDto.getId());
         if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
-            return BaseResultUtil.fail("运单{0}，其他人正在修改", paramsDto.getId());
+            return BaseResultUtil.fail("运单{0}，其他人正在修改，请5秒后尝试", paramsDto.getId());
         }
         lockSet.add(lockKey);
         Map<Long, Map<Long, PushCustomerInfo>> pushCustomerInfoMap = Maps.newHashMap();
