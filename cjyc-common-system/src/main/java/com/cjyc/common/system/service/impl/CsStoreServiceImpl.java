@@ -13,6 +13,7 @@ import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.role.RoleLevelEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
 import com.cjyc.common.model.vo.customer.customerLine.StoreListVo;
@@ -21,6 +22,7 @@ import com.cjyc.common.model.vo.salesman.store.StoreVo;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsStoreService;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CsStoreServiceImpl implements ICsStoreService {
 
     /**
@@ -247,6 +250,8 @@ public class CsStoreServiceImpl implements ICsStoreService {
 
     @Override
     public ResultVo<StoreListVo> findStore(FindStoreDto dto) {
+        log.info("申请合伙人请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        List<BusinessStoreVo> storeVos = Lists.newArrayList();
         //根据城市编码code获取区县
         List<City> cityList = cityDao.selectList(new QueryWrapper<City>().lambda().eq(City::getParentCode, dto.getCityCode()));
         if(!CollectionUtils.isEmpty(cityList)){
@@ -254,9 +259,9 @@ public class CsStoreServiceImpl implements ICsStoreService {
             if(!CollectionUtils.isEmpty(storeCityConList)){
                 Set<Long> storeIds = storeCityConList.stream().map(StoreCityCon::getStoreId).collect(Collectors.toSet());
                 dto.setStoreIds(storeIds);
+                storeVos = storeDao.findStore(dto);
             }
         }
-        List<BusinessStoreVo> storeVos = storeDao.findStore(dto);
         StoreListVo storeVoList = new StoreListVo();
         storeVoList.setStoreVoList(storeVos);
         return BaseResultUtil.success(storeVoList);
