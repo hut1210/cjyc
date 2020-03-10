@@ -136,17 +136,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 log.debug("缓存：key->{}", lockKey);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 10, 20L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("车辆{0}，其他人正在调度", orderCarNo);
                 }
-                log.debug("缓存成功：key->{}", lockKey);
-
-                String s = redisUtils.get(lockKey);
-                log.debug("缓存成功: value->{}", s);
-                lockSet.add(lockKey);
-
-
                 if (!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())) {
                     log.error("业务中心参数错误(saveLocal):" + JSON.toJSONString(paramsDto));
                     return BaseResultUtil.fail("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
@@ -257,7 +250,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
-                //waybillCar.setReceiptFlag(waybillCar.getUnloadLinkPhone().equals(order.getBackContactPhone()));
                 waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
                 if(waybill.getType() == WaybillTypeEnum.BACK.code && !waybillCar.getReceiptFlag()){
                     throw new ParameterException("送车调度目前仅支持交付客户");
@@ -776,11 +768,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      * 计算业务中心
      **/
     private WaybillCar fillWaybillCarBelongStoreInfo(WaybillCar wc) {
-        Long startBelongStoreId = csStoreService.getBelongStoreId(wc.getStartStoreId(), wc.getStartCityCode());
+        Long startBelongStoreId = csStoreService.getBelongStoreId(wc.getStartStoreId(), wc.getStartAreaCode());
         if (startBelongStoreId != null) {
             wc.setStartBelongStoreId(startBelongStoreId);
         }
-        Long endBelongStoreId = csStoreService.getBelongStoreId(wc.getEndStoreId(), wc.getEndCityCode());
+        Long endBelongStoreId = csStoreService.getBelongStoreId(wc.getEndStoreId(), wc.getEndAreaCode());
         if (endBelongStoreId != null) {
             wc.setEndBelongStoreId(endBelongStoreId);
         }

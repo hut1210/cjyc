@@ -232,18 +232,17 @@ public class CsStoreServiceImpl implements ICsStoreService {
      * @author JPG
      * @since 2019/11/15 10:04
      * @param storeId
-     * @param cityCode
      */
     @Override
-    public Long getBelongStoreId(Long storeId, String cityCode) {
+    public Long getBelongStoreId(Long storeId, String areaCode) {
         if(storeId != null && storeId > 0){
             return storeId;
         }
-        Store store = storeDao.findOneBelongByCityCode(cityCode);
+        Store store = storeDao.findOneBelongByAreaCode(areaCode);
         if(store == null){
-            return null;
+            return 0L;
         }
-        return storeId;
+        return store.getId();
     }
 
     @Override
