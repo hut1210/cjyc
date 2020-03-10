@@ -31,8 +31,6 @@ public class ExportTrunkMainListWaybillVo implements Serializable {
     private String driverPhone;
     @Excel(name = "车牌号", orderNum = "7",width = 20)
     private String vehiclePlateNo;
-    private Integer occupiedCarNum;
-    private Integer carryCarNum;
     @Excel(name = "动态车位", orderNum = "8",width = 15)
     private String dynamicCarryNum;
     @Excel(name = "备注信息", orderNum = "9",width = 15)
@@ -41,6 +39,8 @@ public class ExportTrunkMainListWaybillVo implements Serializable {
     private Long createTime;
     @Excel(name = "创建人", orderNum = "11",width = 20)
     private String createUser;
+    private Integer occupiedCarNum;
+    private Integer carryCarNum;
     public String getCreateTime(){
         if(createTime != null){
             return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATE);
