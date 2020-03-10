@@ -25,10 +25,52 @@ public class CooperatorPaidVo implements Serializable {
     @ApiModelProperty(value = "付款状态")
     private String state;
 
-    @ApiModelProperty(value = "合伙人名称")
-    private String cooperator;
+    @ApiModelProperty(value = "付款失败原因")
+    private String description;
 
-    @ApiModelProperty(value = "联系电话")
-    private String phone;
+    @ApiModelProperty(value = "付款时间")
+    private Long payTime;
+
+    @ApiModelProperty(value = "结算类型")
+    private String settleType;
+
+    @ApiModelProperty(value = "始发城市")
+    private String startCity;
+
+    @ApiModelProperty(value = "目的城市")
+    private String endCity;
+
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
+
+    @ApiModelProperty(value = "客户结算类型")
+    private String payMode;
+
+    @ApiModelProperty(value = "客户支付时间")
+    private Long wlPayTime;
+
+    @ApiModelProperty(value = "客户交付时间")
+    private Long completeTime;
+
+    @ApiModelProperty(value = "订单金额")
+    private BigDecimal totalFee;
+
+    @ApiModelProperty(value = "付款类型（公户，个户）")
+    private String payType;
+
+    @ApiModelProperty(value = "对公开户名称")
+    private String publicAccount;
+
+    @ApiModelProperty(value = "开户银行账号")
+    private String cardNo;
+
+    @ApiModelProperty(value = "开户行名称")
+    private String bankName;
+
+    @ApiModelProperty(value = "持卡人姓名")
+    private String cardName;
+
+    @ApiModelProperty(value = "持卡人身份证号")
+    private String IDCard;
 
 }
