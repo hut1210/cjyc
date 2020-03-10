@@ -136,7 +136,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 log.debug("缓存：key->{}", lockKey);
-                if (!redisLock.lock(lockKey, 120000, 10, 20L)) {
+                if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("车辆{0}，其他人正在调度", orderCarNo);
                 }
@@ -401,7 +401,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Set<String> lockSet = new HashSet<>();
         try {
             String lockKey = RedisKeys.getDispatchLock(paramsDto.getId());
-            if (!redisLock.lock(lockKey, 120000, 100, 300L)) {
+            if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
                 return BaseResultUtil.fail("运单，其他人正在调度", paramsDto.getId());
             }
             lockSet.add(lockKey);
@@ -508,9 +508,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
-                for (String key : lockSet) {
-                    redisLock.releaseLock(key);
-                }
+                lockSet.forEach(key -> redisLock.releaseLock(key));
                 //redisUtil.del(lockSet.toArray(new String[0]));
             }
         }
@@ -813,7 +811,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
-                if (!redisLock.lock(lockKey, 120000, 100, 300L)) {
+                if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
                     return BaseResultUtil.fail("运单中车辆{0}，其他人正在调度", orderCarNo);
                 }
                 lockSet.add(lockKey);
@@ -947,7 +945,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
-                redisUtil.del(lockSet.toArray(new String[0]));
+                lockSet.forEach(key ->redisLock.releaseLock(key));
             }
         }
     }
@@ -977,7 +975,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Set<String> lockSet = new HashSet<>();
         //加锁
         String lockKey = RedisKeys.getDispatchLock(paramsDto.getId());
-        if (!redisLock.lock(lockKey, 120000, 100, 300L)) {
+        if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
             return BaseResultUtil.fail("运单{0}，其他人正在修改", paramsDto.getId());
         }
         lockSet.add(lockKey);
@@ -1191,7 +1189,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             return BaseResultUtil.success();
         } finally {
             if (!CollectionUtils.isEmpty(lockSet)) {
-                redisUtil.del(lockSet.toArray(new String[0]));
+                lockSet.forEach(key -> redisLock.releaseLock(key));
             }
         }
     }

@@ -154,7 +154,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
         String lockKey = getSendNoKey(sendNoTypeEnum.prefix, time);
         try {
 
-            if (!redisLock.lock(lockKey, 86400, 10, 200)) {
+            if (!redisLock.lock(lockKey, 86400, 100, 200)) {
                 throw new RuntimeException("获取订单编号失败");
             }
 

@@ -1063,7 +1063,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         String lockKey = RedisKeys.getCancelKey(paramsDto.getOrderId());
         try {
-            if (!redisLock.lock(lockKey, 120000, 100, 200)) {
+            if (!redisLock.lock(lockKey, 120000, 10, 200)) {
                 return BaseResultUtil.fail("当前订单{0}其他人正在操作，", paramsDto.getOrderId());
             }
             //取消订单
