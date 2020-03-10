@@ -478,17 +478,19 @@
             group by t.id
         ) as tb on tb.waybill_id = w.id
         <where>
-            exists (
-                select w.id
-                from w_waybill_car wc
-                where wc.start_belong_store_id in
-                <if test="paramsDto.bizScope != null">
-                    <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </if>
-                and wc.waybill_id = w.id
-            )
+            <if test="paramsDto.bizScope != null">
+                exists (
+                    select wc.id
+                    from w_waybill_car wc
+                    <where>
+                        and wc.start_belong_store_id in
+                        <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        and wc.waybill_id = w.id
+                    </where>
+                )
+            </if>
             and w.type = 2
             <if test="paramsDto.state != null">
                 and w.state = #{paramsDto.state}
@@ -542,17 +544,19 @@
         JOIN w_task t on w.id = t.waybill_id
         left join d_vehicle_running vr on vr.driver_id = t.driver_id
         <where>
-            exists (
-                select wc.id
-                from w_waybill_car wc
-                where wc.start_belong_store_id in
-                <if test="paramsDto.bizScope != null">
-                    <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </if>
-                and wc.waybill_id = w.id
-            )
+            <if test="paramsDto.bizScope != null">
+                exists (
+                    select wc.id
+                    from w_waybill_car wc
+                    <where>
+                        and wc.start_belong_store_id in
+                        <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        and wc.waybill_id = w.id
+                    </where>
+                )
+            </if>
             and w.type = 2
             <if test="paramsDto.state != null">
                 and t.state = #{paramsDto.state}
@@ -714,26 +718,29 @@
             w.id as waybillId,
             w.no as waybillNo,
             w.type as waybillType,
-           (case w.type when 1 then concat(car.start_city,'-',car.end_city)
-                         when 3 then concat(car.start_city,'-',car.end_city) else w.guide_line end) AS guideLine,
+            w.guide_line as guideLine,
             w.car_num as carNum,
             w.freight_fee as freightFee,
             w.create_time as createTime,
             w.carrier_type as carrierType,
             carrier.linkman as linkMan,
             carrier.linkman_phone as linkmanPhone,
-            car.order_car_id as orderCarId,
             w.carrier_id as carrierId
-        from
-            w_waybill w
-            left join d_carrier carrier on w.carrier_id=carrier.id
-            left join w_waybill_car car on w.id=car.waybill_id
+        from w_waybill w
+        left join d_carrier carrier on w.carrier_id=carrier.id
         <where>
             <if test="bizStoreIds != null">
-                and (w.input_store_id in <foreach collection="bizStoreIds" item="item" index="index" open="(" close=")" separator=",">
-                                        #{item}
-                                    </foreach>
-                or w.create_user_id=#{loginId})
+                exists (
+                    select distinct(wc.id)
+                    from w_waybill_car wc
+                    <where>
+                        and wc.start_belong_store_id in
+                        <foreach collection="bizStoreIds" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        and wc.waybill_id = w.id
+                    </where>
+                )
             </if>
             <if test="key != null and key.trim() != ''">
                 and (carrier.linkman_phone like CONCAT('%',#{key},'%') or w.no like CONCAT('%',#{key},'%'))

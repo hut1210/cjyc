@@ -826,17 +826,19 @@
             where t.state &lt;= 100
         ) as tb on tb.waybill_car_id = wc.id
         <where>
-            exists (
-                select wc.id
-                from w_waybill_car wc
-                where wc.start_belong_store_id in
-                <if test="paramsDto.bizScope != null">
-                    <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </if>
-                and wc.waybill_id = w.id
-            )
+            <if test="paramsDto.bizScope != null">
+                exists (
+                    select wc.id
+                    from w_waybill_car wc
+                    <where>
+                        and wc.start_belong_store_id in
+                        <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        and wc.waybill_id = w.id
+                    </where>
+                )
+            </if>
             and w.type = 2
             <if test="paramsDto.state != null">
                 and wc.state = #{paramsDto.state}

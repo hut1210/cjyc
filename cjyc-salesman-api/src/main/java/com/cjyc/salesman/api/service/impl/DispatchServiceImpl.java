@@ -13,6 +13,7 @@ import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
@@ -458,8 +459,13 @@ public class DispatchServiceImpl implements IDispatchService {
                     if (orderCar != null) {
                         Order order = orderDao.selectById(orderCar.getOrderId());
                         if (order != null) {
-                            dispatchRecordVo.setLinkMan(order.getCustomerName());
-                            dispatchRecordVo.setLinkmanPhone(order.getCustomerPhone());
+                            if(WaybillTypeEnum.PICK.code == dispatchRecordVo.getWaybillType()){
+                                dispatchRecordVo.setLinkMan(order.getPickContactName());
+                                dispatchRecordVo.setLinkmanPhone(order.getPickContactPhone());
+                            }else{
+                                dispatchRecordVo.setLinkMan(order.getBackContactName());
+                                dispatchRecordVo.setLinkmanPhone(order.getBackContactPhone());
+                            }
                         }
                     }
                 }
