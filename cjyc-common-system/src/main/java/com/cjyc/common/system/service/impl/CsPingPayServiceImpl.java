@@ -702,7 +702,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     /**
      * 对比合伙人应得运费与已得运费
      */
-    public BigDecimal contrastCooperatorAmount(Long customId){
+    private BigDecimal contrastCooperatorAmount(Long customId){
 
         BigDecimal orderCount = cStransactionService.getCooperatorServiceFeeCount(customId);//总订单运费
 
@@ -712,11 +712,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
         BigDecimal receiveOrderCount = cStransactionService.getCooperatorServiceReceiveFeeCount(customId);
 
-        BigDecimal receiveOrderCarCount = cStransactionService.getCooperatorServiceReceiveCarFeeCount(customId);//
-
-        BigDecimal receiverFee = receiveOrderCount.subtract(receiveOrderCarCount);
-
-        return deservedFee.subtract(receiverFee);
+        return deservedFee.subtract(receiveOrderCount);
     }
 
     @Override

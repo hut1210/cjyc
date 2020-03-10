@@ -33,7 +33,6 @@
         id, code, name, from_province, from_province_code, from_city, from_code, to_province, to_province_code, to_city, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_user_id, update_time
     </sql>
 
-
     <!-- 通过城市编码查看上游运价 -->
     <select id="getLinePriceByCity" parameterType="com.cjyc.foreign.api.dto.req.LineReqDto" resultType="com.cjyc.foreign.api.dto.res.LineResDto">
         select
@@ -42,13 +41,14 @@
             default_wl_fee as defaultWlFee
         from s_line
         <where>
+            state = 1
             <if test="fromCode != null and fromCode.trim() != ''">
-                from_code = #{fromCode}
+                and from_code = #{fromCode}
             </if>
             <if test="toCode != null  and toCode.trim() != ''">
                 and to_code = #{toCode}
             </if>
-            and state = 1 limit 1
+            limit 1
         </where>
     </select>
 
