@@ -140,6 +140,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("车辆{0}，其他人正在调度", orderCarNo);
                 }
+                lockSet.add(lockKey);
                 if (!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())) {
                     log.error("业务中心参数错误(saveLocal):" + JSON.toJSONString(paramsDto));
                     return BaseResultUtil.fail("运单中车辆{0}，始发地业务中心参数错误", orderCarNo);
