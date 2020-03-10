@@ -14,11 +14,11 @@ import java.io.Serializable;
 @Data
 public class LineReqDto implements Serializable {
     private static final long serialVersionUID = 4079246204301360452L;
-    @ApiModelProperty(value = "出发地城市编码",required = true)
-    @NotBlank(message = "出发地城市编码不能为空")
+    @ApiModelProperty(value = "起点城市编码",required = true)
+    @NotBlank(message = "起点城市编码不能为空")
     private String fromCode;
 
-    @ApiModelProperty(value = "目的地城市编码",required = true)
-    @NotBlank(message = "目的地城市编码不能为空")
+    @ApiModelProperty(value = "终点城市编码",required = true)
+    @NotBlank(message = "终点城市编码不能为空")
     private String toCode;
 }

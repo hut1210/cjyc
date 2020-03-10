@@ -10,8 +10,9 @@ import com.cjyc.foreign.api.dto.res.LineResDto;
 import com.cjyc.foreign.api.entity.Line;
 import com.cjyc.foreign.api.service.ILineService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * @Description 班线业务接口实现类
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILineService {
-    @Autowired
+    @Resource
     private ILineDao lineDao;
 
     @Override

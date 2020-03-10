@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.foreign.api.dto.req.LineReqDto;
 import com.cjyc.foreign.api.dto.res.LineResDto;
 import com.cjyc.foreign.api.entity.Line;
+import org.springframework.stereotype.Repository;
 
 /**
  * @Description 班线管理接口
  * @Author Liu Xing Xiang
  * @Date 2020/3/10 10:12
  **/
+@Repository("com.cjyc.foreign.api.dao.ILineDao")
 public interface ILineDao extends BaseMapper<Line> {
     /**
      * 功能描述: 根据城市获取班线价格
