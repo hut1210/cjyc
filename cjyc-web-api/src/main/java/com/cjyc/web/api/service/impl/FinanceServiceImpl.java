@@ -343,7 +343,7 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
-        List<PaymentVo> paymentVoList = new ArrayList<>();
+        /*List<PaymentVo> paymentVoList = new ArrayList<>();
         for(int i=0;i<financeVoList.size();i++){
             PaymentVo paymentVo = financeVoList.get(i);
             if(paymentVo!=null&&paymentVo.getType()!=null){
@@ -359,16 +359,16 @@ public class FinanceServiceImpl implements IFinanceService {
                         paymentVo.setPayModeName("时付");
                         paymentVoList.add(paymentVo);
                     }
-                }
-                if(paymentVo.getType()==1){
+                }else if(paymentVo.getType()==1){
                     paymentVoList.add(paymentVo);
                 }
             }
-        }
-        PageInfo<PaymentVo> pageInfo = new PageInfo<>(paymentVoList);
+        }*/
+        log.info("financeVoList.size ={}",financeVoList.size());
+        PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
         FinanceQueryDto fqd = new FinanceQueryDto();
         List<PaymentVo> pv = financeDao.getPaymentList(fqd);
-        List<PaymentVo> paymentVos = new ArrayList<>();
+        /*List<PaymentVo> paymentVos = new ArrayList<>();
         for(int j=0;j<pv.size();j++){
             PaymentVo paymentVo = pv.get(j);
             if(paymentVo!=null&&paymentVo.getType()!=null){
@@ -384,14 +384,14 @@ public class FinanceServiceImpl implements IFinanceService {
                         paymentVo.setPayModeName("时付");
                         paymentVos.add(paymentVo);
                     }
-                }
-                if(paymentVo.getType()==1){
+                }else if(paymentVo.getType()==1){
                     paymentVos.add(paymentVo);
                 }
             }
-        }
+        }*/
+        log.info("pv.size() ={}",pv.size());
         Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiptCount",paymentVos.size());
+        countInfo.put("receiptCount",pv.size());
         return BaseResultUtil.success(pageInfo,countInfo);
     }
 

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cjyc.foreign.api.dao.ITestDao">
-
+<mapper namespace="com.cjyc.common.model.dao.ILineDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.foreign.api.entity.Line">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.Line">
         <id column="id" property="id" />
         <result column="code" property="code" />
         <result column="name" property="name" />
@@ -34,7 +33,21 @@
         id, code, name, from_province, from_province_code, from_city, from_code, to_province, to_province_code, to_city, to_code, level, kilometer, days, state, default_wl_fee, default_freight_fee, remark, create_time, create_user_id, update_user_id, update_time
     </sql>
 
-    <select id="getLineById" resultType="com.cjyc.foreign.api.entity.Line">
-        select <include refid="Base_Column_List" /> from s_line where id = #{id}
+
+    <!-- 通过城市编码查看上游运价 -->
+    <select id="getLinePriceByCode" resultType="com.cjyc.common.model.entity.Line">
+        select
+          <include refid="Base_Column_List"/>
+        from s_line
+        <where>
+            <if test="fromCode != null and fromCode.trim() != ''">
+                from_code = #{fromCode}
+            </if>
+            <if test="toCode != null  and toCode.trim() != ''">
+                and to_code = #{toCode}
+            </if>
+            and state = 1 limit 1
+        </where>
     </select>
+
 </mapper>

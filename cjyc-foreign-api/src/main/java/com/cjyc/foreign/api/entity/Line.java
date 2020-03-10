@@ -24,9 +24,7 @@ import java.math.BigDecimal;
 @TableName("s_line")
 @ApiModel(value="Line对象", description="班线管理")
 public class Line implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     @ApiModelProperty(value = "线路ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -93,6 +91,4 @@ public class Line implements Serializable {
 
     @ApiModelProperty(value = "更新时间")
     private Long updateTime;
-
-
 }
