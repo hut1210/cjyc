@@ -623,16 +623,15 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (taskCarId == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getUnloadLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
-                    log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车，请5秒后尝试", taskCarId);
-                }
-                lockSet.add(lockKey);
                 WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
                 if (waybillCar == null) {
                     return BaseResultUtil.fail("任务ID为{0}对应的运单车辆不存在", taskCarId);
                 }
+                String lockKey = RedisKeys.getUnloadLockKey(waybillCar.getId());
+                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                    return BaseResultUtil.fail("运单车辆{0}正在卸车，请5秒后重试", waybillCar.getId());
+                }
+                lockSet.add(lockKey);
                 if (waybillCar.getState() <= WaybillCarStateEnum.WAIT_LOAD.code) {
                     return BaseResultUtil.fail("运单车辆{0}尚未装车", waybillCar.getOrderCarNo());
                 }
@@ -806,7 +805,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 String lockKey = RedisKeys.getInStoreLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车, 请5秒后尝试", taskCarId);
+                    return BaseResultUtil.fail("任务车辆{0}正在入库, 请5秒后重试", taskCarId);
                 }
                 lockSet.add(lockKey);
 
@@ -974,7 +973,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 String lockKey = RedisKeys.getOutStoreLockKey(taskId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车", taskId);
+                    return BaseResultUtil.fail("任务车辆{0}正在出库，请5秒后重试", taskId);
                 }
                 lockSet.add(lockKey);
                 WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
@@ -1116,7 +1115,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 String lockKey = RedisKeys.getReceiptLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}, 车辆正在交车，请5秒后重试", taskCarId);
+                    return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", taskCarId);
                 }
                 lockSet.add(lockKey);
                 WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
@@ -1219,7 +1218,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 String lockKey = RedisKeys.getReceiptLockKey(orderCar.getNo());
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}, 车辆正在交车，请5秒后重试", orderCar.getNo());
+                    return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", orderCar.getNo());
                 }
                 lockSet.add(lockKey);
                 if (order == null) {

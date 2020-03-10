@@ -180,8 +180,8 @@ public class RedisKeys {
     public static String getLoadLockKey(Long id) {
         return CJYC + I + LOAD_LOCK_KEY + I + id;
     }
-    public static String getUnloadLockKey(Long taskId) {
-        return CJYC + I + UNLOAD_LOCK_KEY + I + taskId;
+    public static String getUnloadLockKey(Object id) {
+        return CJYC + I + UNLOAD_LOCK_KEY + I + id;
     }
     public static String getCancelLockKey(Long orderId) {
         return CJYC + I + CANCEL_LOCK_ORDER_KEY + I + orderId;

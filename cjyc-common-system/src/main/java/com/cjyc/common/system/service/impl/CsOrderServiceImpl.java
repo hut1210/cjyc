@@ -115,7 +115,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 lockKey = RedisKeys.getOrderLockKey(orderId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}, 订单正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
                 }
             }
             //验证线路
@@ -249,7 +249,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 lockKey = RedisKeys.getOrderLockKey(orderId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}, 订单正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
                 }
             }
             //验证属性
@@ -484,7 +484,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 lockKey = RedisKeys.getOrderLockKey(orderId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}, 订单正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
                 }
             }
             Order order = orderDao.selectById(orderId);
@@ -905,7 +905,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 lockKey = RedisKeys.getOrderLockKey(orderId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}, 订单正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
                 }
             }
             //验证属性
