@@ -478,14 +478,17 @@
             group by t.id
         ) as tb on tb.waybill_id = w.id
         <where>
-            w.type = 2
-            <if test="paramsDto.bizScope != null">
-                and (w.create_user_id = #{paramsDto.loginId}
-                or w.input_store_id in
-                <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>)
-            </if>
+            exists (
+                select * from w_waybill_car wc
+                and wc.start_store_id in
+                <if test="paramsDto.bizScope != null">
+                    <foreach collection="paramsDto.bizScope" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>)
+                </if>
+                and wc.waybill_id = w.id
+            )
+            and w.type = 2
             <if test="paramsDto.state != null">
                 and w.state = #{paramsDto.state}
             </if>

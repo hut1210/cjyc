@@ -1072,7 +1072,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 return BaseResultUtil.fail("订单不存在");
             }
             if (order.getState() >= OrderStateEnum.TRANSPORTING.code) {
-                return BaseResultUtil.fail("订单运输中，不允许取消");
+                return BaseResultUtil.fail("订单{0}，不允许取消", OrderStateEnum.valueOf(order.getState()).name);
             }
             String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
 
