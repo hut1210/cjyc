@@ -40,6 +40,8 @@ public class RedisKeys {
     private final static String DISPATCH_LOCK_CAR_KEY = "dispatch:lock:car";
     private final static String UNLOAD_LOCK_KEY = "unload:lock";
     private final static String LOAD_LOCK_KEY = "load:lock";
+    private final static String RECEIPT_LOCK_KEY = "receipt:lock";
+    private final static String ORDER_LOCK_KEY = "order:lock";
     private final static String CANCEL_LOCK_ORDER_KEY = "cancel:lock:order";
     private final static String IN_STORE_LOCK_KEY = "in:store:lock";
     private final static String OUT_STORE_LOCK_KEY = "out:store:lock";
@@ -185,8 +187,19 @@ public class RedisKeys {
     public static String getInStoreKey(Long id) {
         return CJYC + I + IN_STORE_LOCK_KEY + I + id;
     }
+    public static String getOutStoreKey(Long id) {
+        return CJYC + I + OUT_STORE_LOCK_KEY + I + id;
+    }
 
     public static String getLoadKey(Long id) {
         return CJYC + I + LOAD_LOCK_KEY + I + id;
+    }
+
+    public static String getReceiptKey(Object no) {
+        return CJYC + I + RECEIPT_LOCK_KEY + I + no;
+    }
+
+    public static String getOrderLockKey(Long id) {
+        return CJYC + I + ORDER_LOCK_KEY + I + id;
     }
 }

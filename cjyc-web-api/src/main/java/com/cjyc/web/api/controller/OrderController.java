@@ -96,9 +96,8 @@ public class OrderController {
             reqDto.setLoginType(UserTypeEnum.ADMIN.code);
         }
         reqDto.setState(OrderStateEnum.WAIT_SUBMIT.code);
-        ResultVo resultVo = csOrderService.save(reqDto);
         //发送推送信息
-        return resultVo;
+        return csOrderService.save(reqDto);
     }
 
 

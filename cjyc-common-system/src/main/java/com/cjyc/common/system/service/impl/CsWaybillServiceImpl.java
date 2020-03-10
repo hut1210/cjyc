@@ -284,13 +284,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             return BaseResultUtil.success();
         } finally {
-            if (!CollectionUtils.isEmpty(lockSet)) {
-                /*for (String key : lockSet) {
-                    redisLock.releaseLock(key);
-                }*/
-                redisUtils.delayDelete(lockSet);
-            }
-
+            redisUtils.delayDelete(lockSet);
         }
     }
 
@@ -512,12 +506,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //记录修改历史
             return BaseResultUtil.success();
         } finally {
-            if (!CollectionUtils.isEmpty(lockSet)) {
-                /*for (String key : lockSet) {
-                    redisLock.releaseLock(key);
-                }*/
-                redisUtils.delayDelete(lockSet);
-            }
+            redisUtils.delayDelete(lockSet);
         }
     }
 
@@ -951,13 +940,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             return BaseResultUtil.success();
         } finally {
-            if (!CollectionUtils.isEmpty(lockSet)) {
-                /*for (String key : lockSet) {
-                    redisLock.releaseLock(key);
-                }*/
-                //redisUtil.del(lockSet.toArray(new String[0]));
-                redisUtils.delayDelete(lockSet);
-            }
+            //redisUtil.del(lockSet.toArray(new String[0]));
+            redisUtils.delayDelete(lockSet);
         }
     }
 
@@ -1199,10 +1183,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
             return BaseResultUtil.success();
         } finally {
-            if (!CollectionUtils.isEmpty(lockSet)) {
-                redisUtils.delayDelete(lockSet);
-                //redisUtil.del(lockSet.toArray(new String[0]));
-            }
+            redisUtils.delayDelete(lockSet);
+            //redisUtil.del(lockSet.toArray(new String[0]));
         }
     }
 

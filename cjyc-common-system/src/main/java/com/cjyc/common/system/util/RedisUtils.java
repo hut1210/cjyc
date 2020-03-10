@@ -2,6 +2,7 @@ package com.cjyc.common.system.util;
 
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.log.monitor.LogUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.connection.DataType;
@@ -11,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -1253,6 +1255,9 @@ public class RedisUtils {
 
     @Async
     public void delayDelete(Set<String> keys) {
+        if(CollectionUtils.isEmpty(keys)){
+            return;
+        }
         LogUtil.debug("【延时解锁】----------->开始" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
         try {
             Thread.sleep(5000);
@@ -1265,6 +1270,9 @@ public class RedisUtils {
 
     @Async
     public void delayDelete(String key) {
+        if(StringUtils.isBlank(key)){
+            return;
+        }
         LogUtil.debug("【延时解锁】----------->开始" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
         try {
             Thread.sleep(5000);
