@@ -250,7 +250,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
                             if(tradeBills!=null){
                                 if(tradeBills.size()==1){
                                     TradeBill tradeBill = tradeBills.get(0);
-                                    if(tradeBill!=null&&tradeBill.getState()==1){
+                                    if(tradeBill!=null&&tradeBill.getState()==0){
                                         if(tradeBill.getTradeTime()!=null){
                                             Long time = System.currentTimeMillis()-tradeBill.getTradeTime();
                                             if(time>1800000){
