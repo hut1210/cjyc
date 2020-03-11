@@ -25,14 +25,14 @@ public class CommitOrderCarDto implements Serializable {
     private String model;
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
-    @Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "vin码格式不正确")
+    //@Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "vin码格式不正确")
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "是否能动 0-否 1-是")
     private Integer isMove;
     @ApiModelProperty(value = "是否新车 0-否 1-是")
     private Integer isNew;
-    @Pattern(regexp = "(^$)|(^[1-9]\\d*$)", message = "估值只支持正整数")
+    //@Pattern(regexp = "(^$)|(^[1-9]\\d*$)", message = "估值只支持正整数")
     @ApiModelProperty(value = "估值/分",required = true)
     private Integer valuation;
     @ApiModelProperty(value = "描述")

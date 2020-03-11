@@ -9,7 +9,7 @@ public class test {
 
 
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         BigDecimal a1 = new BigDecimal(1111);
         BigDecimal a2 = new BigDecimal(1000);
         BigDecimal a3 = new BigDecimal(1000);
@@ -44,5 +44,5 @@ public class test {
         for (Map.Entry<String, BigDecimal> entry : args.entrySet()) {
 
         }
-    }
+    }*/
 }
