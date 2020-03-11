@@ -1,6 +1,7 @@
 package com.cjyc.foreign.api.utils;
 
 import com.cjkj.log.monitor.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -16,6 +17,7 @@ import java.util.Map;
 /**
  * HttpClient调用工具封装
  */
+@Slf4j
 public class HttpClientUtil {
     private static final HttpClient httpClient;
     public static final String DEFAULT_CHARSET = "UTF-8";
@@ -54,7 +56,7 @@ public class HttpClientUtil {
             httpResponse = httpClient.execute(httpPost);
             result = EntityUtils.toString(httpResponse.getEntity(), charset);
         }catch (Exception e){
-            LogUtil.error("请求通信[\" + reqURL + \"]时偶遇异常,异常信息如下", e);
+            log.error("请求通信[\" + reqURL + \"]时偶遇异常,异常信息如下", e);
         }
         return result;
     }
