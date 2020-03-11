@@ -136,13 +136,13 @@ public class ExcelListOrderCarVo implements Serializable {
     }
     public String getExpectStartDate(){
         if(expectStartDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectStartDate), TimePatternConstant.DATE);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectStartDate), TimePatternConstant.SIMPLE_DATE_FORMAT);
         }
         return "";
     }
     public String getExpectEndDate(){
         if(expectEndDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectEndDate), TimePatternConstant.DATE);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectEndDate), TimePatternConstant.SIMPLE_DATE_FORMAT);
         }
         return "";
     }
