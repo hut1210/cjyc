@@ -60,6 +60,27 @@ public class DispatchController {
     public void exportAllList(String param, HttpServletResponse response) {
         WaitDispatchListOrderCarDto reqDto = JSON.parseObject(param, WaitDispatchListOrderCarDto.class);
         ResultVo<List<OrderCarWaitDispatchVo>> dispatchRs = orderService.waitDispatchCarAllList(reqDto);
+        if (!isResultSuccess(dispatchRs)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", dispatchRs.getMsg()),
+                    "导出异常.xls", response);
+            return;
+        }
+        List<OrderCarWaitDispatchVo> dispatchList = dispatchRs.getData();
+        if (CollectionUtils.isEmpty(dispatchList)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),
+                    "结果为空.xls", response);
+            return;
+        }
+        dispatchList = dispatchList.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        try{
+            ExcelUtil.exportExcel(dispatchList, "调度信息", "调度信息",
+                    OrderCarWaitDispatchVo.class, System.currentTimeMillis()+"调度信息.xls", response);
+            return;
+        }catch (Exception e) {
+            LogUtil.error("导出订单信息异常", e);
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出调度池信息异常: " + e.getMessage()),
+                    "导出异常.xls", response);
+        }
         ExcelUtil.print(dispatchRs, "调度池信息", response);
     }
 
