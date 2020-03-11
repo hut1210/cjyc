@@ -1,13 +1,12 @@
 package com.cjyc.common.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.web.task.DriverCarCountVo;
 import com.cjyc.common.system.service.ICsCronTaskService;
-import org.springframework.beans.BeanUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -16,14 +15,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CsCronTaskServiceImpl implements ICsCronTaskService {
 
     @Resource
     private IOrderDao orderDao;
-    @Resource
-    private ICustomerDao customerDao;
-    @Resource
-    private IAdminDao adminDao;
     @Resource
     private ICustomerCountDao customerCountDao;
     @Resource
@@ -32,16 +28,12 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
     private IOrderCarDao orderCarDao;
     @Resource
     private IDriverCarCountDao driverCarCountDao;
-    @Resource
-    private ICustomerLineDao customerLineDao;
-    @Resource
-    private ILineDao lineDao;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public void saveCustomerOrder() {
-        System.out.println("保存前一天客户下单统计开始执行。。。。。");
+        log.info("保存前一天客户下单统计开始执行。。。。。");
         //查询前一天所有下的单
         List<Order> dayOrders = findBeforeDayOrder();
         if(!CollectionUtils.isEmpty(dayOrders)){
@@ -57,7 +49,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
 
     @Override
     public void saveDriverCar() {
-        System.out.println("保存前一天司机完成运车统计开始执行。。。。。");
+        log.info("保存前一天司机完成运车统计开始执行。。。。。");
         //获取当天的开始时间
         LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(NOW);
         //获取前一天开始时间
