@@ -25,6 +25,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerLine.BusinessStoreVo;
 import com.cjyc.common.model.vo.web.customer.PartnerImportExcel;
 import com.cjyc.common.model.vo.web.store.StoreExportExcel;
 import com.cjyc.common.model.vo.web.store.StoreImportExcel;
@@ -33,6 +34,7 @@ import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.web.api.service.IStoreService_1;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -436,5 +439,21 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
             areaCodeList.removeAll(coverAreaCodeList);
         }
         return areaCodeList;
+    }
+
+    @Override
+    public List<Store> findStore(String cityCode) {
+        List<Store> list = Lists.newArrayList();
+        //根据城市编码code获取区县
+        List<City> cityList = cityDao.selectList(new QueryWrapper<City>().lambda().eq(City::getParentCode, cityCode));
+        if(!CollectionUtils.isEmpty(cityList)){
+            List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda().in(StoreCityCon::getAreaCode, cityList.stream().map(City::getCode).collect(Collectors.toList())));
+            if(!CollectionUtils.isEmpty(storeCityConList)){
+                Set<Long> storeIds = storeCityConList.stream().map(StoreCityCon::getStoreId).collect(Collectors.toSet());
+                //获取业务中心
+                list = storeDao.findByIds(storeIds);
+            }
+        }
+        return list;
     }
 }

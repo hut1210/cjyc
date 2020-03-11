@@ -129,4 +129,11 @@ public interface IStoreService_1 extends IService<Store> {
      * @return
      */
     ResultVo<List<Store>> findAllStore();
+
+    /**
+     * web端获取该城市下所有区的业务中心
+     * @param cityCode
+     * @return
+     */
+    List<Store> findStore(String cityCode);
 }
