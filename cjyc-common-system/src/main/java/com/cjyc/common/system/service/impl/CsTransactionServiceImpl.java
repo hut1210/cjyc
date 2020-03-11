@@ -253,7 +253,7 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
                                     if(tradeBill!=null&&tradeBill.getState()==1){
                                         if(tradeBill.getTradeTime()!=null){
                                             Long time = System.currentTimeMillis()-tradeBill.getTradeTime();
-                                            if(time>1800){
+                                            if(time>1800000){
                                                 updateFailOrder(order.getNo());
                                             }
                                         }
