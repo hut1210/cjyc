@@ -43,8 +43,8 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     private String driverPhone;
     @Excel(name = "车牌号", orderNum = "14",width = 20)
     private String vehiclePlateNo;
-    @Excel(name = "提送车业务中心", orderNum = "15",width = 20)
-    private String startStoreName;
+    @Excel(name = "提/送车业务中心", orderNum = "15",width = 20)
+    private String endStoreName;
     @Excel(name = "提车地址", orderNum = "16",width = 35)
     private String startAddress;
     @Excel(name = "交付地址", orderNum = "17",width = 35)
