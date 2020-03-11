@@ -134,17 +134,11 @@ cjkj:
 
   signature: 韵车物流
 
+  swagger:
+    basePackage: com.cjyc.foreign.api.controller
+
 
 cjyc:
-  swagger:
-    enabled: true
-    title: 韵车对外接口文档
-    description: 长久韵车对外接口文档
-    version: 2.0.1
-    basePackage: com.cjyc.foreign.api.controller
-    groupName: 韵车对外接口
-    usePathMapping: false
-
   #短信
   sms:
     ##短信时效(分钟)
