@@ -11,12 +11,14 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
+import com.cjyc.foreign.api.dto.req.OrderSaveReqDto;
 import com.cjyc.foreign.api.service.IOrderService;
 import com.cjyc.foreign.api.utils.LoginAccountUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +39,19 @@ public class OrderController {
     private IOrderService orderService;
     @Autowired
     private ICsOrderService csOrderService;
+
+    /**
+     * 功能描述: 下单
+     * @author liuxingxiang
+     * @date 2020/3/11
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<java.lang.String>
+     */
+    @ApiOperation(value = "下单")
+    @PostMapping("/saveOrder")
+    public ResultVo<String> saveOrder(@RequestBody @Validated OrderSaveReqDto dto) {
+        return orderService.saveOrder(dto);
+    }
 
     @ApiOperation(value = "取消订单")
     @PostMapping("/cancelOrder")
