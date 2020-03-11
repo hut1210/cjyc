@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class FinanceTask {
     @Autowired
     private ICsTransactionService csTransactionService;
-    @Scheduled(cron = "0/90 * * * * ?")
+    //@Scheduled(cron = "0/90 * * * * ?")
     private void task() {
 
         log.info("定时更新订单是支付中账单是待支付的");
