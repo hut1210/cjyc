@@ -109,6 +109,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     private final Lock lock = new ReentrantLock();
 
+    private static List<String> phoneList = Arrays.asList("15290809152","18201026858","13367786789","18774973990","13894416363");
+
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException {
@@ -729,6 +731,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
                     //校验订单支付状态flag
                     order = orderDao.selectById(orderId);
+                    if(!phoneList.contains(order.getCustomerPhone())){
+                        log.error("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
+                        return BaseResultUtil.fail("账号不在白名单内");
+                    }
                     if(order.getFlag()!=null){
                         if(order.getFlag().equals("1")){
                             log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
