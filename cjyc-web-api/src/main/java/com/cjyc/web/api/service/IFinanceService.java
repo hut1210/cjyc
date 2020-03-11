@@ -5,7 +5,6 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -85,5 +84,5 @@ public interface IFinanceService {
 
     List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
 
-    ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList();
+    ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
 }

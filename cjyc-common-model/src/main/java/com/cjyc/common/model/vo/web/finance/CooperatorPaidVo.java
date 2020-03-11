@@ -40,11 +40,14 @@ public class CooperatorPaidVo implements Serializable {
     @ApiModelProperty(value = "目的城市")
     private String endCity;
 
+    @ApiModelProperty(value = "客户Id")
+    private Long customerId;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    @ApiModelProperty(value = "客户结算类型")
-    private String payMode;
+    @ApiModelProperty(value = "客户支付方式 0到付（默认），1预付，2账期")
+    private String customerPayType;
 
     @ApiModelProperty(value = "客户支付时间")
     private Long wlPayTime;
@@ -56,7 +59,7 @@ public class CooperatorPaidVo implements Serializable {
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "付款类型（公户，个户）")
-    private String payType;
+    private String cardType;
 
     @ApiModelProperty(value = "对公开户名称")
     private String publicAccount;

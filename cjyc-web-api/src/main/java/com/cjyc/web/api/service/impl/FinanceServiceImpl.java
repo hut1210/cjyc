@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -17,7 +18,6 @@ import com.cjyc.web.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +74,12 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Resource
     private IPaymentErrorLogDao paymentErrorLogDao;
+
+    @Resource
+    private IOrderDao orderDao;
+
+    @Resource
+    private IOrderCarDao orderCarDao;
 
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
@@ -832,7 +838,46 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList() {
-        return null;
+    public ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto) {
+        PageHelper.startPage(cooperatorSearchDto.getCurrentPage(), cooperatorSearchDto.getPageSize());
+        List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cooperatorSearchDto);
+        for(int i=0;i<cooperatorPaidVoList.size();i++){
+            CooperatorPaidVo cooperatorPaidVo = cooperatorPaidVoList.get(i);
+            BigDecimal serviceFee = getCooperatorFee(cooperatorPaidVo.getOrderId(),cooperatorPaidVo.getTotalFee());
+            //合伙人服务费
+            cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
+        }
+        PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    /**
+     * 获取合伙人服务费
+     * @param orderId
+     * @param totalFee
+     * @return
+     */
+    private BigDecimal getCooperatorFee(Long orderId, BigDecimal totalFee){
+        List<OrderCar> orderCarList = orderCarDao.findListByOrderId(orderId);
+        BigDecimal wlFee = new BigDecimal(0);
+        for (int i=0;i<orderCarList.size();i++){
+            OrderCar orderCar = orderCarList.get(i);
+            if(orderCar!=null){
+                if(orderCar.getPickFee()!=null){
+                    wlFee = wlFee.add(MoneyUtil.nullToZero(orderCar.getPickFee()));
+                }
+                if(orderCar.getTrunkFee()!=null){
+                    wlFee = wlFee.add(MoneyUtil.nullToZero(orderCar.getTrunkFee()));
+                }
+                if(orderCar.getBackFee()!=null){
+                    wlFee = wlFee.add(MoneyUtil.nullToZero(orderCar.getBackFee()));
+                }
+                if(orderCar.getAddInsuranceFee()!=null){
+                    wlFee = wlFee.add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
+                }
+            }
+        }
+
+        return MoneyUtil.nullToZero(totalFee).subtract(MoneyUtil.nullToZero(wlFee));
     }
 }
