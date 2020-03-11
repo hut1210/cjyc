@@ -8,6 +8,7 @@ import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -286,6 +287,8 @@ public class TrunkCarDetailExportVo implements Serializable {
         }
         return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
     }
+
+    public String getFreightFee() { return MoneyUtil.fenToYuan(freightFee, MoneyUtil.PATTERN_TWO); }
 
     public String getBackDetailAddr() {
         return (StringUtils.isEmpty(getEndProvince())?"": getEndProvince()) + "/" +
