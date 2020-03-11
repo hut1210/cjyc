@@ -194,7 +194,7 @@
     </select>
 
     <select id="getCooperatorServiceReceiveFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
-        select sum(amount) f_trade_bill where receiver_id = #{customId} and state = 2 and type=21
+        select sum(amount) from f_trade_bill where receiver_id = #{customId} and state = 2 and type=21
     </select>
 
     <select id="getCooperatorServiceReceiveCarFeeCount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">

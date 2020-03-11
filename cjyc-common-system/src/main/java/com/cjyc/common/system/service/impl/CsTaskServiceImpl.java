@@ -970,10 +970,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Set<Long> orderIdSet = Sets.newHashSet();
             int count = 0;
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-                String lockKey = RedisKeys.getOutStoreLockKey(taskId);
+                String lockKey = RedisKeys.getOutStoreLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}正在出库，请5秒后重试", taskId);
+                    return BaseResultUtil.fail("任务车辆{0}正在出库，请5秒后重试", taskCarId);
                 }
                 lockSet.add(lockKey);
                 WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);

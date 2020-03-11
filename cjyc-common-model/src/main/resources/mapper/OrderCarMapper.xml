@@ -362,7 +362,7 @@
         LEFT JOIN s_store s2 on s2.id = o.end_store_id
         LEFT JOIN s_store s3 on s3.id = o.input_store_id
         LEFT JOIN s_city ct1 on oc.now_area_code = ct1.code
-        LEFT JOIN s_city ct2 on s3.city_code = ct2.code
+        LEFT JOIN s_city ct2 on s3.province_code = ct2.code
         left join b_admin m on m.id = o.check_user_id
         left join w_waybill_car wc on wc.order_car_id = oc.id and wc.state &lt;= 100
         <where>
