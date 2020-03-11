@@ -545,7 +545,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail("没有数据权限");
         }
         dto.setBizScope(bizScope.getStoreIds());
-        return BaseResultUtil.success(orderCarDao.findWaitDispatchCarList(dto));
+        return BaseResultUtil.success(orderCarDao.findWaitDispatchCarListWeb(dto));
     }
 
     @Override
