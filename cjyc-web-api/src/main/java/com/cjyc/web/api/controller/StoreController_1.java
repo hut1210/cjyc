@@ -46,7 +46,7 @@ public class StoreController_1 {
     @ApiOperation(value = "根据二级城市编码查询业务中心")
     @PostMapping(value = "/get/{cityCode}")
     public ResultVo<List<Store>> getByCityCode(@PathVariable String cityCode) {
-        List<Store> list = storeService.getByCityCode(cityCode);
+        List<Store> list = storeService.findStore(cityCode);
         return BaseResultUtil.success(list);
     }
 

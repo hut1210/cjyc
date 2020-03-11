@@ -135,6 +135,11 @@ cjkj:
   signature: 韵车物流
 
   swagger:
+    enabled: true
+    title: 韵车对外接口
+    description: 韵车对外接口文档
+    version: 1.0.2
+    host: http://10.253.96.135/api
     basePackage: com.cjyc.foreign.api.controller
 
 

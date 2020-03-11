@@ -43,7 +43,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     #url: jdbc:mysql://10.253.96.139:3306/cjyc?useUnicode=true&characterEncoding=utf-8&useSSL=false #准生产
-    #url: jdbc:mysql://39.107.96.231:3306/cjyc?useUnicode=true&characterEncoding=utf-8&useSSL=false #开发线上数据
+    #url: jdbc:mysql://39.107.96.231:3306/cjyc_zj_test?useUnicode=true&characterEncoding=utf-8&useSSL=false #开发线上数据
     url: jdbc:mysql://39.107.96.231:3306/ju_test_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false #开发
     username: root
     password: Qaz123$%^231#
