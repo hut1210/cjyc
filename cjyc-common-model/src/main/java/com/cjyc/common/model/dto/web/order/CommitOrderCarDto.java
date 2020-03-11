@@ -29,16 +29,18 @@ public class CommitOrderCarDto implements Serializable {
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "是否能动 0-否 1-是")
-    private int isMove;
+    private Integer isMove;
     @ApiModelProperty(value = "是否新车 0-否 1-是")
-    private int isNew;
+    private Integer isNew;
+    @Pattern(regexp = "(^$)|(^[1-9]\\d*$)", message = "估值只支持正整数")
     @ApiModelProperty(value = "估值/分",required = true)
-    private int valuation;
+    private Integer valuation;
     @ApiModelProperty(value = "描述")
     private String description;
     @ApiModelProperty(value = "车辆应收保险费")
     private BigDecimal addInsuranceFee;
     @ApiModelProperty(value = "保额/万")
+    @Pattern(regexp = "(^$)|(^[1-9]\\d*$)", message = "保额只支持正整数")
     private Integer addInsuranceAmount;
 
     @ApiModelProperty(value = "车辆应收提车费 单位：分")
