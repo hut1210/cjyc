@@ -1260,7 +1260,7 @@ public class RedisUtils {
         }
         LogUtil.debug("【延时解锁】----------->开始" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
             delete(keys);
         } catch (InterruptedException e) {
             LogUtil.error("【延时解锁】失败");
@@ -1275,7 +1275,7 @@ public class RedisUtils {
         }
         LogUtil.debug("【延时解锁】----------->开始" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
             delete(key);
         } catch (InterruptedException e) {
             LogUtil.error("【延时解锁】失败");
