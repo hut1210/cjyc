@@ -11,7 +11,9 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
+import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
 import com.cjyc.foreign.api.dto.req.OrderSaveReqDto;
+import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 import com.cjyc.foreign.api.service.IOrderService;
 import com.cjyc.foreign.api.utils.LoginAccountUtil;
 import io.swagger.annotations.Api;
@@ -41,16 +43,29 @@ public class OrderController {
     private ICsOrderService csOrderService;
 
     /**
-     * 功能描述: 下单
+     * 功能描述: 保存订单
      * @author liuxingxiang
      * @date 2020/3/11
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<java.lang.String>
      */
-    @ApiOperation(value = "下单")
+    @ApiOperation(value = "保存订单")
     @PostMapping("/saveOrder")
     public ResultVo<String> saveOrder(@RequestBody @Validated OrderSaveReqDto dto) {
         return orderService.saveOrder(dto);
+    }
+
+    /**
+     * 功能描述: 查询订单详情
+     * @author liuxingxiang
+     * @date 2020/3/11
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo>
+     */
+    @ApiOperation(value = "根据订单号查询订单详情")
+    @PostMapping(value = "/getOrderDetailByOrderNo")
+    public ResultVo<OrderDetailResDto> getDetail(@RequestBody @Validated OrderDetailReqDto dto){
+        return orderService.getOrderDetailByOrderNo(dto);
     }
 
     @ApiOperation(value = "取消订单")
