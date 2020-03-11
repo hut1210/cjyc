@@ -843,9 +843,15 @@ public class FinanceServiceImpl implements IFinanceService {
         List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cooperatorSearchDto);
         for(int i=0;i<cooperatorPaidVoList.size();i++){
             CooperatorPaidVo cooperatorPaidVo = cooperatorPaidVoList.get(i);
-            BigDecimal serviceFee = getCooperatorFee(cooperatorPaidVo.getOrderId(),cooperatorPaidVo.getTotalFee());
+            BigDecimal wlFee = getCooperatorFee(cooperatorPaidVo.getOrderId());
+            //总费用
+            cooperatorPaidVo.setWlFee(wlFee);
+            BigDecimal serviceFee = MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee));
             //合伙人服务费
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
+            /*if(){
+
+            }*/
         }
         PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
         return BaseResultUtil.success(pageInfo);
@@ -854,10 +860,9 @@ public class FinanceServiceImpl implements IFinanceService {
     /**
      * 获取合伙人服务费
      * @param orderId
-     * @param totalFee
      * @return
      */
-    private BigDecimal getCooperatorFee(Long orderId, BigDecimal totalFee){
+    private BigDecimal getCooperatorFee(Long orderId){
         List<OrderCar> orderCarList = orderCarDao.findListByOrderId(orderId);
         BigDecimal wlFee = new BigDecimal(0);
         for (int i=0;i<orderCarList.size();i++){
@@ -878,6 +883,6 @@ public class FinanceServiceImpl implements IFinanceService {
             }
         }
 
-        return MoneyUtil.nullToZero(totalFee).subtract(MoneyUtil.nullToZero(wlFee));
+        return MoneyUtil.nullToZero(wlFee);
     }
 }

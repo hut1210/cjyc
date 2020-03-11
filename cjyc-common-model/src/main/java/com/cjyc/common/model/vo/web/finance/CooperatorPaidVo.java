@@ -58,6 +58,9 @@ public class CooperatorPaidVo implements Serializable {
     @ApiModelProperty(value = "订单金额")
     private BigDecimal totalFee;
 
+    @ApiModelProperty(value = "总费用")
+    private BigDecimal wlFee;
+
     @ApiModelProperty(value = "付款类型（公户，个户）")
     private String cardType;
 

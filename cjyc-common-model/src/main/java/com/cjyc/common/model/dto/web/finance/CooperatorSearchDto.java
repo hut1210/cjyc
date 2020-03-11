@@ -36,6 +36,9 @@ public class CooperatorSearchDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "付款操作人")
     private String operator;
 
-    @ApiModelProperty(value = "下单客户")
+    @ApiModelProperty(value = "下单客户电话")
+    private String phone;
+
+    @ApiModelProperty(value = "客户名称")
     private String customerName;
 }
