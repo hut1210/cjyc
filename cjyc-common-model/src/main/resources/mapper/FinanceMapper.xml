@@ -354,7 +354,7 @@
     <sql id="payMentListHeader">
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,
         wo.customer_id as customerId,wo.customer_type as type,zcity.name as largeArea,
-        if(cc.pay_mode=0,'时付','账期') as payModeName,woc.total_fee as freightReceivable,
+        '时付' as payModeName,woc.total_fee as freightReceivable,
         if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
         woc.order_no as orderNo,
         wo.start_province,wo.start_city,
