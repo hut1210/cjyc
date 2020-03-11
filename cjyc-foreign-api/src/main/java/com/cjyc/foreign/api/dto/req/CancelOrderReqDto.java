@@ -17,6 +17,6 @@ import java.io.Serializable;
 public class CancelOrderReqDto implements Serializable {
     private static final long serialVersionUID = 1L;
     @NotEmpty(message = "订单编号不能为空")
-    @ApiModelProperty(name = "订单编号")
+    @ApiModelProperty(name = "订单编号", required = true)
     private String orderNo;
 }
