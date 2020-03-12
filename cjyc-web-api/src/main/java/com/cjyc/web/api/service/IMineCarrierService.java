@@ -96,6 +96,4 @@ public interface IMineCarrierService extends IService<Carrier> {
      */
     boolean importCarrierDriverExcel(MultipartFile file, Long loginId,Long carrierId);
 
-    ResultVo updateDriverName();
-
 }
