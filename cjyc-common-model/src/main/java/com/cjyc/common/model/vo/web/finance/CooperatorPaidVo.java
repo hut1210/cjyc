@@ -82,4 +82,7 @@ public class CooperatorPaidVo implements Serializable {
     @ApiModelProperty(value = "持卡人身份证号")
     private String IDCard;
 
+    @ApiModelProperty(value = "付款操作人")
+    private String operator;
+
 }
