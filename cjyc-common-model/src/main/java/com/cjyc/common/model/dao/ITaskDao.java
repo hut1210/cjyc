@@ -85,7 +85,7 @@ public interface ITaskDao extends BaseMapper<Task> {
 
     int updateStateById(@Param("taskId") Long taskId, @Param("state") int state);
 
-    int countByTaskIdAndWaybillCarId(@Param("taskId") Long taskId, @Param("waybillCarId") Long waybillCarId);
+    int countByWaybillCarId(@Param("waybillCarId") Long waybillCarId);
 
     Task findByWaybillCarId(Long waybillCarId);
 
