@@ -109,7 +109,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     private final Lock lock = new ReentrantLock();
 
-    private static List<String> phoneList = Arrays.asList("15290809152","18201026858","13367786789","18774973990","13894416363");
+    private static List<String> phoneList = Arrays.asList("15290809152","18201026858","13367786789","18774973990","13894416363","18297278387");
 
     @Override
     public Charge sweepDriveCode(SweepCodeDto sweepCodeDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
