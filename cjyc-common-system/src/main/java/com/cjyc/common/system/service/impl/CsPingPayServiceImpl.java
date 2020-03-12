@@ -1025,11 +1025,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
         params.put("metadata",meta);//自定义参数
 
+        log.info("allinpayToCooperatorCreate params = {}",params.toString());
         Transfer obj = Transfer.create(params);
         if(Pingpp.apiKey.contains("_test_")){//test模式调用查询相当于企业付款成功
             obj = transferRetrieve(obj.getId());
         }
         obj.setAmount(Integer.parseInt(src_amount.toString()));
+        if(obj!=null){
+            log.info("allinpayToCooperatorCreate params = {}",params.toString());
+        }
         return obj;
 
     }
