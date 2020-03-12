@@ -83,4 +83,7 @@ public class OrderSubmitReqDto implements Serializable {
 
     @ApiModelProperty(value = "支付方式 0-到付，1-预付，2账期")
     private Integer payType;
+
+    @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用")
+    private BigDecimal totalFee;
 }
