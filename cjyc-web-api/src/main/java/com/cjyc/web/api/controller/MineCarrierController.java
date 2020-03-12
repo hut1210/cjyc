@@ -168,11 +168,4 @@ public class MineCarrierController {
         boolean result = mimeCarrierService.importCarrierDriverExcel(file, loginId,carrierId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
-
-    @ApiOperation(value = "更新架构组司机姓名")
-    @PostMapping(value = "/updateDriverName")
-    public ResultVo updateDriverName(){
-        return mimeCarrierService.updateDriverName();
-    }
-
 }

@@ -85,4 +85,6 @@ public interface IFinanceService {
     List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
 
     ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
+
+    ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto);
 }

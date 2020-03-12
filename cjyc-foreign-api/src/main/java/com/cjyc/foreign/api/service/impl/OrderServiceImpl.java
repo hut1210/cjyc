@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.config.LogoImgProperty;
+import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
 import com.cjyc.foreign.api.dto.req.OrderSaveReqDto;
 import com.cjyc.foreign.api.dto.res.OrderCarDetailResDto;
@@ -40,10 +42,17 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private IWaybillCarDao waybillCarDao;
     @Resource
     private ICarSeriesDao carSeriesDao;
+    @Resource
+    private ICsCustomerService csCustomerService;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public ResultVo<String> saveOrder(OrderSaveReqDto dto) {
+        //验证用户存不存在
+        ResultVo<Customer> vo = csCustomerService.validateAndGetActive(dto.getLoginId());
+        if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+            return BaseResultUtil.fail(vo.getMsg());
+        }
         // 保存订单
 
         // 保存订单车辆信息

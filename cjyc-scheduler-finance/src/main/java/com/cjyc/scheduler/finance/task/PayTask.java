@@ -22,7 +22,7 @@ public class PayTask {
     @Autowired
     private ICsTransactionService csTransactionService;
 
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     private void task() {
         log.info("定时给合伙人打款");
         try {

@@ -239,10 +239,10 @@ public class FinancePayableController {
 
     @ApiOperation("人工支付合伙人服务费")
     @PostMapping("/pay/{orderId}")
-    public ResultVo payToCooperator(@PathVariable Long orderId){
+    public ResultVo payToCooperator(@RequestBody CooperatorPaymentDto cooperatorPaymentDto){
 
         try{
-            return csPingPayService.allinpayToCooperator(orderId);
+            return financeService.payToCooperator(cooperatorPaymentDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);
             return BaseResultUtil.fail("人工支付合伙人费用异常");

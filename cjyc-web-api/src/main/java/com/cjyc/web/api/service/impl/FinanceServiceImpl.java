@@ -15,6 +15,7 @@ import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.cjyc.web.api.service.IOrderService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -855,6 +856,18 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto) {
+        log.info("人工支付合伙人费用 cooperatorPaymentDto = {}",cooperatorPaymentDto.toString());
+        //记录支付操作者
+        try{
+            return csPingPayService.allinpayToCooperatorNew(cooperatorPaymentDto.getOrderId());
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }
+        return BaseResultUtil.success("合伙人费用支付成功");
     }
 
     /**

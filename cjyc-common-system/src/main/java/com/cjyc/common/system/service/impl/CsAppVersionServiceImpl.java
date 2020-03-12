@@ -7,6 +7,7 @@ import com.cjyc.common.model.dao.IAppVersionDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.enums.UseStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.AppVersionVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAppVersionService;
@@ -38,6 +39,7 @@ public class CsAppVersionServiceImpl extends ServiceImpl<IAppVersionDao, AppVers
 
     @Override
     public ResultVo<AppVersionVo> updateAppVersion(AppVersionDto dto) {
+        log.info("====>app版本更新,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         //验证库中是否有值
         List<AppVersion> oldAppList = appVersionDao.selectList(new QueryWrapper<AppVersion>().lambda()
                                          .eq(AppVersion::getSystemType, dto.getSystemType())
