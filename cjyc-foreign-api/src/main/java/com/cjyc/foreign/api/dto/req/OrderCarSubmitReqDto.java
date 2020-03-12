@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * @Date 2020/3/12 11:40
  **/
 @Data
-public class OrderCarSaveDto implements Serializable {
+public class OrderCarSubmitReqDto implements Serializable {
     private static final long serialVersionUID = -3441938847460577267L;
     @ApiModelProperty(value = "品牌")
     private String brand;
@@ -35,11 +35,8 @@ public class OrderCarSaveDto implements Serializable {
     @ApiModelProperty(value = "是否新车 0-否 1-是")
     private int isNew;
 
-    @ApiModelProperty(value = "估值/分")
+    @ApiModelProperty(value = "估值/万")
     private int valuation;
-
-    @ApiModelProperty(value = "描述")
-    private String description;
 
     @ApiModelProperty(value = "车辆应收保险费")
     private BigDecimal addInsuranceFee;
@@ -47,15 +44,6 @@ public class OrderCarSaveDto implements Serializable {
     @ApiModelProperty(value = "保额/万")
     private Integer addInsuranceAmount;
 
-    @ApiModelProperty(value = "车辆应收提车费 单位：分")
-    private BigDecimal pickFee;
-
-    @ApiModelProperty(value = "车辆应收干线费 单位：分")
+    @ApiModelProperty(value = "车辆应收干线费（物流费） 单位：分")
     private BigDecimal trunkFee;
-
-    @ApiModelProperty(value = "车辆应收送车费 单位：分")
-    private BigDecimal backFee;
-
-    @ApiModelProperty(value = "物流券抵消金额")
-    private BigDecimal couponOffsetFee;
 }

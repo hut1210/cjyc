@@ -5,16 +5,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.web.order.SaveOrderCarDto;
+import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
-import com.cjyc.common.model.enums.order.OrderCarStateEnum;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsOrderService;
+import com.cjyc.foreign.api.dto.req.OrderCarSubmitReqDto;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
-import com.cjyc.foreign.api.dto.req.OrderSaveReqDto;
+import com.cjyc.foreign.api.dto.req.OrderSubmitReqDto;
 import com.cjyc.foreign.api.dto.res.OrderCarDetailResDto;
 import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 import com.cjyc.foreign.api.service.IOrderService;
@@ -44,19 +49,58 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICarSeriesDao carSeriesDao;
     @Resource
     private ICsCustomerService csCustomerService;
+    @Resource
+    private ICsOrderService csOrderService;
 
     @Override
-    @Transactional(rollbackFor = RuntimeException.class)
-    public ResultVo<String> saveOrder(OrderSaveReqDto dto) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo<String> submitOrder(OrderSubmitReqDto reqDto) {
         //验证用户存不存在
-        ResultVo<Customer> vo = csCustomerService.validateAndGetActive(dto.getLoginId());
+        ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
         if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
             return BaseResultUtil.fail(vo.getMsg());
         }
-        // 保存订单
 
-        // 保存订单车辆信息
-        return null;
+        //干线费用
+        List<OrderCarSubmitReqDto> carList = reqDto.getOrderCarList();
+        if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
+            carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
+        }
+
+        // 封装订单入库参数
+        SaveOrderDto paramDto = getSaveOrderDto(vo,reqDto);
+
+        // 调用韵车系统-保存订单
+        ResultVo resultVo = csOrderService.save(paramDto);
+
+        return resultVo;
+    }
+
+    private SaveOrderDto getSaveOrderDto(ResultVo<Customer> vo,OrderSubmitReqDto reqDto) {
+        Customer customer = vo.getData();
+        SaveOrderDto paramDto = new SaveOrderDto();
+        BeanUtils.copyProperties(reqDto,paramDto);
+        paramDto.setLoginName(customer.getName());
+        paramDto.setLoginPhone(customer.getContactPhone());
+        paramDto.setLoginType(UserTypeEnum.CUSTOMER.code);
+        paramDto.setCustomerId(customer.getId());
+        paramDto.setCustomerName(customer.getName());
+        paramDto.setCustomerType(customer.getType());
+        paramDto.setState(OrderStateEnum.SUBMITTED.code);// 订单状态
+
+        // 封装车辆信息
+        List<SaveOrderCarDto> orderCarParamList = new ArrayList<>(10);
+        List<OrderCarSubmitReqDto> orderCarList = reqDto.getOrderCarList();
+        if (!CollectionUtils.isEmpty(orderCarList)) {
+            SaveOrderCarDto orderCarDto = null;
+            for (OrderCarSubmitReqDto orderCarSubmitReqDto : orderCarList) {
+                orderCarDto = new SaveOrderCarDto();
+                BeanUtils.copyProperties(orderCarSubmitReqDto,orderCarDto);
+                orderCarParamList.add(orderCarDto);
+            }
+            paramDto.setOrderCarList(orderCarParamList);
+        }
+        return paramDto;
     }
 
     @Override
@@ -148,19 +192,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         LambdaQueryWrapper<OrderCar> queryCarWrapper = new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderNo,dto.getOrderNo());
         List<OrderCar> orderCarList = orderCarDao.selectList(queryCarWrapper);
         List<OrderCarDetailResDto> orderCarDetailList = new ArrayList<>(10);
-        List<OrderCarDetailResDto> finishPayOrderCarDetailList = new ArrayList<>(10);
         if (!CollectionUtils.isEmpty(orderCarList)) {
             OrderCarDetailResDto orderCarDetailResDto = null;
             for (OrderCar orderCar : orderCarList) {
                 orderCarDetailResDto = new OrderCarDetailResDto();
                 BeanUtils.copyProperties(orderCar,orderCarDetailResDto);
-                if (OrderCarStateEnum.SIGNED.code == orderCar.getState()) {
-                    // 已交付订单车辆信息
-                    finishPayOrderCarDetailList.add(orderCarDetailResDto);
-                } else {
-                    // 待确认，已交付，运输中，全部订单车辆信息
-                    orderCarDetailList.add(orderCarDetailResDto);
-                }
+                // 订单车辆信息
+                orderCarDetailList.add(orderCarDetailResDto);
+
                 // 查询车辆图片
                 this.getCarImg(orderCar, orderCarDetailResDto);
                 // 查询品牌logo图片
@@ -173,7 +212,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             }
         }
         orderDetailResDto.setOrderCarDetailList(orderCarDetailList);
-        orderDetailResDto.setFinishPayOrderCarDetailList(finishPayOrderCarDetailList);
     }
 
     private void getCarImg(OrderCar orderCar, OrderCarDetailResDto orderCarDetailResDto) {

@@ -38,9 +38,6 @@ public class OrderDetailResDto implements Serializable {
     @ApiModelProperty(value = "托运车辆信息列表")
     private List<OrderCarDetailResDto> orderCarDetailList;
 
-    @ApiModelProperty(value = "托运车辆信息列表:已交付车辆")
-    private List<OrderCarDetailResDto> finishPayOrderCarDetailList;
-
     @ApiModelProperty(value = "提车时间")
     @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
