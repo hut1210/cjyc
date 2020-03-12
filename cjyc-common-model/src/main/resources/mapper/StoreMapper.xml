@@ -68,7 +68,7 @@
         s.*
         from s_store s
         where s.city_code = (
-          select city_code from s_city where area_code = #{areaCode}
+          SELECT parent_code FROM s_city WHERE code = #{areaCode}
         )
         and is_delete = 0
         limit 1
