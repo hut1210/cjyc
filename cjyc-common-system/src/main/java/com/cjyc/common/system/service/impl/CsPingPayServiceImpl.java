@@ -733,10 +733,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
                     //校验订单支付状态flag
                     order = orderDao.selectById(orderId);
-                    if(!phoneList.contains(order.getCustomerPhone())){
+                    /*if(!phoneList.contains(order.getCustomerPhone())){
                         log.error("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
                         return BaseResultUtil.fail("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
-                    }
+                    }*/
                     if(order.getFlag()!=null){
                         if(order.getFlag().equals("1")){
                             log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
@@ -848,10 +848,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
                     //校验订单支付状态flag
                     order = orderDao.selectById(orderId);
-                    if(!phoneList.contains(order.getCustomerPhone())){
+                    /*if(!phoneList.contains(order.getCustomerPhone())){
                         log.error("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
                         return;
-                    }
+                    }*/
                     if(order.getFlag()!=null){
                         if(order.getFlag().equals("1")){
                             log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
