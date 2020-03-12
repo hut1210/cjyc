@@ -242,7 +242,7 @@ public class FinancePayableController {
     public ResultVo payToCooperator(@PathVariable Long orderId){
 
         try{
-            return csPingPayService.allinpayToCooperator(orderId);
+            return csPingPayService.allinpayToCooperatorNew(orderId);
         }catch (Exception e){
             log.error(e.getMessage(),e);
             return BaseResultUtil.fail("人工支付合伙人费用异常");
