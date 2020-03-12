@@ -40,6 +40,9 @@ public class CooperatorPaidVo implements Serializable {
     @ApiModelProperty(value = "目的城市")
     private String endCity;
 
+    @ApiModelProperty(value = "下单客户")
+    private String customerPhone;
+
     @ApiModelProperty(value = "客户Id")
     private Long customerId;
 

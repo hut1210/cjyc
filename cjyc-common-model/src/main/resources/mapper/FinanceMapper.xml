@@ -543,7 +543,8 @@
         sbcb.card_name as cardName,
         sbcb.card_no as cardNo,
         sbcb.bank_name as bankName,
-        fep.operator
+        fep.operator,
+        if(ww.freight_pay_state=1,ww.freight_pay_time,0) as payTime
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
@@ -845,6 +846,7 @@
         select wo.id as orderId,wo.no as orderNo,
         wo.customer_id as customerId,
         wo.customer_name as customerName,
+        wo.customer_phone as customerPhone,
         (
             case
                 when wo.flag=0 then '未付款'

@@ -2,6 +2,7 @@ package com.cjyc.common.model.vo.web.finance;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -95,4 +96,19 @@ public class PaidNewVo implements Serializable {
     @ApiModelProperty(value = "银行卡号")
     @Excel(name = "银行卡号" ,orderNum = "14")
     private String cardNo;
+
+    @ApiModelProperty(value = "付款时间")
+    private Long payTime;
+
+    @Excel(name = "付款时间" ,orderNum = "15")
+    private String payTimeStr;
+
+    public String getPayTimeStr() {
+        Long date = getPayTime();
+        if (null == date || date <= 0L) {
+            return "";
+        }
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd mm:HH:ss");
+    }
+
 }
