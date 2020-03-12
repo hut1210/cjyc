@@ -85,6 +85,10 @@ public class OrderController {
         if (null == customer) {
             return BaseResultUtil.fail("用户信息有误，请检查!");
         }
+        if (order.getCustomerId() != null && customer.getId() != null &&
+                !order.getCustomerId().equals(customer.getId())) {
+            return BaseResultUtil.fail("订单不属于该用户，请检查!");
+        }
         //请求信息封装
         CancelOrderDto dto = new CancelOrderDto();
         dto.setOrderId(order.getId());
