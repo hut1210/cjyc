@@ -25,4 +25,14 @@ public class LineResDto implements Serializable {
     @ApiModelProperty(value = "报价(元)")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal defaultWlFee;
+
+    public String getFromCity() {
+        return fromCity == null ? "" : fromCity;
+    }
+    public String getToCity() {
+        return toCity == null ? "" : toCity;
+    }
+    public BigDecimal getDefaultWlFee() {
+        return defaultWlFee == null ? BigDecimal.ZERO : defaultWlFee;
+    }
 }

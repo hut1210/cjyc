@@ -1,10 +1,10 @@
 package com.cjyc.foreign.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.foreign.api.dto.req.LineReqDto;
 import com.cjyc.foreign.api.dto.res.LineResDto;
-import com.cjyc.foreign.api.entity.Line;
 
 /**
  * @Description 班线业务接口
