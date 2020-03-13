@@ -255,4 +255,24 @@ public class FinancePayableController {
         return financeService.getCooperatorPaidList(cooperatorSearchDto);
     }
 
+    @ApiOperation(value = "导出合伙人付款（时付）列表")
+    @GetMapping(value = "/exportCooperator")
+    public ResultVo exportCooperator(HttpServletResponse response, CooperatorSearchDto cooperatorSearchDto){
+        log.info("cooperatorSearchDto ={}",cooperatorSearchDto.toString());
+        List<CooperatorPaidVo> cooperatorPaidVoList = financeService.exportCooperator(cooperatorSearchDto);
+        if (CollectionUtils.isEmpty(cooperatorPaidVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        String title = "合伙人付款（时付）";
+        String sheetName = "付款（时付）";
+        String fileName = "合伙人付款付款（时付）.xls";
+        log.info("cooperatorPaidVoList.size = "+cooperatorPaidVoList.size());
+        try {
+            ExcelUtil.exportExcel(cooperatorPaidVoList, title, sheetName, CooperatorPaidVo.class, fileName, response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出合伙人付款异常:",e);
+            return BaseResultUtil.fail("导出合伙人付款异常"+e.getMessage());
+        }
+    }
 }

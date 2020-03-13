@@ -870,6 +870,24 @@ public class FinanceServiceImpl implements IFinanceService {
         return BaseResultUtil.success("合伙人费用支付成功");
     }
 
+    @Override
+    public List<CooperatorPaidVo> exportCooperator(CooperatorSearchDto cooperatorSearchDto) {
+        List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cooperatorSearchDto);
+        for(int i=0;i<cooperatorPaidVoList.size();i++){
+            CooperatorPaidVo cooperatorPaidVo = cooperatorPaidVoList.get(i);
+            BigDecimal wlFee = getCooperatorFee(cooperatorPaidVo.getOrderId());
+            //总费用
+            cooperatorPaidVo.setWlFee(wlFee);
+            BigDecimal serviceFee = MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee));
+            //合伙人服务费
+            cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
+            cooperatorPaidVo.setWlFee(MoneyUtil.nullToZero(cooperatorPaidVo.getWlFee()).divide(new BigDecimal(100)));
+            cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(cooperatorPaidVo.getServiceFee()).divide(new BigDecimal(100)));
+            cooperatorPaidVo.setTotalFee(MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).divide(new BigDecimal(100)));
+        }
+        return cooperatorPaidVoList;
+    }
+
     /**
      * 获取合伙人服务费
      * @param orderId
