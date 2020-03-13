@@ -36,7 +36,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             BeanUtils.copyProperties(line,res);
             resultVo = BaseResultUtil.success(res);
         } else {
-            resultVo = BaseResultUtil.fail("未查询到数据...");
+            resultVo = BaseResultUtil.fail("未查询到数据!");
         }
 
         log.info("<===查询报价，返回参数：{}", JSON.toJSONString(resultVo));
