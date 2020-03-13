@@ -238,7 +238,7 @@ public class FinancePayableController {
     }
 
     @ApiOperation("人工支付合伙人服务费")
-    @PostMapping("/pay/{orderId}")
+    @PostMapping("/pay/cooperator")
     public ResultVo payToCooperator(@RequestBody CooperatorPaymentDto cooperatorPaymentDto){
 
         try{
