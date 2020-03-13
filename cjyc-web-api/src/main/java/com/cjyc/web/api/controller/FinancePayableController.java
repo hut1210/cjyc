@@ -237,7 +237,7 @@ public class FinancePayableController {
         return csTransactionService.updateFailOrder(orderNo);
     }
 
-    @ApiOperation("人工支付合伙人服务费")
+    @ApiOperation("手动支付合伙人服务费")
     @PostMapping("/pay/cooperator")
     public ResultVo payToCooperator(@RequestBody CooperatorPaymentDto cooperatorPaymentDto){
 
@@ -245,7 +245,7 @@ public class FinancePayableController {
             return financeService.payToCooperator(cooperatorPaymentDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);
-            return BaseResultUtil.fail("人工支付合伙人费用异常");
+            return BaseResultUtil.fail("手动支付合伙人费用异常");
         }
     }
 

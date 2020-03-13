@@ -26,7 +26,7 @@ public class CooperatorPaidVo implements Serializable {
     private String state;
 
     @ApiModelProperty(value = "付款失败原因")
-    private String description;
+    private String description ="请联系管理员";
 
     @ApiModelProperty(value = "付款时间")
     private Long payTime;

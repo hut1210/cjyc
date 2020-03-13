@@ -466,15 +466,10 @@ public class FinanceServiceImpl implements IFinanceService {
         PayablePaidQueryDto pp = new PayablePaidQueryDto();
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(pp);
         PayMentQueryDto pq = new PayMentQueryDto();
+        List<PaidNewVo> paidList =  financeDao.getAutoPaidList(pq);
 
-        List<PaidNewVo> paidList = new ArrayList<>();
-        /*Config config = configDao.getByItemKey("external_pay");
-        if(config!=null&&config.getState()==1) {//对外支付模式
-            log.info("config.getState() "+config.getState().toString());
-            paidList =  financeDao.getPaidListNew(pq);
-        }else{//自动付款*/
-            paidList =  financeDao.getAutoPaidList(pq);
-        /*}*/
+        CooperatorSearchDto cooperatorSearchDto = new CooperatorSearchDto();
+        List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cooperatorSearchDto);
 
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("payableCount",fpv.size());
@@ -482,6 +477,7 @@ public class FinanceServiceImpl implements IFinanceService {
         countInfo.put("waitPaymentCount",payablePaymentList.size());
         countInfo.put("paidCount",payablePaidList.size());
         countInfo.put("timePaidCount",paidList.size());
+        countInfo.put("cooperstorCount",cooperatorPaidVoList.size());
 
         return countInfo;
     }
@@ -654,20 +650,8 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto) {
         log.info("payMentQueryDto = "+payMentQueryDto.toString());
-        if(payMentQueryDto.getState()!=null){
-            if(payMentQueryDto.getState()!=0){
-                payMentQueryDto.setState(1);
-            }
-        }
+        List<PaidNewVo> financeVoList = getAutoPaidList(payMentQueryDto);
 
-        List<PaidNewVo> financeVoList = new ArrayList<>();
-        /*Config config = configDao.getByItemKey("external_pay");
-        if(config!=null&&config.getState()==1) {//对外支付模式
-            log.info("config.getState() "+config.getState().toString());
-            financeVoList = getExternalPaidList(payMentQueryDto);
-        }else{//自动付款*/
-            financeVoList = getAutoPaidList(payMentQueryDto);
-        /*}*/
         log.info("financeVoList = "+financeVoList.size());
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo,getCountInfo());
@@ -816,21 +800,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto) {
-
-        if(payMentQueryDto.getState()!=null){
-            if(payMentQueryDto.getState()!=0){
-                payMentQueryDto.setState(1);
-            }
-        }
-        List<PaidNewVo> paidNewVoList = new ArrayList<>();
-        /*Config config = configDao.getByItemKey("external_pay");
-        if(config!=null&&config.getState()==1) {//对外支付模式
-            log.info("config.getState() "+config.getState().toString());
-            paidNewVoList =  financeDao.getPaidListNew(payMentQueryDto);
-        }else{//自动付款*/
-            paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);;
-        /*}*/
-
+        List<PaidNewVo> paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);;
         for(int i=0;i<paidNewVoList.size();i++){
             PaidNewVo paidNewVo = paidNewVoList.get(i);
             paidNewVo.setFreightFee(paidNewVo.getFreightFee()!=null?paidNewVo.getFreightFee().divide(new BigDecimal(100)):null);
@@ -855,7 +825,7 @@ public class FinanceServiceImpl implements IFinanceService {
             }*/
         }
         PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success(pageInfo,getCountInfo());
     }
 
     @Override
