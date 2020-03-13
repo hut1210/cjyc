@@ -111,7 +111,7 @@ public class PaidNewVo implements Serializable {
         return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd mm:HH:ss");
     }
     @ApiModelProperty(value = "失败原因")
-    @Excel(name = "付款时间" ,orderNum = "16")
-    private String failReason="请联系管理员";
+    @Excel(name = "失败原因" ,orderNum = "16")
+    private String failReason;
 
 }

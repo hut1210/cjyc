@@ -32,7 +32,7 @@ public class CooperatorPaidVo implements Serializable {
 
     @ApiModelProperty(value = "付款失败原因")
     @Excel(name = "付款失败原因" ,orderNum = "3")
-    private String description ="请联系管理员";
+    private String description;
 
     @ApiModelProperty(value = "付款时间")
     private Long payTime;

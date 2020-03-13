@@ -468,8 +468,8 @@ public class FinanceServiceImpl implements IFinanceService {
         PayMentQueryDto pq = new PayMentQueryDto();
         List<PaidNewVo> paidList =  financeDao.getAutoPaidList(pq);
 
-        CooperatorSearchDto cooperatorSearchDto = new CooperatorSearchDto();
-        List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cooperatorSearchDto);
+        CooperatorSearchDto cs = new CooperatorSearchDto();
+        List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cs);
 
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("payableCount",fpv.size());
@@ -652,6 +652,12 @@ public class FinanceServiceImpl implements IFinanceService {
         log.info("payMentQueryDto = "+payMentQueryDto.toString());
         List<PaidNewVo> financeVoList = getAutoPaidList(payMentQueryDto);
 
+        for(int i=0;i<financeVoList.size();i++){
+            PaidNewVo paidNewVo = financeVoList.get(i);
+            if(paidNewVo.getState().equals("支付失败")){
+                paidNewVo.setFailReason("请联系管理员");
+            }
+        }
         log.info("financeVoList = "+financeVoList.size());
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo,getCountInfo());
@@ -804,6 +810,10 @@ public class FinanceServiceImpl implements IFinanceService {
         for(int i=0;i<paidNewVoList.size();i++){
             PaidNewVo paidNewVo = paidNewVoList.get(i);
             paidNewVo.setFreightFee(paidNewVo.getFreightFee()!=null?paidNewVo.getFreightFee().divide(new BigDecimal(100)):null);
+
+            if(paidNewVo.getState().equals("支付失败")){
+                paidNewVo.setFailReason("请联系管理员");
+            }
         }
         return paidNewVoList;
     }
@@ -820,6 +830,9 @@ public class FinanceServiceImpl implements IFinanceService {
             BigDecimal serviceFee = MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee));
             //合伙人服务费
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
+            if(cooperatorPaidVo.getState().equals("支付失败")){
+                cooperatorPaidVo.setDescription("请联系管理员");
+            }
 
         }
         PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
@@ -892,6 +905,9 @@ public class FinanceServiceImpl implements IFinanceService {
             cooperatorPaidVo.setWlFee(MoneyUtil.nullToZero(cooperatorPaidVo.getWlFee()).divide(new BigDecimal(100)));
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(cooperatorPaidVo.getServiceFee()).divide(new BigDecimal(100)));
             cooperatorPaidVo.setTotalFee(MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).divide(new BigDecimal(100)));
+            if(cooperatorPaidVo.getState().equals("支付失败")){
+                cooperatorPaidVo.setDescription("请联系管理员");
+            }
         }
         return cooperatorPaidVoList;
     }
