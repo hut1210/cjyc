@@ -797,7 +797,7 @@
         where w.id = #{waybillId}
         and wc.receipt_flag != 1
         and (wc.end_store_id is null or wc.end_store_id = 0)
-
+        and wc.state &lt;= 100
     </select>
 
 </mapper>

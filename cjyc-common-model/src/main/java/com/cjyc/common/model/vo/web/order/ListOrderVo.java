@@ -238,13 +238,13 @@ public class ListOrderVo extends Order {
             case 15:
                 str = "待预付款"; break;
             case 25:
-                str = "已确认"; break;
+                str = "待调度"; break;
             case 55:
                 str = "运输中"; break;
             case 88:
                 str = "待付款"; break;
             case 100:
-                str = "已完成"; break;
+                str = "已交付"; break;
             case 112:
                 str = "异常结束"; break;
             case 113:
