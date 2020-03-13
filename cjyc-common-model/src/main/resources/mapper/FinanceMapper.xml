@@ -897,7 +897,9 @@
         <if test="state !=null and state.trim() !=''">
             and wo.flag = #{state}
         </if>
-
+        <if test="phone !=null and phone.trim() !=''">
+            wo.customer_phone like concat('%',#{phone},'%')
+        </if>
         <if test="customerName !=null and customerName.trim() !=''">
             wo.customer_name like concat('%',#{customerName},'%')
         </if>
