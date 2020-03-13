@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * 推送工具类
  */
-public class PushUtils {
+public class PushUtil {
     /**
      * 获取推送实例
      * @param topic

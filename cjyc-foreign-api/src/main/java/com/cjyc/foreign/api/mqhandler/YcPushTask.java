@@ -3,14 +3,11 @@ package com.cjyc.foreign.api.mqhandler;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.log.monitor.LogUtil;
-import com.cjyc.foreign.api.constant.MQConstant;
 import com.cjyc.foreign.api.push.IPushable;
-import com.cjyc.foreign.api.utils.PushUtils;
+import com.cjyc.foreign.api.utils.PushUtil;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -45,7 +42,7 @@ public class YcPushTask {
             JSONObject obj = null;
             try {
                 obj = JSON.parseObject(jsonMsg, JSONObject.class);
-                IPushable pushable = PushUtils.determinePushable(topic);
+                IPushable pushable = PushUtil.determinePushable(topic);
                 if (null == pushable) {
                     log.error("此消息没有对应推送器，请检查!");
                     dealNackMsg(message, channel, jsonMsg);
