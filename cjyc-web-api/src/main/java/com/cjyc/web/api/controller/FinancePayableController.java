@@ -265,7 +265,7 @@ public class FinancePayableController {
         }
         String title = "合伙人付款（时付）";
         String sheetName = "付款（时付）";
-        String fileName = "合伙人付款付款（时付）.xls";
+        String fileName = "合伙人付款（时付）.xls";
         log.info("cooperatorPaidVoList.size = "+cooperatorPaidVoList.size());
         try {
             ExcelUtil.exportExcel(cooperatorPaidVoList, title, sheetName, CooperatorPaidVo.class, fileName, response);
