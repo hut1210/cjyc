@@ -61,7 +61,19 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail(vo.getMsg());
         }
 
-        //干线费用
+        // 验证订单费用是否正确
+        BigDecimal totalFee = reqDto.getTotalFee();
+        int carNum = reqDto.getOrderCarList().size();
+        BigDecimal totalWlFee = reqDto.getLineWlFreightFee().multiply(new BigDecimal(carNum));
+        if (totalFee == null) {
+            reqDto.setTotalFee(totalWlFee);
+        } else {
+            if (!totalFee.equals(totalWlFee)) {
+                return BaseResultUtil.fail("订单金额不正确!");
+            }
+        }
+
+        // 干线费用
         List<OrderCarSubmitReqDto> carList = reqDto.getOrderCarList();
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
