@@ -19,5 +19,5 @@ public interface ILineService extends IService<Line> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.foreign.api.dto.res.LineResDto>
      */
-    ResultVo<LineResDto> getLinePriceByCity(LineReqDto dto);
+    ResultVo<LineResDto> getLinePriceByCityCode(LineReqDto dto);
 }

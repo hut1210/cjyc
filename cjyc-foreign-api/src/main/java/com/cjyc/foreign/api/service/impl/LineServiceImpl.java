@@ -27,7 +27,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     private ILineDao lineDao;
 
     @Override
-    public ResultVo<LineResDto> getLinePriceByCity(LineReqDto dto) {
+    public ResultVo<LineResDto> getLinePriceByCityCode(LineReqDto dto) {
         ResultVo<LineResDto> resultVo = null;
         log.info("===>查询报价，请求参数：{}", JSON.toJSONString(dto));
         Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
