@@ -7,4 +7,5 @@ import com.alibaba.fastjson.JSONObject;
  */
 public interface IPushable {
     boolean push(JSONObject jo);
+    String getFlag();
 }
