@@ -74,16 +74,6 @@ public class RedisKeys {
         return CJYC + I + SMS_COUNT_KEY + I + date + I + phone;
     }
 
-    public static String getDispatchLock(String orderCarNo) {
-        return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + orderCarNo;
-    }
-    public static String getDispatchLock(Long Id) {
-        return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + Id;
-    }
-
-    public static String getAllotTaskKey(Long waybillCarId) {
-        return CJYC + I + ALLOT_CAR_LOCK_KEY + I + waybillCarId;
-    }
 
     public static String getUserKey(Long userId) {
         return CJYC + I + USER_KEY + I + userId;
@@ -177,26 +167,36 @@ public class RedisKeys {
         return "cjyc:order:refund:"+orderId;
     }
 
-    public static String getLoadLockKey(Long id) {
+    public static String getDispatchLock(String orderCarNo) {
+        return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + orderCarNo;
+    }
+    public static String getDispatchLock(Long id) {
+        return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + id;
+    }
+
+    public static String getAllotTaskKey(Long waybillCarId) {
+        return CJYC + I + ALLOT_CAR_LOCK_KEY + I + waybillCarId;
+    }
+    public static String getLoadLockKey(Object id) {
         return CJYC + I + LOAD_LOCK_KEY + I + id;
     }
     public static String getUnloadLockKey(Object id) {
         return CJYC + I + UNLOAD_LOCK_KEY + I + id;
     }
-    public static String getCancelLockKey(Long orderId) {
+    public static String getCancelLockKey(Object orderId) {
         return CJYC + I + CANCEL_LOCK_ORDER_KEY + I + orderId;
     }
 
-    public static String getInStoreLockKey(Long id) {
+    public static String getInStoreLockKey(Object id) {
         return CJYC + I + IN_STORE_LOCK_KEY + I + id;
     }
-    public static String getOutStoreLockKey(Long id) {
+    public static String getOutStoreLockKey(Object id) {
         return CJYC + I + OUT_STORE_LOCK_KEY + I + id;
     }
     public static String getReceiptLockKey(Object no) {
         return CJYC + I + RECEIPT_LOCK_KEY + I + no;
     }
-    public static String getOrderLockKey(Long id) {
+    public static String getOrderLockKey(Object id) {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
     }
 }

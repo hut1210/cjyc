@@ -733,10 +733,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
                     //校验订单支付状态flag
                     order = orderDao.selectById(orderId);
-                    if(!phoneList.contains(order.getCustomerPhone())){
+                    /*if(!phoneList.contains(order.getCustomerPhone())){
                         log.error("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
                         return BaseResultUtil.fail("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
-                    }
+                    }*/
                     if(order.getFlag()!=null){
                         if(order.getFlag().equals("1")){
                             log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
@@ -848,10 +848,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
                     //校验订单支付状态flag
                     order = orderDao.selectById(orderId);
-                    if(!phoneList.contains(order.getCustomerPhone())){
+                    /*if(!phoneList.contains(order.getCustomerPhone())){
                         log.error("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
                         return;
-                    }
+                    }*/
                     if(order.getFlag()!=null){
                         if(order.getFlag().equals("1")){
                             log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
@@ -1001,7 +1001,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         params.put("amount", amount);
         // 目前支持 支付宝：alipay，银联：unionpay，微信公众号：wx_pub，通联：allinpay，京东：jdpay 余额：balance
         params.put("channel", "allinpay");
-        params.put("type", "b2c");//付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        //对公户打款
+        //付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        if(showPartnerVo.getCardType()==1){
+            params.put("type", "b2b");
+        }else{
+            params.put("type", "b2c");
+        }
         params.put("currency", "cny");
         params.put("description", "通联代付合伙人费用");
 
@@ -1025,11 +1031,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
         params.put("metadata",meta);//自定义参数
 
+        log.info("allinpayToCooperatorCreate params = {}",params.toString());
         Transfer obj = Transfer.create(params);
         if(Pingpp.apiKey.contains("_test_")){//test模式调用查询相当于企业付款成功
             obj = transferRetrieve(obj.getId());
         }
         obj.setAmount(Integer.parseInt(src_amount.toString()));
+        if(obj!=null){
+            log.info("allinpayToCooperatorCreate params = {}",params.toString());
+        }
         return obj;
 
     }
