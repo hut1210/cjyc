@@ -12,7 +12,7 @@ import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
  */
 public interface IOrderService extends IService<Order>{
     /**
-     * 功能描述: 保存订单
+     * 功能描述: 下单
      * @author liuxingxiang
      * @date 2020/3/11
      * @param reqDto

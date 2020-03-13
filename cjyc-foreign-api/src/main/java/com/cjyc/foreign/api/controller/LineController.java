@@ -25,15 +25,15 @@ public class LineController {
     private ILineService lineService;
 
     /**
-     * 功能描述: 根据城市获取班线价格
+     * 功能描述: 根据城市编码查询班线价格
      * @author liuxingxiang
      * @date 2020/3/10
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.foreign.api.dto.res.LineResDto>
      */
-    @PostMapping("/getLinePriceByCity")
-    public ResultVo<LineResDto> getLinePriceByCity(@RequestBody @Validated LineReqDto dto) {
-        return lineService.getLinePriceByCity(dto);
+    @PostMapping("/getLinePriceByCityCode")
+    public ResultVo<LineResDto> getLinePriceByCityCode(@RequestBody @Validated LineReqDto dto) {
+        return lineService.getLinePriceByCityCode(dto);
     }
 
 
