@@ -2,14 +2,15 @@ package com.cjyc.foreign.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.dao.ILineDao;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.foreign.api.dao.ILineDao;
 import com.cjyc.foreign.api.dto.req.LineReqDto;
 import com.cjyc.foreign.api.dto.res.LineResDto;
-import com.cjyc.foreign.api.entity.Line;
 import com.cjyc.foreign.api.service.ILineService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,10 +27,18 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     private ILineDao lineDao;
 
     @Override
-    public ResultVo<LineResDto> getLinePriceByCity(LineReqDto dto) {
+    public ResultVo<LineResDto> getLinePriceByCityCode(LineReqDto dto) {
+        ResultVo<LineResDto> resultVo = null;
         log.info("===>查询报价，请求参数：{}", JSON.toJSONString(dto));
-        LineResDto res = lineDao.getLinePriceByCity(dto);
-        ResultVo<LineResDto> resultVo = BaseResultUtil.success(res);
+        Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
+        if (line != null) {
+            LineResDto res = new LineResDto();
+            BeanUtils.copyProperties(line,res);
+            resultVo = BaseResultUtil.success(res);
+        } else {
+            resultVo = BaseResultUtil.fail("未查询到数据...");
+        }
+
         log.info("<===查询报价，返回参数：{}", JSON.toJSONString(resultVo));
         return resultVo;
     }

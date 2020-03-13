@@ -244,7 +244,7 @@
                 and  dd.phone like CONCAT('%',#{phone},'%')
             </if>
             <if test="plateNo != null and plateNo.trim() != ''">
-                and  dvr.plate_no like CONCAT('%',#{plateNo},'%')
+                and  dv.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
             and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
         </where>

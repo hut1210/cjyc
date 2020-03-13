@@ -873,10 +873,12 @@
         sbcb.bank_code,sbcb.bank_name as bankName,
         sbcb.card_name as cardName,
         sbcb.card_no as cardNo,
-        sbcb.id_card as IDCard
+        sbcb.id_card as IDCard,
+        fep.operator
         from w_order wo
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
+        left join f_external_payment fep on fep.order_id=wo.id
         where wo.state=100 and wo.customer_type=3
         <if test="orderNo !=null and orderNo.trim() !=''">
             and wo.no like concat('%',#{orderNo},'%')
@@ -897,7 +899,9 @@
         <if test="state !=null and state.trim() !=''">
             and wo.flag = #{state}
         </if>
-
+        <if test="phone !=null and phone.trim() !=''">
+            wo.customer_phone like concat('%',#{phone},'%')
+        </if>
         <if test="customerName !=null and customerName.trim() !=''">
             wo.customer_name like concat('%',#{customerName},'%')
         </if>

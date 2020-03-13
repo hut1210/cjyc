@@ -87,4 +87,6 @@ public interface IFinanceService {
     ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
 
     ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto);
+
+    List<CooperatorPaidVo> exportCooperator(CooperatorSearchDto cooperatorSearchDto);
 }
