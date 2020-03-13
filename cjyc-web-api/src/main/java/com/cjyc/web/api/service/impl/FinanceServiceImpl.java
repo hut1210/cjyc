@@ -820,9 +820,7 @@ public class FinanceServiceImpl implements IFinanceService {
             BigDecimal serviceFee = MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee));
             //合伙人服务费
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
-            /*if(){
 
-            }*/
         }
         PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
         return BaseResultUtil.success(pageInfo,getCountInfo());
@@ -830,12 +828,52 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto) {
-        log.info("人工支付合伙人费用 cooperatorPaymentDto = {}",cooperatorPaymentDto.toString());
+
         //记录支付操作者
+        StringBuilder result =  new StringBuilder();
         try{
-            return csPingPayService.allinpayToCooperatorNew(cooperatorPaymentDto.getOrderId());
+            if(cooperatorPaymentDto==null){
+                return BaseResultUtil.fail("参数为空");
+            }
+            if(cooperatorPaymentDto.getOrderId()==null){
+                return BaseResultUtil.fail("订单参数为空");
+            }
+            log.info("手动支付合伙人费用 cooperatorPaymentDto = {}",cooperatorPaymentDto.toString());
+            ResultVo resultVo = csPingPayService.allinpayToCooperatorNew(cooperatorPaymentDto.getOrderId());
+            log.info("resultVo错误码 ={}",resultVo.getCode());
+            if(resultVo.getCode()==1){
+                if(result.length()>0){
+                    result.append(",");
+                }
+                result.append(resultVo.getMsg());
+            }
+            try {
+                log.info("result = {}",result.toString());
+                if(result.length()==0){
+                    if(cooperatorPaymentDto!=null && cooperatorPaymentDto.getLoginId()!=null){
+                        Admin admin = csAdminService.getById(cooperatorPaymentDto.getLoginId(), true);
+
+                        if(admin != null){
+                            ExternalPayment externalPayment = new ExternalPayment();
+                            externalPayment.setPayTime(System.currentTimeMillis());
+                            externalPayment.setLoginId(cooperatorPaymentDto.getLoginId());
+                            externalPayment.setOperator(admin.getName());
+                            externalPayment.setOrderId(cooperatorPaymentDto.getOrderId());
+                            externalPayment.setState(2);
+                            externalPaymentDao.insert(externalPayment);
+                        }
+
+                    }
+                }
+            }catch (Exception e){
+                log.error("合伙人打款详情新增失败 orderId = {}",cooperatorPaymentDto.getOrderId());
+            }
         }catch (Exception e){
+            result.append("打款失败");
             log.error(e.getMessage(),e);
+        }
+        if(result.length()>0){
+            return BaseResultUtil.fail(result.toString());
         }
         return BaseResultUtil.success("合伙人费用支付成功");
     }
