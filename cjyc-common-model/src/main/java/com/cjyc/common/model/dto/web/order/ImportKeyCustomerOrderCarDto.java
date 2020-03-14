@@ -21,19 +21,19 @@ public class ImportKeyCustomerOrderCarDto {
     @Min(1)
     private Integer orderNo;
     @Excel(name = "VIN")
-    @Pattern(regexp = "[A-Z0-9]{17}", message = "VIN码只能为17位大写字母及数字组合")
+    @Pattern(regexp = "(^$)|([A-Z0-9]{17})", message = "VIN码只能为17位大写字母及数字组合")
     private String vinCode;
     @Excel(name = "品牌")
     private String brand;
     @Excel(name = "车系")
     private String model;
     @Excel(name = "是否能动")
-    @Pattern(regexp = "(是|否)", message = "是否能动只能输入是或否")
+    @Pattern(regexp = "(^$)|([是否])", message = "是否能动只能输入是或否")
     private String isMove;
     @Excel(name = "车牌号")
     private String carNum;
     @Excel(name = "是否新车")
-    @Pattern(regexp = "(是|否)", message = "是否新车只能输入是或否")
+    @Pattern(regexp = "(^$)|([是否])", message = "是否新车只能输入是或否")
     private String isNew;
     @Excel(name = "物流费(元)")
     @NotNull(message = "物流费(元)不能为空")
