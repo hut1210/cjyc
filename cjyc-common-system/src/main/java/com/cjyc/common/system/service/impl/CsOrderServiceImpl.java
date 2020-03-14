@@ -28,6 +28,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
+import com.cjyc.common.model.util.RegexUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
@@ -496,7 +497,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (order.getEndStoreId() == null || order.getEndStoreId() <= 0) {
                 return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
             }
-
+            if(!RegexUtil.isMobileSimple(order.getPickContactPhone())){
+                return BaseResultUtil.fail("发车人手机号格式不正确");
+            }
+            if(!RegexUtil.isMobileSimple(order.getBackContactPhone())){
+                return BaseResultUtil.fail("收车人手机号格式不正确");
+            }
             ResultVo<Customer> validateVo = validateCustomerForOrder(order.getCustomerName(), order.getCustomerPhone(), order.getCustomerType(), paramsDto.getLoginId(), true);
             if (validateVo.getCode() != ResultEnum.SUCCESS.getCode()) {
                 return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
@@ -542,6 +548,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             redisUtils.delayDelete(lockKey);
         }
     }
+
 
     private ResultVo<CommitOrderDto> validateOrderForCommit(CommitOrderDto paramsDto) {
         if (paramsDto.getLineId() == null || paramsDto.getLineId() <= 0) {

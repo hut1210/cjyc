@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.util.MoneyUtil;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
@@ -36,7 +37,11 @@ public class ImportKeyCustomerOrderCarDto {
     private String isNew;
     @Excel(name = "物流费(元)")
     @NotNull(message = "物流费(元)不能为空")
-    private BigDecimal wlFee;
+    private BigDecimal trunkFee;
     @Excel(name = "车值(万元)")
     private BigDecimal vehicleValue;
+
+    public BigDecimal getTrunkFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(trunkFee));
+    }
 }

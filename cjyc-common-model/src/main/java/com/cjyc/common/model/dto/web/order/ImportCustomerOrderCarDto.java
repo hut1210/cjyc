@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.util.MoneyUtil;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -40,12 +41,28 @@ public class ImportCustomerOrderCarDto {
     private BigDecimal pickFee;
     @Excel(name = "物流费(元)")
     @NotNull(message = "物流费(元)不能为空")
-    private BigDecimal wlFee;
+    private BigDecimal trunkFee;
     @Excel(name = "送车费(元)")
     @NotNull(message = "送车费(元)不能为空")
-    private BigDecimal sendFee;
+    private BigDecimal backFee;
     @Excel(name = "车值(万元)")
     private BigDecimal vehicleValue;
     @Excel(name = "保费(元)")
-    private BigDecimal inFee;
+    private BigDecimal addInsuranceFee;
+
+    public BigDecimal getPickFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(pickFee));
+    }
+
+    public BigDecimal getTrunkFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(trunkFee));
+    }
+
+    public BigDecimal getBackFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(backFee));
+    }
+
+    public BigDecimal getAddInsuranceFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(addInsuranceFee));
+    }
 }

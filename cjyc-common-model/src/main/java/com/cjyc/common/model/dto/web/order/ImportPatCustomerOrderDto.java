@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.util.MoneyUtil;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -94,4 +95,8 @@ public class ImportPatCustomerOrderDto {
     private String endProvinceCode;
     private String endCityCode;
     private String endAreaCode;
+
+    public BigDecimal getOrderFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(orderFee));
+    }
 }
