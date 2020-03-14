@@ -9,7 +9,6 @@ import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
-import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -27,11 +26,9 @@ import com.cjyc.foreign.api.service.IOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,52 +49,57 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ICsOrderService csOrderService;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public ResultVo<String> submitOrder(OrderSubmitReqDto reqDto) {
-        //验证用户存不存在
-        ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
-        if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
-            return BaseResultUtil.fail(vo.getMsg());
-        }
-
-        // 验证订单费用是否正确
-        BigDecimal totalFee = reqDto.getTotalFee();
-        int carNum = reqDto.getOrderCarList().size();
-        BigDecimal totalWlFee = reqDto.getLineWlFreightFee().multiply(new BigDecimal(carNum));
-        if (totalFee == null) {
-            reqDto.setTotalFee(totalWlFee);
-        } else {
-            if (!totalFee.equals(totalWlFee)) {
-                return BaseResultUtil.fail("订单金额不正确!");
+        ResultVo resultVo = null;
+        try {
+            //验证用户存不存在
+            Customer customer = csCustomerService.getByPhone(reqDto.getCustomerPhone(), true);
+            if(customer == null){
+                return BaseResultUtil.fail("用户不存在");
             }
+
+            // 验证订单费用是否正确
+            /*BigDecimal totalFee = reqDto.getTotalFee();
+            int carNum = reqDto.getOrderCarList().size();
+            BigDecimal totalWlFee = reqDto.getLineWlFreightFee().multiply(new BigDecimal(carNum));
+            if (totalFee == null) {
+                reqDto.setTotalFee(totalWlFee);
+            } else {
+                if (!totalFee.equals(totalWlFee)) {
+                    return BaseResultUtil.fail("订单金额不正确!");
+                }
+            }*/
+
+            // 干线费用
+            List<OrderCarSubmitReqDto> carList = reqDto.getOrderCarList();
+            if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
+                carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
+            }
+
+            // 封装订单入库参数
+            SaveOrderDto paramDto = getSaveOrderDto(customer,reqDto);
+
+            // 调用韵车系统-保存订单
+            resultVo = csOrderService.save(paramDto);
+        } catch (Exception e) {
+            log.error("===>下单出现异常：{}",e.getMessage());
+            resultVo = BaseResultUtil.fail("下单出现异常...");
         }
-
-        // 干线费用
-        List<OrderCarSubmitReqDto> carList = reqDto.getOrderCarList();
-        if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
-            carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
-        }
-
-        // 封装订单入库参数
-        SaveOrderDto paramDto = getSaveOrderDto(vo,reqDto);
-
-        // 调用韵车系统-保存订单
-        ResultVo resultVo = csOrderService.save(paramDto);
 
         return resultVo;
     }
 
-    private SaveOrderDto getSaveOrderDto(ResultVo<Customer> vo,OrderSubmitReqDto reqDto) {
-        Customer customer = vo.getData();
+    private SaveOrderDto getSaveOrderDto(Customer customer,OrderSubmitReqDto reqDto) {
         SaveOrderDto paramDto = new SaveOrderDto();
         BeanUtils.copyProperties(reqDto,paramDto);
+        paramDto.setLoginId(customer.getId());
         paramDto.setLoginName(customer.getName());
         paramDto.setLoginPhone(customer.getContactPhone());
         paramDto.setLoginType(UserTypeEnum.CUSTOMER.code);
         paramDto.setCustomerId(customer.getId());
         paramDto.setCustomerName(customer.getName());
         paramDto.setCustomerType(customer.getType());
-        paramDto.setState(OrderStateEnum.SUBMITTED.code);// 订单状态
+        paramDto.setState(OrderStateEnum.SUBMITTED.code);// 下单状态
 
         // 封装车辆信息
         List<SaveOrderCarDto> orderCarParamList = new ArrayList<>(10);

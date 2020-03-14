@@ -2,6 +2,7 @@ package com.cjyc.foreign.api.dto.res;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -16,6 +17,10 @@ import java.math.BigDecimal;
 @Data
 public class LineResDto implements Serializable {
     private static final long serialVersionUID = 1823148747037611381L;
+    @ApiModelProperty(value = "线路ID")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
+
     @ApiModelProperty(value = "起点城市名称")
     private String fromCity;
 

@@ -1,6 +1,5 @@
 package com.cjyc.foreign.api.dto.res;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -84,7 +83,6 @@ public class OrderDetailResDto implements Serializable {
     private String endProvinceCode;
 
     @ApiModelProperty(value = "目的地城市")
-    @Excel(name = "目的城市", orderNum = "14")
     private String endCity;
 
     @ApiModelProperty(value = "目的地城市编号")

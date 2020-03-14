@@ -11,6 +11,7 @@ import com.cjyc.foreign.api.dto.res.LineResDto;
 import com.cjyc.foreign.api.service.ILineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,17 +30,19 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     @Override
     public ResultVo<LineResDto> getLinePriceByCityCode(LineReqDto dto) {
         ResultVo<LineResDto> resultVo = null;
-        log.info("===>查询报价，请求参数：{}", JSON.toJSONString(dto));
-        Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
-        if (line != null) {
+        try {
+            log.info("===>查询报价，请求参数：{}", JSON.toJSONString(dto));
+            Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
             LineResDto res = new LineResDto();
-            BeanUtils.copyProperties(line,res);
+            if (line != null) {
+                BeanUtils.copyProperties(line,res);
+            }
             resultVo = BaseResultUtil.success(res);
-        } else {
-            resultVo = BaseResultUtil.fail("未查询到数据!");
+            log.info("<===查询报价，返回参数：{}", JSON.toJSONString(resultVo));
+        } catch (BeansException e) {
+            log.error("===>查询报价出现异常：{}",e);
+            resultVo = BaseResultUtil.fail("查询报价出现异常...");
         }
-
-        log.info("<===查询报价，返回参数：{}", JSON.toJSONString(resultVo));
         return resultVo;
     }
 }
