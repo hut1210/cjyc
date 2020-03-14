@@ -85,6 +85,11 @@ spring:
         min-idle: 8
   rabbitmq:
     host: 10.253.96.127
+    port: 5672
+    username: cjkj_dev
+    password: cjkj9999
+    virtual-host: /
+    publisher-confirms: true
 
 ##-----------------------------------logging-------------------------------------------
 ##日志
@@ -96,6 +101,16 @@ logging:
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:
+  amqp:
+    enabled: true
+    exchange:
+      direct:
+        tpl: cjyc_tpl_exchange
+    routing-key:
+      order-state: cjyc_route_order_state_key
+      order-confirm: cjyc_route_order_confirm_key
+
+
   push:
     enabled: true
     apikey:
