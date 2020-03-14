@@ -1,12 +1,11 @@
 package com.cjyc.foreign.api.dto.res;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
-import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -20,27 +19,111 @@ import java.util.List;
 @Data
 public class OrderDetailResDto implements Serializable {
     private static final long serialVersionUID = 8407119907104446329L;
-
-    @ApiModelProperty(value = "订单主键id")
+    @ApiModelProperty(value = "ID")
     private Long id;
 
     @ApiModelProperty(value = "订单编号")
     private String no;
 
-    @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，" +
-            "88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
-    private Integer state;
+    @ApiModelProperty(value = "客户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long customerId;
 
-    @ApiModelProperty(value = "下单时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
-    private Long createTime;
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
 
-    @ApiModelProperty(value = "托运车辆信息列表")
-    private List<OrderCarDetailResDto> orderCarDetailList;
+    @ApiModelProperty(value = "客户电话")
+    private String customerPhone;
 
-    @ApiModelProperty(value = "提车时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
+    @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")
+    private Integer customerType;
+
+    @ApiModelProperty(value = "订单所属业务中心ID")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long inputStoreId;
+
+    @ApiModelProperty(value = "订单所属业务中心名称")
+    private String inputStoreName;
+
+    @ApiModelProperty(value = "始发城市省")
+    private String startProvince;
+
+    @ApiModelProperty(value = "始发城市省编号")
+    private String startProvinceCode;
+
+    @ApiModelProperty(value = "始发城市")
+    private String startCity;
+
+    @ApiModelProperty(value = "始发城市编号")
+    private String startCityCode;
+
+    @ApiModelProperty(value = "始发城市区")
+    private String startArea;
+
+    @ApiModelProperty(value = "始发城市区编号")
+    private String startAreaCode;
+
+    @ApiModelProperty(value = "始发城市详细地址")
+    private String startAddress;
+
+    @ApiModelProperty(value = "始发城市业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long startStoreId;
+
+    @ApiModelProperty(value = "始发城市业务中心名称")
+    private String startStoreName;
+
+    @ApiModelProperty(value = "始发城市业务所属中心id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long startBelongStoreId;
+
+    @ApiModelProperty(value = "目的地城市省")
+    private String endProvince;
+
+    @ApiModelProperty(value = "目的地城市省编号")
+    private String endProvinceCode;
+
+    @ApiModelProperty(value = "目的地城市")
+    @Excel(name = "目的城市", orderNum = "14")
+    private String endCity;
+
+    @ApiModelProperty(value = "目的地城市编号")
+    private String endCityCode;
+
+    @ApiModelProperty(value = "目的地城市区")
+    private String endArea;
+
+    @ApiModelProperty(value = "目的地城市区编号")
+    private String endAreaCode;
+
+    @ApiModelProperty(value = "目的地城市详细地址")
+    private String endAddress;
+
+    @ApiModelProperty(value = "目的地城市业务中心ID: -1不经过业务中心")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long endStoreId;
+
+    @ApiModelProperty(value = "目的地城市业务中心名称")
+    private String endStoreName;
+
+    @ApiModelProperty(value = "目的地城市业务所属中心id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long endBelongStoreId;
+
+    @ApiModelProperty(value = "预计出发时间（提车日期）")
     private Long expectStartDate;
+
+    @ApiModelProperty(value = "预计到达时间")
+    private Long expectEndDate;
+
+    @ApiModelProperty(value = "车辆总数")
+    private Integer carNum;
+
+    @ApiModelProperty(value = "线路ID")
+    private Long lineId;
+
+    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
+    private Integer pickType;
 
     @ApiModelProperty(value = "发车人")
     private String pickContactName;
@@ -48,26 +131,8 @@ public class OrderDetailResDto implements Serializable {
     @ApiModelProperty(value = "发车人联系方式")
     private String pickContactPhone;
 
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门，4物流上门")
-    private Integer pickType;
-
-    @ApiModelProperty(value = "出发地省编号")
-    private String startProvinceCode;
-
-    @ApiModelProperty(value = "出发地市编号")
-    private String startCityCode;
-
-    @ApiModelProperty(value = "出发地市名称")
-    private String startCity;
-
-    @ApiModelProperty(value = "出发地区编号")
-    private String startAreaCode;
-
-    @ApiModelProperty(value = "出发地省市区名称")
-    private String startProvinceCityAreaName;
-
-    @ApiModelProperty(value = "出发地详细地址")
-    private String startAddress;
+    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
+    private Integer backType;
 
     @ApiModelProperty(value = "收车人")
     private String backContactName;
@@ -75,194 +140,72 @@ public class OrderDetailResDto implements Serializable {
     @ApiModelProperty(value = "收车人联系方式")
     private String backContactPhone;
 
-    @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
-    private Integer backType;
+    @ApiModelProperty(value = "订单来源：1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序,9-99车圈")
+    private Integer source;
 
-    @ApiModelProperty(value = "收车省编号")
-    private String endProvinceCode;
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
 
-    @ApiModelProperty(value = "收车市编号")
-    private String endCityCode;
+    @ApiModelProperty(value = "创建人：客户/业务员")
+    private String createUserName;
 
-    @ApiModelProperty(value = "收车市名称")
-    private String endCity;
+    @ApiModelProperty(value = "创建人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long createUserId;
 
-    @ApiModelProperty(value = "收车区编号")
-    private String endAreaCode;
+    @ApiModelProperty(value = "被分配给业务员的名称")
+    private String allotToUserName;
 
-    @ApiModelProperty(value = "收车省市区名称")
-    private String endProvinceCityAreaName;
+    @ApiModelProperty(value = "被分配给业务员的userid")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long allotToUserId;
 
-    @ApiModelProperty(value = "目的地详细地址")
-    private String endAddress;
+    @ApiModelProperty(value = "确认时间")
+    private Long checkTime;
 
-    @ApiModelProperty(value = "代驾提车费")
+    @ApiModelProperty(value = "确认人：业务员")
+    private String checkUserName;
+
+    @ApiModelProperty(value = "确认人userid")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long checkUserId;
+
+    @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，" +
+            "55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
+    private Integer state;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
+    @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")
+    private Integer invoiceFlag;
+
+    @ApiModelProperty(value = "发票类型：0无， 1-普通(个人) ，2增值普票(企业) ，3增值专用发票")
+    private Integer invoiceType;
+
+    @ApiModelProperty(value = "物流券抵消金额")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal pickFee;
-
-    @ApiModelProperty(value = "拖车送车费")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal backFee;
-
-    @ApiModelProperty(value = "车辆应收干线费")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal trunkFee;
-
-    @ApiModelProperty(value = "预付款")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal depositFee;
-
-    @ApiModelProperty(value = "保险费")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal addInsuranceFee;
+    private BigDecimal couponOffsetFee;
 
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用，计算值")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
 
-    @ApiModelProperty(value = "物流费：计算值")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal wlTotalFee;
-
-    @ApiModelProperty(value = "车辆代收中介费（为资源合伙人代收）")
-    @JsonSerialize(using = BigDecimalSerizlizer.class)
-    private BigDecimal agencyFee;
-
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
 
-    @ApiModelProperty(value = "优惠券id:如果ID为0，则说明没有优惠券")
-    private Long couponSendId;
+    @ApiModelProperty(value = "客户支付尾款状态：0未支付，1部分支付，2支付完成")
+    private Integer wlPayState;
 
-    @ApiModelProperty(value = "优惠券名称")
-    private String couponName;
+    @ApiModelProperty(value = "上次客户支付尾款时间")
+    private Long wlPayTime;
 
-    @ApiModelProperty(value = "车辆总数")
-    private Integer carNum;
+    @ApiModelProperty(value = "订单完结时间")
+    private Long finishTime;
 
-    @ApiModelProperty(value = "出发地业务中心id")
-    @JsonSerialize(using= ToStringSerializer.class)
-    private Long startStoreId;
+    @ApiModelProperty(value = "订单车辆信息列表")
+    private List<OrderCarDetailResDto> orderCarDetailList;
 
-    @ApiModelProperty(value = "出发地业务中心名称")
-    private String startStoreName;
-
-    @ApiModelProperty(value = "出发地业务中心详细地址")
-    private String startStoreNameDetail;
-
-    @ApiModelProperty(value = "目的地业务中心id")
-    @JsonSerialize(using= ToStringSerializer.class)
-    private Long endStoreId;
-
-    @ApiModelProperty(value = "目的地业务中心名称")
-    private String endStoreName;
-
-    @ApiModelProperty(value = "目的地业务中心详细地址")
-    private String endStoreNameDetail;
-
-    public BigDecimal getWlTotalFee() {
-        return wlTotalFee == null ? new BigDecimal(0) : wlTotalFee;
-    }
-    public BigDecimal getAgencyFee() {
-        return agencyFee == null ? new BigDecimal(0) : agencyFee;
-    }
-    public Long getStartStoreId() {
-        return startStoreId == null ? 0 : startStoreId;
-    }
-    public String getStartStoreName() {
-        return StringUtils.isBlank(startStoreName) ? "" : startStoreName;
-    }
-    public String getStartStoreNameDetail() {
-        return StringUtils.isBlank(startStoreNameDetail) ? "" : startStoreNameDetail;
-    }
-    public Long getEndStoreId() {
-        return endStoreId == null ? 0 : endStoreId;
-    }
-    public String getEndStoreName() {
-        return StringUtils.isBlank(endStoreName) ? "" : endStoreName;
-    }
-    public String getEndStoreNameDetail() {
-        return StringUtils.isBlank(endStoreNameDetail) ? "" : endStoreNameDetail;
-    }
-    public String getStartCity() {
-        return StringUtils.isBlank(startCity) ? "" : startCity;
-    }
-    public String getEndCity() {
-        return StringUtils.isBlank(endCity) ? "" : endCity;
-    }
-    public String getStartProvinceCode() {
-        return StringUtils.isBlank(startProvinceCode) ? "" : startProvinceCode;
-    }
-    public String getStartCityCode() {
-        return StringUtils.isBlank(startCityCode) ? "" : startCityCode;
-    }
-    public String getStartAreaCode() {
-        return StringUtils.isBlank(startAreaCode) ? "" : startAreaCode;
-    }
-    public String getStartProvinceCityAreaName() {
-        return StringUtils.isBlank(startProvinceCityAreaName) ? "" : startProvinceCityAreaName;
-    }
-    public String getEndProvinceCode() {
-        return StringUtils.isBlank(endProvinceCode) ? "" : endProvinceCode;
-    }
-    public String getEndCityCode() {
-        return StringUtils.isBlank(endCityCode) ? "" : endCityCode;
-    }
-    public String getEndAreaCode() {
-        return StringUtils.isBlank(endAreaCode) ? "" : endAreaCode;
-    }
-    public String getEndProvinceCityAreaName() {
-        return StringUtils.isBlank(endProvinceCityAreaName) ? "" : endProvinceCityAreaName;
-    }
-    public Long getCreateTime() {
-        return createTime == null ? 0 : createTime;
-    }
-    public Long getExpectStartDate() {
-        return expectStartDate == null ? 0 : expectStartDate;
-    }
-    public String getPickContactName() {
-        return StringUtils.isBlank(pickContactName) ? "" : pickContactName;
-    }
-    public String getPickContactPhone() {
-        return StringUtils.isBlank(pickContactPhone) ? "" : pickContactPhone;
-    }
-    public String getStartAddress() {
-        return StringUtils.isBlank(startAddress) ? "" : startAddress;
-    }
-    public String getBackContactName() {
-        return StringUtils.isBlank(backContactName) ? "" : backContactName;
-    }
-    public String getBackContactPhone() {
-        return StringUtils.isBlank(backContactPhone) ? "" : backContactPhone;
-    }
-    public String getEndAddress() {
-        return StringUtils.isBlank(endAddress) ? "" : endAddress;
-    }
-    public BigDecimal getPickFee() {
-        return pickFee == null ? new BigDecimal(0) : pickFee;
-    }
-    public BigDecimal getBackFee() {
-        return backFee == null ? new BigDecimal(0) : backFee;
-    }
-    public BigDecimal getTrunkFee() {
-        return trunkFee == null ? new BigDecimal(0) : trunkFee;
-    }
-    public BigDecimal getDepositFee() {
-        return depositFee == null ? new BigDecimal(0) : depositFee;
-    }
-    public BigDecimal getAddInsuranceFee() {
-        return addInsuranceFee == null ? new BigDecimal(0) : addInsuranceFee;
-    }
-    public BigDecimal getTotalFee() {
-        return totalFee == null ? new BigDecimal(0) : totalFee;
-    }
-    public String getCouponName() {
-        return StringUtils.isBlank(couponName) ? "" : couponName;
-    }
-    public Long getCouponSendId() {
-        return couponSendId == null ? 0 : couponSendId;
-    }
-    public Integer getCarNum() {
-        return carNum == null ? 0 : carNum;
-    }
+    @ApiModelProperty(value = "订单车辆运输信息列表")
+    private List<OrderCarTransportDetailResDto> orderCarTransportDetailList;
 }

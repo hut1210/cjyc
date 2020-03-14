@@ -941,7 +941,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }catch (Exception e){
             log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo());
             log.error(e.getMessage(), e);
-            addPaymentErrorLog("allinpay 订单"+order.getNo()+"，支付服务费失败");
+            addPaymentErrorLog("allinpay 订单"+order.getNo()+"，支付服务费失败"+e.getMessage());
             cStransactionService.updateOrderFlag(order.getNo(),"-2",System.currentTimeMillis());//付款失败
             return;
         }
@@ -1001,7 +1001,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         params.put("amount", amount);
         // 目前支持 支付宝：alipay，银联：unionpay，微信公众号：wx_pub，通联：allinpay，京东：jdpay 余额：balance
         params.put("channel", "allinpay");
-        params.put("type", "b2c");//付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        //对公户打款
+        //付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        if(showPartnerVo.getCardType()==1){
+            params.put("type", "b2b");
+        }else{
+            params.put("type", "b2c");
+        }
         params.put("currency", "cny");
         params.put("description", "通联代付合伙人费用");
 

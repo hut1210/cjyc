@@ -17,7 +17,7 @@ public enum OrderStateEnum {
     WAIT_CHECK("待确认", 5),
     //WAIT_RECHECK("待复确认", 10),
     WAIT_PREPAY("待支付",15),
-    CHECKED("已确认",25),
+    CHECKED("待调度",25),
     TRANSPORTING("运输中",55),
     FINISHED("已完成",100),
     //F_RETURN("原返（待）",111),
