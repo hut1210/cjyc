@@ -1,16 +1,24 @@
 package com.cjyc.common.system.service.impl;
 
 import com.cjyc.common.model.entity.Order;
-import com.cjyc.common.model.entity.defined.OrderStateEntity;
+import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.system.config.AmqpProperty;
 import com.cjyc.common.system.service.ICsAmqpService;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -25,18 +33,49 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         if(order == null){
             return;
         }
-        if(!AmqpProperty.enabled){
-            return;
-        }
-        send(AmqpProperty.topicExchange, AmqpProperty.orderStateRoutingKey, new OrderStateEntity(order.getNo(), order.getState(), System.currentTimeMillis()));
+        sendOrderState(Sets.newHashSet(order));
     }
     @Async
     @Override
-    public void sendOrderConfirm(Order order) {
+    public void sendOrderState(Set<Order> orderSet) {
+        if(CollectionUtils.isEmpty(orderSet)){
+            return;
+        }
+        orderSet.forEach(o -> {
+            Map<Object, Object> map = Maps.newHashMap();
+            map.put("orderNo", o.getNo());
+            map.put("state", o.getState());
+            map.put("createTime", System.currentTimeMillis());
+            send(AmqpProperty.topicExchange, AmqpProperty.orderStateRoutingKey, map);
+        });
+    }
+
+    @Async
+    @Override
+    public void sendOrderConfirm(Order order, List<OrderCar> ocList) {
         if(order == null){
             return;
         }
-        send(AmqpProperty.directExchange, AmqpProperty.orderStateRoutingKey, null);
+        BigDecimal pickTotalFee = BigDecimal.ZERO;
+        BigDecimal trunkTotalFee = BigDecimal.ZERO;
+        BigDecimal backTotalFee = BigDecimal.ZERO;
+        BigDecimal addInsuranceTotalFee = BigDecimal.ZERO;
+        for (OrderCar orderCar : ocList) {
+            pickTotalFee = pickTotalFee.add(MoneyUtil.nullToZero(orderCar.getPickFee()));
+            trunkTotalFee = trunkTotalFee.add(MoneyUtil.nullToZero(orderCar.getTrunkFee()));
+            backTotalFee = backTotalFee.add(MoneyUtil.nullToZero(orderCar.getBackFee()));
+            addInsuranceTotalFee = addInsuranceTotalFee.add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
+
+        }
+        Map<Object, Object> map = Maps.newHashMap();
+        map.put("orderNo", order.getNo());
+        map.put("state", order.getState());
+        map.put("pickFee", pickTotalFee);
+        map.put("trunkFee", trunkTotalFee);
+        map.put("backFee", backTotalFee);
+        map.put("addInsuranceFee", addInsuranceTotalFee);
+        map.put("createTime", System.currentTimeMillis());
+        send(AmqpProperty.directExchange, AmqpProperty.orderStateRoutingKey, map);
     }
     @Async
     @Override

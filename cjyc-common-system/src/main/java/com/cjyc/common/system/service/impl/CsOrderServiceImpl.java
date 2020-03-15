@@ -237,6 +237,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 //推送给客户消息
                 csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
             }
+            csAmqpService.sendOrderState(order);
             return BaseResultUtil.success(OrderStateEnum.SUBMITTED.code == paramsDto.getState() ? "下单成功，订单编号{0}" : "保存成功，订单编号{0}", order.getNo());
         } finally {
             redisUtils.delayDelete(lockKey);
@@ -274,8 +275,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
             //推送给客户消息
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
-            csAmqpService.sendOrderState(order);
-            csAmqpService.sendOrderConfirm(order);
             return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
         } finally {
             redisUtils.delayDelete(lockKey);
@@ -436,6 +435,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if(oldOrder != null && OrderStateEnum.WAIT_SUBMIT.code < oldOrder.getState()){
                 csOrderChangeLogService.asyncSaveForChangePrice(oldOrder, getFullOrder(order, ocList), "提交订单", userInfo);
             }
+            csAmqpService.sendOrderConfirm(order, ocList);
             return order;
         } finally {
             if (!isNewOrder) {
@@ -683,6 +683,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //支付提醒
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAY_ORDER, order.getNo());
         }
+
+        csAmqpService.sendOrderState(order);
         sendPushMsgToCustomerForSelfBack(order);
 
         return BaseResultUtil.success();
