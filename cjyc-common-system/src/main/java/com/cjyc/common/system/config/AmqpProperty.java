@@ -2,30 +2,39 @@ package com.cjyc.common.system.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.stereotype.Component;
 
 @Configuration
 @ConditionalOnProperty(prefix = "cjkj.amqp", name = "enabled", havingValue = "true")
 public class AmqpProperty {
 
-    public static String tplExchange;
-    /**
-     * 承运商普通管理员角色资源列表
-     */
+    public static Boolean enabled;
+    public static String directExchange;
+    public static String topicExchange;
     public static String orderStateRoutingKey;
     public static String orderConfirmRoutingKey;
 
-    @Value("${cjkj.carries_menu_ids}")
-    public static String getTplExchange() {
-        return tplExchange;
+    @Value("${cjkj.amqp.enabled}")
+    public void setEnabled(Boolean enabled) {
+        AmqpProperty.enabled = enabled;
     }
 
-    public static String getOrderStateRoutingKey() {
-        return orderStateRoutingKey;
+    @Value("${cjkj.amqp.exchange.direct}")
+    public void setDirectExchange(String directExchange) {
+        AmqpProperty.directExchange = directExchange;
     }
-
-    public static String getOrderConfirmRoutingKey() {
-        return orderConfirmRoutingKey;
+    @Value("${cjkj.amqp.exchange.topic}")
+    public void setTopicExchange(String topicExchange) {
+        AmqpProperty.topicExchange = topicExchange;
+    }
+    @Value("${cjkj.amqp.routing-key.order-state}")
+    public void setOrderStateRoutingKey(String orderStateRoutingKey) {
+        AmqpProperty.orderStateRoutingKey = orderStateRoutingKey;
+    }
+    @Value("${cjkj.amqp.routing-key.order-confirm}")
+    public void setOrderConfirmRoutingKey(String orderConfirmRoutingKey) {
+        AmqpProperty.orderConfirmRoutingKey = orderConfirmRoutingKey;
     }
 }

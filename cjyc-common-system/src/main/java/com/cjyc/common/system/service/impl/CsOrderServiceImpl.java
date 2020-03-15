@@ -104,6 +104,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsSmsService csSmsService;
     @Resource
     private ICsOrderChangeLogService csOrderChangeLogService;
+    @Resource
+    private ICsAmqpService csAmqpService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -272,7 +274,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
             //推送给客户消息
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
-
+            csAmqpService.sendOrderState(order);
+            csAmqpService.sendOrderConfirm(order);
             return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
         } finally {
             redisUtils.delayDelete(lockKey);

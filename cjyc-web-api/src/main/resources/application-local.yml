@@ -84,10 +84,10 @@ spring:
         #连接池中的最小空闲连接 默认 0
         min-idle: 8
   rabbitmq:
-    host: 10.253.96.127
+    host: 10.253.96.135
     port: 5672
-    username: cjkj_dev
-    password: cjkj9999
+    username: admin
+    password: 123456
     virtual-host: /
     publisher-confirms: true
 
@@ -104,8 +104,8 @@ cjkj:
   amqp:
     enabled: true
     exchange:
-      direct:
-        tpl: cjyc_tpl_exchange
+      direct: cjyc_direct_exchange
+      topic: cjyc_topic_exchange
     routing-key:
       order-state: cjyc_route_order_state_key
       order-confirm: cjyc_route_order_confirm_key
