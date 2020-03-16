@@ -113,6 +113,14 @@
         and state &lt; 100
         limit 1
     </update>
+    <update id="updateForPaid">
+        update w_order
+        set wl_pay_state = 2,
+        wl_pay_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where id = #{id}
+        and state &lt;= 100
+        limit 1
+    </update>
 
     <resultMap id="VinResultMap" type="com.cjyc.common.model.vo.customer.order.OrderCenterVo">
         <!--查询该订单号下的一条车辆信息-->

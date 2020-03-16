@@ -291,4 +291,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<Map<String, Object>> findLineWaitDispatchCarCountListWeb(LineWaitCountDto paramsDto);
 
     List<WaitCountLineVo> findWaitDispatchCarCountLineListForAppV2(@Param("param") WaitCountDto paramsDto);
+
+    int countUnPayByOrderId(Long orderId);
 }

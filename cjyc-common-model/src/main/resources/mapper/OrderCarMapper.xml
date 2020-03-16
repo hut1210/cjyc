@@ -2614,6 +2614,12 @@
         group by shell.startCityCode, shell.endCityCode
         order by shell.startCityCode
     </select>
+    <select id="countUnPayByOrderId" resultType="java.lang.Integer">
+        select count(0)
+        from w_order_car
+        where order_id = #{id}
+        and state &lt; 100 and wl_pay_state != 2
+    </select>
     <sql id="count_wait_list_for_web">
         select
         <include refid="wait_list_for_web_field"/>
