@@ -42,11 +42,16 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             return;
         }
         orderSet.forEach(o -> {
-            Map<Object, Object> map = Maps.newHashMap();
-            map.put("orderNo", o.getNo());
-            map.put("state", o.getState());
-            map.put("createTime", System.currentTimeMillis());
-            send(AmqpProperty.topicExchange, AmqpProperty.orderStateRoutingKey, map);
+            Map<Object, Object> dataMap = Maps.newHashMap();
+            dataMap.put("orderNo", o.getNo());
+            dataMap.put("state", o.getState());
+            dataMap.put("createTime", System.currentTimeMillis());
+
+            Map<Object, Object> shellMap = Maps.newHashMap();
+            shellMap.put("type", "");
+            shellMap.put("data", dataMap);
+
+            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
         });
     }
 
@@ -67,15 +72,19 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             addInsuranceTotalFee = addInsuranceTotalFee.add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
 
         }
-        Map<Object, Object> map = Maps.newHashMap();
-        map.put("orderNo", order.getNo());
-        map.put("state", order.getState());
-        map.put("pickFee", pickTotalFee);
-        map.put("trunkFee", trunkTotalFee);
-        map.put("backFee", backTotalFee);
-        map.put("addInsuranceFee", addInsuranceTotalFee);
-        map.put("createTime", System.currentTimeMillis());
-        send(AmqpProperty.directExchange, AmqpProperty.orderStateRoutingKey, map);
+        Map<Object, Object> dataMap = Maps.newHashMap();
+        dataMap.put("orderNo", order.getNo());
+        dataMap.put("state", order.getState());
+        dataMap.put("pickFee", pickTotalFee);
+        dataMap.put("trunkFee", trunkTotalFee);
+        dataMap.put("backFee", backTotalFee);
+        dataMap.put("addInsuranceFee", addInsuranceTotalFee);
+        dataMap.put("createTime", System.currentTimeMillis());
+
+        Map<Object, Object> shellMap = Maps.newHashMap();
+        shellMap.put("type", "");
+        shellMap.put("data", dataMap);
+        send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
     }
     @Async
     @Override

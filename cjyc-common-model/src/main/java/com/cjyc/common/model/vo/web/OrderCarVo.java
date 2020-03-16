@@ -117,6 +117,7 @@ public class OrderCarVo extends OrderCar implements Serializable {
     @ApiModelProperty(value = "目的地业务中心地址")
     private String endStoreAddress;
     @ApiModelProperty(value = "目的地业务中心联系人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long endStoreLooplinkUserId;
     @ApiModelProperty(value = "目的地业务中心联系人")
     private String endStoreLooplinkName;
