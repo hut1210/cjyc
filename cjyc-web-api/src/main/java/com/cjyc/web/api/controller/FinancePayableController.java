@@ -205,6 +205,12 @@ public class FinancePayableController {
         return financeService.getPaidListNew(payMentQueryDto);
     }
 
+    @ApiOperation(value = "应付账款-司机时付-根据运单号查看司机上游付款状态列表")
+    @PostMapping(value = "/listDriverUpstreamPaidInfo")
+    public ResultVo<PageVo<DriverUpstreamPaidInfoVo>> listDriverUpstreamPaidStatus(@PathVariable String waybillNo){
+        return financeService.listDriverUpstreamPaidInfo(waybillNo);
+    }
+
     @ApiOperation(value = "导出财务已付款（时付）列表")
     @GetMapping(value = "/exportTimePaid")
     public ResultVo exportTimePaid(HttpServletResponse response, PayMentQueryDto payMentQueryDto){

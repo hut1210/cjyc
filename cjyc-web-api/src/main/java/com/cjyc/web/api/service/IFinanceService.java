@@ -85,4 +85,12 @@ public interface IFinanceService {
     List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
 
     ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
+
+    /**
+     * 根据运单号查看司机上游付款状态列表
+     *
+     * @param waybillNo
+     * @return
+     */
+    ResultVo<PageVo<DriverUpstreamPaidInfoVo>> listDriverUpstreamPaidInfo(String waybillNo);
 }

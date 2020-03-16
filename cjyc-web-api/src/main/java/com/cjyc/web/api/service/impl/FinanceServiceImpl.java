@@ -6,6 +6,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
+import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -80,6 +82,9 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Resource
     private IOrderCarDao orderCarDao;
+
+    @Resource
+    private IWaybillCarDao waybillCarDao;
 
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
@@ -885,4 +890,15 @@ public class FinanceServiceImpl implements IFinanceService {
 
         return MoneyUtil.nullToZero(wlFee);
     }
+
+    @Override
+    public ResultVo<PageVo<DriverUpstreamPaidInfoVo>> listDriverUpstreamPaidInfo(String waybillNo) {
+        if(StringUtils.isEmpty(waybillNo)){
+            BaseResultUtil.fail("运单单号不能为空！");
+        }
+        List<DriverUpstreamPaidInfoVo> listInfo = waybillCarDao.listDriverUpstreamPaidInfo(waybillNo);
+        PageInfo<DriverUpstreamPaidInfoVo> pageInfo = new PageInfo<>(listInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
 }

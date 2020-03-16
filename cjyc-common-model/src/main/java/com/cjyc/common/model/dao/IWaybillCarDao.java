@@ -17,6 +17,7 @@ import com.cjyc.common.model.entity.defined.BillCarNum;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
+import com.cjyc.common.model.vo.web.finance.DriverUpstreamPaidInfoVo;
 import com.cjyc.common.model.vo.web.mineStore.StorageCarVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
@@ -219,4 +220,11 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int countActiveWaybill(@Param("orderCarId") Long orderCarId, @Param("type") int type);
 
+    /**
+     * 根据运单号查看司机上游付款状态列表
+     *
+     * @param waybillNo
+     * @return
+     */
+    List<DriverUpstreamPaidInfoVo> listDriverUpstreamPaidInfo(String waybillNo);
 }

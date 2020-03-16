@@ -1917,5 +1917,11 @@
         and w.state &lt;= 100
         AND w.type =#{type}
     </select>
+    <!--根据运单号查看司机上游付款状态列表-->
+    <select id="listDriverUpstreamPaidInfo"
+            resultType="com.cjyc.common.model.vo.web.finance.DriverUpstreamPaidInfoVo">
+
+
+    </select>
 
 </mapper>
