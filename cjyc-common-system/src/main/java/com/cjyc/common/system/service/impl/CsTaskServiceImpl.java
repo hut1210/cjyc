@@ -1311,17 +1311,25 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     private void validateAndFinishOrder(Long orderId, UserInfo userInfo) {
-        int count = orderCarDao.countUnFinishByOrderId(orderId);
-        log.info("validateAndFinishOrder count = " + count);
-        if (count <= 0) {
-            Order order = orderDao.selectById(orderId);
+        int countUnFinish = orderCarDao.countUnFinishByOrderId(orderId);
+        int countUnpay = orderCarDao.countUnPayByOrderId(orderId);
+        log.info("validateAndFinishOrder countUnFinish = " + countUnFinish);
+        boolean isFinish = countUnFinish <= 0;
+        boolean isPaid = countUnpay <= 0;
+
+        if(isFinish){
             orderDao.updateForFinish(orderId);
 
+            Order order = orderDao.selectById(orderId);
             //订单完成日志
             csOrderLogService.asyncSave(order, OrderLogEnum.FINISH,
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.FINISH.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
                     userInfo);
+        }
+
+        if(isPaid){
+            orderDao.updateForPaid(orderId);
         }
     }
 
