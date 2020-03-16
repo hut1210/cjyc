@@ -104,11 +104,9 @@ cjkj:
   amqp:
     enabled: true
     exchange:
-      direct: cjyc_direct_exchange
       topic: cjyc_topic_exchange
     routing-key:
-      order-state: cjyc_route_order_state_key
-      order-confirm: cjyc_route_order_confirm_key
+      common: cjyc_route_common_key
 
 
   push:

@@ -27,10 +27,6 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "订单来源默认传9：99车圈(C端客户)", required = true)
     private Integer clientId;
 
-    @NotEmpty(message = "车辆信息不能为空")
-    @ApiModelProperty(value = "车辆列表", required = true)
-    private List<@Valid OrderCarSubmitReqDto> orderCarList;
-
     @NotBlank(message = "客户电话不能为空")
     @Pattern(regexp = "^[1]\\d{10}$", message = "请输入正确的手机号")
     @ApiModelProperty(value = "客户电话默认传16000000001", required = true)
@@ -64,10 +60,6 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "线路ID", required = true)
     private Long lineId;
 
-    @NotNull(message = "线路费用不能为空")
-    @ApiModelProperty(value = "线路费用", required = true)
-    private BigDecimal lineWlFreightFee;
-
     @NotNull(message = "提车方式不能为空")
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门", required = true)
     private Integer pickType;
@@ -98,7 +90,15 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "支付方式默认传 0-到付", required = true)
     private Integer payType;
 
+    @NotNull(message = "线路费用不能为空")
+    @ApiModelProperty(value = "线路费用/元", required = true)
+    private BigDecimal lineWlFreightFee;
+
     @NotNull(message = "订单总价不能为空")
-    @ApiModelProperty(value = "订单总价", required = true)
+    @ApiModelProperty(value = "订单总价/元：订单总价=（线路费用 + 保险费）* 车辆数", required = true)
     private BigDecimal totalFee;
+
+    @NotEmpty(message = "车辆信息不能为空")
+    @ApiModelProperty(value = "车辆列表", required = true)
+    private List<@Valid OrderCarSubmitReqDto> orderCarList;
 }

@@ -42,11 +42,16 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             return;
         }
         orderSet.forEach(o -> {
-            Map<Object, Object> map = Maps.newHashMap();
-            map.put("orderNo", o.getNo());
-            map.put("state", o.getState());
-            map.put("createTime", System.currentTimeMillis());
-            send(AmqpProperty.topicExchange, AmqpProperty.orderStateRoutingKey, map);
+            Map<Object, Object> dataMap = Maps.newHashMap();
+            dataMap.put("orderNo", o.getNo());
+            dataMap.put("state", o.getState());
+            dataMap.put("createTime", System.currentTimeMillis());
+
+            Map<Object, Object> shellMap = Maps.newHashMap();
+            shellMap.put("type", "99CC_order_state");
+            shellMap.put("data", dataMap);
+
+            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
         });
     }
 
@@ -67,15 +72,20 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             addInsuranceTotalFee = addInsuranceTotalFee.add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
 
         }
-        Map<Object, Object> map = Maps.newHashMap();
-        map.put("orderNo", order.getNo());
-        map.put("state", order.getState());
-        map.put("pickFee", pickTotalFee);
-        map.put("trunkFee", trunkTotalFee);
-        map.put("backFee", backTotalFee);
-        map.put("addInsuranceFee", addInsuranceTotalFee);
-        map.put("createTime", System.currentTimeMillis());
-        send(AmqpProperty.directExchange, AmqpProperty.orderStateRoutingKey, map);
+        Map<Object, Object> dataMap = Maps.newHashMap();
+        dataMap.put("orderNo", order.getNo()); // 订单编号
+        dataMap.put("state", order.getState()); //状态
+        dataMap.put("expectEndDate", order.getExpectEndDate()); // 预计到达日期
+        dataMap.put("pickFee", pickTotalFee); //提车费
+        dataMap.put("trunkFee", trunkTotalFee);//物流费
+        dataMap.put("backFee", backTotalFee);//送车费
+        dataMap.put("addInsuranceFee", addInsuranceTotalFee);//保险费
+        dataMap.put("createTime", System.currentTimeMillis());//当前时间
+
+        Map<Object, Object> shellMap = Maps.newHashMap();
+        shellMap.put("type", "99CC_order_confirm");
+        shellMap.put("data", dataMap);
+        send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
     }
     @Async
     @Override

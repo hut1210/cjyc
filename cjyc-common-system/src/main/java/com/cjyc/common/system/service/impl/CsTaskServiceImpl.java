@@ -1322,14 +1322,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.FINISH.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
                     userInfo);
-            //支付合伙人服务费
-
-            /*try {
-                csPingPayService.allinpayToCooperator(order.getId());
-            } catch (Exception e) {
-                log.error("支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
-                log.error(e.getMessage(), e);
-            }*/
         }
     }
 
