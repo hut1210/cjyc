@@ -23,7 +23,7 @@ public class TestListener {
     @Resource
     private AmqpTemplate rabbitTemplate;
 
-    @RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "${cjkj.amqp.routing-key.common}"), exchange = @Exchange(value = "${cjkj.amqp.exchange.topic}"), key = "${cjkj.amqp.routing-key.common}")})
+    //@RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "${cjkj.amqp.routing-key.common}"), exchange = @Exchange(value = "${cjkj.amqp.exchange.topic}"), key = "${cjkj.amqp.routing-key.common}")})
     public void testStateListener(String s) {
         log.info("消费信息----------------------》》》》》》" + s);
 

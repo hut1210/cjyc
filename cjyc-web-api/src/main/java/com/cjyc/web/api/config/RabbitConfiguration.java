@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(prefix = "cjkj.amqp", name = "enabled", havingValue = "true")
 public class RabbitConfiguration {
 
-    @Bean
+   /* @Bean
     public TopicExchange topicExchange() {
         return new TopicExchange(AmqpProperty.topicExchange, true, false);
     }
@@ -32,6 +32,6 @@ public class RabbitConfiguration {
         //参考https://docs.spring.io/spring-amqp/docs/1.7.11.RELEASE/reference/html/_reference.html#collection-declaration
         //链式写法: 用指定的路由键将队列绑定到交换机
         return BindingBuilder.bind(orderStateQueue).to(topicExchange).with(AmqpProperty.commonRoutingKey);
-    }
+    }*/
 
 }
