@@ -941,7 +941,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }catch (Exception e){
             log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo());
             log.error(e.getMessage(), e);
-            addPaymentErrorLog("allinpay 订单"+order.getNo()+"，支付服务费失败");
+            addPaymentErrorLog("allinpay 订单"+order.getNo()+"，支付服务费失败"+e.getMessage());
             cStransactionService.updateOrderFlag(order.getNo(),"-2",System.currentTimeMillis());//付款失败
             return;
         }

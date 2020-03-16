@@ -22,8 +22,10 @@ public class ListOrderVo extends Order {
     @ApiModelProperty("状态")
     private String outterState;
     @ApiModelProperty("出发地址（全）")
+    @Excel(name = "提车地址", orderNum = "23")
     private String startFullAddress;
     @ApiModelProperty("目的地址（全）")
+    @Excel(name = "交付地址", orderNum = "28")
     private String endFullAddress;
 
 
@@ -34,10 +36,8 @@ public class ListOrderVo extends Order {
     @Excel(name = "归属大区", orderNum = "4")
     private String region;
     @ApiModelProperty("大区编码")
-    @Excel(name = "大区编码", orderNum = "4")
     private String regionCode;
     @ApiModelProperty("所属业务中心地址")
-    @Excel(name = "所属业务中心地址", orderNum = "5")
     private String inputStoreAddress;
     @ApiModelProperty("出发业务中心地址")
     @Excel(name = "收车业务中心地址", orderNum = "16")
@@ -49,7 +49,6 @@ public class ListOrderVo extends Order {
     @Excel(name = "合同编号", orderNum = "12")
     private String contractNo;
     @ApiModelProperty("账期/天")
-    @Excel(name = "账期/天", orderNum = "9")
     private String settlePeriod;
     @ApiModelProperty("总服务费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
@@ -228,7 +227,7 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (state) {
             case 0:
-                str = "待提交"; break;
+                str = "预订单"; break;
             case 2:
                 str = "待确认"; break;
             case 5:
@@ -236,15 +235,15 @@ public class ListOrderVo extends Order {
             case 10:
                 str = "待复确认"; break;
             case 15:
-                str = "待预付款"; break;
+                str = "待付款"; break;
             case 25:
-                str = "已确认"; break;
+                str = "待调度"; break;
             case 55:
                 str = "运输中"; break;
             case 88:
                 str = "待付款"; break;
             case 100:
-                str = "已完成"; break;
+                str = "已交付"; break;
             case 112:
                 str = "异常结束"; break;
             case 113:

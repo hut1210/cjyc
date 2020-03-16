@@ -3,6 +3,8 @@ package com.cjyc.foreign.api.dto.req;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,35 +17,37 @@ import java.math.BigDecimal;
 @Data
 public class OrderCarSubmitReqDto implements Serializable {
     private static final long serialVersionUID = -3441938847460577267L;
-    @ApiModelProperty(value = "品牌")
+
+    @NotBlank(message = "不能为空")
+    @ApiModelProperty(value = "品牌", required = true)
     private String brand;
 
-    @ApiModelProperty(value = "型号")
+    @NotBlank(message = "不能为空")
+    @ApiModelProperty(value = "型号", required = true)
     private String model;
 
     @Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "车牌号格式不正确，请检查")
-    @ApiModelProperty(value = "车牌号")
+    @ApiModelProperty(value = "车牌号", required = true)
     private String plateNo;
 
-    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
+    //@Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
     @ApiModelProperty(value = "vin码")
     private String vin;
 
-    @ApiModelProperty(value = "是否能动 0-否 1-是")
-    private int isMove;
+    @NotNull(message = "是否能动标识不能为空")
+    @ApiModelProperty(value = "是否能动 0-否 1-是", required = true)
+    private Integer isMove;
 
-    @ApiModelProperty(value = "是否新车 0-否 1-是")
-    private int isNew;
+    @NotNull(message = "是否新车标识不能为空")
+    @ApiModelProperty(value = "是否新车 0-否 1-是", required = true)
+    private Integer isNew;
 
-    @ApiModelProperty(value = "估值/万")
+    @ApiModelProperty(value = "车值/万")
     private int valuation;
 
-    @ApiModelProperty(value = "车辆应收保险费")
+    @ApiModelProperty(value = "保险费/元")
     private BigDecimal addInsuranceFee;
 
-    @ApiModelProperty(value = "保额/万")
-    private Integer addInsuranceAmount;
-
-    @ApiModelProperty(value = "车辆应收干线费（物流费） 单位：分")
+    @ApiModelProperty(value = "车辆应收干线费（物流费） 单位：分",hidden = true)
     private BigDecimal trunkFee;
 }

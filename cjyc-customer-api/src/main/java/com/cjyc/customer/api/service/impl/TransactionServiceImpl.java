@@ -109,6 +109,8 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Resource
     private ICsAdminService csAdminService;
+    @Resource
+    private ICsAmqpService csAmqpService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -667,7 +669,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     userInfo);
 
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAID_ORDER, order.getNo());
-
+            csAmqpService.sendOrderState(order);
         }
     }
 

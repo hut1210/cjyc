@@ -12,12 +12,12 @@ public enum OrderStateEnum {
      * 0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，55运输中，88待付款，
      * 100已完成，111原返（待），112异常结束，113取消（待），114作废（待）
      */
-    WAIT_SUBMIT("待提交", 0),
+    WAIT_SUBMIT("预订单", 0),
     SUBMITTED("待分配", 2),
     WAIT_CHECK("待确认", 5),
     //WAIT_RECHECK("待复确认", 10),
     WAIT_PREPAY("待支付",15),
-    CHECKED("已确认",25),
+    CHECKED("待调度",25),
     TRANSPORTING("运输中",55),
     FINISHED("已完成",100),
     //F_RETURN("原返（待）",111),

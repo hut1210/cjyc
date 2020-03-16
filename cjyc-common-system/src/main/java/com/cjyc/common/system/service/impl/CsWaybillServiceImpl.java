@@ -1107,6 +1107,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     waybillCar = new WaybillCar();
                     log.debug("【干线调度修改】新车辆{}", orderCarNo);
                 }
+                boolean isChangeCarState = false;
+                if(waybillCar.getState() == null || (WaybillCarStateEnum.WAIT_LOAD.code >= waybillCar.getState() && carrierInfo.isReAllotCarrier())){
+                    isChangeCarState = true;
+                }
 
                 //验证订单车辆状态
                 OrderCar orderCar = orderCarDao.selectById(orderCarId);
@@ -1130,14 +1134,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
-                //waybillCar.setReceiptFlag(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone()));
                 waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
-                if (isNewWaybillCar) {
+                if (isChangeCarState || isNewWaybillCar) {
                     waybillCar.setState(getTrunkState(carrierInfo));
-                    waybillCarDao.insert(waybillCar);
-                } else {
-                    waybillCarDao.updateByIdForNull(waybillCar);
                 }
+                int row = isNewWaybillCar ? waybillCarDao.insert(waybillCar) : waybillCarDao.updateByIdForNull(waybillCar);
 
                 //变更地址取消后续运单
                 if (isChangeAddress) {

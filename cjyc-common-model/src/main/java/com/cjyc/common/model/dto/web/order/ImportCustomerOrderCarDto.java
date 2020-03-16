@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.util.MoneyUtil;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -17,7 +18,7 @@ public class ImportCustomerOrderCarDto {
     @Min(1)
     private Integer orderNo;
     @Excel(name = "VIN")
-    @Pattern(regexp = "[A-Z0-9]{17}", message = "vin码必须为17位且只能是大写字母或数字")
+    @Pattern(regexp = "(^$)|[A-Z0-9]{17}", message = "vin码必须为17位且只能是大写字母或数字")
     private String vinCode;
     @Excel(name = "品牌")
     @NotEmpty(message = "品牌不能为空")
@@ -26,13 +27,13 @@ public class ImportCustomerOrderCarDto {
     @NotEmpty(message = "车系不能为空")
     private String model;
     @Excel(name = "是否能动")
-    @Pattern(regexp = "(是|否)", message = "是否能动只能输入是或否")
+    @Pattern(regexp = "(^$)|([是否])", message = "是否能动只能输入是或否")
     @NotEmpty(message = "是否能动不能为空")
     private String isMove;
     @Excel(name = "车牌号")
     private String carNum;
     @Excel(name = "是否新车")
-    @Pattern(regexp = "(是|否)", message = "只能输入是或否")
+    @Pattern(regexp = "(^$)|([是否])", message = "只能输入是或否")
     @NotEmpty(message = "是否新车不能为空")
     private String isNew;
     @Excel(name = "提车费(元)")
@@ -40,12 +41,28 @@ public class ImportCustomerOrderCarDto {
     private BigDecimal pickFee;
     @Excel(name = "物流费(元)")
     @NotNull(message = "物流费(元)不能为空")
-    private BigDecimal wlFee;
+    private BigDecimal trunkFee;
     @Excel(name = "送车费(元)")
     @NotNull(message = "送车费(元)不能为空")
-    private BigDecimal sendFee;
+    private BigDecimal backFee;
     @Excel(name = "车值(万元)")
     private BigDecimal vehicleValue;
     @Excel(name = "保费(元)")
-    private BigDecimal inFee;
+    private BigDecimal addInsuranceFee;
+
+    public BigDecimal getPickFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(pickFee));
+    }
+
+    public BigDecimal getTrunkFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(trunkFee));
+    }
+
+    public BigDecimal getBackFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(backFee));
+    }
+
+    public BigDecimal getAddInsuranceFee() {
+        return MoneyUtil.yuanToFen(MoneyUtil.nullToZero(addInsuranceFee));
+    }
 }

@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 @Data
 public class LineResDto implements Serializable {
     private static final long serialVersionUID = 1823148747037611381L;
+    @ApiModelProperty(value = "线路ID")
+    private Long id;
+
     @ApiModelProperty(value = "起点城市名称")
     private String fromCity;
 
@@ -25,4 +28,17 @@ public class LineResDto implements Serializable {
     @ApiModelProperty(value = "报价(元)")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal defaultWlFee;
+
+    public Long getId() {
+        return id == null ? -1 : id;
+    }
+    public String getFromCity() {
+        return fromCity == null ? "" : fromCity;
+    }
+    public String getToCity() {
+        return toCity == null ? "" : toCity;
+    }
+    public BigDecimal getDefaultWlFee() {
+        return defaultWlFee == null ? BigDecimal.ZERO : defaultWlFee;
+    }
 }

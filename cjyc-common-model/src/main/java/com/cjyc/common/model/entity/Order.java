@@ -84,7 +84,6 @@ public class Order implements Serializable {
     private String startAreaCode;
 
     @ApiModelProperty(value = "出发地详细地址")
-    @Excel(name = "提车地址", orderNum = "23")
     private String startAddress;
 
     @ApiModelProperty(value = "出发地经度")
@@ -125,7 +124,6 @@ public class Order implements Serializable {
     private String endAreaCode;
 
     @ApiModelProperty(value = "目的地详细地址")
-    @Excel(name = "交付地址", orderNum = "28")
     private String endAddress;
 
     @ApiModelProperty(value = "目的地经度")

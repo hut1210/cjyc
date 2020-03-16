@@ -43,13 +43,13 @@ public class OrderController {
     private ICsOrderService csOrderService;
 
     /**
-     * 功能描述: 保存订单
+     * 功能描述: 下单
      * @author liuxingxiang
      * @date 2020/3/11
-     * @param dto
+     * @param reqDto
      * @return com.cjyc.common.model.vo.ResultVo<java.lang.String>
      */
-    @ApiOperation(value = "用户下单")
+    @ApiOperation(value = "下单")
     @PostMapping("/submitOrder")
     public ResultVo<String> submitOrder(@RequestBody @Validated OrderSubmitReqDto reqDto) {
         return orderService.submitOrder(reqDto);
