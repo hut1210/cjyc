@@ -141,7 +141,10 @@ cjkj:
     version: 1.0.2
     #host: http://10.253.96.135/api
     basePackage: com.cjyc.foreign.api.controller
-
+  rabbitmq:
+    server-addr: 10.253.96.135
+    user-name: admin
+    password: 123456
 
 cjyc:
   #短信
