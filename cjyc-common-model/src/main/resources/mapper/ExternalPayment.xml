@@ -4,7 +4,6 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.ExternalPayment">
-        <id column="id" property="id" />
         <result column="carrier_id" property="carrierId" />
         <result column="waybill_id" property="waybillId" />
         <result column="order_id" property="orderId" />
