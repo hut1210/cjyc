@@ -48,7 +48,7 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             dataMap.put("createTime", System.currentTimeMillis());
 
             Map<Object, Object> shellMap = Maps.newHashMap();
-            shellMap.put("type", "");
+            shellMap.put("type", "99CC_order_state");
             shellMap.put("data", dataMap);
 
             send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
@@ -73,16 +73,17 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
 
         }
         Map<Object, Object> dataMap = Maps.newHashMap();
-        dataMap.put("orderNo", order.getNo());
-        dataMap.put("state", order.getState());
-        dataMap.put("pickFee", pickTotalFee);
-        dataMap.put("trunkFee", trunkTotalFee);
-        dataMap.put("backFee", backTotalFee);
-        dataMap.put("addInsuranceFee", addInsuranceTotalFee);
-        dataMap.put("createTime", System.currentTimeMillis());
+        dataMap.put("orderNo", order.getNo()); // 订单编号
+        dataMap.put("state", order.getState()); //状态
+        dataMap.put("expectEndDate", order.getExpectEndDate()); // 预计到达日期
+        dataMap.put("pickFee", pickTotalFee); //提车费
+        dataMap.put("trunkFee", trunkTotalFee);//物流费
+        dataMap.put("backFee", backTotalFee);//送车费
+        dataMap.put("addInsuranceFee", addInsuranceTotalFee);//保险费
+        dataMap.put("createTime", System.currentTimeMillis());//当前时间
 
         Map<Object, Object> shellMap = Maps.newHashMap();
-        shellMap.put("type", "");
+        shellMap.put("type", "99CC_order_confirm");
         shellMap.put("data", dataMap);
         send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
     }
