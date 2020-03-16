@@ -707,13 +707,26 @@ public class FinanceServiceImpl implements IFinanceService {
                                     Admin admin = csAdminService.getById(externalPaymentDto.getLoginId(), true);
 
                                     if(admin != null){
-                                        ExternalPayment externalPayment = new ExternalPayment();
-                                        externalPayment.setWaybillId(waybillId);
-                                        externalPayment.setPayTime(System.currentTimeMillis());
-                                        externalPayment.setLoginId(externalPaymentDto.getLoginId());
-                                        externalPayment.setOperator(admin.getName());
-                                        externalPayment.setState(2);
-                                        externalPaymentDao.updateByWayBillId(externalPayment);
+                                        ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
+
+                                        if(ep==null){
+                                            ExternalPayment externalPayment = new ExternalPayment();
+                                            externalPayment.setWaybillId(waybillId);
+                                            externalPayment.setPayTime(System.currentTimeMillis());
+                                            externalPayment.setLoginId(externalPaymentDto.getLoginId());
+                                            externalPayment.setOperator(admin.getName());
+                                            externalPayment.setState(2);
+                                            externalPaymentDao.insert(externalPayment);
+                                        }else{
+                                            ExternalPayment externalPayment = new ExternalPayment();
+                                            externalPayment.setWaybillId(waybillId);
+                                            externalPayment.setPayTime(System.currentTimeMillis());
+                                            externalPayment.setLoginId(externalPaymentDto.getLoginId());
+                                            externalPayment.setOperator(admin.getName());
+                                            externalPayment.setState(2);
+                                            externalPaymentDao.updateByWayBillId(externalPayment);
+                                        }
+
                                     }
 
                                 }

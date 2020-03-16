@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.ITradeBillSummaryDao">
+
+    <select id="incomeSummary" resultType="java.math.BigDecimal">
+        select sum(amount) from f_trade_bill where state=2 and (type!=20 and type!=21)
+    </select>
+    <select id="costSummary" resultType="java.math.BigDecimal">
+        select sum(amount) from f_trade_bill where state=2 and (type=20 or type =21)
+    </select>
+
+</mapper>

@@ -3,10 +3,12 @@ package com.cjyc.foreign.api.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dao.IOrderCarDao;
+import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.web.order.SaveOrderCarDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -15,6 +17,7 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.foreign.api.dto.req.OrderCarSubmitReqDto;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
@@ -29,6 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,17 +41,13 @@ import java.util.List;
 @Service
 public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements IOrderService {
     @Resource
-    private ICouponSendDao couponSendDao;
-    @Resource
     private IOrderCarDao orderCarDao;
-    @Resource
-    private IWaybillCarDao waybillCarDao;
-    @Resource
-    private ICarSeriesDao carSeriesDao;
     @Resource
     private ICsCustomerService csCustomerService;
     @Resource
     private ICsOrderService csOrderService;
+    @Resource
+    private ICsLineService csLineService;
 
     @Override
     public ResultVo<String> submitOrder(OrderSubmitReqDto reqDto) {
@@ -55,23 +56,68 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             //验证用户存不存在
             Customer customer = csCustomerService.getByPhone(reqDto.getCustomerPhone(), true);
             if(customer == null){
+                log.info("用户不存在");
                 return BaseResultUtil.fail("用户不存在");
             }
 
-            // 验证订单费用是否正确
-            /*BigDecimal totalFee = reqDto.getTotalFee();
-            int carNum = reqDto.getOrderCarList().size();
-            BigDecimal totalWlFee = reqDto.getLineWlFreightFee().multiply(new BigDecimal(carNum));
-            if (totalFee == null) {
-                reqDto.setTotalFee(totalWlFee);
-            } else {
-                if (!totalFee.equals(totalWlFee)) {
-                    return BaseResultUtil.fail("订单金额不正确!");
+            // 验证线路是否存在
+            Line line = csLineService.getlineByArea(reqDto.getStartAreaCode(), reqDto.getEndAreaCode());
+            if (line == null) {
+                log.info("线路不存在，请重新选择城市");
+                return BaseResultUtil.fail("线路不存在，请重新选择城市");
+            }
+
+            // 验证订单总价是否正确
+            List<@Valid OrderCarSubmitReqDto> orderCarList = reqDto.getOrderCarList();
+            int carNum = orderCarList.size();// 车辆数
+
+
+            // 计算总保险费
+            BigDecimal totalInsuranceFee = BigDecimal.ZERO;// 总保险费-计算值
+            BigDecimal totalParamInsuranceFee = BigDecimal.ZERO;// 总保险费-参数值
+            for (OrderCarSubmitReqDto carSubmitReqDto : orderCarList) {
+                int valuation = carSubmitReqDto.getValuation();// 车值
+                BigDecimal paramInsuranceFee = carSubmitReqDto.getAddInsuranceFee();// 保险费-参数值
+                BigDecimal addInsuranceFee = BigDecimal.ZERO;// 每辆车保险费-计算值
+                // 计算每辆车保险费
+                while (valuation - 10 > 0) {
+                    addInsuranceFee = addInsuranceFee.add(BigDecimal.valueOf(50));
+                    valuation = valuation - 10;
                 }
-            }*/
+                // 验证每辆车保险费
+                if (!addInsuranceFee.equals(paramInsuranceFee)) {
+                    log.info("车牌号【" + carSubmitReqDto.getPlateNo() + "】保险费金额不正确!");
+                    log.info("车牌号【" + carSubmitReqDto.getPlateNo() + "】保险费金额为 "+ addInsuranceFee);
+                    return BaseResultUtil.fail("车牌号【" + carSubmitReqDto.getPlateNo() + "】保险费金额不正确!");
+                }
+
+                carSubmitReqDto.setAddInsuranceFee(addInsuranceFee);// 设置正确的保险费
+                totalInsuranceFee = totalInsuranceFee.add(addInsuranceFee);
+                totalParamInsuranceFee = totalParamInsuranceFee.add(paramInsuranceFee);
+            }
+
+            // 线路费验证
+            BigDecimal lineWlFreightFee = reqDto.getLineWlFreightFee();
+            BigDecimal defaultWlFee = line.getDefaultWlFee();
+            BigDecimal lineFee = defaultWlFee == null ? BigDecimal.ZERO : defaultWlFee.divide(new BigDecimal(100));
+            if (lineFee.equals(lineWlFreightFee)) {
+                log.info("线路费金额不正确");
+                return BaseResultUtil.fail("线路费金额不正确!");
+            }
+
+            // 验证订单总价 订单总价 = (线路费用 * 车辆数)+总保险费
+            BigDecimal totalFee = reqDto.getLineWlFreightFee().multiply(BigDecimal.valueOf(carNum)).add(totalParamInsuranceFee);
+            if (!reqDto.getTotalFee().equals(totalFee)) {
+                log.info("订单金额不正确");
+                return BaseResultUtil.fail("订单金额不正确!");
+            }
+
+            // 设置线路费与订单总价
+            reqDto.setLineWlFreightFee(lineFee);
+            reqDto.setTotalFee(lineFee.multiply(BigDecimal.valueOf(carNum)).add(totalInsuranceFee));
 
             // 干线费用
-            List<OrderCarSubmitReqDto> carList = reqDto.getOrderCarList();
+            List<OrderCarSubmitReqDto> carList = orderCarList;
             if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
                 carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
             }

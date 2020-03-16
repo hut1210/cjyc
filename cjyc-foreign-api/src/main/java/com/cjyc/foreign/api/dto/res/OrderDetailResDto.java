@@ -1,6 +1,7 @@
 package com.cjyc.foreign.api.dto.res;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,6 +9,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -109,9 +111,11 @@ public class OrderDetailResDto implements Serializable {
     private Long endBelongStoreId;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
 
     @ApiModelProperty(value = "预计到达时间")
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectEndDate;
 
     @ApiModelProperty(value = "车辆总数")
@@ -142,6 +146,7 @@ public class OrderDetailResDto implements Serializable {
     private Integer source;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "创建人：客户/业务员")
@@ -159,6 +164,7 @@ public class OrderDetailResDto implements Serializable {
     private Long allotToUserId;
 
     @ApiModelProperty(value = "确认时间")
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long checkTime;
 
     @ApiModelProperty(value = "确认人：业务员")
@@ -196,9 +202,11 @@ public class OrderDetailResDto implements Serializable {
     private Integer wlPayState;
 
     @ApiModelProperty(value = "上次客户支付尾款时间")
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long wlPayTime;
 
     @ApiModelProperty(value = "订单完结时间")
+    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long finishTime;
 
     @ApiModelProperty(value = "订单车辆信息列表")
@@ -206,4 +214,240 @@ public class OrderDetailResDto implements Serializable {
 
     @ApiModelProperty(value = "订单车辆运输信息列表")
     private List<OrderCarTransportDetailResDto> orderCarTransportDetailList;
+
+    public Long getId() {
+        return id == null ? -1 : id;
+    }
+
+    public String getNo() {
+        return no == null ? "" : no;
+    }
+
+    public Long getCustomerId() {
+        return customerId == null ? -1 : customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName == null ? "" : customerName;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone == null ? "" : customerPhone;
+    }
+
+    public Integer getCustomerType() {
+        return customerType == null ? -1 : customerType;
+    }
+
+    public Long getInputStoreId() {
+        return inputStoreId == null ? -1 : inputStoreId;
+    }
+
+    public String getInputStoreName() {
+        return inputStoreName == null ? "" : inputStoreName;
+    }
+
+    public String getStartProvince() {
+        return startProvince == null ? "" : startProvince;
+    }
+
+    public String getStartProvinceCode() {
+        return startProvinceCode == null ? "" : startProvinceCode;
+    }
+
+    public String getStartCity() {
+        return startCity == null ? "" : startCity;
+    }
+
+    public String getStartCityCode() {
+        return startCityCode == null ? "" : startCityCode;
+    }
+
+    public String getStartArea() {
+        return startArea == null ? "" : startArea;
+    }
+
+    public String getStartAreaCode() {
+        return startAreaCode == null ? "" : startAreaCode;
+    }
+
+    public String getStartAddress() {
+        return startAddress == null ? "" : startAddress;
+    }
+
+    public Long getStartStoreId() {
+        return startStoreId == null ? -1 : startStoreId;
+    }
+
+    public String getStartStoreName() {
+        return startStoreName == null ? "" : startStoreName;
+    }
+
+    public Long getStartBelongStoreId() {
+        return startBelongStoreId == null ? -1 : startBelongStoreId;
+    }
+
+    public String getEndProvince() {
+        return endProvince == null ? "" : endProvince;
+    }
+
+    public String getEndProvinceCode() {
+        return endProvinceCode == null ? "" : endProvinceCode;
+    }
+
+    public String getEndCity() {
+        return endCity == null ? "" : endCity;
+    }
+
+    public String getEndCityCode() {
+        return endCityCode == null ? "" : endCityCode;
+    }
+
+    public String getEndArea() {
+        return endArea == null ? "" : endArea;
+    }
+
+    public String getEndAreaCode() {
+        return endAreaCode == null ? "" : endAreaCode;
+    }
+
+    public String getEndAddress() {
+        return endAddress == null ? "" : endAddress;
+    }
+
+    public Long getEndStoreId() {
+        return endStoreId == null ? -1 : endStoreId;
+    }
+
+    public String getEndStoreName() {
+        return endStoreName == null ? "" : endStoreName;
+    }
+
+    public Long getEndBelongStoreId() {
+        return endBelongStoreId == null ? -1 : endBelongStoreId;
+    }
+
+    public Long getExpectStartDate() {
+        return expectStartDate == null ? 0 : expectStartDate;
+    }
+
+    public Long getExpectEndDate() {
+        return expectEndDate == null ? 0 : expectEndDate;
+    }
+
+    public Integer getCarNum() {
+        return carNum == null ? 0 : carNum;
+    }
+
+    public Long getLineId() {
+        return lineId == null ? -1 : lineId;
+    }
+
+    public Integer getPickType() {
+        return pickType == null ? -1 : pickType;
+    }
+
+    public String getPickContactName() {
+        return pickContactName == null ? "" : pickContactName;
+    }
+
+    public String getPickContactPhone() {
+        return pickContactPhone == null ? "" : pickContactPhone;
+    }
+
+    public Integer getBackType() {
+        return backType == null ? -1 : backType;
+    }
+
+    public String getBackContactName() {
+        return backContactName == null ? "" : backContactName;
+    }
+
+    public String getBackContactPhone() {
+        return backContactPhone == null ? "" : backContactPhone;
+    }
+
+    public Integer getSource() {
+        return source == null ? -1 : source;
+    }
+
+    public Long getCreateTime() {
+        return createTime == null ? 0 : createTime;
+    }
+
+    public String getCreateUserName() {
+        return createUserName == null ? "" : createUserName;
+    }
+
+    public Long getCreateUserId() {
+        return createUserId == null ? -1 : createUserId;
+    }
+
+    public String getAllotToUserName() {
+        return allotToUserName == null ? "" : allotToUserName;
+    }
+
+    public Long getAllotToUserId() {
+        return allotToUserId == null ? -1 : allotToUserId;
+    }
+
+    public Long getCheckTime() {
+        return checkTime == null ? 0 : checkTime;
+    }
+
+    public String getCheckUserName() {
+        return checkUserName == null ? "" : checkUserName;
+    }
+
+    public Long getCheckUserId() {
+        return checkUserId == null ? -1 : checkUserId;
+    }
+
+    public Integer getState() {
+        return state == null ? -1 : state;
+    }
+
+    public String getRemark() {
+        return remark == null ? "" : remark;
+    }
+
+    public Integer getInvoiceFlag() {
+        return invoiceFlag == null ? -1 : invoiceFlag;
+    }
+
+    public Integer getInvoiceType() {
+        return invoiceType == null ? -1 : invoiceType;
+    }
+
+    public BigDecimal getCouponOffsetFee() {
+        return couponOffsetFee == null ? BigDecimal.ZERO : couponOffsetFee;
+    }
+
+    public BigDecimal getTotalFee() {
+        return totalFee == null ? BigDecimal.ZERO : totalFee;
+    }
+
+    public Integer getPayType() {
+        return payType == null ? -1 : payType;
+    }
+
+    public Integer getWlPayState() {
+        return wlPayState == null ? -1 : wlPayState;
+    }
+
+    public Long getWlPayTime() {
+        return wlPayTime == null ? 0 : wlPayTime;
+    }
+
+    public Long getFinishTime() {
+        return finishTime == null ? 0 : finishTime;
+    }
+
+    public List<OrderCarDetailResDto> getOrderCarDetailList() {
+        return orderCarDetailList == null ? new ArrayList<>(0) : orderCarDetailList;
+    }
+
+    public List<OrderCarTransportDetailResDto> getOrderCarTransportDetailList() {
+        return orderCarTransportDetailList == null ? new ArrayList<>(0) : orderCarTransportDetailList;
+    }
 }
