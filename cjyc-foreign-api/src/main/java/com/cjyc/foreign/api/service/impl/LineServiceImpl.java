@@ -33,11 +33,13 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         try {
             log.info("===>查询报价，请求参数：{}", JSON.toJSONString(dto));
             Line line = lineDao.getLinePriceByCode(dto.getFromCode(), dto.getToCode());
-            LineResDto res = new LineResDto();
             if (line != null) {
+                LineResDto res = new LineResDto();
                 BeanUtils.copyProperties(line,res);
+                resultVo = BaseResultUtil.success(res);
+            } else {
+                resultVo = BaseResultUtil.fail("未查询到数据...");
             }
-            resultVo = BaseResultUtil.success(res);
             log.info("<===查询报价，返回参数：{}", JSON.toJSONString(resultVo));
         } catch (BeansException e) {
             log.error("===>查询报价出现异常：{}",e);

@@ -27,4 +27,24 @@ public class OrderCarTransportDetailResDto implements Serializable {
 
     @ApiModelProperty("送车运输状态：1待调度，2待提车，3待交车，5已完成，21自提待调度，22自提待提车，23自提待交车，25自提已交付，100物流上门")
     private Integer backTransportState;
+
+    public String getNo() {
+        return no == null ? "" : no;
+    }
+
+    public String getVin() {
+        return vin == null ? "" : vin;
+    }
+
+    public Integer getPickTransportState() {
+        return pickTransportState == null ? -1 : pickTransportState;
+    }
+
+    public Integer getTrunkTransportState() {
+        return trunkTransportState == null ? -1 : trunkTransportState;
+    }
+
+    public Integer getBackTransportState() {
+        return backTransportState == null ? -1 : backTransportState;
+    }
 }
