@@ -97,4 +97,11 @@ public class ExcelUtil {
             return ExcelImportUtil.importExcel(file.getInputStream(), pojoClass, params);
         }
     }
+
+    public static void exportMultipleSheets(List<Map<String, Object>> list, String fileName, HttpServletResponse response) throws IOException {
+        Workbook workbook = ExcelExportUtil.exportExcel(list, ExcelType.HSSF);
+        if (workbook != null) {
+            downLoadExcel(fileName, response, workbook);
+        }
+    }
 }

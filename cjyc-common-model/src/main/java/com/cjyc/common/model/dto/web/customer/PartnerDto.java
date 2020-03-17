@@ -60,7 +60,13 @@ public class PartnerDto implements Serializable {
     @NotNull(message = "卡类型不能为空")
     private Integer cardType;
 
-    @ApiModelProperty(value = "开户名称",required = true)
+    @ApiModelProperty(value = "省直辖市名称")
+    private String provinceName;
+
+    @ApiModelProperty(value = "地区名称")
+    private String areaName;
+
+    @ApiModelProperty(value = "开户名称/持卡人姓名",required = true)
     @NotBlank(message = "开户名称不能为空")
     private String cardName;
 

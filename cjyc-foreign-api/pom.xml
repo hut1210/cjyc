@@ -21,6 +21,12 @@
             <groupId>com.cjyc</groupId>
             <artifactId>cjyc-common-system</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.cjkj</groupId>
+                    <artifactId>cjkj-mq-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--web-->
         <dependency>

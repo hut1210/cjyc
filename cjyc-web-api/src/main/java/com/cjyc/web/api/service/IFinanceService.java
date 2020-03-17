@@ -6,6 +6,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author:Hut
@@ -14,7 +15,7 @@ import java.util.List;
 public interface IFinanceService {
     ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto);
 
-    List<ExportFinanceVo> exportExcel(FinanceQueryDto financeQueryDto);
+    Map exportExcel(FinanceQueryDto financeQueryDto);
 
     ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
 
@@ -89,6 +90,8 @@ public interface IFinanceService {
     ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto);
 
     List<CooperatorPaidVo> exportCooperator(CooperatorSearchDto cooperatorSearchDto);
+
+    ResultVo<List<ExportFinanceDetailVo>> getFinanceDetailList(String no);
 
     /**
      * 根据运单号查看上游付款状态列表

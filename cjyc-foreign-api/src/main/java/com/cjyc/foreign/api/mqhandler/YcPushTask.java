@@ -1,19 +1,23 @@
-/*
 package com.cjyc.foreign.api.mqhandler;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjkj.mq.rabbit.bean.BasicRabbitMessage;
 import com.cjkj.mq.rabbit.sender.MessageSender;
+import com.cjyc.foreign.api.constant.MQConstant;
 import com.cjyc.foreign.api.push.IPushable;
 import com.cjyc.foreign.api.utils.PushUtil;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -24,53 +28,47 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-*/
 /**
  * 99车圈推送订单状态任务
- *//*
-
+ */
 @Slf4j
 @Component
 public class YcPushTask {
-    */
-/**
+    /**
      * 线程池
-     *//*
-
+     */
     private static final ThreadPoolExecutor EXEC = new ThreadPoolExecutor(3, 10, 3, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(3), new ThreadPoolExecutor.DiscardOldestPolicy());
-    */
-/**
+    /**
      * 失败回调次数统计
-     *//*
-
+     */
     private ConcurrentHashMap<String, Integer> failTimes = new ConcurrentHashMap<>();
     //发送失败后重发策略
     private static Map<Integer, Integer> retryRule = new HashMap<>();
     //重发唯一标识
     private static final String RETRY_FLAG = "uniqueSequence";
-    //业务类型确定
+    //业务类型key
     private static final String BIZ_TYPE = "type";
+    //业务数据key
+    private static final String BIZ_DATA = "data";
     static {
-        retryRule.put(1, 15000);
-        retryRule.put(2, 30000);
-//        retryRule.put(3, 60);
+        retryRule.put(1, 600000);
+        retryRule.put(2, 1800000);
+        retryRule.put(3, 3600000);
 //        retryRule.put(4, 360);
 //        retryRule.put(5, 1440);
     }
     @Autowired
     private MessageSender messageSender;
-    */
-/**
+    /**
     * @Description: 韵车mq消息推送消费
     * @Param: [message, channel]
     * @return: void
     * @Author: zcm
     * @Date: 2020/3/13
-    *//*
-
-    //@RabbitHandler
-    //@RabbitListener(queues = MQConstant.QUEUE_YC_PUSH)
+    */
+//    @RabbitHandler
+//    @RabbitListener(queues = MQConstant.QUEUE_YC_PUSH)
     private void pushOrderStateFunc(Message message, Channel channel) {
         EXEC.execute(() -> {
             final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -81,7 +79,8 @@ public class YcPushTask {
             JSONObject obj = null;
             try {
                 obj = (JSONObject) JSONObject.parse(jsonMsg);
-                if (obj == null || obj.isEmpty() || StringUtils.isEmpty(obj.getString(BIZ_TYPE))) {
+                if (obj == null || obj.isEmpty() || StringUtils.isEmpty(obj.getString(BIZ_TYPE))
+                 || !obj.containsKey(BIZ_DATA) || obj.getJSONObject(BIZ_DATA).isEmpty()) {
                     log.error("业务数据有误，请检查，数据: {}", obj);
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     return;
@@ -94,7 +93,7 @@ public class YcPushTask {
                     return;
                 }
                 //TODO 调用状态回调接口
-                if (pushable.push(obj)) {
+                if (pushable.push(obj.getJSONObject(BIZ_DATA))) {
                     //正常逻辑处理后在应答, 需要先调用推送接口并解析返回结果，成功后确认
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     log.info("消费消息成功，id: {}", message.getMessageProperties().getDeliveryTag());
@@ -116,14 +115,12 @@ public class YcPushTask {
         });
     }
 
-    */
-/**
+    /**
      * 消息处理失败，回退处理
      * @param message
      * @param channel
      * @param jsonMsg
-     *//*
-
+     */
     private void dealNackMsg(Message message, Channel channel, String jsonMsg) {
         log.error("消息处理失败：id:{}", message.getMessageProperties().getDeliveryTag());
         if (message.getMessageProperties().getRedelivered()) {
@@ -145,15 +142,13 @@ public class YcPushTask {
         }
     }
     
-    */
-/**
+    /**
     * @Description: 给对方消息推送失败后，需延迟发送
     * @Param: [message, channel, msgJo]
     * @return: void
     * @Author: zcm
     * @Date: 2020/3/14
-    *//*
-
+    */
     private void onPushFail(Message message, Channel channel, JSONObject msgJo) {
         String flag = msgJo.getString(RETRY_FLAG);
         if (StringUtils.isEmpty(flag)) {
@@ -192,4 +187,3 @@ public class YcPushTask {
         }
     }
 }
-*/
