@@ -1,3 +1,4 @@
+/*
 package com.cjyc.foreign.api.mqhandler;
 
 import com.alibaba.fastjson.JSONObject;
@@ -23,20 +24,26 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+*/
 /**
  * 99车圈推送订单状态任务
- */
+ *//*
+
 @Slf4j
 @Component
 public class YcPushTask {
-    /**
+    */
+/**
      * 线程池
-     */
+     *//*
+
     private static final ThreadPoolExecutor EXEC = new ThreadPoolExecutor(3, 10, 3, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(3), new ThreadPoolExecutor.DiscardOldestPolicy());
-    /**
+    */
+/**
      * 失败回调次数统计
-     */
+     *//*
+
     private ConcurrentHashMap<String, Integer> failTimes = new ConcurrentHashMap<>();
     //发送失败后重发策略
     private static Map<Integer, Integer> retryRule = new HashMap<>();
@@ -53,13 +60,15 @@ public class YcPushTask {
     }
     @Autowired
     private MessageSender messageSender;
-    /**
+    */
+/**
     * @Description: 韵车mq消息推送消费
     * @Param: [message, channel]
     * @return: void
     * @Author: zcm
     * @Date: 2020/3/13
-    */
+    *//*
+
     //@RabbitHandler
     //@RabbitListener(queues = MQConstant.QUEUE_YC_PUSH)
     private void pushOrderStateFunc(Message message, Channel channel) {
@@ -107,12 +116,14 @@ public class YcPushTask {
         });
     }
 
-    /**
+    */
+/**
      * 消息处理失败，回退处理
      * @param message
      * @param channel
      * @param jsonMsg
-     */
+     *//*
+
     private void dealNackMsg(Message message, Channel channel, String jsonMsg) {
         log.error("消息处理失败：id:{}", message.getMessageProperties().getDeliveryTag());
         if (message.getMessageProperties().getRedelivered()) {
@@ -134,13 +145,15 @@ public class YcPushTask {
         }
     }
     
-    /**
+    */
+/**
     * @Description: 给对方消息推送失败后，需延迟发送
     * @Param: [message, channel, msgJo]
     * @return: void
     * @Author: zcm
     * @Date: 2020/3/14
-    */
+    *//*
+
     private void onPushFail(Message message, Channel channel, JSONObject msgJo) {
         String flag = msgJo.getString(RETRY_FLAG);
         if (StringUtils.isEmpty(flag)) {
@@ -179,3 +192,4 @@ public class YcPushTask {
         }
     }
 }
+*/

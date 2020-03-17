@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web.carrier;
+package com.cjyc.common.model.dto.web.carrier;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import lombok.Data;
