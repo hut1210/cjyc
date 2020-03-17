@@ -63,4 +63,6 @@ public interface IFinanceDao extends BaseMapper {
     List<PaidNewVo> getAutoPaidList(PayMentQueryDto payMentQueryDto);
 
     List<CooperatorPaidVo> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
+
+    List<ExportFinanceDetailVo> getFinanceDetailList(String no);
 }
