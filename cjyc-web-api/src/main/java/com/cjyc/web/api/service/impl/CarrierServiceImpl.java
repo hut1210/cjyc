@@ -27,6 +27,7 @@ import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.ICarrierService;
+import com.cjyc.web.api.service.IPublicPayBankService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +81,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private ICsBankInfoService bankInfoService;
+    @Resource
+    private IPublicPayBankService payBankService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -603,9 +606,18 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(NOW);
         //获取银行编码
-        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
-        if(bankInfo != null){
-            bcb.setBankCode(bankInfo.getBankCode());
+        if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
+            BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+            if(bankInfo != null){
+                bcb.setBankCode(bankInfo.getBankCode());
+            }
+        }else if(dto.getCardType().equals(CardTypeEnum.PUBLIC.code)){
+            PublicPayBank payBank = payBankService.findPayBank(bcb.getBankName());
+            if(payBank != null){
+                bcb.setBankCode(payBank.getBankCode());
+            }
+            bcb.setProvinceName(dto.getProvinceName());
+            bcb.setAreaName(dto.getAreaName());
         }
         bankCardBindDao.insert(bcb);
     }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.publicPay.PayBankVo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -32,5 +33,14 @@ public interface IPublicPayBankService extends IService<PublicPayBank> {
      * @return
      */
     ResultVo<PageVo<PayBankVo>> findPayBankInfo(PayBankDto dto);
+
+    /**
+     * 根据银行名称获取对公银行信息
+     * @param subBankName
+     * @return
+     */
+    PublicPayBank findPayBank(String subBankName);
+
+
 
 }

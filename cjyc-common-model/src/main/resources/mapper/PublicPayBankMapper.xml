@@ -41,4 +41,17 @@
         </where>
     </select>
 
+    <!-- 根据银行名称查询对公支付银行信息 -->
+    <select id="findPayBank" resultType="com.cjyc.common.model.entity.PublicPayBank"
+                            parameterType="java.lang.String">
+        select
+          <include refid="Base_Column_List"/>
+        from s_public_pay_bank
+        <where>
+            <if test="subBankName != null and subBankName.trim() != ''">
+               sub_bank_name = #{subBankName}
+            </if>
+        </where>
+    </select>
+
 </mapper>
