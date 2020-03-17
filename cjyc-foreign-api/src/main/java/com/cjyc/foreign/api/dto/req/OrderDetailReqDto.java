@@ -14,6 +14,7 @@ import java.io.Serializable;
 @Data
 public class OrderDetailReqDto implements Serializable {
     private static final long serialVersionUID = 7823889126670980859L;
+
     @ApiModelProperty(value = "订单编号",required = true)
     @NotBlank(message = "订单编号不能为空")
     private String orderNo;
