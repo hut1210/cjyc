@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
-@Api(tags = "rabbit")
+/*@Api(tags = "rabbit")
 @RequestMapping("/mq")
 @RestController
-@Slf4j
+@Slf4j*/
 public class TestListener {
 
-    @Resource
+    /*@Resource
     private AmqpTemplate rabbitTemplate;
 
     //@RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "${cjkj.amqp.routing-key.common}"), exchange = @Exchange(value = "${cjkj.amqp.exchange.topic}"), key = "${cjkj.amqp.routing-key.common}")})
@@ -36,6 +36,6 @@ public class TestListener {
         System.out.println("----------------------》》》》》》" + AmqpProperty.enabled);
         rabbitTemplate.convertAndSend(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, "");
         return "成功";
-    }
+    }*/
 
 }

@@ -1,6 +1,5 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.web.OperateDto;

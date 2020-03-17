@@ -19,7 +19,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleExportExcel;
-import com.cjyc.common.model.vo.web.vehicle.VehicleImportExcel;
+import com.cjyc.common.model.dto.web.vehicle.VehicleImportExcel;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import com.cjyc.web.api.service.IVehicleService;
 import com.github.pagehelper.PageHelper;

@@ -1,7 +1,6 @@
 package com.cjyc.foreign.api.dto.res;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
-import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -52,7 +51,6 @@ public class OrderCarDetailResDto implements Serializable {
     private String nowAreaCode;
 
     @ApiModelProperty(value = "当前位置更新时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long nowUpdateTime;
 
     @ApiModelProperty(value = "状态：0待路由，5待提车调度，10待提车，12待自送交车，15提车中（待交车），25待干线调度<循环>（提车入库），35待干线提车<循环>，40干线中<循环>（待干线交车），45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），70待自取提车，100已签收")
@@ -111,11 +109,9 @@ public class OrderCarDetailResDto implements Serializable {
     private Integer wlPayState;
 
     @ApiModelProperty(value = "物流费支付时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long wlPayTime;
 
     @ApiModelProperty(value = "完成时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long finishTime;
 
     public Long getId() {

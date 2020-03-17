@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web.mineCarrier;
+package com.cjyc.common.model.dto.web.mineCarrier;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import lombok.Data;

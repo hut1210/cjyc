@@ -1,13 +1,18 @@
 package com.cjyc.common.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.cjyc.common.model.constant.AccountConstant;
+import com.cjyc.common.model.constant.AmqpConstant;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.defined.MQMessage;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.system.config.AmqpProperty;
 import com.cjyc.common.system.service.ICsAmqpService;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -46,12 +51,9 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             dataMap.put("orderNo", o.getNo());
             dataMap.put("state", o.getState());
             dataMap.put("createTime", System.currentTimeMillis());
-
-            Map<Object, Object> shellMap = Maps.newHashMap();
-            shellMap.put("type", "99CC_order_state");
-            shellMap.put("data", dataMap);
-
-            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
+            if(AccountConstant.ACCOUNT_99CC.equals(o.getCustomerPhone())){
+                send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_STATE, dataMap));
+            }
         });
     }
 
@@ -82,23 +84,26 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         dataMap.put("addInsuranceFee", addInsuranceTotalFee);//保险费
         dataMap.put("createTime", System.currentTimeMillis());//当前时间
 
-        Map<Object, Object> shellMap = Maps.newHashMap();
-        shellMap.put("type", "99CC_order_confirm");
-        shellMap.put("data", dataMap);
-        send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
+        if(AccountConstant.ACCOUNT_99CC.equals(order.getCustomerPhone())){
+            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_CONFIRM, dataMap));
+        }
     }
     @Async
     @Override
     public void send(String exchange, String routingKey, Object message) {
-        if(message == null){
-            return;
+        try {
+            if(message == null){
+                return;
+            }
+            //设置回调对象
+            rabbitTemplate.setConfirmCallback(this);
+            //构建回调返回的数据
+            CorrelationData correlationData = new CorrelationData(String.valueOf(UUID.randomUUID()));
+            rabbitTemplate.convertAndSend(exchange, routingKey, JSON.toJSONString(message), correlationData);
+            log.info("Amqp >>> 发送消息到RabbitMQ, 消息内容: " + message);
+        } catch (AmqpException e) {
+            log.error(e.getMessage(), e);
         }
-        //设置回调对象
-        rabbitTemplate.setConfirmCallback(this);
-        //构建回调返回的数据
-        CorrelationData correlationData = new CorrelationData(String.valueOf(UUID.randomUUID()));
-        rabbitTemplate.convertAndSend(exchange, routingKey, message, correlationData);
-        log.info("Amqp >>> 发送消息到RabbitMQ, 消息内容: " + message);
     }
 
 

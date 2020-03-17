@@ -116,7 +116,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000L, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
@@ -251,7 +251,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
@@ -325,7 +325,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order = orderDao.selectById(orderId);
                 if (order != null) {
                     lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
-                    redisLock.lock(lockKey, 60000, 100, 300);
+                    redisLock.lock(lockKey, 120000, 0, 300);
                     oldOrder = getFullOrder(order);
                 }
             }
@@ -358,7 +358,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order.setCreateUserName(paramsDto.getLoginName());
                 order.setCreateTime(currentTimeMillis);
             }
-            order.setState(OrderStateEnum.SUBMITTED.code);
+            order.setState(OrderStateEnum.WAIT_CHECK.code);
             order.setTotalFee(MoneyUtil.yuanToFen(paramsDto.getTotalFee()));
 
             //更新或插入订单
@@ -486,7 +486,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
@@ -915,7 +915,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
@@ -1126,7 +1126,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         String lockKey = RedisKeys.getCancelLockKey(paramsDto.getOrderId());
         try {
-            if (!redisLock.lock(lockKey, 120000, 10, 200)) {
+            if (!redisLock.lock(lockKey, 120000, 0, 200)) {
                 return BaseResultUtil.fail("当前订单{0}其他人正在操作，", paramsDto.getOrderId());
             }
             //取消订单
