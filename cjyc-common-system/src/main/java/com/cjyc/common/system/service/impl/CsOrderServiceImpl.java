@@ -121,14 +121,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
             }
-            //验证线路
-            if (paramsDto.getLineId() == null || paramsDto.getLineId() <= 0) {
-                Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
-                if (line == null) {
-                    return BaseResultUtil.fail("线路不存在，请重新选择城市");
-                }
-                paramsDto.setLineId(line.getId());
+
+            Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
+            if (line == null || line.getId() == null) {
+                return BaseResultUtil.fail("线路不存在，请重新选择城市");
             }
+            if(!line.getId().equals(paramsDto.getLineId())){
+                return BaseResultUtil.fail("线路数据异常，请重新选择一次城市信息");
+            }
+            paramsDto.setLineId(line.getId());
 
             long currentTimeMillis = System.currentTimeMillis();
 
@@ -559,13 +560,14 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
 
     private ResultVo<CommitOrderDto> validateOrderForCommit(CommitOrderDto paramsDto) {
-        if (paramsDto.getLineId() == null || paramsDto.getLineId() <= 0) {
-            Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
-            if (line == null) {
-                return BaseResultUtil.fail("线路不存在，请重新选择城市");
-            }
-            paramsDto.setLineId(line.getId());
+        Line line = csLineService.getlineByArea(paramsDto.getStartAreaCode(), paramsDto.getEndAreaCode());
+        if (line == null) {
+            return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
+        if(!line.getId().equals(paramsDto.getLineId())){
+            return BaseResultUtil.fail("线路数据异常，请重新选择一次城市信息");
+        }
+        paramsDto.setLineId(line.getId());
         if (OrderPickTypeEnum.SELF.code == paramsDto.getPickType() && (paramsDto.getStartStoreId() == null || paramsDto.getStartStoreId() == 0)) {
             return BaseResultUtil.fail("始发地不经过业务中心的单子，不能选择自送");
         }
