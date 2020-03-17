@@ -73,6 +73,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             // 调用韵车系统-保存订单
             log.info("===>调用韵车系统保存订单接口,请求参数：{}",JSON.toJSONString(paramDto));
             resultVo = csOrderService.save(paramDto);
+            log.info("<===调用韵车系统保存订单接口,返回参数：{}",JSON.toJSONString(resultVo));
             if (resultVo.getCode() == ResultEnum.SUCCESS.getCode()) {
                 int index = resultVo.getMsg().indexOf("D");
                 if (index > -1) {
