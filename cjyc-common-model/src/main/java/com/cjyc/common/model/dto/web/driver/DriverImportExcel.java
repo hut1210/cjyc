@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web.driver;
+package com.cjyc.common.model.dto.web.driver;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import lombok.Data;

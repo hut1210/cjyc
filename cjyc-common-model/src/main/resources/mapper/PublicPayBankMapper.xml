@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyc.common.model.dao.IPublicPayBankDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.PublicPayBank">
+        <id column="id" property="id" />
+        <result column="bank_code" property="bankCode" />
+        <result column="pay_bank_no" property="payBankNo" />
+        <result column="sub_bank_name" property="subBankName" />
+        <result column="area_code" property="areaCode" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bank_code, pay_bank_no, sub_bank_name, area_code, create_user_id, create_time, update_user_id, update_time
+    </sql>
+
+    <!-- 查询对公支付银行信息 -->
+    <select id="findPayBankInfo" resultType="com.cjyc.common.model.vo.web.publicPay.PayBankVo"
+                                 parameterType="com.cjyc.common.model.dto.web.publicPayBank.PayBankDto">
+        SELECT
+            id AS id,
+            bank_code AS bankCode,
+            pay_bank_no AS payBankNo,
+            sub_bank_name AS subBankName,
+            area_code AS areaCode
+        FROM
+            s_public_pay_bank
+        <where>
+            <if test="payBankNo != null and payBankNo.trim() != ''">
+                pay_bank_no like concat('%',#{payBankNo},'%')
+            </if>
+            <if test="subBankName != null and subBankName.trim() != ''">
+                and sub_bank_name like concat('%',#{subBankName},'%')
+            </if>
+        </where>
+    </select>
+
+</mapper>
