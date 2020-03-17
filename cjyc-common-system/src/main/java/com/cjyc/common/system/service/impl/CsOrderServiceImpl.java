@@ -327,6 +327,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
                     redisLock.lock(lockKey, 60000, 100, 300);
                     oldOrder = getFullOrder(order);
+
+                    //验证运单
+                    if(order.getState() > OrderStateEnum.WAIT_CHECK.code){
+                        throw new ParameterException("订单已经确认过，请刷新接单列表");
+                    }
                 }
             }
             //新建订单
