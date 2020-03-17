@@ -541,7 +541,11 @@
         sbcb.card_no as cardNo,
         sbcb.bank_name as bankName,
         fep.operator,
-        if(ww.freight_pay_state=1,ww.freight_pay_time,0) as payTime
+        if(ww.freight_pay_state=1,ww.freight_pay_time,0) as payTime,
+        sbcb.card_type, as cardType,
+        sbcb.id_card, as idCard,
+        sbcb.province_name, as provinceName,
+        sbcb.area_name, as areaName
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
@@ -871,7 +875,12 @@
         sbcb.card_name as cardName,
         sbcb.card_no as cardNo,
         sbcb.id_card as IDCard,
-        fep.operator
+        fep.operator,
+        sbcb.card_name as receiveCardName,
+        sbcb.bank_name as bankNameDetail,
+        sbcb.card_no as pubCardNo,
+        sbcb.province_name as provinceName,
+        sbcb.area_name as areaName
         from w_order wo
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
