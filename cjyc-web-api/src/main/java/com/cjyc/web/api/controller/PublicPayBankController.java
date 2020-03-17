@@ -25,6 +25,7 @@ public class PublicPayBankController {
 
     @ApiOperation(value = "对公支付行号导入Excel", notes = "\t 请求接口为/importPayBankExcel/loginId(登录用户ID)格式")
     @PostMapping("/importPayBankExcel/{loginId}")
+    @Deprecated
     public ResultVo importPayBankExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
         boolean result = payBankService.importPayBankExcel(file,loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
