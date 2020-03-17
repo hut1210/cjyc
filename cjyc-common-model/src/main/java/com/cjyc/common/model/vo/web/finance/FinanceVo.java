@@ -22,7 +22,7 @@ public class FinanceVo implements Serializable {
     private String no;
     @ApiModelProperty(value = "品牌")
     private String brand;
-    @ApiModelProperty(value = "型号")
+    @ApiModelProperty(value = "车系")
     private String model;
     @ApiModelProperty(value = "vin码")
     private String vin;
