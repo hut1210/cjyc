@@ -215,9 +215,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Override
     public OrderCarVo getCarVoById(Long orderCarId) {
         OrderCarVo vo = orderCarDao.findVoById(orderCarId);
+        if(vo == null){
+            return vo;
+        }
         Admin admin = csAdminService.findLoop(vo.getEndStoreId());
         if(admin != null){
-            vo.setEndStoreLooplinkUserId(admin.getUserId());
+            vo.setEndStoreLooplinkUserId(admin.getId());
             vo.setEndStoreLooplinkName(admin.getName());
             vo.setEndStoreLooplinkPhone(admin.getPhone());
         }
