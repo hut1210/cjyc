@@ -146,6 +146,8 @@
             dc.MODE AS MODE,
             dc.is_invoice AS isInvoice,
             sbcb.card_type AS cardType,
+            sbcb.province_name AS provinceName,
+            sbcb.area_name AS areaName,
             sbcb.card_name AS cardName,
             sbcb.bank_name AS bankName,
             sbcb.card_no AS cardNo,

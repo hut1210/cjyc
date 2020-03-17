@@ -42,6 +42,10 @@ public class ShowPartnerVo implements Serializable {
 
     @ApiModelProperty("卡类型:1公户，2私户")
     private Integer cardType;
+    @ApiModelProperty("省/直辖市名称")
+    private String provinceName;
+    @ApiModelProperty("地区名称")
+    private String areaName;
     @ApiModelProperty("银行名称")
     private String bankName;
     @ApiModelProperty("银行卡卡号")
