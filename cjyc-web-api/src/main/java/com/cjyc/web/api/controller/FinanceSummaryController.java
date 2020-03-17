@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.ITradeBillSummaryService;
@@ -8,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,27 +34,27 @@ public class FinanceSummaryController {
 
     @ApiOperation(value = "收入合计")
     @PostMapping(value = "/incomeSummary")
-    public ResultVo incomeSummary(){
+    public ResultVo incomeSummary(@RequestBody FinanceQueryDto financeQueryDto){
         Map<String, BigDecimal> map = new HashMap<>();
-        BigDecimal incomeSummary = tradeBillService.incomeSummary();
+        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
         map.put("incomeSummary",incomeSummary);
         return BaseResultUtil.success(map);
     }
 
     @ApiOperation(value = "成本合计")
     @PostMapping(value = "/costSummary")
-    public ResultVo costSummary(){
+    public ResultVo costSummary(@RequestBody FinanceQueryDto financeQueryDto){
         Map<String, BigDecimal> map = new HashMap<>();
-        BigDecimal costSummary = tradeBillService.costSummary();
+        BigDecimal costSummary = tradeBillService.costSummary(financeQueryDto);
         map.put("costSummary",costSummary);
         return BaseResultUtil.success(map);
     }
 
     @ApiOperation(value = "毛利")
     @PostMapping(value = "/grossProfit")
-    public ResultVo grossProfit(){
+    public ResultVo grossProfit(@RequestBody FinanceQueryDto financeQueryDto){
         Map<String, BigDecimal> map = new HashMap<>();
-        BigDecimal grossProfit = tradeBillService.grossProfit();
+        BigDecimal grossProfit = tradeBillService.grossProfit(financeQueryDto);
         map.put("grossProfit",grossProfit);
         return BaseResultUtil.success(map);
     }

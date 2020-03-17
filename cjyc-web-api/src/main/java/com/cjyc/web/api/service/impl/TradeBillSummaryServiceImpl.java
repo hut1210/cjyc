@@ -1,6 +1,7 @@
 package com.cjyc.web.api.service.impl;
 
 import com.cjyc.common.model.dao.ITradeBillSummaryDao;
+import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.web.api.service.ITradeBillSummaryService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +24,22 @@ public class TradeBillSummaryServiceImpl implements ITradeBillSummaryService {
     private ITradeBillSummaryDao tradeBillSummaryDao;
 
     @Override
-    public BigDecimal incomeSummary() {
-        return MoneyUtil.nullToZero(tradeBillSummaryDao.incomeSummary());
+    public BigDecimal incomeSummary(FinanceQueryDto financeQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.incomeSummary(financeQueryDto));
     }
 
     @Override
-    public BigDecimal costSummary() {
-        return MoneyUtil.nullToZero(tradeBillSummaryDao.costSummary());
+    public BigDecimal refundSummary(FinanceQueryDto financeQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.refundSummary(financeQueryDto));
     }
 
     @Override
-    public BigDecimal grossProfit() {
-        return incomeSummary().subtract(costSummary());
+    public BigDecimal costSummary(FinanceQueryDto financeQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.costSummary(financeQueryDto));
+    }
+
+    @Override
+    public BigDecimal grossProfit(FinanceQueryDto financeQueryDto) {
+        return incomeSummary(financeQueryDto).subtract(costSummary(financeQueryDto));
     }
 }

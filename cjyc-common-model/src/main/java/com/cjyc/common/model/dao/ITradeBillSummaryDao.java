@@ -1,5 +1,7 @@
 package com.cjyc.common.model.dao;
 
+import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
+
 import java.math.BigDecimal;
 
 /**
@@ -8,7 +10,9 @@ import java.math.BigDecimal;
  * @Date: 2020/03/16 9:41
  **/
 public interface ITradeBillSummaryDao {
-    BigDecimal incomeSummary();
+    BigDecimal incomeSummary(FinanceQueryDto financeQueryDto);
 
-    BigDecimal costSummary();
+    BigDecimal costSummary(FinanceQueryDto financeQueryDto);
+
+    BigDecimal refundSummary(FinanceQueryDto financeQueryDto);
 }
