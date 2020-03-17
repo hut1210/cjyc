@@ -1,7 +1,6 @@
 package com.cjyc.foreign.api.dto.res;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
-import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -111,11 +110,9 @@ public class OrderDetailResDto implements Serializable {
     private Long endBelongStoreId;
 
     @ApiModelProperty(value = "预计出发时间（提车日期）")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartDate;
 
     @ApiModelProperty(value = "预计到达时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectEndDate;
 
     @ApiModelProperty(value = "车辆总数")
@@ -146,7 +143,6 @@ public class OrderDetailResDto implements Serializable {
     private Integer source;
 
     @ApiModelProperty(value = "创建时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "创建人：客户/业务员")
@@ -164,7 +160,6 @@ public class OrderDetailResDto implements Serializable {
     private Long allotToUserId;
 
     @ApiModelProperty(value = "确认时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long checkTime;
 
     @ApiModelProperty(value = "确认人：业务员")
@@ -202,11 +197,9 @@ public class OrderDetailResDto implements Serializable {
     private Integer wlPayState;
 
     @ApiModelProperty(value = "上次客户支付尾款时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long wlPayTime;
 
     @ApiModelProperty(value = "订单完结时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long finishTime;
 
     @ApiModelProperty(value = "订单车辆信息列表")
