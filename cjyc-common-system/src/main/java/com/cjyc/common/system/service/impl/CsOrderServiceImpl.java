@@ -116,7 +116,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000L, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
@@ -251,7 +251,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
@@ -486,7 +486,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
@@ -915,7 +915,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }

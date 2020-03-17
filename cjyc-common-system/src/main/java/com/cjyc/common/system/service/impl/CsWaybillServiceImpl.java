@@ -400,7 +400,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Set<String> lockSet = new HashSet<>();
         try {
             String lockKey = RedisKeys.getDispatchLock(paramsDto.getId());
-            if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
+            if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                 return BaseResultUtil.fail("运单，其他人正在调度", paramsDto.getId());
             }
             lockSet.add(lockKey);
@@ -424,7 +424,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             /**验证运单车辆信息*/
             //加锁
             String lockCarKey = RedisKeys.getDispatchLock(orderCarNo);
-            if (!redisLock.lock(lockCarKey, 120000, 10, 150L)) {
+            if (!redisLock.lock(lockCarKey, 120000, 0, 150L)) {
                 return BaseResultUtil.fail("订单车辆{0}正在调度，请5秒后重试", orderCarNo);
             }
             lockSet.add(lockCarKey);
@@ -1538,7 +1538,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     throw new ParameterException("ID为{0}的车辆不存在", waybillCarId);
                 }
                 String lockKey = RedisKeys.getUnloadLockKey(waybillCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("运单车辆{0}正在卸车，请5秒后重试", waybillCar.getOrderCarNo());
                 }
