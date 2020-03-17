@@ -14,6 +14,7 @@ import java.io.Serializable;
 @Data
 public class LineReqDto implements Serializable {
     private static final long serialVersionUID = 4079246204301360452L;
+
     @ApiModelProperty(value = "起点城市编码",required = true)
     @NotBlank(message = "起点城市编码不能为空")
     private String fromCode;
