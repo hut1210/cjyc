@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 财务
@@ -39,26 +43,54 @@ public class FinanceController {
         return financeService.getFinanceList(financeQueryDto);
     }
 
+    @ApiOperation(value = "成本详情列表")
+    @PostMapping(value = "/detail/{no}")
+    public ResultVo<List<ExportFinanceDetailVo>> getFinanceDetailList(@PathVariable String no){
+        return financeService.getFinanceDetailList(no);
+    }
+
     @ApiOperation(value = "导出Excel")
     @GetMapping(value = "/export")
     public ResultVo exportExcel(HttpServletResponse response,FinanceQueryDto financeQueryDto){
 
         log.info("financeQueryDto ={}",financeQueryDto.toString());
-        List<ExportFinanceVo> financeVoList = financeService.exportExcel(financeQueryDto);
+        Map map = financeService.exportExcel(financeQueryDto);
+
+        List<ExportFinanceVo> financeVoList = (List<ExportFinanceVo>)map.get("financeVoList");
+        List<ExportFinanceDetailVo> detailList= (List<ExportFinanceDetailVo>)map.get("detailVoList");
+
         if (CollectionUtils.isEmpty(financeVoList)) {
             return BaseResultUtil.success("未查询到结果");
         }
-        String title = "财务总流水";
-        String sheetName = "财务总流水";
+
+        ExportParams totalFlow = new ExportParams();
+        totalFlow.setSheetName("总流水");
+        ExportParams detail = new ExportParams();
+        detail.setSheetName("成本明细");
+
+        Map<String, Object> totalFlowMap = new HashMap<>(4);
+        totalFlowMap.put("title", totalFlow);
+        totalFlowMap.put("entity", ExportFinanceVo.class);
+        totalFlowMap.put("data", financeVoList);
+
+        Map<String, Object> detailMap = new HashMap<>(4);
+        detailMap.put("title", detail);
+        detailMap.put("entity", ExportFinanceDetailVo.class);
+        detailMap.put("data", detailList);
+
+        List<Map<String, Object>> sheetsList = new ArrayList<>();
+        sheetsList.add(totalFlowMap);
+        sheetsList.add(detailMap);
+
         String fileName = "财务总流水.xls";
-        log.info("financeVoList.size = "+financeVoList.size());
         try {
-            ExcelUtil.exportExcel(financeVoList, title, sheetName, ExportFinanceVo.class, fileName, response);
+            ExcelUtil.exportMultipleSheets(sheetsList,fileName,response);
             return null;
         } catch (IOException e) {
             log.error("导出财务总流水异常:",e);
             return BaseResultUtil.fail("导出财务总流水异常"+e.getMessage());
         }
+
     }
 
     @ApiOperation(value = "财务应收账款列表")

@@ -27,6 +27,7 @@ public class ChinaPostalCodeController {
 
     @ApiOperation(value = "邮政区号导入Excel", notes = "\t 请求接口为/importPostalCodeExcel/loginId(登录用户ID)格式")
     @PostMapping("/importPostalCodeExcel/{loginId}")
+    @Deprecated
     public ResultVo importPostalCodeExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
         boolean result = chinaPostalCodeService.importPostalCodeExcel(file,loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());

@@ -322,6 +322,8 @@
                 ccp.settle_type AS settleType,
                 ccp.settle_period AS settlePeriod,
                 sbcb.card_type AS cardType,
+                sbcb.province_name AS provinceName,
+                sbcb.area_name AS areaName,
                 sbcb.bank_name AS bankName,
                 sbcb.card_no AS cardNo,
                 sbcb.card_name AS cardName,

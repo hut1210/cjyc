@@ -80,4 +80,10 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
         PageInfo<PayBankVo> pageInfo = new PageInfo<>(payBankInfoList);
         return BaseResultUtil.success(pageInfo);
     }
+
+    @Override
+    public PublicPayBank findPayBank(String subBankName) {
+        PublicPayBank payBank = payBankDao.findPayBank(subBankName);
+        return payBank;
+    }
 }
