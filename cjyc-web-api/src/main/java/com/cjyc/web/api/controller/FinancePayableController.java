@@ -206,7 +206,7 @@ public class FinancePayableController {
     }
 
     @ApiOperation(value = "应付账款-司机时付-根据运单号查看上游付款状态列表")
-    @PostMapping(value = "/listDriverUpstreamPaidInfo")
+    @PostMapping(value = "/listDriverUpstreamPaidInfo/{waybillNo}")
     public ResultVo<PageVo<DriverUpstreamPaidInfoVo>> listDriverUpstreamPaidStatus(@PathVariable String waybillNo){
         return financeService.listDriverUpstreamPaidInfo(waybillNo);
     }
