@@ -1920,15 +1920,13 @@
     <!--根据运单号查看司机上游付款状态列表-->
     <select id="listDriverUpstreamPaidInfo"
             resultType="com.cjyc.common.model.vo.web.finance.DriverUpstreamPaidInfoVo">
-        SELECT ordercar.no as vno, ordercar.vin, ordercar.order_no,  ordercar.wl_pay_time as payTime,
-               ordercar.customer_phone as customerAccount, ordercar.finish_time,
-               ordercar.wl_pay_state as payState,
-               worder.total_fee as totalFee, worder.start_city, worder.end_city, worder.customer_name, worder.pay_type
+        SELECT ordercar.no as vno, ordercar.vin, ordercar.order_no,  ordercar.wl_pay_time as payTime, ordercar.finish_time, ordercar.wl_pay_state as payState,
+               worder.total_fee, worder.start_city, worder.end_city, worder.customer_name, worder.pay_type, worder.customer_phone as customerAccount
         FROM w_waybill bill
         LEFT JOIN w_waybill_car billcar ON bill.id = billcar.waybill_id
         LEFT JOIN w_order_car ordercar ON billcar.order_car_id = ordercar.id
         LEFT JOIN w_order worder ON ordercar.order_id = worder.id
-        WHERE bill.waybill_no = #{waybillNo}
+        WHERE bill.no = #{waybillNo}
     </select>
 
 </mapper>
