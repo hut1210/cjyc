@@ -56,26 +56,7 @@ public class PingPayController {
 
     @Resource
     private ICsCustomerService csCustomerService;
-    @Resource
-    private ICsPingxxService csPingxxService;
 
-    @Resource
-    private ICsPingPayService csPingPayService;
-
-    @Autowired
-    private ICsTransactionService csTransactionService;
-
-    @ApiOperation("支付合伙人")
-    @PostMapping("/allinpay/{orderId}")
-    public ResultVo allinpay(HttpServletRequest request,@PathVariable Long orderId){
-
-        try{
-            return csPingPayService.allinpayToCooperator(orderId);
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
-            return BaseResultUtil.fail(e.getMessage());
-        }
-    }
 
 /*    @ApiOperation("付款")
     @PostMapping("/order/pre/pay")

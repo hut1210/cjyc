@@ -6,8 +6,8 @@
             resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
         zcity.name as largeArea,
-        wo.input_store_name as inputStoreName,wo.start_address as startAddress,
-        wo.end_address as endAddress,
+        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
+        wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
 
         wo.customer_id as customerId,
@@ -27,7 +27,7 @@
         left join w_task wt on wtc.task_id = wt.id
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
-        <where>
+        where wo.state=100
             <if test="no != null and no.trim() != ''">
                 and woc.no like concat('%',#{no},'%')
             </if>
@@ -94,25 +94,23 @@
             <if test="receiveEndTime!= null">
                 and woc.wl_pay_time &lt;= #{receiveEndTime}
             </if>
-        </where>
         group by woc.no
         order by woc.finish_time desc
     </select>
 
     <select id="getAllFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.ExportFinanceVo">
-        select DISTINCT(woc.no)
-        ,woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
         zcity.name as largeArea,
-        wo.input_store_name as inputStoreName,wo.start_address as startAddress,
-        wo.end_address as endAddress,
+        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
+        wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
 
         wo.customer_id as customerId,
         wo.customer_type as type,cc.name as customerName,
         cc.pay_mode as payMode,
         if(wo.customer_type=3,woc.total_fee,null) as feeShare,
-        (woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee) as freightReceivable,
+        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
         if(woc.wl_pay_state=2,woc.total_fee,null) as amountReceived,
         if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee),0) as totalIncome,
         woc.wl_pay_time as receivedTime
@@ -125,7 +123,7 @@
         left join w_task wt on wtc.task_id = wt.id
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
-        <where>
+        where wo.state=100
             <if test="no != null and no.trim() != ''">
                 and woc.no like concat('%',#{no},'%')
             </if>
@@ -192,7 +190,6 @@
             <if test="receiveEndTime!= null">
                 and woc.wl_pay_time &lt;= #{receiveEndTime}
             </if>
-        </where>
         group by woc.no
         order by woc.finish_time desc
     </select>
@@ -543,7 +540,8 @@
         sbcb.card_name as cardName,
         sbcb.card_no as cardNo,
         sbcb.bank_name as bankName,
-        fep.operator
+        fep.operator,
+        if(ww.freight_pay_state=1,ww.freight_pay_time,0) as payTime
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
@@ -845,6 +843,7 @@
         select wo.id as orderId,wo.no as orderNo,
         wo.customer_id as customerId,
         wo.customer_name as customerName,
+        wo.customer_phone as customerPhone,
         (
             case
                 when wo.flag=0 then '未付款'
@@ -871,10 +870,12 @@
         sbcb.bank_code,sbcb.bank_name as bankName,
         sbcb.card_name as cardName,
         sbcb.card_no as cardNo,
-        sbcb.id_card as IDCard
+        sbcb.id_card as IDCard,
+        fep.operator
         from w_order wo
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
+        left join f_external_payment fep on fep.order_id=wo.id
         where wo.state=100 and wo.customer_type=3
         <if test="orderNo !=null and orderNo.trim() !=''">
             and wo.no like concat('%',#{orderNo},'%')
@@ -895,7 +896,9 @@
         <if test="state !=null and state.trim() !=''">
             and wo.flag = #{state}
         </if>
-
+        <if test="phone !=null and phone.trim() !=''">
+            wo.customer_phone like concat('%',#{phone},'%')
+        </if>
         <if test="customerName !=null and customerName.trim() !=''">
             wo.customer_name like concat('%',#{customerName},'%')
         </if>

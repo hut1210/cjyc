@@ -72,7 +72,18 @@ spring:
         max-idle: 16
         #连接池中的最小空闲连接 默认 0
         min-idle: 8
-
+  rabbitmq:
+    host: 10.253.96.135
+    port: 5672
+    username: admin
+    password: 123456
+    virtual-host: cjkj_host
+    addresses: 10.253.96.135
+    listener:
+      simple:
+        acknowledge-mode: manual
+      direct:
+        acknowledge-mode: manual
 
 ##-----------------------------------logging-------------------------------------------
 ##日志
@@ -85,6 +96,12 @@ logging:
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:
+  amqp:
+    enabled: true
+    exchange:
+      topic: cjyc_topic_exchange
+    routing-key:
+      common: cjyc_route_common_key
   push:
     enabled: true
     apikey:

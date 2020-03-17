@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
-import com.cjyc.foreign.api.dto.req.OrderSaveReqDto;
+import com.cjyc.foreign.api.dto.req.OrderSubmitReqDto;
 import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 
 /**
@@ -12,13 +12,13 @@ import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
  */
 public interface IOrderService extends IService<Order>{
     /**
-     * 功能描述: 保存订单
+     * 功能描述: 下单
      * @author liuxingxiang
      * @date 2020/3/11
-     * @param dto
+     * @param reqDto
      * @return com.cjyc.common.model.vo.ResultVo<java.lang.String>
      */
-    ResultVo<String> saveOrder(OrderSaveReqDto dto);
+    ResultVo<String> submitOrder(OrderSubmitReqDto reqDto);
 
     /**
      * 功能描述: 根据订单号查询订单详情

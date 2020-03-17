@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Data
 public class ImportOrderChangePriceVo {
-    @Excel(name = "订单编号", needMerge = true,  width = 15,orderNum = "0")
+    @Excel(name = "订单编号", width = 15,orderNum = "0")
     private String no;
     @Excel(name = "修改人", orderNum = "1")
     private String createUserName;

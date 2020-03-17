@@ -87,6 +87,7 @@
                 and create_user =#{paramsDto.createUser}
             </if>
         </where>
+        order by create_time desc
     </select>
     <select id="countAllByStoreId" resultType="java.util.Map">
         select

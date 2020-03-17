@@ -104,6 +104,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
     private RedisUtils redisUtils;
     @Resource
     private ITradeBillDao tradeBillDao;
+    @Resource
+    private ICsAmqpService csAmqpService;
 
     /**
      * 获取任务编号
@@ -255,7 +257,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         Long waybillId = paramsDto.getWaybillId();
         Long driverId = paramsDto.getDriverId();
         List<Long> waybillCarIdList = paramsDto.getWaybillCarIdList();
-        Set<String> lockKeySet = new HashSet<>();
+        Set<String> lockSet = new HashSet<>();
         try {
             //验证运单状态
             Waybill waybill = waybillDao.selectById(waybillId);
@@ -298,6 +300,29 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 return BaseResultUtil.fail("司机尚未绑定车牌号");
             }
 
+
+            for (WaybillCar waybillCar : list) {
+                //加锁
+                String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getId());
+                if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
+                    throw new ServerException("运单车辆{0}正在分配, 请5秒后重试，", waybillCar.getOrderCarNo());
+                }
+                lockSet.add(lockKey);
+
+                //验证运单车辆状态
+                if (waybillCar.getState() > WaybillCarStateEnum.WAIT_ALLOT.code) {
+                    throw new ServerException("当前运单车辆{0}的状态，无法分配任务", waybillCar.getOrderCarNo());
+                }
+
+                //验证是否存在任务明细
+                int n = taskDao.countByWaybillCarId(waybillCar.getId());
+                if (n > 0) {
+                    throw new ServerException("当前运单车辆{0}, 已经分配过", waybillCar.getOrderCarNo());
+                }
+            }
+
+
+
             Task task = new Task();
             //计算任务编号
             task.setNo(getTaskNo(waybill.getNo()));
@@ -325,26 +350,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             taskDao.insert(task);
 
             for (WaybillCar waybillCar : list) {
-                if (waybillCar == null) {
-                    continue;
-                }
-                //加锁
-                String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getId());
-                if (!redisLock.lock(lockKey, 120000, 100, 300)) {
-                    throw new ServerException("当前运单车辆{0}其他人正在分配，", waybillCar.getOrderCarNo());
-                }
-                lockKeySet.add(lockKey);
-
-                //验证运单车辆状态
-                if (waybillCar.getState() > WaybillCarStateEnum.WAIT_ALLOT.code) {
-                    throw new ServerException("当前运单车辆{0}的状态，无法分配任务", waybillCar.getOrderCarNo());
-                }
-
-                //验证是否存在任务明细
-                int n = taskDao.countByTaskIdAndWaybillCarId(task.getId(), waybillCar.getId());
-                if (n > 0) {
-                    throw new ServerException("当前运单车辆{0}, 已经分配过", waybillCar.getOrderCarNo());
-                }
 
                 TaskCar taskCar = new TaskCar();
                 taskCar.setTaskId(task.getId());
@@ -358,7 +363,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             return BaseResultUtil.success();
         } finally {
-            redisUtil.delete(lockKeySet);
+            redisUtil.delayDelete(lockSet);
         }
 
     }
@@ -393,17 +398,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Map<Long, WaybillCar> waybillCarMap = Maps.newHashMap();
             Map<Long, Order> orderMap = Maps.newHashMap();
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-                String lockKey = RedisKeys.getLoadLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
+                if (waybillCar == null) {
+                    return BaseResultUtil.fail("运单车辆不存在");
+                }
+                String lockKey = RedisKeys.getLoadLockKey(waybillCar.getOrderCarNo());
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车", taskCarId);
                 }
                 lockSet.add(lockKey);
-
-                WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
-                if (waybillCar == null) {
-                    return BaseResultUtil.fail("运单车辆不存在");
-                }
                 String orderCarNo = waybillCar.getOrderCarNo();
                 if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
                     return BaseResultUtil.fail("车辆{0}已经装过车", orderCarNo);
@@ -448,8 +453,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
             Set<CarStorageLog> storageLogSet = Sets.newHashSet();
             List<PushInfo> pushCustomerList = Lists.newArrayList();
             Set<String> directLoadCarNoSet = Sets.newHashSet();
+            Set<Order> firstLoadOrderSet = Sets.newHashSet();
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-                WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
                 boolean isFirstLoad = false;
@@ -523,6 +529,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     PushInfo pushInfo = csPushMsgService.getPushInfo(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_TRANSPORT, order.getNo(), order.getStartCity(), order.getEndCity());
                     pushCustomerList.add(pushInfo);
                 }
+                if(isFirstLoad){
+                    firstLoadOrderSet.add(order);
+                }
                 count++;
             }
             //更新订单状态
@@ -547,6 +556,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_LOAD, waybill.getNo(), Joiner.on(",").join(directLoadCarNoSet), directLoadCarNoSet.size());
                 }
             }
+
+            csAmqpService.sendOrderState(firstLoadOrderSet);
             return BaseResultUtil.success();
         } finally {
             redisUtils.delayDelete(lockSet);
@@ -619,19 +630,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
 
             Map<Long, OrderCar> orderCarMap = Maps.newHashMap();
+            Map<Long, Order> orderMap = Maps.newHashMap();
+            Map<Long, WaybillCar> waybillCarMap = Maps.newHashMap();
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
                 if (taskCarId == null) {
                     continue;
                 }
-                WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 if (waybillCar == null) {
                     return BaseResultUtil.fail("任务ID为{0}对应的运单车辆不存在", taskCarId);
                 }
-                String lockKey = RedisKeys.getUnloadLockKey(waybillCar.getId());
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
-                    return BaseResultUtil.fail("运单车辆{0}正在卸车，请5秒后重试", waybillCar.getId());
-                }
-                lockSet.add(lockKey);
+
                 if (waybillCar.getState() <= WaybillCarStateEnum.WAIT_LOAD.code) {
                     return BaseResultUtil.fail("运单车辆{0}尚未装车", waybillCar.getOrderCarNo());
                 }
@@ -656,7 +665,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             int count = 0;
             List<String> directUnloadList = Lists.newArrayList();
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
-                WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
 
                 boolean isInStore = waybillCar.getEndStoreId() != null && waybillCar.getEndStoreId() > 0;
@@ -798,22 +807,25 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             Set<CarStorageLog> storageLogSet = Sets.newHashSet();
             Map<Long, PushInfo> pushMap = Maps.newHashMap();
+            Map<Long, OrderCar> orderCarMap = Maps.newHashMap();
+            Map<Long, Order> orderMap = Maps.newHashMap();
+            Map<Long, WaybillCar> waybillCarMap = Maps.newHashMap();
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
                 if (taskCarId == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getInStoreLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
-                    log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}正在入库, 请5秒后重试", taskCarId);
-                }
-                lockSet.add(lockKey);
-
-                WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 if (waybillCar == null) {
                     failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}对应的运单车辆不存在", taskCarId));
                     continue;
                 }
+                //锁定
+                String lockKey = RedisKeys.getInStoreLockKey(taskCarId);
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
+                    log.debug("缓存失败：key->{}", lockKey);
+                    return BaseResultUtil.fail("任务车辆{0}正在入库, 请5秒后重试", waybillCar.getOrderCarNo());
+                }
+                lockSet.add(lockKey);
                 if (waybillCar.getState() > WaybillCarStateEnum.UNLOADED.code) {
                     failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "车辆已经卸过车"));
                     continue;
@@ -823,19 +835,24 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "车辆目的地不在业务中心, 不能入库"));
                     continue;
                 }
-
                 //计算车辆状态
-                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 if (orderCar == null) {
                     failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "车辆不存在"));
                     continue;
                 }
-                Order order = orderDao.selectById(orderCar.getOrderId());
+                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
                 if (order == null) {
                     failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单不存在"));
-                    continue;
                 }
+
+            }
+            //写数据
+            for (Long taskCarId : paramsDto.getTaskCarIdList()) {
                 //当前状态
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
+                OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
+                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
                 //更新运单车辆状态
                 waybillCarDao.updateForInStore(waybillCar.getId());
                 Integer newState = computeOrderCarStateForDirectUnload(waybillCar);
@@ -967,34 +984,44 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (CollectionUtils.isEmpty(paramsDto.getTaskCarIdList())) {
                 return BaseResultUtil.fail("车辆不能为空");
             }
-            Set<Long> orderIdSet = Sets.newHashSet();
-            int count = 0;
+
+            Map<Long, OrderCar> orderCarMap = Maps.newHashMap();
+            Map<Long, Order> orderMap = Maps.newHashMap();
+            Map<Long, WaybillCar> waybillCarMap = Maps.newHashMap();
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
+                if (waybillCar == null) {
+                    return BaseResultUtil.fail("任务ID为{0}对应的运单车辆不存在", taskCarId);
+                }
                 String lockKey = RedisKeys.getOutStoreLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}正在出库，请5秒后重试", taskCarId);
+                    return BaseResultUtil.fail("任务车辆{0}正在出库，请5秒后重试", waybillCar.getOrderCarNo());
                 }
                 lockSet.add(lockKey);
-                WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
-                if (waybillCar == null) {
-                    failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}对应的运单车辆不存在", taskCarId));
-                    continue;
-                }
                 if (waybillCar.getState() != WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆状态不能出库"));
-                    continue;
+                    return BaseResultUtil.fail("任务车辆{0}不能出库", waybillCar.getOrderCarNo());
                 }
                 //验证车辆当前所在业务中心是否与出发业务中心匹配
-                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 if (orderCar == null) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆不存在"));
-                    continue;
+                    return BaseResultUtil.fail("任务车辆{0}订单车辆不存在", waybillCar.getOrderCarNo());
                 }
-        /*            if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
-                        failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单车辆尚未到达始发地业务中心范围内"));
-                        continue;
-                    }*/
+                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getId());
+                if (order == null) {
+                    return BaseResultUtil.fail("任务车辆{0}订单不存在", waybillCar.getOrderCarNo());
+                }
+            }
+            int count = 0;
+            Set<Long> orderIdSet = Sets.newHashSet();
+            Set<Order> firstLoadOrderSet = Sets.newHashSet();
+            for (Long taskCarId : paramsDto.getTaskCarIdList()) {
+                WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
+                OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
+                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getId());
+                if(OrderStateEnum.TRANSPORTING.code > order.getState()){
+                    firstLoadOrderSet.add(order);
+                }
                 //更新运单车辆状态
                 waybillCarDao.updateStateById(waybillCar.getId(), WaybillCarStateEnum.LOADED.code);
                 //更新车辆信息
@@ -1057,6 +1084,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             } else {
                 csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_LOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
             }
+            csAmqpService.sendOrderState(firstLoadOrderSet);
             return BaseResultUtil.success(resultReasonVo);
         } finally {
             redisUtils.delayDelete(lockSet);
@@ -1112,17 +1140,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (taskCarId == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getReceiptLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
-                    log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", taskCarId);
-                }
-                lockSet.add(lockKey);
                 WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
                 if (waybillCar == null) {
                     failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}对应的运单车辆不存在", taskCarId));
                     continue;
                 }
+                String lockKey = RedisKeys.getReceiptLockKey(taskCarId);
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
+                    log.debug("缓存失败：key->{}", lockKey);
+                    return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", waybillCar.getOrderCarNo());
+                }
+                lockSet.add(lockKey);
                 if (waybill.getCarrierType() != WaybillCarrierTypeEnum.SELF.code && waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
                     failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆还未装车", taskCarId));
                     continue;
@@ -1216,7 +1244,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     continue;
                 }
                 String lockKey = RedisKeys.getReceiptLockKey(orderCar.getNo());
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", orderCar.getNo());
                 }
@@ -1283,25 +1311,27 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     private void validateAndFinishOrder(Long orderId, UserInfo userInfo) {
-        int count = orderCarDao.countUnFinishByOrderId(orderId);
-        log.info("validateAndFinishOrder count = " + count);
-        if (count <= 0) {
-            Order order = orderDao.selectById(orderId);
+        int countUnFinish = orderCarDao.countUnFinishByOrderId(orderId);
+        int countUnpay = orderCarDao.countUnPayByOrderId(orderId);
+        log.info("validateAndFinishOrder countUnFinish = " + countUnFinish);
+        boolean isFinish = countUnFinish <= 0;
+        boolean isPaid = countUnpay <= 0;
+
+        if(isFinish){
             orderDao.updateForFinish(orderId);
 
+            Order order = orderDao.selectById(orderId);
             //订单完成日志
             csOrderLogService.asyncSave(order, OrderLogEnum.FINISH,
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.FINISH.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
                     userInfo);
-            //支付合伙人服务费
+            //
+            csAmqpService.sendOrderState(order);
+        }
 
-            /*try {
-                csPingPayService.allinpayToCooperator(order.getId());
-            } catch (Exception e) {
-                log.error("支付合伙人{}（ID{}）服务费失败", order.getCustomerName(), order.getCustomerId());
-                log.error(e.getMessage(), e);
-            }*/
+        if(isPaid){
+            orderDao.updateForPaid(orderId);
         }
     }
 

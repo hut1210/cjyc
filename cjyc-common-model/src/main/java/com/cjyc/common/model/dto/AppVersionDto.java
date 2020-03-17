@@ -19,7 +19,7 @@ public class AppVersionDto implements Serializable {
     private Integer appType;
 
     @ApiModelProperty(value = "系统当前版本号")
-    @NotBlank(message = "当前系统版本号")
+    @NotBlank(message = "当前系统版本号不能为空")
     private String version;
 
 }

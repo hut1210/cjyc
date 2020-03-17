@@ -74,4 +74,6 @@ public interface IOrderDao extends BaseMapper<Order> {
     Order findByNo(String orderNo);
 
     int countUnArriveStore(Long id);
+
+    int updateForPaid(Long orderId);
 }

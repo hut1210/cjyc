@@ -16,6 +16,7 @@ import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.cjyc.web.api.service.IOrderService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -470,15 +471,10 @@ public class FinanceServiceImpl implements IFinanceService {
         PayablePaidQueryDto pp = new PayablePaidQueryDto();
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(pp);
         PayMentQueryDto pq = new PayMentQueryDto();
+        List<PaidNewVo> paidList =  financeDao.getAutoPaidList(pq);
 
-        List<PaidNewVo> paidList = new ArrayList<>();
-        /*Config config = configDao.getByItemKey("external_pay");
-        if(config!=null&&config.getState()==1) {//对外支付模式
-            log.info("config.getState() "+config.getState().toString());
-            paidList =  financeDao.getPaidListNew(pq);
-        }else{//自动付款*/
-            paidList =  financeDao.getAutoPaidList(pq);
-        /*}*/
+        CooperatorSearchDto cs = new CooperatorSearchDto();
+        List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cs);
 
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("payableCount",fpv.size());
@@ -486,6 +482,7 @@ public class FinanceServiceImpl implements IFinanceService {
         countInfo.put("waitPaymentCount",payablePaymentList.size());
         countInfo.put("paidCount",payablePaidList.size());
         countInfo.put("timePaidCount",paidList.size());
+        countInfo.put("cooperstorCount",cooperatorPaidVoList.size());
 
         return countInfo;
     }
@@ -658,20 +655,14 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto) {
         log.info("payMentQueryDto = "+payMentQueryDto.toString());
-        if(payMentQueryDto.getState()!=null){
-            if(payMentQueryDto.getState()!=0){
-                payMentQueryDto.setState(1);
+        List<PaidNewVo> financeVoList = getAutoPaidList(payMentQueryDto);
+
+        for(int i=0;i<financeVoList.size();i++){
+            PaidNewVo paidNewVo = financeVoList.get(i);
+            if(paidNewVo.getState().equals("支付失败")){
+                paidNewVo.setFailReason("请联系管理员");
             }
         }
-
-        List<PaidNewVo> financeVoList = new ArrayList<>();
-        /*Config config = configDao.getByItemKey("external_pay");
-        if(config!=null&&config.getState()==1) {//对外支付模式
-            log.info("config.getState() "+config.getState().toString());
-            financeVoList = getExternalPaidList(payMentQueryDto);
-        }else{//自动付款*/
-            financeVoList = getAutoPaidList(payMentQueryDto);
-        /*}*/
         log.info("financeVoList = "+financeVoList.size());
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
         return BaseResultUtil.success(pageInfo,getCountInfo());
@@ -721,13 +712,26 @@ public class FinanceServiceImpl implements IFinanceService {
                                     Admin admin = csAdminService.getById(externalPaymentDto.getLoginId(), true);
 
                                     if(admin != null){
-                                        ExternalPayment externalPayment = new ExternalPayment();
-                                        externalPayment.setWaybillId(waybillId);
-                                        externalPayment.setPayTime(System.currentTimeMillis());
-                                        externalPayment.setLoginId(externalPaymentDto.getLoginId());
-                                        externalPayment.setOperator(admin.getName());
-                                        externalPayment.setState(2);
-                                        externalPaymentDao.updateByWayBillId(externalPayment);
+                                        ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
+
+                                        if(ep==null){
+                                            ExternalPayment externalPayment = new ExternalPayment();
+                                            externalPayment.setWaybillId(waybillId);
+                                            externalPayment.setPayTime(System.currentTimeMillis());
+                                            externalPayment.setLoginId(externalPaymentDto.getLoginId());
+                                            externalPayment.setOperator(admin.getName());
+                                            externalPayment.setState(2);
+                                            externalPaymentDao.insert(externalPayment);
+                                        }else{
+                                            ExternalPayment externalPayment = new ExternalPayment();
+                                            externalPayment.setWaybillId(waybillId);
+                                            externalPayment.setPayTime(System.currentTimeMillis());
+                                            externalPayment.setLoginId(externalPaymentDto.getLoginId());
+                                            externalPayment.setOperator(admin.getName());
+                                            externalPayment.setState(2);
+                                            externalPaymentDao.updateByWayBillId(externalPayment);
+                                        }
+
                                     }
 
                                 }
@@ -820,24 +824,14 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto) {
-
-        if(payMentQueryDto.getState()!=null){
-            if(payMentQueryDto.getState()!=0){
-                payMentQueryDto.setState(1);
-            }
-        }
-        List<PaidNewVo> paidNewVoList = new ArrayList<>();
-        /*Config config = configDao.getByItemKey("external_pay");
-        if(config!=null&&config.getState()==1) {//对外支付模式
-            log.info("config.getState() "+config.getState().toString());
-            paidNewVoList =  financeDao.getPaidListNew(payMentQueryDto);
-        }else{//自动付款*/
-            paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);;
-        /*}*/
-
+        List<PaidNewVo> paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);;
         for(int i=0;i<paidNewVoList.size();i++){
             PaidNewVo paidNewVo = paidNewVoList.get(i);
             paidNewVo.setFreightFee(paidNewVo.getFreightFee()!=null?paidNewVo.getFreightFee().divide(new BigDecimal(100)):null);
+
+            if(paidNewVo.getState().equals("支付失败")){
+                paidNewVo.setFailReason("请联系管理员");
+            }
         }
         return paidNewVoList;
     }
@@ -854,12 +848,89 @@ public class FinanceServiceImpl implements IFinanceService {
             BigDecimal serviceFee = MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee));
             //合伙人服务费
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
-            /*if(){
+            if(cooperatorPaidVo.getState().equals("支付失败")){
+                cooperatorPaidVo.setDescription("请联系管理员");
+            }
+            cooperatorPaidVo.setWlFee(MoneyUtil.nullToZero(cooperatorPaidVo.getWlFee()).divide(new BigDecimal(100)));
+            cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(cooperatorPaidVo.getServiceFee()).divide(new BigDecimal(100)));
+            cooperatorPaidVo.setTotalFee(MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).divide(new BigDecimal(100)));
 
-            }*/
         }
         PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
-        return BaseResultUtil.success(pageInfo);
+        return BaseResultUtil.success(pageInfo,getCountInfo());
+    }
+
+    @Override
+    public ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto) {
+
+        //记录支付操作者
+        StringBuilder result =  new StringBuilder();
+        try{
+            if(cooperatorPaymentDto==null){
+                return BaseResultUtil.fail("参数为空");
+            }
+            if(cooperatorPaymentDto.getOrderId()==null){
+                return BaseResultUtil.fail("订单参数为空");
+            }
+            log.info("手动支付合伙人费用 cooperatorPaymentDto = {}",cooperatorPaymentDto.toString());
+            ResultVo resultVo = csPingPayService.allinpayToCooperatorNew(cooperatorPaymentDto.getOrderId());
+            log.info("resultVo错误码 ={}",resultVo.getCode());
+            if(resultVo.getCode()==1){
+                if(result.length()>0){
+                    result.append(",");
+                }
+                result.append(resultVo.getMsg());
+            }
+            try {
+                log.info("result = {}",result.toString());
+                if(result.length()==0){
+                    if(cooperatorPaymentDto!=null && cooperatorPaymentDto.getLoginId()!=null){
+                        Admin admin = csAdminService.getById(cooperatorPaymentDto.getLoginId(), true);
+
+                        if(admin != null){
+                            ExternalPayment externalPayment = new ExternalPayment();
+                            externalPayment.setPayTime(System.currentTimeMillis());
+                            externalPayment.setLoginId(cooperatorPaymentDto.getLoginId());
+                            externalPayment.setOperator(admin.getName());
+                            externalPayment.setOrderId(cooperatorPaymentDto.getOrderId());
+                            externalPayment.setState(2);
+                            externalPaymentDao.insert(externalPayment);
+                        }
+
+                    }
+                }
+            }catch (Exception e){
+                log.error("合伙人打款详情新增失败 orderId = {}",cooperatorPaymentDto.getOrderId());
+            }
+        }catch (Exception e){
+            result.append("打款失败");
+            log.error(e.getMessage(),e);
+        }
+        if(result.length()>0){
+            return BaseResultUtil.fail(result.toString());
+        }
+        return BaseResultUtil.success("合伙人费用支付成功");
+    }
+
+    @Override
+    public List<CooperatorPaidVo> exportCooperator(CooperatorSearchDto cooperatorSearchDto) {
+        List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cooperatorSearchDto);
+        for(int i=0;i<cooperatorPaidVoList.size();i++){
+            CooperatorPaidVo cooperatorPaidVo = cooperatorPaidVoList.get(i);
+            BigDecimal wlFee = getCooperatorFee(cooperatorPaidVo.getOrderId());
+            //总费用
+            cooperatorPaidVo.setWlFee(wlFee);
+            BigDecimal serviceFee = MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee));
+            //合伙人服务费
+            cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
+            cooperatorPaidVo.setWlFee(MoneyUtil.nullToZero(cooperatorPaidVo.getWlFee()).divide(new BigDecimal(100)));
+            cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(cooperatorPaidVo.getServiceFee()).divide(new BigDecimal(100)));
+            cooperatorPaidVo.setTotalFee(MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).divide(new BigDecimal(100)));
+            if(cooperatorPaidVo.getState().equals("支付失败")){
+                cooperatorPaidVo.setDescription("请联系管理员");
+            }
+        }
+        return cooperatorPaidVoList;
     }
 
     /**

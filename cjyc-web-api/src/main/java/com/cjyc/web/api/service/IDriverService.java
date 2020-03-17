@@ -133,4 +133,11 @@ public interface IDriverService {
      * @return
      */
     ResultVo deleteDriverInfo(DeleteDriverDto dto);
+
+    /**
+     * 社会司机转到指定的承运商下
+     * @param dto
+     * @return
+     */
+    ResultVo changeCarrierSubDriver(CarrierSubDriverDto dto);
 }

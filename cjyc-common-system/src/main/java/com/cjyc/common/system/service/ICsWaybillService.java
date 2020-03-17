@@ -78,7 +78,10 @@ public interface ICsWaybillService {
 
     void cancelWaybill(Waybill waybill);
 
+    WaybillCar getWaybillCarByIdFromMap(Map<Long, WaybillCar> waybillCarMap, Long waybillCarId);
+
     void cancelWaybillCar(Waybill waybill, WaybillCar waybillCar);
     void cancelWaybillCar(WaybillCar waybillCar);
 
+    WaybillCar getWaybillCarByTaskCarIdFromMap(Map<Long, WaybillCar> waybillCarMap, Long taskCarId);
 }

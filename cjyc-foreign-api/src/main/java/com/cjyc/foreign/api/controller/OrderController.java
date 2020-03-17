@@ -12,7 +12,7 @@ import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
-import com.cjyc.foreign.api.dto.req.OrderSaveReqDto;
+import com.cjyc.foreign.api.dto.req.OrderSubmitReqDto;
 import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 import com.cjyc.foreign.api.service.IOrderService;
 import com.cjyc.foreign.api.utils.LoginAccountUtil;
@@ -43,16 +43,16 @@ public class OrderController {
     private ICsOrderService csOrderService;
 
     /**
-     * 功能描述: 保存订单
+     * 功能描述: 下单
      * @author liuxingxiang
      * @date 2020/3/11
-     * @param dto
+     * @param reqDto
      * @return com.cjyc.common.model.vo.ResultVo<java.lang.String>
      */
-    @ApiOperation(value = "保存订单")
-    @PostMapping("/saveOrder")
-    public ResultVo<String> saveOrder(@RequestBody @Validated OrderSaveReqDto dto) {
-        return orderService.saveOrder(dto);
+    @ApiOperation(value = "下单")
+    @PostMapping("/submitOrder")
+    public ResultVo<String> submitOrder(@RequestBody @Validated OrderSubmitReqDto reqDto) {
+        return orderService.submitOrder(reqDto);
     }
 
     /**
@@ -84,6 +84,10 @@ public class OrderController {
         Customer customer = csCustomerService.getByPhone(account, true);
         if (null == customer) {
             return BaseResultUtil.fail("用户信息有误，请检查!");
+        }
+        if (order.getCustomerId() != null && customer.getId() != null &&
+                !order.getCustomerId().equals(customer.getId())) {
+            return BaseResultUtil.fail("订单不属于该用户，请检查!");
         }
         //请求信息封装
         CancelOrderDto dto = new CancelOrderDto();

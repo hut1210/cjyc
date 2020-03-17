@@ -3,18 +3,6 @@
 #local为本机环境(127.0.0.1)配置
 #
 
-server:
-  #服务端口
-  port: 9505
-  #服务baseURl
-  servlet:
-    context-path: /cjyc/scheduler
-  #https访问
-#  ssl:
-#    key-store: classpath:server.jks
-#    key-store-password: Vf1@MFJkhRyOSxm2
-#    keyStoreType: JKS
-
 spring:
   main:
     allow-bean-definition-overriding: true

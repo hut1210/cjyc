@@ -1,10 +1,10 @@
 package com.cjyc.foreign.api.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.foreign.api.dto.req.LineReqDto;
 import com.cjyc.foreign.api.dto.res.LineResDto;
-import com.cjyc.foreign.api.entity.Line;
 
 /**
  * @Description 班线业务接口
@@ -19,5 +19,5 @@ public interface ILineService extends IService<Line> {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.foreign.api.dto.res.LineResDto>
      */
-    ResultVo<LineResDto> getLinePriceByCity(LineReqDto dto);
+    ResultVo<LineResDto> getLinePriceByCityCode(LineReqDto dto);
 }

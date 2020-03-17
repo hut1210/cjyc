@@ -28,6 +28,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
+import com.cjyc.common.model.util.RegexUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 import com.cjyc.common.model.vo.web.order.OrderVo;
@@ -103,6 +104,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsSmsService csSmsService;
     @Resource
     private ICsOrderChangeLogService csOrderChangeLogService;
+    @Resource
+    private ICsAmqpService csAmqpService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -113,9 +116,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000L, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
             }
             //验证线路
@@ -234,6 +237,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 //推送给客户消息
                 csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
             }
+            csAmqpService.sendOrderState(order);
             return BaseResultUtil.success(OrderStateEnum.SUBMITTED.code == paramsDto.getState() ? "下单成功，订单编号{0}" : "保存成功，订单编号{0}", order.getNo());
         } finally {
             redisUtils.delayDelete(lockKey);
@@ -247,9 +251,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
             }
             //验证属性
@@ -271,7 +275,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
             //推送给客户消息
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
-
             return BaseResultUtil.success("下单成功，订单编号{0}", order.getNo());
         } finally {
             redisUtils.delayDelete(lockKey);
@@ -322,7 +325,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order = orderDao.selectById(orderId);
                 if (order != null) {
                     lockKey = RedisKeys.getDispatchLockForOrderUpdate(order.getNo());
-                    redisLock.lock(lockKey, 60000, 100, 300);
+                    redisLock.lock(lockKey, 120000, 0, 300);
                     oldOrder = getFullOrder(order);
                 }
             }
@@ -355,7 +358,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order.setCreateUserName(paramsDto.getLoginName());
                 order.setCreateTime(currentTimeMillis);
             }
-            order.setState(OrderStateEnum.SUBMITTED.code);
+            order.setState(OrderStateEnum.WAIT_CHECK.code);
             order.setTotalFee(MoneyUtil.yuanToFen(paramsDto.getTotalFee()));
 
             //更新或插入订单
@@ -432,6 +435,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if(oldOrder != null && OrderStateEnum.WAIT_SUBMIT.code < oldOrder.getState()){
                 csOrderChangeLogService.asyncSaveForChangePrice(oldOrder, getFullOrder(order, ocList), "提交订单", userInfo);
             }
+            csAmqpService.sendOrderConfirm(order, ocList);
             return order;
         } finally {
             if (!isNewOrder) {
@@ -482,9 +486,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
             }
             Order order = orderDao.selectById(orderId);
@@ -496,7 +500,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (order.getEndStoreId() == null || order.getEndStoreId() <= 0) {
                 return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
             }
-
+            if(!RegexUtil.isMobileSimple(order.getPickContactPhone())){
+                return BaseResultUtil.fail("发车人手机号格式不正确");
+            }
+            if(!RegexUtil.isMobileSimple(order.getBackContactPhone())){
+                return BaseResultUtil.fail("收车人手机号格式不正确");
+            }
             ResultVo<Customer> validateVo = validateCustomerForOrder(order.getCustomerName(), order.getCustomerPhone(), order.getCustomerType(), paramsDto.getLoginId(), true);
             if (validateVo.getCode() != ResultEnum.SUCCESS.getCode()) {
                 return BaseResultUtil.getVo(validateVo.getCode(), validateVo.getMsg());
@@ -542,6 +551,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             redisUtils.delayDelete(lockKey);
         }
     }
+
 
     private ResultVo<CommitOrderDto> validateOrderForCommit(CommitOrderDto paramsDto) {
         if (paramsDto.getLineId() == null || paramsDto.getLineId() <= 0) {
@@ -673,6 +683,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //支付提醒
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAY_ORDER, order.getNo());
         }
+
+        csAmqpService.sendOrderState(order);
         sendPushMsgToCustomerForSelfBack(order);
 
         return BaseResultUtil.success();
@@ -903,9 +915,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         try {
             if(orderId != null){
                 lockKey = RedisKeys.getOrderLockKey(orderId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("订单{0}正在修改，请5秒后重试", orderId);
+                    return BaseResultUtil.fail("订单正在修改，请5秒后重试");
                 }
             }
             //验证属性
@@ -1114,7 +1126,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         String lockKey = RedisKeys.getCancelLockKey(paramsDto.getOrderId());
         try {
-            if (!redisLock.lock(lockKey, 120000, 10, 200)) {
+            if (!redisLock.lock(lockKey, 120000, 0, 200)) {
                 return BaseResultUtil.fail("当前订单{0}其他人正在操作，", paramsDto.getOrderId());
             }
             //取消订单

@@ -614,21 +614,4 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         }
         return result;
     }
-
-    @Override
-    public ResultVo updateDriverName() {
-        List<Driver> driverList = driverDao.selectList(new QueryWrapper<Driver>().lambda().ge(Driver::getCreateTime, 1583905040194L));
-        if(!CollectionUtils.isEmpty(driverList)){
-            for(Driver driver : driverList){
-                UpdateUserReq user = new UpdateUserReq();
-                user.setUserId(driver.getUserId());
-                user.setName(driver.getRealName());
-                ResultData rd = sysUserService.updateUser(user);
-                if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
-                    BaseResultUtil.fail("失败");
-                }
-            }
-        }
-        return BaseResultUtil.success();
-    }
 }

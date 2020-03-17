@@ -136,9 +136,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 log.debug("缓存：key->{}", lockKey);
-                if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("车辆{0}正在调度，请5秒后重试", orderCarNo);
+                    return BaseResultUtil.fail("订单车辆{0}正在调度，请5秒后重试", orderCarNo);
                 }
                 lockSet.add(lockKey);
                 if (!csStoreService.validateStoreParam(dto.getStartStoreId(), dto.getStartStoreName())) {
@@ -400,7 +400,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Set<String> lockSet = new HashSet<>();
         try {
             String lockKey = RedisKeys.getDispatchLock(paramsDto.getId());
-            if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
+            if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                 return BaseResultUtil.fail("运单，其他人正在调度", paramsDto.getId());
             }
             lockSet.add(lockKey);
@@ -424,7 +424,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             /**验证运单车辆信息*/
             //加锁
             String lockCarKey = RedisKeys.getDispatchLock(orderCarNo);
-            if (!redisLock.lock(lockCarKey, 120000, 10, 150L)) {
+            if (!redisLock.lock(lockCarKey, 120000, 0, 150L)) {
                 return BaseResultUtil.fail("订单车辆{0}正在调度，请5秒后重试", orderCarNo);
             }
             lockSet.add(lockCarKey);
@@ -807,7 +807,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
-                if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                     return BaseResultUtil.fail("订单车辆{0}正在调度，请5秒后重试", orderCarNo);
                 }
                 lockSet.add(lockKey);
@@ -968,12 +968,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     public ResultVo updateTrunk(UpdateTrunkWaybillDto paramsDto) {
         log.debug("【干线调度修改】------------>参数" + JSON.toJSONString(paramsDto));
         Set<String> lockSet = new HashSet<>();
-        //加锁
-        String lockKey = RedisKeys.getDispatchLock(paramsDto.getId());
-        if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
-            return BaseResultUtil.fail("运单{0}正在修改，请5秒后重试", paramsDto.getId());
-        }
-        lockSet.add(lockKey);
         Map<Long, Map<Long, PushCustomerInfo>> pushCustomerInfoMap = Maps.newHashMap();
         try {
             List<UpdateTrunkWaybillCarDto> dtoList = paramsDto.getList();
@@ -983,7 +977,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (waybill == null) {
                 return BaseResultUtil.fail("运单不存在");
             }
-
+            //加锁
+            String lockKey = RedisKeys.getDispatchLock(waybill.getId());
+            if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
+                return BaseResultUtil.fail("运单{0}正在修改，请5秒后重试", waybill.getNo());
+            }
+            lockSet.add(lockKey);
             //是否重新分配任务
             CarrierInfo carrierInfo = validateTrunkCarrierInfo(carrierId);
             validateReAllotCarrier(carrierInfo, waybill.getCarrierId());
@@ -1002,8 +1001,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 Long orderCarId = dto.getOrderCarId();
                 //加锁
                 String lockCarKey = RedisKeys.getDispatchLock(orderCarNo);
-                if (!redisLock.lock(lockCarKey, 60000, 100, 300L)) {
-                    return BaseResultUtil.fail("运单中车辆{0}，其他人正在调度", orderCarNo);
+                if (!redisLock.lock(lockCarKey, 120000, 0, 150L)) {
+                    return BaseResultUtil.fail("车辆{0}正在调度，请5秒后重试", orderCarNo);
                 }
                 lockSet.add(lockCarKey);
 
@@ -1108,6 +1107,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     waybillCar = new WaybillCar();
                     log.debug("【干线调度修改】新车辆{}", orderCarNo);
                 }
+                boolean isChangeCarState = false;
+                if(waybillCar.getState() == null || (WaybillCarStateEnum.WAIT_LOAD.code >= waybillCar.getState() && carrierInfo.isReAllotCarrier())){
+                    isChangeCarState = true;
+                }
 
                 //验证订单车辆状态
                 OrderCar orderCar = orderCarDao.selectById(orderCarId);
@@ -1131,14 +1134,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 fillWaybillCarAdmin(waybillCar, waybill.getType());
                 //计算预计到达时间
                 fillWaybillCarExpectEndTime(waybillCar, order.getExpectStartDate());
-                //waybillCar.setReceiptFlag(order.getBackContactPhone().equals(waybillCar.getUnloadLinkPhone()));
                 waybillCar.setReceiptFlag(validateIsArriveDest(waybillCar, order));
-                if (isNewWaybillCar) {
+                if (isChangeCarState || isNewWaybillCar) {
                     waybillCar.setState(getTrunkState(carrierInfo));
-                    waybillCarDao.insert(waybillCar);
-                } else {
-                    waybillCarDao.updateByIdForNull(waybillCar);
                 }
+                int row = isNewWaybillCar ? waybillCarDao.insert(waybillCar) : waybillCarDao.updateByIdForNull(waybillCar);
 
                 //变更地址取消后续运单
                 if (isChangeAddress) {
@@ -1389,6 +1389,29 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         cancelWaybillCar(null, waybillCar);
     }
 
+    @Override
+    public WaybillCar getWaybillCarByTaskCarIdFromMap(Map<Long, WaybillCar> waybillCarMap, Long taskCarId) {
+        WaybillCar wc;
+        if(waybillCarMap.containsKey(taskCarId)){
+            wc = waybillCarMap.get(taskCarId);
+        }else{
+            wc = waybillCarDao.findByTaskCarId(taskCarId);
+            waybillCarMap.put(taskCarId, wc);
+        }
+        return wc;
+    }
+    @Override
+    public WaybillCar getWaybillCarByIdFromMap(Map<Long, WaybillCar> waybillCarMap, Long waybillCarId) {
+        WaybillCar wc;
+        if(waybillCarMap.containsKey(waybillCarId)){
+            wc = waybillCarMap.get(waybillCarId);
+        }else{
+            wc = waybillCarDao.findByTaskCarId(waybillCarId);
+            waybillCarMap.put(waybillCarId, wc);
+        }
+        return wc;
+    }
+
     /**
      * 取消运单车辆
      *
@@ -1509,16 +1532,17 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (waybillCarId == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getUnloadLockKey(waybillCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
-                    log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("运单车辆{0}正在卸车，请5秒后重试", waybillCarId);
-                }
-                lockSet.add(lockKey);
+
                 WaybillCar waybillCar = waybillCarDao.selectById(waybillCarId);
                 if (waybillCar == null) {
                     throw new ParameterException("ID为{0}的车辆不存在", waybillCarId);
                 }
+                String lockKey = RedisKeys.getUnloadLockKey(waybillCarId);
+                if (!redisLock.lock(lockKey, 120000, 0, 150L)) {
+                    log.debug("缓存失败：key->{}", lockKey);
+                    return BaseResultUtil.fail("运单车辆{0}正在卸车，请5秒后重试", waybillCar.getOrderCarNo());
+                }
+                lockSet.add(lockKey);
                 if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
                     throw new ParameterException("车辆{0}已完结, 不能卸载", waybillCar.getOrderCarNo());
                 }
