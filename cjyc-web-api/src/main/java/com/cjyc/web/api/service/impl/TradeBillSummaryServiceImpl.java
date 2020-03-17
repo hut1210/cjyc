@@ -1,8 +1,11 @@
 package com.cjyc.web.api.service.impl;
 
 import com.cjyc.common.model.dao.ITradeBillSummaryDao;
+import com.cjyc.common.model.dto.web.finance.CooperatorSearchDto;
 import com.cjyc.common.model.dto.web.finance.FinanceQueryDto;
+import com.cjyc.common.model.dto.web.finance.PayMentQueryDto;
 import com.cjyc.common.model.util.MoneyUtil;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.ITradeBillSummaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,7 @@ public class TradeBillSummaryServiceImpl implements ITradeBillSummaryService {
 
     @Override
     public BigDecimal incomeSummary(FinanceQueryDto financeQueryDto) {
-        return MoneyUtil.nullToZero(tradeBillSummaryDao.incomeSummary(financeQueryDto));
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.incomeSummary(financeQueryDto)).subtract(refundSummary(financeQueryDto));
     }
 
     @Override
@@ -41,5 +44,34 @@ public class TradeBillSummaryServiceImpl implements ITradeBillSummaryService {
     @Override
     public BigDecimal grossProfit(FinanceQueryDto financeQueryDto) {
         return incomeSummary(financeQueryDto).subtract(costSummary(financeQueryDto));
+    }
+
+    @Override
+    public BigDecimal receiptSummary(FinanceQueryDto financeQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.receiptSummary(financeQueryDto));
+    }
+
+    @Override
+    public BigDecimal payToCarrierSummary(PayMentQueryDto payMentQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.payToCarrierSummary(payMentQueryDto));
+    }
+
+    @Override
+    public BigDecimal paidToCarrierSummary(PayMentQueryDto payMentQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.paidToCarrierSummary(payMentQueryDto));
+    }
+
+    @Override
+    public BigDecimal payToCooperatorSummary(CooperatorSearchDto cooperatorSearchDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.payToCooperatorSummary(cooperatorSearchDto)).subtract(cooperatorSummary(cooperatorSearchDto));
+    }
+
+    private BigDecimal cooperatorSummary(CooperatorSearchDto cooperatorSearchDto){
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.cooperatorSummary(cooperatorSearchDto));
+    }
+
+    @Override
+    public BigDecimal paidToCooperatorSummary(CooperatorSearchDto cooperatorSearchDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.paidToCooperatorSummary(cooperatorSearchDto));
     }
 }

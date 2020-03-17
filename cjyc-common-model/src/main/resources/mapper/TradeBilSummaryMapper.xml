@@ -174,5 +174,237 @@
         )
     </select>
 
+    <sql id="payMentListCondition">
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and  woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and  woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+        <if test="area != null and area.trim() != ''">
+            and zcity.code = #{area}
+        </if>
+
+        <if test="type != null">
+            and cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            and  cc.name  like concat('%',#{customerName},'%')
+        </if>
+        <if test="brand != null and brand.trim() != ''">
+            and woc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and woc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            and wo.input_store_name = #{inputStoreName}
+        </if>
+        <if test="completeStartTime!= null">
+            and woc.finish_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and woc.finish_time &lt;= #{completeEndTime}
+        </if>
+        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+            and wo.start_province_code = #{startProvinceCode}
+        </if>
+        <if test="startCityCode != null and startCityCode.trim() != ''">
+            and wo.start_city_code = #{startCityCode}
+        </if>
+        <if test="startAreaCode != null and startAreaCode.trim() != ''">
+            and wo.start_area_code = #{startAreaCode}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+            and wo.end_province_code = #{endProvinceCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            and wo.end_city_code = #{endCityCode}
+        </if>
+        <if test="endAreaCode != null and endAreaCode.trim() != ''">
+            and wo.end_area_code = #{endAreaCode}
+        </if>
+    </sql>
+    <select id="receiptSummary" resultType="java.math.BigDecimal">
+        select sum(total_fee) from
+        (select DISTINCT(woc.no),woc.total_fee
+        from w_order_car woc
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+
+        where woc.wl_pay_state=2 and cc.pay_mode=0 and wo.customer_type=1
+        <include refid="payMentListCondition"></include>
+        <if test="payMode != null">
+            and  cc.pay_mode =#{payMode}
+        </if>
+        group by woc.no
+        union
+        select DISTINCT(woc.no),woc.total_fee
+        from w_order_car woc
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join c_customer_partner ccp on cc.id = ccp.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+
+        where woc.wl_pay_state=2 and ccp.settle_type=0 and wo.customer_type=3
+        <include refid="payMentListCondition"></include>
+        <if test="payMode != null">
+            and  ccp.settle_type =#{payMode}
+        </if>
+        group by woc.no
+        union
+        select DISTINCT(woc.no),woc.total_fee
+        from w_order_car woc
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join c_customer_contract ccc on cc.id =ccc.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+
+        where woc.wl_pay_state=2 and ccc.settle_type=0 and wo.customer_type=2
+        <include refid="payMentListCondition"></include>
+        <if test="payMode != null">
+            and  ccp.settle_type =#{payMode}
+        </if>
+        group by woc.no ) t
+    </select>
+    <select id="payToCarrierSummary" resultType="java.math.BigDecimal">
+        select sum(t.freight_fee) from (select DISTINCT(ww.id) as waybillId,
+        ww.freight_fee
+        from w_waybill ww
+        left join d_carrier dc on dc.id=ww.carrier_id
+        left join w_task wt on wt.waybill_id = ww.id
+        left join f_external_payment fep on fep.waybill_id=ww.id
+        left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
+        where dc.settle_type=0 and ww.state=100
+        and ww.carrier_type in (1,2,4,5)
+        <include refid="carrierSummary"></include>
+        ) t
+    </select>
+    <sql id="carrierSummary">
+        <if test="waybillNo != null and waybillNo.trim() != ''">
+            and ww.no like concat('%',#{waybillNo},'%')
+        </if>
+        <if test="completeStartTime!= null">
+            and ww.complete_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and ww.complete_time &lt;= #{completeEndTime}
+        </if>
+        <if test="waybillType!= null">
+            and ww.type =#{waybillType}
+        </if>
+        <if test="invoiceNo!= null and invoiceNo.trim() != ''">
+        </if>
+        <if test="state!= null">
+            and ww.freight_pay_state =#{state}
+        </if>
+        <if test="carrierName!= null and carrierName.trim() != ''">
+            and ww.carrier_name like concat('%',#{carrierName},'%')
+        </if>
+        <if test="driverName!= null and driverName.trim() != ''">
+            and wt.driver_name like concat('%',#{driverName},'%')
+        </if>
+        <if test="driverPhone!= null and driverPhone.trim() != ''">
+            and wt.driver_phone like concat('%',#{driverPhone},'%')
+        </if>
+        <if test="vehiclePlateNo!= null and vehiclePlateNo.trim() != ''">
+            and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
+        </if>
+        <if test="operator!= null and operator.trim() != ''">
+            and fep.operator like concat('%',#{operator},'%')
+        </if>
+    </sql>
+    <select id="paidToCarrierSummary" resultType="java.math.BigDecimal">
+        select sum(amount)
+        from f_trade_bill ftb
+        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id where type=20 and state=2 and ftbd.source_no in
+        (select DISTINCT(ww.id) as waybillId
+        from w_waybill ww
+        left join d_carrier dc on dc.id=ww.carrier_id
+        left join w_task wt on wt.waybill_id = ww.id
+        left join f_external_payment fep on fep.waybill_id=ww.id
+        left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
+        where dc.settle_type=0 and ww.state=100
+        and ww.carrier_type in (1,2,4,5)
+        <include refid="carrierSummary"></include>
+        )
+    </select>
+
+    <sql id="cooperatorSummary">
+        <if test="orderNo !=null and orderNo.trim() !=''">
+            and wo.no like concat('%',#{orderNo},'%')
+        </if>
+        <!--付款开始时间-->
+        <if test="startPayTime !=null">
+            and wo.service_fee_pay_time &gt;=#{startPayTime}
+        </if>
+        <if test="endPayTime !=null">
+            and wo.service_fee_pay_time &lt;=#{endPayTime}
+        </if>
+        <if test="startCompleteTime !=null">
+            and wo.finish_time &gt;=#{startCompleteTime}
+        </if>
+        <if test="endCompleteTime !=null">
+            and wo.finish_time &lt;=#{endCompleteTime}
+        </if>
+        <if test="state !=null and state.trim() !=''">
+            and wo.flag = #{state}
+        </if>
+        <if test="phone !=null and phone.trim() !=''">
+            wo.customer_phone like concat('%',#{phone},'%')
+        </if>
+        <if test="customerName !=null and customerName.trim() !=''">
+            wo.customer_name like concat('%',#{customerName},'%')
+        </if>
+    </sql>
+    <select id="payToCooperatorSummary" resultType="java.math.BigDecimal">
+        select sum(wo.total_fee+wo.coupon_offset_fee)
+        from w_order wo
+        left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
+        left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
+        left join f_external_payment fep on fep.order_id=wo.id
+        where wo.state=100 and wo.customer_type=3
+        <include refid="cooperatorSummary"></include>
+    </select>
+
+    <select id="cooperatorSummary" resultType="java.math.BigDecimal">
+        select sum(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee)
+        from w_order_car woc where woc.order_no in(
+        select wo.no
+        from w_order wo
+        left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
+        left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
+        left join f_external_payment fep on fep.order_id=wo.id
+        where wo.state=100 and wo.customer_type=3
+        <include refid="cooperatorSummary"></include>
+        )
+    </select>
+    <select id="paidToCooperatorSummary" resultType="java.math.BigDecimal">
+        select sum(amount)
+        from f_trade_bill ftb
+        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id where type=21 and state=2 and ftbd.source_no in
+        (select wo.no
+        from w_order wo
+        left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
+        left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
+        left join f_external_payment fep on fep.order_id=wo.id
+        where wo.state=100 and wo.customer_type=3
+        <include refid="cooperatorSummary"></include>)
+    </select>
+
+
 
 </mapper>
