@@ -9,6 +9,7 @@ import com.cjyc.common.system.service.ICsAmqpService;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -91,15 +92,19 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
     @Async
     @Override
     public void send(String exchange, String routingKey, Object message) {
-        if(message == null){
-            return;
+        try {
+            if(message == null){
+                return;
+            }
+            //设置回调对象
+            rabbitTemplate.setConfirmCallback(this);
+            //构建回调返回的数据
+            CorrelationData correlationData = new CorrelationData(String.valueOf(UUID.randomUUID()));
+            rabbitTemplate.convertAndSend(exchange, routingKey, JSON.toJSONString(message), correlationData);
+            log.info("Amqp >>> 发送消息到RabbitMQ, 消息内容: " + message);
+        } catch (AmqpException e) {
+            log.error(e.getMessage(), e);
         }
-        //设置回调对象
-        rabbitTemplate.setConfirmCallback(this);
-        //构建回调返回的数据
-        CorrelationData correlationData = new CorrelationData(String.valueOf(UUID.randomUUID()));
-        rabbitTemplate.convertAndSend(exchange, routingKey, JSON.toJSONString(message), correlationData);
-        log.info("Amqp >>> 发送消息到RabbitMQ, 消息内容: " + message);
     }
 
 
