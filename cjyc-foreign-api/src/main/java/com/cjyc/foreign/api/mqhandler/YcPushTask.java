@@ -47,12 +47,14 @@ public class YcPushTask {
     private static Map<Integer, Integer> retryRule = new HashMap<>();
     //重发唯一标识
     private static final String RETRY_FLAG = "uniqueSequence";
-    //业务类型确定
+    //业务类型key
     private static final String BIZ_TYPE = "type";
+    //业务数据key
+    private static final String BIZ_DATA = "data";
     static {
-        retryRule.put(1, 15000);
-        retryRule.put(2, 30000);
-//        retryRule.put(3, 60);
+        retryRule.put(1, 600000);
+        retryRule.put(2, 1800000);
+        retryRule.put(3, 3600000);
 //        retryRule.put(4, 360);
 //        retryRule.put(5, 1440);
     }
@@ -65,8 +67,8 @@ public class YcPushTask {
     * @Author: zcm
     * @Date: 2020/3/13
     */
-    @RabbitHandler
-    @RabbitListener(queues = MQConstant.QUEUE_YC_PUSH)
+//    @RabbitHandler
+//    @RabbitListener(queues = MQConstant.QUEUE_YC_PUSH)
     private void pushOrderStateFunc(Message message, Channel channel) {
         EXEC.execute(() -> {
             final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -77,7 +79,8 @@ public class YcPushTask {
             JSONObject obj = null;
             try {
                 obj = (JSONObject) JSONObject.parse(jsonMsg);
-                if (obj == null || obj.isEmpty() || StringUtils.isEmpty(obj.getString(BIZ_TYPE))) {
+                if (obj == null || obj.isEmpty() || StringUtils.isEmpty(obj.getString(BIZ_TYPE))
+                 || !obj.containsKey(BIZ_DATA) || obj.getJSONObject(BIZ_DATA).isEmpty()) {
                     log.error("业务数据有误，请检查，数据: {}", obj);
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     return;
@@ -90,7 +93,7 @@ public class YcPushTask {
                     return;
                 }
                 //TODO 调用状态回调接口
-                if (pushable.push(obj)) {
+                if (pushable.push(obj.getJSONObject(BIZ_DATA))) {
                     //正常逻辑处理后在应答, 需要先调用推送接口并解析返回结果，成功后确认
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     log.info("消费消息成功，id: {}", message.getMessageProperties().getDeliveryTag());

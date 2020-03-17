@@ -17,6 +17,7 @@ public class CarCircleOrderConfirmPush implements IOrderConfirmPushable{
     }
     @Override
     public boolean push(JSONObject jo) {
+        System.out.println("订单确认接收到数据为: " + jo.toJSONString());
         return false;
     }
 }
