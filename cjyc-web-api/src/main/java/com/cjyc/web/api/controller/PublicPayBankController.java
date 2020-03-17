@@ -1,13 +1,10 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.postal.PostalDto;
 import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
-import com.cjyc.common.model.entity.PublicPayBank;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import com.cjyc.common.model.vo.web.publicPay.PayBankVo;
 import com.cjyc.web.api.service.IPublicPayBankService;
 import io.swagger.annotations.Api;
@@ -16,9 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.List;
 
-@Api(tags = "基础数据-对公支付行号")
+@Api(tags = "基础数据-对公支付银行信息")
 @CrossOrigin
 @RestController
 @RequestMapping("/publicPayBank")
@@ -39,4 +35,5 @@ public class PublicPayBankController {
     public ResultVo<PageVo<PayBankVo>> findPayBankInfo(@RequestBody PayBankDto dto) {
         return payBankService.findPayBankInfo(dto);
     }
+
 }
