@@ -166,4 +166,10 @@ public class DriverController {
     public ResultVo deleteDriverInfo(@Validated @RequestBody DeleteDriverDto dto){
         return driverService.deleteDriverInfo(dto);
     }
+
+    @ApiOperation(value = "社会司机转到承运商下(根据司机手机号,承运商id)")
+    @PostMapping(value = "/changeCarrierSubDriver")
+    public ResultVo changeCarrierSubDriver(@Validated @RequestBody CarrierSubDriverDto dto){
+        return driverService.changeCarrierSubDriver(dto);
+    }
 }

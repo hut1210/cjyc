@@ -1,6 +1,8 @@
 package com.cjyc.web.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
@@ -22,6 +24,7 @@ import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
+import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
@@ -37,6 +40,7 @@ import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.IDriverService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +57,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -96,6 +101,8 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     private IWaybillDao waybillDao;
     @Resource
     private IBankCardBindDao bankCardBindDao;
+    @Resource
+    private ICarrierCityConDao carrierCityConDao;
     @Resource
     private ISysRoleService sysRoleService;
 
@@ -922,4 +929,124 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         driverDao.deleteById(dto.getDriverId());
         return BaseResultUtil.success();
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo changeCarrierSubDriver(CarrierSubDriverDto dto) {
+        ResultVo resultVo = verifyCarrier(dto);
+        if(!ResultEnum.SUCCESS.getCode().equals(resultVo.getCode())){
+            return BaseResultUtil.fail(resultVo.getMsg());
+        }
+        Map map = (Map) resultVo.getData();
+        Driver driver = (Driver) map.get("driver");
+        //企业承运商
+        Carrier carrier = (Carrier) map.get("carrier");
+        //个人承运商
+        Carrier societyCarrier = (Carrier) map.get("societyCarrier");
+        //查询该司机的运单是否完成
+        List<Waybill> waybillList = waybillDao.selectList(new QueryWrapper<Waybill>().lambda().eq(Waybill::getCarrierId, societyCarrier.getId()));
+        if(!CollectionUtils.isEmpty(waybillList)){
+            for(Waybill waybill : waybillList){
+                if(waybill.getState() < WaybillStateEnum.FINISHED.code){
+                    return BaseResultUtil.fail("该司机有未完成的运单,不可以转到该承运商下");
+                }
+            }
+        }
+        //更新架构组社会司机角色
+        Role role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_sub_driver_role_name"), DeptTypeEnum.CARRIER.code);
+        if(role == null){
+            return BaseResultUtil.fail("下属司机角色不存在,请先添加角色");
+        }
+        //获取社会司机角色
+        Role societyRole = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
+        if(role == null){
+            return BaseResultUtil.fail("个人司机角色不存在,请先添加角色");
+        }
+        UpdateUserReq uur = new UpdateUserReq();
+        uur.setUserId(driver.getUserId());
+        uur.setRoleIdList(Arrays.asList(role.getRoleId()));
+        ResultData updateRd = sysUserService.update(uur);
+        if(!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
+            return BaseResultUtil.fail("更新该社会司机下的所有角色失败");
+        }
+        //更新运单数据
+        if(!CollectionUtils.isEmpty(waybillList)){
+            Waybill w = new Waybill();
+            w.setCarrierId(carrier.getId());
+            w.setCarrierName(carrier.getName());
+            w.setCarrierType(carrier.getType());
+
+            LambdaUpdateWrapper<Waybill> waybillUpdateWrapper = new UpdateWrapper<Waybill>().lambda().eq(Waybill::getCarrierId, societyCarrier.getId());
+            waybillDao.update(w,waybillUpdateWrapper);
+        }
+        //更细司机与角色关联表
+        UserRoleDept urd = new UserRoleDept();
+        urd.setDeptId(carrier.getId().toString());
+        urd.setRoleId(role.getId());
+
+        LambdaUpdateWrapper<UserRoleDept> urdWrapper = new UpdateWrapper<UserRoleDept>().lambda()
+                .eq(UserRoleDept::getDeptId, societyCarrier.getId())
+                .eq(UserRoleDept::getRoleId, societyRole.getId())
+                .eq(UserRoleDept::getUserId, driver.getId());
+        userRoleDeptDao.update(urd,urdWrapper);
+
+        //更新车辆表
+        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getCarrierId, societyCarrier.getId()));
+        if(vehicle != null){
+            //更新承运商id
+            vehicle = new Vehicle();
+            vehicle.setCarrierId(carrier.getId());
+            vehicle.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
+            LambdaUpdateWrapper<Vehicle> vehicleUpdateWrapper = new UpdateWrapper<Vehicle>().lambda()
+                    .eq(Vehicle::getCarrierId, societyCarrier.getId())
+                    .eq(Vehicle::getOwnershipType, VehicleOwnerEnum.PERSONAL.code);
+            vehicleDao.update(vehicle,vehicleUpdateWrapper);
+        }
+        //删除司机银行卡
+        bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,societyCarrier.getId()));
+
+        //删除d_carrier_city_con表
+        carrierCityConDao.delete(new QueryWrapper<CarrierCityCon>().lambda().eq(CarrierCityCon::getCarrierId,societyCarrier.getId()));
+
+        //删除d_carrier表相关数据
+        carrierDao.deleteById(societyCarrier.getId());
+        return BaseResultUtil.success();
+    }
+
+    /**
+     * 验证个人/企业承运商
+     * @param dto
+     * @return
+     */
+    private ResultVo verifyCarrier(CarrierSubDriverDto dto){
+        //验证该承运商
+        Carrier carrier = carrierDao.selectById(dto.getChangeCarrierId());
+        if(carrier == null ){
+            return BaseResultUtil.fail("数据错误，请检查");
+        }
+        //验证该承运商角色
+        if(carrier.getType() != CarrierTypeEnum.ENTERPRISE.code){
+            return BaseResultUtil.fail("该承运商不是企业承运商，请检查");
+        }
+        //验证社会司机是否存在
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone, dto.getPhone()));
+        if(driver == null){
+            return BaseResultUtil.fail("该社会司机不存在，请检查");
+        }
+        //验证社会司机（承运商）是否存在
+        Carrier societyCarrier = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda().eq(Carrier::getLinkmanPhone, dto.getPhone()));
+        if(societyCarrier == null){
+            return BaseResultUtil.fail("社会司机不存在，请检查");
+        }
+        //验证社会司机角色
+        if(societyCarrier.getType() != CarrierTypeEnum.PERSONAL.code){
+            return BaseResultUtil.fail("社会司机角色有误，请检查");
+        }
+        Map map = Maps.newHashMap();
+        map.put("driver",driver);
+        map.put("societyCarrier",societyCarrier);
+        map.put("carrier",carrier);
+        return BaseResultUtil.success(map);
+    }
+
 }

@@ -87,7 +87,7 @@ public class OrderSubmitReqDto implements Serializable {
     private String backContactPhone;
 
     @NotNull(message = "支付方式不能为空")
-    @ApiModelProperty(value = "支付方式默认传 0-到付", required = true)
+    @ApiModelProperty(value = "支付方式：0到付（默认），1预付，2账期", required = true)
     private Integer payType;
 
     @NotNull(message = "线路费用不能为空")

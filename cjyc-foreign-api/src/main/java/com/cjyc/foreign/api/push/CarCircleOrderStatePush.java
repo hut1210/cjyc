@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class CarCircleOrderStatePush implements IOrderStatePushable{
     private String flag;
     public CarCircleOrderStatePush() {
-        setFlag(MQConstant.TOPIC_ORDER_STATE);
+        setFlag(MQConstant.TOPIC_ORDER_STATE_99CC);
     }
     @Override
     public boolean push(JSONObject jo) {

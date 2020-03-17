@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class CarCircleOrderConfirmPush implements IOrderConfirmPushable{
     private String flag;
     public CarCircleOrderConfirmPush() {
-        setFlag(MQConstant.TOPIC_ORDER_CONFIRM);
+        setFlag(MQConstant.TOPIC_ORDER_CONFIRM_99CC);
     }
     @Override
     public boolean push(JSONObject jo) {

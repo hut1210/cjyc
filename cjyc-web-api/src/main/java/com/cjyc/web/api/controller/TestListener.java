@@ -1,6 +1,5 @@
 package com.cjyc.web.api.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.cjyc.common.system.config.AmqpProperty;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsAmqpService;

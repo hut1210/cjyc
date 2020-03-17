@@ -67,6 +67,9 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo applyInvoice(CustomerInvoiceAddDto dto) throws Exception {
+        if(!dto.getType().equals(InvoiceTypeEnum.PERSONAL_INVOICE.code)){
+            return BaseResultUtil.fail("纳税人识别号不能为空");
+        }
         // 开票订单号校验
         for (OrderAmountDto orderAmountDto : dto.getOrderAmountList()) {
             InvoiceOrderCon invoiceOrderCon = invoiceOrderConDao.selectOne(new QueryWrapper<InvoiceOrderCon>().lambda()

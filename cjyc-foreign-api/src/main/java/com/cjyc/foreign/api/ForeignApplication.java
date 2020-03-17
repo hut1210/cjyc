@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableFeignClients({"com.cjyc.common.system.feign"})
 @EnableDiscoveryClient
 @MapperScan({"com.cjyc.foreign.api.dao", "com.cjyc.common.model.dao"})
-@ComponentScan({"com.cjyc.foreign.api", "com.cjkj.common", "com.cjyc.common.system"})
+@ComponentScan({"com.cjyc.foreign.api", "com.cjkj.common", "com.cjyc.common.system", "com.cjkj.mq"})
 public class ForeignApplication {
 
     public static void main(String[] args) {
