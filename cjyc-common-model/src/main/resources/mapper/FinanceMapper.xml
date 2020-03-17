@@ -542,10 +542,10 @@
         sbcb.bank_name as bankName,
         fep.operator,
         if(ww.freight_pay_state=1,ww.freight_pay_time,0) as payTime,
-        sbcb.card_type, as cardType,
-        sbcb.id_card, as idCard,
-        sbcb.province_name, as provinceName,
-        sbcb.area_name, as areaName
+        sbcb.card_type as cardType,
+        sbcb.id_card as idCard,
+        sbcb.province_name as provinceName,
+        sbcb.area_name as areaName
         from w_waybill ww
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
