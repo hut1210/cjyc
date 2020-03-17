@@ -92,7 +92,7 @@ public class OrderController {
         reqDto.setCustomerId(customer.getId());
         reqDto.setCustomerName(customer.getName());
         reqDto.setCustomerType(customer.getType());
-        reqDto.setState(OrderStateEnum.SUBMITTED.code);
+        reqDto.setState(OrderStateEnum.WAIT_CHECK.code);
         //干线费用
         List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){

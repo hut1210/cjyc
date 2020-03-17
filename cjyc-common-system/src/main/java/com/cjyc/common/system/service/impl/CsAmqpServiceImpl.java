@@ -1,8 +1,11 @@
 package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.cjyc.common.model.constant.AccountConstant;
+import com.cjyc.common.model.constant.AmqpConstant;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.defined.MQMessage;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.system.config.AmqpProperty;
 import com.cjyc.common.system.service.ICsAmqpService;
@@ -35,11 +38,13 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         if(order == null){
             return;
         }
-        sendOrderState(Sets.newHashSet(order));
+        if(AccountConstant.ACCOUNT_99CC.equals(order.getCustomerPhone())){
+            sendOrderState(Sets.newHashSet(order), AmqpConstant.MQ_TYPE_99CC_ORDER_STATE);
+        }
     }
     @Async
     @Override
-    public void sendOrderState(Set<Order> orderSet) {
+    public void sendOrderState(Set<Order> orderSet, String type) {
         if(CollectionUtils.isEmpty(orderSet)){
             return;
         }
@@ -48,12 +53,7 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             dataMap.put("orderNo", o.getNo());
             dataMap.put("state", o.getState());
             dataMap.put("createTime", System.currentTimeMillis());
-
-            Map<Object, Object> shellMap = Maps.newHashMap();
-            shellMap.put("type", "99CC_order_state");
-            shellMap.put("data", dataMap);
-
-            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
+            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(type, dataMap));
         });
     }
 
@@ -84,10 +84,7 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         dataMap.put("addInsuranceFee", addInsuranceTotalFee);//保险费
         dataMap.put("createTime", System.currentTimeMillis());//当前时间
 
-        Map<Object, Object> shellMap = Maps.newHashMap();
-        shellMap.put("type", "99CC_order_confirm");
-        shellMap.put("data", dataMap);
-        send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, shellMap);
+        send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_CONFIRM, dataMap));
     }
     @Async
     @Override

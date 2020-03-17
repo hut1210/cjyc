@@ -358,7 +358,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 order.setCreateUserName(paramsDto.getLoginName());
                 order.setCreateTime(currentTimeMillis);
             }
-            order.setState(OrderStateEnum.SUBMITTED.code);
+            order.setState(OrderStateEnum.WAIT_CHECK.code);
             order.setTotalFee(MoneyUtil.yuanToFen(paramsDto.getTotalFee()));
 
             //更新或插入订单
