@@ -88,8 +88,14 @@ spring:
     port: 5672
     username: admin
     password: 123456
-    virtual-host: /
-    publisher-confirms: true
+    virtual-host: cjkj_host
+    addresses: 10.253.96.135
+    listener:
+      simple:
+        acknowledge-mode: manual
+      direct:
+        acknowledge-mode: manual
+
 
 ##-----------------------------------logging-------------------------------------------
 ##日志

@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.util.MoneyUtil;
@@ -97,7 +98,7 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         rabbitTemplate.setConfirmCallback(this);
         //构建回调返回的数据
         CorrelationData correlationData = new CorrelationData(String.valueOf(UUID.randomUUID()));
-        rabbitTemplate.convertAndSend(exchange, routingKey, message, correlationData);
+        rabbitTemplate.convertAndSend(exchange, routingKey, JSON.toJSONString(message), correlationData);
         log.info("Amqp >>> 发送消息到RabbitMQ, 消息内容: " + message);
     }
 
