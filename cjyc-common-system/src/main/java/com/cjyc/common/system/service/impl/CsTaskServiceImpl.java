@@ -1326,6 +1326,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.FINISH.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
                     userInfo);
+            //
+            csAmqpService.sendOrderState(order);
         }
 
         if(isPaid){
