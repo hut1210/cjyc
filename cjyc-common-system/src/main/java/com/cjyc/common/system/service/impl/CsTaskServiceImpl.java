@@ -304,7 +304,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             for (WaybillCar waybillCar : list) {
                 //加锁
                 String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getId());
-                if (!redisLock.lock(lockKey, 120000, 100, 300)) {
+                if (!redisLock.lock(lockKey, 120000, 1, 100L)) {
                     throw new ServerException("运单车辆{0}正在分配, 请5秒后重试，", waybillCar.getOrderCarNo());
                 }
                 lockSet.add(lockKey);
@@ -404,9 +404,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     return BaseResultUtil.fail("运单车辆不存在");
                 }
                 String lockKey = RedisKeys.getLoadLockKey(waybillCar.getOrderCarNo());
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}，车辆正在卸车", taskCarId);
+                    return BaseResultUtil.fail("任务车辆{0}正在提车，请5秒后重试", waybillCar.getOrderCarNo());
                 }
                 lockSet.add(lockKey);
                 String orderCarNo = waybillCar.getOrderCarNo();
@@ -821,7 +821,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
                 //锁定
                 String lockKey = RedisKeys.getInStoreLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在入库, 请5秒后重试", waybillCar.getOrderCarNo());
                 }
@@ -994,7 +994,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     return BaseResultUtil.fail("任务ID为{0}对应的运单车辆不存在", taskCarId);
                 }
                 String lockKey = RedisKeys.getOutStoreLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在出库，请5秒后重试", waybillCar.getOrderCarNo());
                 }
@@ -1146,7 +1146,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     continue;
                 }
                 String lockKey = RedisKeys.getReceiptLockKey(taskCarId);
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", waybillCar.getOrderCarNo());
                 }
@@ -1244,7 +1244,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     continue;
                 }
                 String lockKey = RedisKeys.getReceiptLockKey(orderCar.getNo());
-                if (!redisLock.lock(lockKey, 120000, 10, 150L)) {
+                if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", orderCar.getNo());
                 }
@@ -1326,6 +1326,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     new String[]{OrderLogEnum.FINISH.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.FINISH.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
                     userInfo);
+            //
+            csAmqpService.sendOrderState(order);
         }
 
         if(isPaid){

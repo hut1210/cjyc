@@ -30,6 +30,7 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
+import com.cjyc.web.api.service.IPublicPayBankService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -96,6 +97,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     private IBankInfoDao bankInfoDao;
     @Resource
     private ICsBankInfoService bankInfoService;
+    @Resource
+    private IPublicPayBankService payBankService;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -827,9 +830,18 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCreateTime(now);
         //获取银行编码
-        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
-        if(bankInfo != null){
-            bcb.setBankCode(bankInfo.getBankCode());
+        if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
+            BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+            if(bankInfo != null){
+                bcb.setBankCode(bankInfo.getBankCode());
+            }
+        }else{
+            PublicPayBank payBank = payBankService.findPayBank(bcb.getBankName());
+            if(payBank != null){
+                bcb.setBankCode(payBank.getBankCode());
+            }
+            bcb.setProvinceName(dto.getProvinceName());
+            bcb.setAreaName(dto.getAreaName());
         }
         bankCardBindDao.insert(bcb);
     }
@@ -1064,9 +1076,18 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     bcb.setIdCard(customer.getIdCard());
                     bcb.setCreateTime(NOW);
                     //获取银行编码
-                    BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
-                    if(bankInfo != null){
-                        bcb.setBankCode(bankInfo.getBankCode());
+                    if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
+                        BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+                        if(bankInfo != null){
+                            bcb.setBankCode(bankInfo.getBankCode());
+                        }
+                    }else{
+                        PublicPayBank payBank = payBankService.findPayBank(dto.getBankName());
+                        if(payBank != null){
+                            bcb.setBankCode(payBank.getBankCode());
+                        }
+                        bcb.setProvinceName(dto.getProvinceName());
+                        bcb.setAreaName(dto.getAreaName());
                     }
                     bankCardBindDao.insert(bcb);
                     return BaseResultUtil.success();
@@ -1339,9 +1360,18 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             bcb.setCardColour(RandomUtil.getIntRandom());
             bcb.setCreateTime(NOW);
             //获取银行编码
-            BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
-            if(bankInfo != null){
-                bcb.setBankCode(bankInfo.getBankCode());
+            if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
+                BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
+                if(bankInfo != null){
+                    bcb.setBankCode(bankInfo.getBankCode());
+                }
+            }else if(dto.getCardType().equals(CardTypeEnum.PUBLIC.code)){
+                PublicPayBank payBank = payBankService.findPayBank(bcb.getBankName());
+                if(payBank != null){
+                    bcb.setBankCode(payBank.getBankCode());
+                }
+                bcb.setProvinceName(dto.getProvinceName());
+                bcb.setAreaName(dto.getAreaName());
             }
             bankCardBindDao.insert(bcb);
             return BaseResultUtil.success();

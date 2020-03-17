@@ -464,7 +464,7 @@ public class OrderController {
                             ImportKeyCustomerOrderCarDto.class, carParams);
                     if (carResult.isVerfiyFail()) {
                         String fileName = "验证失败.xlsx";
-                        printExcelResult(orderResult.getFailWorkbook(), fileName, response);
+                        printExcelResult(carResult.getFailWorkbook(), fileName, response);
                     }else {
                         carList = carResult.getList();
                         //导入操作
@@ -511,7 +511,7 @@ public class OrderController {
                             ImportPatCustomerOrderCarDto.class, carParams);
                     if (carResult.isVerfiyFail()) {
                         String fileName = "验证失败.xlsx";
-                        printExcelResult(orderResult.getFailWorkbook(), fileName, response);
+                        printExcelResult(carResult.getFailWorkbook(), fileName, response);
                     }else {
                         carList = carResult.getList();
                         //TODO 导入操作

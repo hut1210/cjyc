@@ -17,6 +17,7 @@ public class CarCircleOrderStatePush implements IOrderStatePushable{
     }
     @Override
     public boolean push(JSONObject jo) {
+        System.out.println("订单状态接收到数据为: " + jo.toJSONString());
         return false;
     }
 }

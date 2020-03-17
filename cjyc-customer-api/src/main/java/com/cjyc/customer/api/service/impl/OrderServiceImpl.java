@@ -88,7 +88,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             }
             order.setLineId(line.getId());
         }
-        order.setState(OrderStateEnum.SUBMITTED.code);
+        order.setState(OrderStateEnum.WAIT_CHECK.code);
         orderDao.updateById(order);
 
         //给客户发送消息

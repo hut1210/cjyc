@@ -437,7 +437,7 @@ public class PingPayServiceImpl implements IPingPayService {
                     if (value != null) {
                         redisUtils.delete(lockKey);
                     }
-                    if (!redisLock.lock(lockKey, paramsDto.getLoginId(), 1800000, 100, 300)) {
+                    if (!redisLock.lock(lockKey, paramsDto.getLoginId(), 1800000, 10, 300)) {
                         return BaseResultUtil.fail("锁定车辆失败");
                     }
                     lockKeySet.add(lockKey);
