@@ -221,7 +221,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int countActiveWaybill(@Param("orderCarId") Long orderCarId, @Param("type") int type);
 
     /**
-     * 根据运单号查看司机上游付款状态列表
+     * 根据运单号查看上游付款状态列表
      *
      * @param waybillNo
      * @return

@@ -15,11 +15,8 @@ public class DriverUpstreamPaidInfoVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "ID")
-    private Long id;
-
     @ApiModelProperty(value = "车辆编码")
-    private String no;
+    private String vno;
 
     @ApiModelProperty(value = "VIN码")
     private String vin;
