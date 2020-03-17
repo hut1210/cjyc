@@ -38,13 +38,11 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         if(order == null){
             return;
         }
-        if(AccountConstant.ACCOUNT_99CC.equals(order.getCustomerPhone())){
-            sendOrderState(Sets.newHashSet(order), AmqpConstant.MQ_TYPE_99CC_ORDER_STATE);
-        }
+        sendOrderState(Sets.newHashSet(order));
     }
     @Async
     @Override
-    public void sendOrderState(Set<Order> orderSet, String type) {
+    public void sendOrderState(Set<Order> orderSet) {
         if(CollectionUtils.isEmpty(orderSet)){
             return;
         }
@@ -53,7 +51,9 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             dataMap.put("orderNo", o.getNo());
             dataMap.put("state", o.getState());
             dataMap.put("createTime", System.currentTimeMillis());
-            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(type, dataMap));
+            if(AccountConstant.ACCOUNT_99CC.equals(o.getCustomerPhone())){
+                send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_STATE, dataMap));
+            }
         });
     }
 
@@ -84,7 +84,9 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         dataMap.put("addInsuranceFee", addInsuranceTotalFee);//保险费
         dataMap.put("createTime", System.currentTimeMillis());//当前时间
 
-        send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_CONFIRM, dataMap));
+        if(AccountConstant.ACCOUNT_99CC.equals(order.getCustomerPhone())){
+            send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_CONFIRM, dataMap));
+        }
     }
     @Async
     @Override

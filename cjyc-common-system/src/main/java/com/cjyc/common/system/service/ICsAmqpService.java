@@ -17,5 +17,5 @@ public interface ICsAmqpService extends RabbitTemplate.ConfirmCallback {
     @Async
     void sendOrderState(Order order);
     @Async
-    void sendOrderState(Set<Order> orderSet, String type);
+    void sendOrderState(Set<Order> orderSet);
 }
