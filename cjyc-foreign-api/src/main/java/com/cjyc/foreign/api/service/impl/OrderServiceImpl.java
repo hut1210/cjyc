@@ -11,6 +11,7 @@ import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Line;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -72,6 +73,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             // 调用韵车系统-保存订单
             log.info("===>调用韵车系统保存订单接口,请求参数：{}",JSON.toJSONString(paramDto));
             resultVo = csOrderService.save(paramDto);
+            log.info("<===调用韵车系统保存订单接口,返回参数：{}",JSON.toJSONString(resultVo));
+            if (resultVo.getCode() == ResultEnum.SUCCESS.getCode()) {
+                int index = resultVo.getMsg().indexOf("D");
+                if (index > -1) {
+                    resultVo = BaseResultUtil.getVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(),
+                            resultVo.getMsg().substring(index));
+                }
+            }
         } catch (Exception e) {
             log.error("===>下单异常：{}",e.getMessage());
             resultVo = BaseResultUtil.fail("下单异常...");
