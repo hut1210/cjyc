@@ -304,7 +304,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             for (WaybillCar waybillCar : list) {
                 //加锁
                 String lockKey = RedisKeys.getAllotTaskKey(waybillCar.getId());
-                if (!redisLock.lock(lockKey, 120000, 100, 300)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                     throw new ServerException("运单车辆{0}正在分配, 请5秒后重试，", waybillCar.getOrderCarNo());
                 }
                 lockSet.add(lockKey);

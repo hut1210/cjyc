@@ -136,7 +136,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
                 log.debug("缓存：key->{}", lockKey);
-                if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("订单车辆{0}正在调度，请5秒后重试", orderCarNo);
                 }
@@ -807,7 +807,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 //加锁
                 String lockKey = RedisKeys.getDispatchLock(orderCarNo);
-                if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
+                if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                     return BaseResultUtil.fail("订单车辆{0}正在调度，请5秒后重试", orderCarNo);
                 }
                 lockSet.add(lockKey);
@@ -979,7 +979,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
             //加锁
             String lockKey = RedisKeys.getDispatchLock(waybill.getId());
-            if (!redisLock.lock(lockKey, 120000, 10, 100L)) {
+            if (!redisLock.lock(lockKey, 120000, 0, 100L)) {
                 return BaseResultUtil.fail("运单{0}正在修改，请5秒后重试", waybill.getNo());
             }
             lockSet.add(lockKey);
@@ -1001,7 +1001,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 Long orderCarId = dto.getOrderCarId();
                 //加锁
                 String lockCarKey = RedisKeys.getDispatchLock(orderCarNo);
-                if (!redisLock.lock(lockCarKey, 120000, 10, 300L)) {
+                if (!redisLock.lock(lockCarKey, 120000, 0, 150L)) {
                     return BaseResultUtil.fail("车辆{0}正在调度，请5秒后重试", orderCarNo);
                 }
                 lockSet.add(lockCarKey);
