@@ -114,8 +114,6 @@ cjkj:
       topic: cjyc_topic_exchange
     routing-key:
       common: cjyc_route_common_key
-
-
   push:
     enabled: true
     apikey:
