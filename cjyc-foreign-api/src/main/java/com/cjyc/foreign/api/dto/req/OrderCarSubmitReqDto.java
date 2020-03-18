@@ -46,7 +46,7 @@ public class OrderCarSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "车值/万")
     private int valuation;
 
-    @ApiModelProperty(value = "保险费/元，保险费计算规则：车值<=10万：保险费0元；11万<=车值<=19万：保险费50元；20万<=车值<=29万：保险费10元,以此类推")
+    @ApiModelProperty(value = "保险费/元",hidden = true)
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "车辆应收干线费 单位：分",hidden = true)
