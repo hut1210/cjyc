@@ -1136,6 +1136,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (!redisLock.lock(lockKey, 120000, 1, 200)) {
                 return BaseResultUtil.fail("当前订单{0}正在操作，请稍后尝试", paramsDto.getOrderId());
             }
+
             //取消订单
             Order order = orderDao.selectById(paramsDto.getOrderId());
             if (order == null) {
@@ -1156,6 +1157,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
                 waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
             }
+            //取消所有在库状态
+            orderCarDao.updateLocationForCancel(order.getId());
             //退款
             csPingPayService.cancelOrderRefund(order.getId());
 
@@ -1388,9 +1391,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if(vo.getOrderEndStoreId() != null && !vo.getOrderEndStoreId().equals(vo.getStartStoreId())){
                     return BaseResultUtil.fail("车辆{0},尚未调度到订单目的业务中心，无法配送调度", vo.getOrderCarNo());
                 }
-                if (vo.getOrderEndCityCode() != null  && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
+                /*if (vo.getOrderEndCityCode() != null  && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
-                }
+                }*/
                 //验证数据范围
                 if (bizScope.getCode() != BizScopeEnum.CHINA.code) {
                     if (vo.getStartBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {

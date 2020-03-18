@@ -189,6 +189,11 @@
         now_update_time = UNIX_TIMESTAMP(NOW()) * 1000
         where id = #{orderCarId}
     </update>
+    <update id="updateLocationForCancel">
+        update w_order_car
+        set now_store_id = null
+        where order_id = #{orderId}
+    </update>
 
 
     <delete id="deleteBatchByOrderId">
