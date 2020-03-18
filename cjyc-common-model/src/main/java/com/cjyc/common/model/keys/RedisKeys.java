@@ -177,26 +177,26 @@ public class RedisKeys {
     public static String getAllotTaskKey(Long waybillCarId) {
         return CJYC + I + ALLOT_CAR_LOCK_KEY + I + waybillCarId;
     }
-    public static String getLoadLockKey(Object id) {
+    public static String getLoadLockKey(Long id) {
         return CJYC + I + LOAD_LOCK_KEY + I + id;
     }
-    public static String getUnloadLockKey(Object id) {
-        return CJYC + I + UNLOAD_LOCK_KEY + I + id;
+    public static String getUnloadLockKey(Long waybillCarId) {
+        return CJYC + I + UNLOAD_LOCK_KEY + I + waybillCarId;
     }
-    public static String getCancelLockKey(Object orderId) {
+    public static String getCancelLockKey(Long orderId) {
         return CJYC + I + CANCEL_LOCK_ORDER_KEY + I + orderId;
     }
 
-    public static String getInStoreLockKey(Object id) {
+    public static String getInStoreLockKey(Long id) {
         return CJYC + I + IN_STORE_LOCK_KEY + I + id;
     }
-    public static String getOutStoreLockKey(Object id) {
+    public static String getOutStoreLockKey(Long id) {
         return CJYC + I + OUT_STORE_LOCK_KEY + I + id;
     }
-    public static String getReceiptLockKey(Object no) {
+    public static String getReceiptLockKey(Long no) {
         return CJYC + I + RECEIPT_LOCK_KEY + I + no;
     }
-    public static String getOrderLockKey(Object id) {
+    public static String getOrderLockKey(Long id) {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
     }
 }

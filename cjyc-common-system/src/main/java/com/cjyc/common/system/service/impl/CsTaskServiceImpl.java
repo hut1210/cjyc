@@ -403,7 +403,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (waybillCar == null) {
                     return BaseResultUtil.fail("运单车辆不存在");
                 }
-                String lockKey = RedisKeys.getLoadLockKey(waybillCar.getOrderCarNo());
+                String lockKey = RedisKeys.getLoadLockKey(taskCarId);
                 if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在提车，请5秒后重试", waybillCar.getOrderCarNo());
@@ -640,7 +640,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (waybillCar == null) {
                     return BaseResultUtil.fail("任务ID为{0}对应的运单车辆不存在", taskCarId);
                 }
-
+                String lockKey = RedisKeys.getUnloadLockKey(waybillCar.getId());
+                if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
+                    log.debug("缓存失败：key->{}", lockKey);
+                    return BaseResultUtil.fail("任务车辆{0}正在提车，请5秒后重试", waybillCar.getOrderCarNo());
+                }
+                lockSet.add(lockKey);
                 if (waybillCar.getState() <= WaybillCarStateEnum.WAIT_LOAD.code) {
                     return BaseResultUtil.fail("运单车辆{0}尚未装车", waybillCar.getOrderCarNo());
                 }
