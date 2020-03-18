@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 @Component
 @EnableScheduling
 @Configuration
-public class UserCronTask {
+public class StatisticTask {
 
     @Resource
     private ICsCronTaskService csCronTaskService;
@@ -28,7 +28,7 @@ public class UserCronTask {
      * 每天凌晨两点执行
      */
     @Scheduled(cron = "0 0 2 * * ?")
-    //@Scheduled(cron = "0/60 * * * * ?")
+    //@Scheduled(cron = "0/10 * * * * ?")
     void saveDriverCar(){
         csCronTaskService.saveDriverCar();
     }
