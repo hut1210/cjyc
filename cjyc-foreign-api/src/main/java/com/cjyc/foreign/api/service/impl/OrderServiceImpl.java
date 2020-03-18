@@ -181,7 +181,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
 
     @Override
     public ResultVo<OrderDetailResDto> getOrderDetailByOrderNo(OrderDetailReqDto dto) {
-        log.info("===>99车圈-查询订单详情,请求参数：{} ", JSON.toJSONString(dto));
+        log.info("===>99车圈-查询订单详情,请求参数：{}", JSON.toJSONString(dto));
         OrderDetailResDto orderDetailResDto = new OrderDetailResDto();
         // 查询订单信息
         Order order = super.getOne(new QueryWrapper<Order>().lambda().eq(Order::getNo,dto.getOrderNo()));
@@ -196,7 +196,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         getTransportInfo(orderDetailResDto);
 
         ResultVo<OrderDetailResDto> resultVo = BaseResultUtil.success(orderDetailResDto);
-        log.info("<===99车圈-查询订单详情,返回参数：{} ", JSON.toJSONString(resultVo));
+        log.info("<===99车圈-查询订单详情,返回参数：{}", JSON.toJSONString(resultVo));
         return resultVo;
     }
 
