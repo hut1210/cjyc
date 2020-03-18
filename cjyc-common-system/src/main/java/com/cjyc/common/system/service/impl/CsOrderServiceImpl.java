@@ -217,7 +217,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     orderCarList.forEach(orderCar -> {
                         if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
                             log.error("【均摊费用】失败{}", JSON.toJSONString(paramsDto));
-                            throw new ServerException("订单车辆存在时，订单金额不能为零");
+                            throw new ServerException("订单车辆存在时，车辆金额不能为零");
                         }
                         orderCarDao.updateById(orderCar);
                     });
