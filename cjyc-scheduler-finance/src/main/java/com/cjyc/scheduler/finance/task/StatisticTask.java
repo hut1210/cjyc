@@ -28,7 +28,7 @@ public class StatisticTask {
      * 每天凌晨两点执行
      */
     @Scheduled(cron = "0 0 2 * * ?")
-    //@Scheduled(cron = "0/60 * * * * ?")
+    //@Scheduled(cron = "0/10 * * * * ?")
     void saveDriverCar(){
         csCronTaskService.saveDriverCar();
     }
