@@ -52,16 +52,11 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "提车日期", required = true)
     private Long expectStartDate;
 
-    @NotNull(message = "预计到达时间不能为空")
-    @ApiModelProperty(value = "预计到达时间", required = true)
-    private Long expectEndDate;
-
     @NotNull(message = "线路ID不能为空")
     @ApiModelProperty(value = "线路ID", required = true)
     private Long lineId;
 
-    @NotNull(message = "提车方式不能为空")
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门", required = true)
+    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")
     private Integer pickType;
 
     @NotBlank(message = "提车联系人不能为空")
@@ -73,8 +68,7 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "提车联系人电话", required = true)
     private String pickContactPhone;
 
-    @NotNull(message = "交付方式不能为空")
-    @ApiModelProperty(value = "交付方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门", required = true)
+    @ApiModelProperty(value = "交付方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门")
     private Integer backType;
 
     @NotBlank(message = "交付联系人不能为空")
@@ -87,15 +81,14 @@ public class OrderSubmitReqDto implements Serializable {
     private String backContactPhone;
 
     @NotNull(message = "支付方式不能为空")
-    @ApiModelProperty(value = "支付方式：0到付（默认），1预付，2账期", required = true)
+    @ApiModelProperty(value = "支付方式：0到付(默认)", required = true)
     private Integer payType;
 
     @NotNull(message = "线路费用不能为空")
     @ApiModelProperty(value = "线路费用/元", required = true)
     private BigDecimal lineWlFreightFee;
 
-    @NotNull(message = "订单总价不能为空")
-    @ApiModelProperty(value = "订单总价/元：订单总价=（线路费用 + 保险费）* 车辆数", required = true)
+    @ApiModelProperty(value = "订单总价/元",hidden = true)
     private BigDecimal totalFee;
 
     @NotEmpty(message = "车辆信息不能为空")

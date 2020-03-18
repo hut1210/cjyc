@@ -82,4 +82,5 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
         //查询前一天所有下的单
         return orderDao.findDayOrder(beforeStartDay, beforeEndDay);
     }
+
 }

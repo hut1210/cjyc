@@ -864,6 +864,10 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(urd == null){
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda().eq(Role::getId, urd.getRoleId()));
+        if(role != null && !"个人司机".equals(role.getRoleName())){
+            return BaseResultUtil.fail("非个人司机不可删除");
+        }
         boolean result = csSmsService.validateCaptcha(dto.getPhone(),dto.getCode(),CaptchaTypeEnum.valueOf(dto.getType()), ClientEnum.APP_DRIVER);
         if(!result){
             return BaseResultUtil.fail("验证码与手机号不匹配或者过期，请核对发送");

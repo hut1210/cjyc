@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 @Component
 @EnableScheduling
 @Configuration
-public class SystemCronTask {
+public class UserCronTask {
 
     @Resource
     private ICsCronTaskService csCronTaskService;
