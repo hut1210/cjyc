@@ -2,6 +2,7 @@ package com.cjyc.common.model.keys;
 
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
+import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.google.common.collect.Lists;
@@ -53,6 +54,8 @@ public class RedisKeys {
     private final static String BANK_INFO = "bankInfo:bankName";
     private final static String CITY_TREE = "city:tree";
     private final static String KEYWORD_CITY_TREE = "keyword:city:tree";
+    private final static String KEYWORD_POSTAL_CODE = "keyword:postal:code";
+    private final static String PAY_BANK_INFO = "pay:bank:info";
 
     private final static String USER_KEY = "user";
 
@@ -135,6 +138,10 @@ public class RedisKeys {
         return CJYC + I + CAR_SERIES + I + keyword;
     }
 
+    public static String getPostalKey(String keyword){
+        return CJYC + I + KEYWORD_POSTAL_CODE + I + keyword;
+    }
+
     public static String getThreeCityKey(String keyword){
         String key = CJYC + I + THREE_CITY;
         if(StringUtils.isNotBlank(keyword)){
@@ -145,6 +152,10 @@ public class RedisKeys {
 
     public static String getAppBankInfoKey(BankInfoDto dto){
         return CJYC + I + BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getKeyword();
+    }
+
+    public static String getPayBankInfoKey(PayBankDto dto){
+        return CJYC + I + PAY_BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getSubBankName() + I +dto.getPayBankNo();
     }
 
     public static String getWebBankInfoKey(KeywordDto dto){

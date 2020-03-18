@@ -201,19 +201,37 @@
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
         where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
-        and wwc.state = 100
+        and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
         order by ww.create_time desc
     </select>
 
     <select id="getTrunkCostList" parameterType="map" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
-        select ww.carrier_name as name,wwc.freight_fee as freightFee,ww.freight_pay_time as payTime,
-        dc.settle_type as settleType
+        select ww.no as wayBillNo,
+        ww.carrier_name as name,
+        wwc.freight_fee as freightFee,
+        ftb.amount as paidFreightFee,
+        ww.freight_pay_time as payTime,
+        dc.settle_type as settleType,
+        (CASE
+            when ww.freight_pay_state=2 then '付款中'
+            when ww.freight_pay_state=1 then '已付款'
+            when ww.freight_pay_state=-2 then '支付失败'
+        END) as payState,
+        (CASE
+            when ww.carrier_type=1 then '个人承运商'
+            when ww.carrier_type=2 then '企业承运商'
+            when ww.carrier_type=4 then '代驾'
+            when ww.carrier_type=5 then '拖车'
+        END) as carrierType,
+        dc.linkman_phone as phone
 
         from w_waybill_car wwc
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
+        left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
+        left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
         where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
-        and wwc.state = 100
+        and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
         order by ww.create_time desc
     </select>
 
@@ -636,6 +654,7 @@
         and wt.complete_time &gt; 0
         and carrier_type in (1,2,4,5)
         and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
+        and ww.state=100
         <if test="waybillNo !=null and waybillNo.trim() !=''">
             and wt.no like concat('%',#{waybillNo},'%')
         </if>

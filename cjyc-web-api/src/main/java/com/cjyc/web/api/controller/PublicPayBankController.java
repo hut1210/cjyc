@@ -34,7 +34,7 @@ public class PublicPayBankController {
     @ApiOperation(value = "查询对公支付银行信息")
     @PostMapping(value = "/findPayBankInfo")
     public ResultVo<PageVo<PayBankVo>> findPayBankInfo(@RequestBody PayBankDto dto) {
-        return payBankService.findPayBankInfo(dto);
+        return payBankService.findPayBankInfo(true,dto);
     }
 
 }
