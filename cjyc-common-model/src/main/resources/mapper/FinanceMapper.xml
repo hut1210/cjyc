@@ -636,6 +636,7 @@
         and wt.complete_time &gt; 0
         and carrier_type in (1,2,4,5)
         and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
+        and ww.state=100
         <if test="waybillNo !=null and waybillNo.trim() !=''">
             and wt.no like concat('%',#{waybillNo},'%')
         </if>

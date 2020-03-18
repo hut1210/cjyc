@@ -1004,7 +1004,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //对公户打款
         //付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
         if(showPartnerVo.getCardType()==1){
+            log.info("开户行={}",showPartnerVo.getBankName());
             params.put("type", "b2b");
+            params.put("sub_bank", "交通银行股份有限公司珠海拱北支行");
+            params.put("sub_bank_code", "301585000042");
+            params.put("prov", "广东");
+            params.put("city", "珠海");
         }else{
             params.put("type", "b2c");
         }
