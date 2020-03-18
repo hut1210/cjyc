@@ -667,7 +667,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
      */
     private ResultVo modifyDriverNew(DriverDto dto) {
         //获取运力信息
-        VehicleRunning vRun = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
+        /*VehicleRunning vRun = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,dto.getDriverId()));
         if(vRun != null){
             List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                         .eq(Task::getVehicleRunningId,vRun.getId())
@@ -675,7 +675,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
-        }
+        }*/
         //更新司机信息
         Carrier carrier = carrierDao.selectById(dto.getCarrierId());
         Driver driver = driverDao.selectById(dto.getDriverId());
