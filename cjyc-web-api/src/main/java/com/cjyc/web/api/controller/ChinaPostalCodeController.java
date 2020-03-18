@@ -36,6 +36,6 @@ public class ChinaPostalCodeController {
     @ApiOperation(value = "根据关键字模糊搜索省/地区")
     @PostMapping(value = "/findChinaPostal")
     public ResultVo<List<ProvinceVo>> findChinaPostal(@RequestBody PostalDto dto) {
-        return chinaPostalCodeService.findChinaPostal(dto);
+        return chinaPostalCodeService.findChinaPostal(true,dto);
     }
 }

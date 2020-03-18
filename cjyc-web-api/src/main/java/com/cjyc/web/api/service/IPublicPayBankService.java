@@ -29,10 +29,11 @@ public interface IPublicPayBankService extends IService<PublicPayBank> {
 
     /**
      * 获取对公支付银行信息
+     * @param isSearchCache 缓存
      * @param dto
      * @return
      */
-    ResultVo<PageVo<PayBankVo>> findPayBankInfo(PayBankDto dto);
+    ResultVo<PageVo<PayBankVo>> findPayBankInfo(boolean isSearchCache,PayBankDto dto);
 
     /**
      * 根据银行名称获取对公银行信息
