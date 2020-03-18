@@ -201,7 +201,7 @@
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
         where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
-        and wwc.state = 100
+        and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
         order by ww.create_time desc
     </select>
 
