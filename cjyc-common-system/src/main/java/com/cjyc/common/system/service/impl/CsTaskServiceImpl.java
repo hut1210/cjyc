@@ -1007,7 +1007,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (orderCar == null) {
                     return BaseResultUtil.fail("任务车辆{0}订单车辆不存在", waybillCar.getOrderCarNo());
                 }
-                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getId());
+                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
                 if (order == null) {
                     return BaseResultUtil.fail("任务车辆{0}订单不存在", waybillCar.getOrderCarNo());
                 }
@@ -1018,7 +1018,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             for (Long taskCarId : paramsDto.getTaskCarIdList()) {
                 WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
-                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getId());
+                Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
                 if(OrderStateEnum.TRANSPORTING.code > order.getState()){
                     firstLoadOrderSet.add(order);
                 }
