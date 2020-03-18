@@ -37,7 +37,6 @@ import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.pqc.math.linearalgebra.BigEndianConversions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -306,7 +305,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
 
                 if(addLock){
-                    String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
+                    String lockKey = RedisKeys.getWlPayLockKey(orderCar.getNo());
                     String value = redisUtils.get(lockKey);
                     if (value != null && !value.equals(validateSweepCodeDto.getTaskId().toString())) {
                         return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
@@ -1227,7 +1226,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Override
     public ResultVo unlockQrcode(String orderCarNo) {
         try{
-            String key = RedisKeys.getWlCollectPayLockKey(orderCarNo);
+            String key = RedisKeys.getWlPayLockKey(orderCarNo);
             redisUtils.delete(key);
         }catch (Exception e){
             return BaseResultUtil.fail("解锁扫码付款");

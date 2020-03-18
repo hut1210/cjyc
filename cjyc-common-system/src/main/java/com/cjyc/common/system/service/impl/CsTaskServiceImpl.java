@@ -1150,7 +1150,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}对应的运单车辆不存在", taskCarId));
                     continue;
                 }
-                String lockKey = RedisKeys.getReceiptLockKey(taskCarId);
+                String lockKey = RedisKeys.getReceiptLockKey(waybillCar.getOrderCarId());
                 if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", waybillCar.getOrderCarNo());
@@ -1248,7 +1248,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (orderCar == null) {
                     continue;
                 }
-                String lockKey = RedisKeys.getReceiptLockKey(orderCar.getNo());
+                String lockKey = RedisKeys.getReceiptLockKey(orderCar.getId());
                 if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
                     return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", orderCar.getNo());
@@ -1538,7 +1538,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             if (orderCar == null) {
                 continue;
             }
-            String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
+            String lockKey = RedisKeys.getWlPayLockKey(orderCar.getNo());
             lockSet.add(lockKey);
 
             //更新支付车辆状态

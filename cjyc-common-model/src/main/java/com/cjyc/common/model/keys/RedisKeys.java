@@ -62,8 +62,7 @@ public class RedisKeys {
     private final static String ROLE_BIZ_SCOPE_KEY = "role:biz:scope";
 
     private final static String NEW_TASK_NO_KEY = "new:task:no";
-    private final static String WL_PRE_PAY_LOCK = "wl:pre:pay:lock";
-    private final static String WL_COLLECT_PAY_LOCK = "wl:collect:pay:lock";
+    private final static String WL_PAY_LOCK = "wl:pay:lock";
 
     /**---------------driver-------------------------------------------------------------------*/
 
@@ -90,19 +89,8 @@ public class RedisKeys {
         return CJYC + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
-    public static String getWlCollectPayLockKey(String carNo) {
-        return  CJYC + I + WL_COLLECT_PAY_LOCK + I + carNo;
-    }
-    public static List<String> getWlCollectPayLockKeys(List<String> carNos) {
-        List<String> list = Lists.newArrayList();
-        for (String carNo : carNos) {
-            list.add(CJYC + I + WL_COLLECT_PAY_LOCK + I + carNo);
-        }
-        return list;
-    }
-
-    public static String getWlPrePayLock(String orderNo) {
-        return CJYC + I + WL_PRE_PAY_LOCK + I + orderNo;
+    public static String getWlPayLockKey(String carNo) {
+        return  CJYC + I + WL_PAY_LOCK + I + carNo;
     }
 
     /**
@@ -204,8 +192,8 @@ public class RedisKeys {
     public static String getOutStoreLockKey(Long id) {
         return CJYC + I + OUT_STORE_LOCK_KEY + I + id;
     }
-    public static String getReceiptLockKey(Long no) {
-        return CJYC + I + RECEIPT_LOCK_KEY + I + no;
+    public static String getReceiptLockKey(Long id) {
+        return CJYC + I + RECEIPT_LOCK_KEY + I + id;
     }
     public static String getOrderLockKey(Long id) {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
