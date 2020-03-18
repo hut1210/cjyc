@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.customer.AppCustomerDto;
 import com.cjyc.common.model.dto.customer.UpdateCustomerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerInfo.CustomerCardInfoVo;
 import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
 import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
 import com.cjyc.customer.api.service.ICustomerService;
@@ -73,5 +74,10 @@ public class CustomerController {
         return customerService.findNewCustomerInfoNew(dto);
     }
 
+    @ApiOperation(value = "获取合伙人银行信息")
+    @PostMapping("/findPartnerBank")
+    public ResultVo<CustomerCardInfoVo> findPartnerBank(@Validated @RequestBody AppCustomerDto dto){
+        return customerService.findPartnerBank(dto);
+    }
 
 }

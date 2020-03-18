@@ -417,7 +417,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
-        if(urd == null){
+        if(null == urd){
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
         BankCardVos cardVos = new BankCardVos();

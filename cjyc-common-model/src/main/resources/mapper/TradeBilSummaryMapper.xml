@@ -239,14 +239,14 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and cc.pay_mode=0 and wo.customer_type=1
+        where cc.pay_mode=0 and wo.customer_type=1 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  cc.pay_mode =#{payMode}
         </if>
         group by woc.no
         union
-        select DISTINCT(woc.no),woc.total_fee
+        select DISTINCT(woc.no),(woc.total_fee+woc.coupon_offset_fee) as total_fee
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
@@ -256,7 +256,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccp.settle_type=0 and wo.customer_type=3
+        where ccp.settle_type=0 and wo.customer_type=3 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  ccp.settle_type =#{payMode}
@@ -273,10 +273,10 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccc.settle_type=0 and wo.customer_type=2
+        where ccc.settle_type=0 and wo.customer_type=2 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
-            and  ccp.settle_type =#{payMode}
+            and  ccc.settle_type =#{payMode}
         </if>
         group by woc.no ) t
     </select>

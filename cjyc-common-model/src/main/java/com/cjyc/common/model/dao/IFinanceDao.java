@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author:Hut
@@ -65,4 +66,12 @@ public interface IFinanceDao extends BaseMapper {
     List<CooperatorPaidVo> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
 
     List<ExportFinanceDetailVo> getFinanceDetailList(String no);
+
+    BigDecimal payableAccountSummary(PayableQueryDto payableQueryDto);
+
+    BigDecimal waitCollectSummary(WaitTicketCollectDto waitTicketCollectDto);
+
+    BigDecimal paymentSummary(WaitPaymentDto waitPaymentDto);
+
+    Map payablePaidSummary(PayablePaidQueryDto payablePaidQueryDto);
 }

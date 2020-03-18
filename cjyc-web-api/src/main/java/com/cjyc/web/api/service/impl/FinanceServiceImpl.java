@@ -377,10 +377,14 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PaymentVo> pv = financeDao.getPaymentList(fqd);
 
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
+
+        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
         log.info("pv.size() ={}", pv.size());
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("receiptCount", pv.size());
         countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
+
+        countInfo.put("ActualReceiptSummary",incomeSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -431,9 +435,11 @@ public class FinanceServiceImpl implements IFinanceService {
             financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis() - financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
+        Map countInfo = getCountInfo();
         PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
-
-        return BaseResultUtil.success(pageInfo, getCountInfo());
+        BigDecimal payableAccountSummary = financeDao.payableAccountSummary(payableQueryDto);
+        countInfo.put("payableAccountSummary",payableAccountSummary);
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     private Map getCountInfo() {
@@ -500,7 +506,12 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(waitTicketCollectDto.getCurrentPage(), waitTicketCollectDto.getPageSize());
         List<SettlementVo> settlementVoList = financeDao.getCollectTicketList(waitTicketCollectDto);
         PageInfo<SettlementVo> pageInfo = new PageInfo<>(settlementVoList);
-        return BaseResultUtil.success(pageInfo, getCountInfo());
+
+        Map countInfo = getCountInfo();
+        BigDecimal waitCollectSummary = financeDao.waitCollectSummary(waitTicketCollectDto);
+        countInfo.put("waitCollectSummary",waitCollectSummary);
+
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
@@ -550,7 +561,11 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(waitPaymentDto.getCurrentPage(), waitPaymentDto.getPageSize());
         List<SettlementVo> settlementVoList = financeDao.getPayablePaymentList(waitPaymentDto);
         PageInfo<SettlementVo> pageInfo = new PageInfo<>(settlementVoList);
-        return BaseResultUtil.success(pageInfo, getCountInfo());
+
+        Map countInfo = getCountInfo();
+        BigDecimal paymentSummary = financeDao.paymentSummary(waitPaymentDto);
+        countInfo.put("paymentSummary",paymentSummary);
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
@@ -594,7 +609,14 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(payablePaidQueryDto.getCurrentPage(), payablePaidQueryDto.getPageSize());
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
         PageInfo<PayablePaidVo> pageInfo = new PageInfo<>(payablePaidList);
-        return BaseResultUtil.success(pageInfo, getCountInfo());
+
+        Map countInfo = getCountInfo();
+        Map map = financeDao.payablePaidSummary(payablePaidQueryDto);
+        BigDecimal payableSummary = (BigDecimal) map.get("freightFee");
+        BigDecimal payablePaidSummary = (BigDecimal) map.get("totalFreightPay");
+        countInfo.put("payableSummary",payableSummary);
+        countInfo.put("payablePaidSummary",payablePaidSummary);
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
