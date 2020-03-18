@@ -115,27 +115,47 @@ public class CooperatorPaidVo implements Serializable {
     @Excel(name = "付款类型" ,orderNum = "15")
     private String cardType;
 
+    @ApiModelProperty(value = "收款人姓名")
+    @Excel(name = "收款人姓名" ,orderNum = "16")
+    private String receiveCardName;
+
+    @ApiModelProperty(value = "开户行详细名称")
+    @Excel(name = "开户行详细名称" ,orderNum = "17")
+    private String bankNameDetail;
+
+    @ApiModelProperty(value = "银行卡号")
+    @Excel(name = "银行卡号" ,orderNum = "18")
+    private String pubCardNo;
+
+    @ApiModelProperty(value = "公户账号所在省份")
+    @Excel(name = "公户账号所在省份" ,orderNum = "19")
+    private String provinceName;
+
+    @ApiModelProperty(value = "公户账号所在城市")
+    @Excel(name = "公户账号所在城市" ,orderNum = "20")
+    private String areaName;
+
     @ApiModelProperty(value = "对公开户名称")
     private String publicAccount;
 
     @ApiModelProperty(value = "开户银行账号")
-    @Excel(name = "开户银行账号" ,orderNum = "16")
+    @Excel(name = "开户银行账号" ,orderNum = "21")
     private String cardNo;
 
     @ApiModelProperty(value = "开户行名称")
-    @Excel(name = "开户行名称" ,orderNum = "17")
+    @Excel(name = "开户行名称" ,orderNum = "22")
     private String bankName;
 
     @ApiModelProperty(value = "持卡人姓名")
-    @Excel(name = "持卡人姓名" ,orderNum = "18")
+    @Excel(name = "持卡人姓名" ,orderNum = "23")
     private String cardName;
 
     @ApiModelProperty(value = "持卡人身份证号")
-    @Excel(name = "持卡人身份证号" ,orderNum = "19")
+    @Excel(name = "持卡人身份证号" ,orderNum = "24")
     private String IDCard;
 
     @ApiModelProperty(value = "付款操作人")
-    @Excel(name = "付款操作人" ,orderNum = "20")
+    @Excel(name = "付款操作人" ,orderNum = "25")
     private String operator;
 
 }
