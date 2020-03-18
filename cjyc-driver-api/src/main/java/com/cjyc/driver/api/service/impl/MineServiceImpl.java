@@ -665,6 +665,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
 
     @Override
     public ResultVo<PageVo<DriverVehicleVo>> findVehicleNew(BaseDriverDto dto){
+        List<DriverVehicleVo> vehicleVos = null;
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getUserId, dto.getLoginId())
                 .eq(UserRoleDept::getId, dto.getRoleId()));
@@ -672,7 +673,12 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DriverVehicleVo> vehicleVos = driverDao.findVehicle(Long.valueOf(urd.getDeptId()));
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda().eq(Role::getId, urd.getRoleId()));
+        if(role != null && "下属司机".equals(role.getRoleName())){
+            vehicleVos = driverDao.findSubDriverVehicle(Long.valueOf(urd.getDeptId()),dto.getLoginId());
+        }else{
+            vehicleVos = driverDao.findVehicle(Long.valueOf(urd.getDeptId()));
+        }
         PageInfo<DriverVehicleVo> pageInfo = new PageInfo(vehicleVos);
         return BaseResultUtil.success(pageInfo);
     }
