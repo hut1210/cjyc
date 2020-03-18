@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.BankCardBind;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.customer.customerInfo.CustomerCardInfoVo;
 import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,5 +38,12 @@ public interface IBankCardBindDao extends BaseMapper<BankCardBind> {
      * @return
      */
     int findBankCardInfoNum(@Param("carrierId") Long carrierId);
+
+    /**
+     * 获取用户银行卡信息
+     * @param loginId
+     * @return
+     */
+    CustomerCardInfoVo findCustomerBankCardInfo(@Param("loginId") Long loginId);
 
 }
