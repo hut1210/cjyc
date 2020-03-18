@@ -56,7 +56,6 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "线路ID", required = true)
     private Long lineId;
 
-    @NotNull(message = "提车方式不能为空")
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门", required = true)
     private Integer pickType;
 
@@ -69,7 +68,6 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "提车联系人电话", required = true)
     private String pickContactPhone;
 
-    @NotNull(message = "交付方式不能为空")
     @ApiModelProperty(value = "交付方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门", required = true)
     private Integer backType;
 

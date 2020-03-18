@@ -26,12 +26,11 @@ public class OrderCarSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "型号", required = true)
     private String model;
 
-    @NotBlank(message = "车牌号不能为空")
     @Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "车牌号格式不正确，请检查")
     @ApiModelProperty(value = "车牌号", required = true)
     private String plateNo;
 
-    //@Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
+    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
     @ApiModelProperty(value = "vin码")
     private String vin;
 
@@ -43,8 +42,9 @@ public class OrderCarSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "是否新车 0-否 1-是", required = true)
     private Integer isNew;
 
+    @NotNull(message = "车值不能为空")
     @ApiModelProperty(value = "车值/万")
-    private int valuation;
+    private Integer valuation;
 
     @ApiModelProperty(value = "保险费/元",hidden = true)
     private BigDecimal addInsuranceFee;
