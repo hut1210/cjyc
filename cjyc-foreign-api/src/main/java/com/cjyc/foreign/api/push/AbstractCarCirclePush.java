@@ -26,16 +26,18 @@ public abstract class AbstractCarCirclePush implements IPushable{
     */
     protected boolean doPush(String interUrl, JSONObject jo, String clientId, String charset,
                                         Map<String, String> headers) {
-        StringBuilder sb = new StringBuilder("");
-        sb.append("createTime" + jo.get("createTime"));
-        sb.append("orderNo" + jo.get("orderNo"));
-        sb.append("clientId" + clientId);
-        String md5Str = MD5Util.getMD5Str(sb.toString());
-        if (StringUtils.isEmpty(md5Str)) {
-            return false;
+        if (!jo.containsKey("sign") || StringUtils.isEmpty(jo.getString("sign"))) {
+            StringBuilder sb = new StringBuilder("");
+            sb.append("createTime" + jo.get("createTime"));
+            sb.append("orderNo" + jo.get("orderNo"));
+            sb.append("clientId" + clientId);
+            String md5Str = MD5Util.getMD5ToBase64Str(sb.toString());
+            if (StringUtils.isEmpty(md5Str)) {
+                return false;
+            }
+            jo.put("sign", md5Str);
+            System.out.println("新版_待加密内容：" + sb.toString());
         }
-        jo.put("sign", md5Str);
-        System.out.println("新版_待加密内容：" + sb.toString());
         System.out.println("新版_接收到处理后数据为: " + jo.toJSONString());
 //        String result = HttpClientUtil.sendJsonPost(interUrl, jo.toJSONString(), null, null);
 //        if (StringUtils.isEmpty(result)) {
