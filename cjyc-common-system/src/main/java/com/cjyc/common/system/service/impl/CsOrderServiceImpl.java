@@ -342,6 +342,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             //copy属性
             BeanUtils.copyProperties(paramsDto, order);
+            if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType() && PayModeEnum.COLLECT.code != order.getPayType()){
+                throw new ParameterException("合伙人下单支付方式只能选择到付，请确认后重新下单");
+            }
             if(order.getCustomerId() == null){
                 throw new ParameterException("客户身份信息有误, 请联系管理员");
             }
@@ -1394,6 +1397,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 /*if (vo.getOrderEndCityCode() != null  && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }*/
+                if (validateIsArriveStoreOrCityRange(vo.getEndAreaCode(), vo.getOrderEndStoreId(), vo.getOrderEndCityCode())) {
+                    return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
+                }
                 //验证数据范围
                 if (bizScope.getCode() != BizScopeEnum.CHINA.code) {
                     if (vo.getStartBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
@@ -1463,6 +1469,18 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success(dispatchAddCarVo);
     }
 
+    private boolean validateIsArriveStoreOrCityRange(String endAreaCode, Long orderEndStoreId, String orderEndCityCode) {
+        if(orderEndStoreId == null || orderEndStoreId <= 0){
+            //无业务中心
+
+        }else{
+            //有业务中心
+            List<String> list = csStoreService.getStoreRangeById(orderEndStoreId);
+        }
+        return false;
+
+    }
+
     /**
      * 拷贝订单开始城市
      *
@@ -1510,10 +1528,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @since 2019/10/29 8:30
      */
     private List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
-        if (totalFee == null || totalFee.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
-        if (CollectionUtils.isEmpty(orderCarlist)) {
+        if (totalFee == null || CollectionUtils.isEmpty(orderCarlist)) {
             return orderCarlist;
         }
 
@@ -1521,42 +1536,35 @@ public class CsOrderServiceImpl implements ICsOrderService {
         for (OrderCar oc : orderCarlist) {
             carTotalFee = carTotalFee.add(getCarWlFee(oc));
         }
-        if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
+
         if(totalFee.compareTo(carTotalFee) < 0){
             throw new ParameterException("订单金额不能小于物流费");
         }
-        BigDecimal avg = totalFee.divide(carTotalFee, 8, RoundingMode.FLOOR);
+        boolean isAvg = carTotalFee.compareTo(BigDecimal.ZERO) == 0;
+
         BigDecimal avgTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            BigDecimal avgCar = getCarWlFee(oc).multiply(avg).setScale(0, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal avgCar;
+            if(isAvg){
+                avgCar = BigDecimal.ONE.multiply(totalFee).divide(new BigDecimal(orderCarlist.size()), 0, BigDecimal.ROUND_HALF_DOWN);
+            }else{
+                avgCar = getCarWlFee(oc).multiply(totalFee).divide(carTotalFee, 0, BigDecimal.ROUND_HALF_DOWN);
+            }
             //赋值
             oc.setTotalFee(avgCar);
             //统计
             avgTotalFee = avgTotalFee.add(avgCar);
         }
-
-        BigDecimal remainder = totalFee.subtract(avgTotalFee);
-
-        if (remainder.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
-
-        BigDecimal[] bigDecimals = remainder.divideAndRemainder(new BigDecimal(orderCarlist.size()));
-        BigDecimal rAvg = bigDecimals[0];
-        BigDecimal rRemainder = bigDecimals[1];
-        for (OrderCar oc : orderCarlist) {
-            if (rRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                oc.setTotalFee(oc.getTotalFee().add(rAvg).add(BigDecimal.ONE));
-                rRemainder = rRemainder.subtract(BigDecimal.ONE);
-            } else {
-                oc.setTotalFee(oc.getTotalFee().add(rAvg));
+        BigDecimal cha = totalFee.subtract(avgTotalFee);
+        if (cha.compareTo(BigDecimal.ZERO) > 0) {
+            for (OrderCar oc : orderCarlist) {
+                if (cha.compareTo(BigDecimal.ZERO) > 0) {
+                    oc.setTotalFee(oc.getTotalFee().add(BigDecimal.ONE));
+                    cha = cha.subtract(BigDecimal.ONE);
+                }
             }
         }
-
         return orderCarlist;
-
     }
     @Override
     public BigDecimal getCarWlFee(OrderCar orderCar) {
@@ -1583,37 +1591,32 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         BigDecimal carTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            carTotalFee = carTotalFee.add(oc.getPickFee()).add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee());
+            carTotalFee = carTotalFee.add(getCarWlFee(oc));
         }
         if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return orderCarlist;
         }
 
-        BigDecimal avg = couponOffsetFee.divide(carTotalFee, 8, RoundingMode.FLOOR);
         BigDecimal avgTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            BigDecimal avgCar = (oc.getPickFee().add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee())).multiply(avg);
-            avgCar = avgCar.setScale(0, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal avgCar = getCarWlFee(oc).multiply(couponOffsetFee).divide(carTotalFee, 0, RoundingMode.DOWN);
             oc.setTotalFee(avgCar);
             avgTotalFee = avgTotalFee.add(avgCar);
         }
 
-        BigDecimal remainder = couponOffsetFee.subtract(avgTotalFee);
-        if (remainder.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
-        BigDecimal[] bigDecimals = remainder.divideAndRemainder(new BigDecimal(orderCarlist.size()));
-        BigDecimal rAvg = bigDecimals[0];
-        BigDecimal rRemainder = bigDecimals[1];
-        for (OrderCar oc : orderCarlist) {
-            if (rRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                oc.setCouponOffsetFee(oc.getTotalFee().add(rAvg).add(BigDecimal.ONE));
-                rRemainder = rRemainder.subtract(BigDecimal.ONE);
-            } else {
-                oc.setCouponOffsetFee(oc.getTotalFee().add(rAvg));
+        BigDecimal cha = couponOffsetFee.subtract(avgTotalFee);
+        if (cha.compareTo(BigDecimal.ZERO) <= 0) {
+            for (OrderCar oc : orderCarlist) {
+                if (cha.compareTo(BigDecimal.ZERO) <= 0) {
+                    break;
+                }
+                oc.setCouponOffsetFee(oc.getTotalFee().add(BigDecimal.ONE));
+                cha = cha.subtract(BigDecimal.ONE);
             }
         }
         return orderCarlist;
     }
+
+
 
 }

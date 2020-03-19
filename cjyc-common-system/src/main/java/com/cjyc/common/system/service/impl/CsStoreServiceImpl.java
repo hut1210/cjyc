@@ -281,5 +281,9 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return true;
     }
 
+    @Override
+    public List<String> getStoreRangeById(Long orderEndStoreId) {
+        return null;
+    }
 
 }

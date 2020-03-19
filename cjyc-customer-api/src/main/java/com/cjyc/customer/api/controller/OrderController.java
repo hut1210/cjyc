@@ -5,8 +5,10 @@ import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RegexUtil;
@@ -105,11 +107,16 @@ public class OrderController {
         if(!RegexUtil.isMobileSimple(reqDto.getBackContactPhone())){
             return BaseResultUtil.fail("收车人手机号格式不正确");
         }
+        if(CustomerTypeEnum.COOPERATOR.code == reqDto.getCustomerType() && PayModeEnum.COLLECT.code != reqDto.getPayType()){
+            return BaseResultUtil.fail("合伙人下单支付方式只能选择到付，请确认后重新下单");
+        }
+
         //干线费用
         List<SaveOrderCarDto> carList = reqDto.getOrderCarList();
         if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
             carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
         }
+
 
         return csOrderService.save(reqDto);
     }

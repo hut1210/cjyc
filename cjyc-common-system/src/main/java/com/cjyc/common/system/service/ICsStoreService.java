@@ -72,4 +72,6 @@ public interface ICsStoreService {
     ResultVo<List<StoreLoopAdminVo>> listLoopAdmin(StoreListLoopAdminDto loginId);
 
     boolean validateStoreParam(Long storeId, String storeName);
+
+    List<String> getStoreRangeById(Long orderEndStoreId);
 }
