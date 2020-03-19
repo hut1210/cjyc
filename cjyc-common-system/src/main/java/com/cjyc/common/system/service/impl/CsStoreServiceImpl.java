@@ -281,5 +281,16 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return true;
     }
 
+    @Override
+    public Store getStoreFromMap(Map<Long, Store> map, Long storeId) {
+        Store store;
+        if (map.containsKey(storeId)) {
+            store = map.get(storeId);
+        } else {
+            store = storeDao.selectById(storeId);
+            map.put(storeId, store);
+        }
+        return store;
+    }
 
 }

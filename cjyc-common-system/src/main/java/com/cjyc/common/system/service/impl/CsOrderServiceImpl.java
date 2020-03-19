@@ -18,6 +18,7 @@ import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.*;
@@ -37,6 +38,7 @@ import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -106,6 +108,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsOrderChangeLogService csOrderChangeLogService;
     @Resource
     private ICsAmqpService csAmqpService;
+    @Resource
+    private ICsOrderCarLogService csOrderCarLogService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -1139,7 +1143,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (!redisLock.lock(lockKey, 120000, 1, 200)) {
                 return BaseResultUtil.fail("当前订单{0}正在操作，请稍后尝试", paramsDto.getOrderId());
             }
-
+            UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
             //取消订单
             Order order = orderDao.selectById(paramsDto.getOrderId());
             if (order == null) {
@@ -1160,21 +1164,34 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
                 waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
             }
-            //取消所有在库状态
+            //出库
+            Map<Long, Store> storeMap = Maps.newHashMap();
+            orderCars.forEach(orderCar -> {
+                if(orderCar.getNowStoreId() != null && orderCar.getNowStoreId() > 0){
+                    Store store = csStoreService.getStoreFromMap(storeMap, orderCar.getNowStoreId());
+                    csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_OUT_STORE,
+                            new String[]{MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getOutterLog(), store.getName()),
+                                    MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getInnerLog(), store.getName(), paramsDto.getLoginName(), paramsDto.getLoginPhone()),
+                            "取消订单出库"},
+                            userInfo);
+                }
+            });
             orderCarDao.updateLocationForCancel(order.getId());
+
+
             //退款
             csPingPayService.cancelOrderRefund(order.getId());
 
             //添加操作日志
             orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
                     new String[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
+                    userInfo);
 
             //记录订单日志
             csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
                     new String[]{OrderLogEnum.CANCEL.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                    userInfo);
             //TODO 发送消息
             return BaseResultUtil.success();
         } finally {
