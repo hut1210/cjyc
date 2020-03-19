@@ -21,9 +21,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("s_china_postal_code")
-@ApiModel(value="ChinaPostalCode对象", description="")
-public class ChinaPostalCode implements Serializable {
+@TableName("s_postal_code")
+@ApiModel(value="PostalCode对象", description="")
+public class PostalCode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
