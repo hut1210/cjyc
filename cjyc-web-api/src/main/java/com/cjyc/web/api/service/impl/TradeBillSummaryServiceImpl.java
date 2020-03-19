@@ -28,7 +28,7 @@ public class TradeBillSummaryServiceImpl implements ITradeBillSummaryService {
 
     @Override
     public BigDecimal incomeSummary(FinanceQueryDto financeQueryDto) {
-        return MoneyUtil.nullToZero(tradeBillSummaryDao.incomeSummary(financeQueryDto)).subtract(refundSummary(financeQueryDto));
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.incomeSummary(financeQueryDto));
     }
 
     @Override
