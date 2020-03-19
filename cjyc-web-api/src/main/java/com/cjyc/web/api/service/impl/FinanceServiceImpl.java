@@ -389,6 +389,22 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
+    public ResultVo<PageVo<PaymentVo>> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto) {
+        PageHelper.startPage(paymentDaysQueryDto.getCurrentPage(), paymentDaysQueryDto.getPageSize());
+        List<PaymentVo> financeVoList = financeDao.listPaymentDaysInfo(paymentDaysQueryDto);
+        PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
+//        FinanceQueryDto fqd = new FinanceQueryDto();
+//        List<PaymentVo> pv = financeDao.getPaymentList(fqd);
+//        BigDecimal receiptSummary = tradeBillService.receiptSummary(paymentDaysQueryDto);
+//        BigDecimal incomeSummary = tradeBillService.incomeSummary(paymentDaysQueryDto);
+        Map<String, Object> countInfo = new HashMap<>();
+//        countInfo.put("receiptCount", pv.size());
+//        countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
+//        countInfo.put("ActualReceiptSummary",incomeSummary.divide(new BigDecimal(100)));
+        return BaseResultUtil.success(pageInfo, countInfo);
+    }
+
+    @Override
     public ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto) {
         PageHelper.startPage(payMentQueryDto.getCurrentPage(), payMentQueryDto.getPageSize());
         List<PaidVo> financeVoList = financeDao.getPaidList(payMentQueryDto);
