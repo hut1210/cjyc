@@ -352,7 +352,7 @@ public class TransactionServiceImpl implements ITransactionService {
             //给司机发送短信提醒到账
             Waybill waybill = waybillDao.findVoById(waybillId);
             if (waybill != null) {
-                StringBuilder message = new StringBuilder("运单");
+                StringBuilder message = new StringBuilder("【韵车物流】运单");
                 message.append(waybill.getNo());
                 message.append("已完成，并向您支付本单运费");
                 message.append(MoneyUtil.fenToYuan(waybill.getFreightFee(),MoneyUtil.PATTERN_TWO));
