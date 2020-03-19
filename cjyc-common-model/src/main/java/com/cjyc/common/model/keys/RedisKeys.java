@@ -2,13 +2,10 @@ package com.cjyc.common.model.keys;
 
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
-import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
+import com.cjyc.common.model.dto.web.payBank.PayBankDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
 
 /**
  * RedisKey

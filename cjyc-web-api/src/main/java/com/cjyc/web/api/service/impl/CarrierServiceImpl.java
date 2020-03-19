@@ -27,7 +27,7 @@ import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.ICarrierCityConService;
 import com.cjyc.web.api.service.ICarrierService;
-import com.cjyc.web.api.service.IPublicPayBankService;
+import com.cjyc.web.api.service.IPayBankService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -82,7 +81,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Resource
     private ICsBankInfoService bankInfoService;
     @Resource
-    private IPublicPayBankService payBankService;
+    private IPayBankService payBankService;
 
     /**
      * 承运商超级管理员角色名称
@@ -610,7 +609,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 bcb.setBankCode(bankInfo.getBankCode());
             }
         }else if(dto.getCardType().equals(CardTypeEnum.PUBLIC.code)){
-            PublicPayBank payBank = payBankService.findPayBank(bcb.getBankName());
+            PayBank payBank = payBankService.findPayBank(bcb.getBankName());
             if(payBank != null){
                 bcb.setBankCode(payBank.getBankCode());
             }

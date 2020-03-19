@@ -1,12 +1,12 @@
 package com.cjyc.web.api.controller;
 
-import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
+import com.cjyc.common.model.dto.web.payBank.PayBankDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.publicPay.PayBankVo;
-import com.cjyc.web.api.service.IPublicPayBankService;
+import com.cjyc.common.model.vo.web.payBank.PayBankVo;
+import com.cjyc.web.api.service.IPayBankService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +17,11 @@ import javax.annotation.Resource;
 @Api(tags = "基础数据-对公支付银行信息")
 @CrossOrigin
 @RestController
-@RequestMapping("/publicPayBank")
-public class PublicPayBankController {
+@RequestMapping("/payBank")
+public class PayBankController {
 
     @Resource
-    private IPublicPayBankService payBankService;
+    private IPayBankService payBankService;
 
     @ApiOperation(value = "对公支付行号导入Excel", notes = "\t 请求接口为/importPayBankExcel/loginId(登录用户ID)格式")
     @PostMapping("/importPayBankExcel/{loginId}")

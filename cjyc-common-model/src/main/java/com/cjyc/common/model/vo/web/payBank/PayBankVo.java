@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.web.publicPay;
+package com.cjyc.common.model.vo.web.payBank;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;

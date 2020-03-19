@@ -21,9 +21,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("s_public_pay_bank")
-@ApiModel(value="PublicPayBank对象", description="")
-public class PublicPayBank implements Serializable {
+@TableName("s_pay_bank")
+@ApiModel(value="PayBank对象", description="")
+public class PayBank implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

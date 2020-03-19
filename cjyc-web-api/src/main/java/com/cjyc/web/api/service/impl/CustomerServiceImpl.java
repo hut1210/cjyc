@@ -30,7 +30,7 @@ import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
-import com.cjyc.web.api.service.IPublicPayBankService;
+import com.cjyc.web.api.service.IPayBankService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -98,7 +97,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Resource
     private ICsBankInfoService bankInfoService;
     @Resource
-    private IPublicPayBankService payBankService;
+    private IPayBankService payBankService;
 
     @Override
     public ResultVo<CustomerInfoVo> findCustomerInfo(ExistCustomreDto dto) {
@@ -833,7 +832,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 bcb.setBankCode(bankInfo.getBankCode());
             }
         }else{
-            PublicPayBank payBank = payBankService.findPayBank(bcb.getBankName());
+            PayBank payBank = payBankService.findPayBank(bcb.getBankName());
             if(payBank != null){
                 bcb.setBankCode(payBank.getBankCode());
             }
@@ -1079,7 +1078,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                             bcb.setBankCode(bankInfo.getBankCode());
                         }
                     }else{
-                        PublicPayBank payBank = payBankService.findPayBank(dto.getBankName());
+                        PayBank payBank = payBankService.findPayBank(dto.getBankName());
                         if(payBank != null){
                             bcb.setBankCode(payBank.getBankCode());
                         }
@@ -1363,7 +1362,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     bcb.setBankCode(bankInfo.getBankCode());
                 }
             }else if(dto.getCardType().equals(CardTypeEnum.PUBLIC.code)){
-                PublicPayBank payBank = payBankService.findPayBank(bcb.getBankName());
+                PayBank payBank = payBankService.findPayBank(bcb.getBankName());
                 if(payBank != null){
                     bcb.setBankCode(payBank.getBankCode());
                 }
