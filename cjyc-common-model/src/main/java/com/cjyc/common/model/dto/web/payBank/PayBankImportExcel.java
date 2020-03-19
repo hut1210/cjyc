@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto.web.publicPayBank;
+package com.cjyc.common.model.dto.web.payBank;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import lombok.Data;

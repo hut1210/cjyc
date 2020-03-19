@@ -3,25 +3,22 @@ package com.cjyc.web.api.service.impl;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dto.web.postal.PostalDto;
 import com.cjyc.common.model.dto.web.postal.PostalImportExcel;
-import com.cjyc.common.model.entity.ChinaPostalCode;
-import com.cjyc.common.model.dao.IChinaPostalCodeDao;
+import com.cjyc.common.model.entity.PostalCode;
+import com.cjyc.common.model.dao.IPostalCodeDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import com.cjyc.common.system.util.RedisUtils;
-import com.cjyc.web.api.service.IChinaPostalCodeService;
+import com.cjyc.web.api.service.IPostalCodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,15 +32,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
-public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao, ChinaPostalCode> implements IChinaPostalCodeService {
+public class PostalCodeServiceImpl extends ServiceImpl<IPostalCodeDao, PostalCode> implements IPostalCodeService {
 
     @Resource
-    private IChinaPostalCodeDao chinaPostalCodeDao;
+    private IPostalCodeDao postalCodeDao;
     @Resource
     private RedisUtils redisUtils;
-
-
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public boolean importPostalCodeExcel(MultipartFile file, Long loginId) {
@@ -52,14 +46,14 @@ public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao,
             List<PostalImportExcel> postalImportList = ExcelUtil.importExcel(file, 0, 1, PostalImportExcel.class);
             if(!CollectionUtils.isEmpty(postalImportList)){
                 for(PostalImportExcel postal : postalImportList){
-                    ChinaPostalCode cpc = new ChinaPostalCode();
+                    PostalCode cpc = new PostalCode();
                     cpc.setProvinceName(postal.getProvinceName());
                     cpc.setAreaName(postal.getAreaName());
                     cpc.setPostalCode(postal.getPostalCode());
                     cpc.setAreaCode(postal.getAreaCode());
                     cpc.setCreateUserId(loginId);
-                    cpc.setCreateTime(NOW);
-                    chinaPostalCodeDao.insert(cpc);
+                    cpc.setCreateTime(System.currentTimeMillis());
+                    postalCodeDao.insert(cpc);
                 }
                 result = true;
             } else {
@@ -81,12 +75,12 @@ public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao,
             String postalStr = redisUtils.hget(key,key);
             postalList = JsonUtils.jsonToList(postalStr, ProvinceVo.class);
             if(CollectionUtils.isEmpty(postalList)){
-                postalList = chinaPostalCodeDao.findPostal(dto.getKeyword());
+                postalList = postalCodeDao.findPostal(dto.getKeyword());
                 redisUtils.hset(key, key, JsonUtils.objectToJson(postalList));
                 redisUtils.expire(key, 1, TimeUnit.DAYS);
             }
         }else{
-            postalList = chinaPostalCodeDao.findPostal(dto.getKeyword());
+            postalList = postalCodeDao.findPostal(dto.getKeyword());
         }
         return BaseResultUtil.success(postalList);
     }

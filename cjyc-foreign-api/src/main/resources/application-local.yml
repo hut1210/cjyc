@@ -196,3 +196,18 @@ tldf:
   bankacct: 110061002018800020878
   pfxPath: 20010000002141804.p12
   tltcerPath: allinpay-pds.cer
+
+
+## mq相关
+mq:
+  rabbit:
+    yc:
+      push:
+        queue: cjyc_route_common_key
+
+## 对外接口相关
+yc:
+  99cc:
+    clientId: 1237998740088164353
+    confirmInterUrl: http://test.99chequan.com:8084/api/transport/yunCheOffer
+    stateInterUrl: http://test.99chequan.com:8084/api/transport/updateYunCheOrderStatus

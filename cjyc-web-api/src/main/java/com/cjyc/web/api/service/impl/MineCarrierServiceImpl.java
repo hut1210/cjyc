@@ -88,8 +88,6 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Resource
     private ICsCustomerService csCustomerService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo<PageVo<MyWaybillVo>> findWaybill(MyWaybillDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
@@ -219,7 +217,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             veh.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
             veh.setCarrierId(carrier.getId());
             veh.setCreateUserId(dto.getLoginId());
-            veh.setCreateTime(NOW);
+            veh.setCreateTime(System.currentTimeMillis());
             vehicleDao.insert(veh);
             //选择绑定司机
             if(dto.getDriverId() != null){
@@ -236,7 +234,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vr.setState(RunningStateEnum.EFFECTIVE.code);
                 vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                vr.setCreateTime(NOW);
+                vr.setCreateTime(System.currentTimeMillis());
                 vehicleRunningDao.insert(vr);
             }
         }else{
@@ -287,7 +285,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
         vehicle = vehicleDao.selectById(dto.getVehicleId());
 
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                                .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId,dto.getVehicleId()));
+                .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId,dto.getVehicleId()));
         //新增没有绑定，修改绑定
         if(dvc == null && vr == null && dto.getDriverId() != null){
             csVehicleService.saveTransport(dto,null,vehicle);
@@ -394,7 +392,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             //解冻
             urd.setState(CommonStateEnum.CHECKED.code);
         }
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         driver.setCheckUserId(dto.getLoginId());
         driverDao.updateById(driver);
         userRoleDeptDao.updateById(urd);
@@ -441,7 +439,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
             veh.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
             veh.setCarrierId(carrier.getId());
             veh.setCreateUserId(dto.getLoginId());
-            veh.setCreateTime(NOW);
+            veh.setCreateTime(System.currentTimeMillis());
             vehicleDao.insert(veh);
             //选择绑定司机
             if(dto.getDriverId() != null){
@@ -458,7 +456,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vr.setState(RunningStateEnum.EFFECTIVE.code);
                 vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                vr.setCreateTime(NOW);
+                vr.setCreateTime(System.currentTimeMillis());
                 vehicleRunningDao.insert(vr);
             }
         }else{
@@ -563,7 +561,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                     //承运商超级管理员登陆
                     driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
                     driver.setCreateUserId(loginId);
-                    driver.setCreateTime(NOW);
+                    driver.setCreateTime(System.currentTimeMillis());
                     driverDao.insert(driver);
 
                     Integer mode = null;
@@ -583,7 +581,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                         vehicle.setCarrierId(carrier.getId());
                         vehicle.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
                         vehicle.setCreateUserId(loginId);
-                        vehicle.setCreateTime(NOW);
+                        vehicle.setCreateTime(System.currentTimeMillis());
                         vehicleDao.insert(vehicle);
                         //保存司机与车辆关系
                         DriverVehicleCon dvc = new DriverVehicleCon();
@@ -598,7 +596,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
                         vr.setCarryCarNum(excel.getDefaultCarryNum());
                         vr.setState(RunningStateEnum.EFFECTIVE.code);
                         vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                        vr.setCreateTime(NOW);
+                        vr.setCreateTime(System.currentTimeMillis());
                         vehicleRunningDao.insert(vr);
                     }
                 }

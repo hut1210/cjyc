@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto.web.publicPayBank;
+package com.cjyc.common.model.dto.web.payBank;
 
 import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;

@@ -209,7 +209,7 @@
         select ww.no as wayBillNo,
         ww.carrier_name as name,
         wwc.freight_fee as freightFee,
-        ftb.amount as paidFreightFee,
+        wwc.freight_fee as paidFreightFee,
         ww.freight_pay_time as payTime,
         dc.settle_type as settleType,
         (CASE
@@ -230,8 +230,6 @@
         from w_waybill_car wwc
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
-        left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
-        left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
         where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
         and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
         order by ww.create_time desc
@@ -381,7 +379,8 @@
         wo.input_store_name as inputStoreName,
         wo.customer_name as customerName,
         wo.customer_contract_id as customerContractId,
-        woc.finish_time as deliveryDate,woc.finish_time
+        woc.finish_time as deliveryDate,woc.finish_time,
+        woc.wl_pay_time as payTime
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
@@ -396,7 +395,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and cc.pay_mode=0 and wo.customer_type=1
+        where woc.wl_pay_state=2 and cc.pay_mode=0 and wo.customer_type=1 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  cc.pay_mode =#{payMode}
@@ -412,7 +411,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccp.settle_type=0 and wo.customer_type=3
+        where woc.wl_pay_state=2 and ccp.settle_type=0 and wo.customer_type=3 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  ccp.settle_type =#{payMode}
@@ -426,7 +425,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccc.settle_type=0 and wo.customer_type=2
+        where woc.wl_pay_state=2 and ccc.settle_type=0 and wo.customer_type=2 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  ccc.settle_type =#{payMode}
@@ -927,10 +926,13 @@
             and wo.flag = #{state}
         </if>
         <if test="phone !=null and phone.trim() !=''">
-            wo.customer_phone like concat('%',#{phone},'%')
+            and wo.customer_phone like concat('%',#{phone},'%')
         </if>
         <if test="customerName !=null and customerName.trim() !=''">
-            wo.customer_name like concat('%',#{customerName},'%')
+            and wo.customer_name like concat('%',#{customerName},'%')
+        </if>
+        <if test="operator !=null and operator.trim() !=''">
+            and fep.operator like concat('%',#{operator},'%')
         </if>
         order by wo.service_fee_pay_time desc
     </select>

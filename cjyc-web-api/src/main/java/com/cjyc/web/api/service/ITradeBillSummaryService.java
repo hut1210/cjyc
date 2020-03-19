@@ -53,4 +53,6 @@ public interface ITradeBillSummaryService {
     BigDecimal payToCooperatorSummary(CooperatorSearchDto cooperatorSearchDto);
 
     BigDecimal paidToCooperatorSummary(CooperatorSearchDto cooperatorSearchDto);
+
+    BigDecimal ActualReceiptSummary(FinanceQueryDto financeQueryDto);
 }

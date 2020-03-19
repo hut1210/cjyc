@@ -378,13 +378,13 @@ public class FinanceServiceImpl implements IFinanceService {
 
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
 
-        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
+        BigDecimal ActualReceiptSummary = tradeBillService.ActualReceiptSummary(financeQueryDto);
         log.info("pv.size() ={}", pv.size());
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("receiptCount", pv.size());
         countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
 
-        countInfo.put("ActualReceiptSummary",incomeSummary.divide(new BigDecimal(100)));
+        countInfo.put("ActualReceiptSummary",receiptSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -977,7 +977,13 @@ public class FinanceServiceImpl implements IFinanceService {
         if(StringUtils.isEmpty(waybillNo)){
             BaseResultUtil.fail("运单单号不能为空！");
         }
+        // 根据运单号查看上游付款状态列表
         List<DriverUpstreamPaidInfoVo> listInfo = waybillCarDao.listDriverUpstreamPaidInfo(waybillNo);
+        // 订单金额分转元
+        listInfo.forEach(e ->{
+            e.setTotalFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
         PageInfo<DriverUpstreamPaidInfoVo> pageInfo = new PageInfo<>(listInfo);
         return BaseResultUtil.success(pageInfo);
     }

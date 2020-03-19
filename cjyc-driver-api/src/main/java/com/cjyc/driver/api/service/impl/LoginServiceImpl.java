@@ -61,8 +61,6 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     @Resource
     private ICsUserRoleDeptService csUserRoleDeptService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo<DriverLoginVo> login(LoginDto dto) {
         //查询该手机号是否在司机表中
@@ -145,7 +143,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
         driver.setSource(DriverSourceEnum.APP_DRIVER.code);
-        driver.setCreateTime(NOW);
+        driver.setCreateTime(System.currentTimeMillis());
         //新增数据到物流平台
         ResultData<Long> rd = csDriverService.saveDriverToPlatform(driver);
         driver.setUserId(rd.getData());
@@ -160,7 +158,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrier.setLinkmanPhone(phone);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
-        carrier.setCreateTime(NOW);
+        carrier.setCreateTime(System.currentTimeMillis());
         carrierDao.insert(carrier);
 
         //承运商与司机关系
@@ -281,7 +279,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         driver.setType(DriverTypeEnum.SOCIETY.code);
         driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
         driver.setSource(DriverSourceEnum.APP_DRIVER.code);
-        driver.setCreateTime(NOW);
+        driver.setCreateTime(System.currentTimeMillis());
         //新增数据到物流平台
         driverDao.insert(driver);
 
@@ -294,7 +292,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
         carrier.setLinkmanPhone(phone);
         carrier.setSettleType(ModeTypeEnum.TIME.code);
         carrier.setState(CommonStateEnum.WAIT_CHECK.code);
-        carrier.setCreateTime(NOW);
+        carrier.setCreateTime(System.currentTimeMillis());
         carrierDao.insert(carrier);
 
         //保存司机角色机构关系

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cjyc.common.model.dao.IChinaPostalCodeDao">
+<mapper namespace="com.cjyc.common.model.dao.IPostalCodeDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.ChinaPostalCode">
+    <resultMap id="BaseResultMap" type="com.cjyc.common.model.entity.PostalCode">
         <id column="id" property="id" />
         <result column="province_name" property="provinceName" />
         <result column="area_name" property="areaName" />
@@ -38,7 +38,7 @@
             postal_code AS postalCode,
             area_code AS areaCode
         FROM
-          s_china_postal_code
+          s_postal_code
         <where>
             <if test="keyword != null and keyword.trim() != ''">
                 (province_name like concat('%',#{keyword},'%')  or area_name like concat('%',#{keyword},'%'))

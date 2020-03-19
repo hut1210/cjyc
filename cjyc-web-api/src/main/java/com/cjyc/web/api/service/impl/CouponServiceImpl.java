@@ -55,8 +55,6 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
     @Resource
     private ICouponSendDao couponSendDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo saveOrModifyCoupon(CouponDto dto) {
         if(dto.getCouponId() == null){
@@ -65,7 +63,7 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
             coupon = encapCoupon(coupon,dto);
             coupon.setId(dto.getCouponId());
             coupon.setState(CommonStateEnum.WAIT_CHECK.code);
-            coupon.setCreateTime(NOW);
+            coupon.setCreateTime(System.currentTimeMillis());
             coupon.setCreateUserId(dto.getLoginId());
             couponDao.insert(coupon);
         }else{
@@ -79,8 +77,8 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
 
     @Override
     public ResultVo verifyCoupon(OperateDto dto) {
-         Coupon coupon = new Coupon();
-         BeanUtils.copyProperties(dto,coupon);
+        Coupon coupon = new Coupon();
+        BeanUtils.copyProperties(dto,coupon);
         if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
             //审核通过
             coupon.setState(CommonStateEnum.CHECKED.code);
@@ -172,18 +170,18 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
     private Coupon encapCoupon(Coupon coupon,CouponDto dto){
         BeanUtils.copyProperties(dto,coupon);
         coupon.setId(dto.getCouponId());
-       if(CouponTypeEnum.FULL_CUT.code == coupon.getType()){
-           coupon.setFullAmount(coupon.getFullAmount() == null ? BigDecimal.ZERO:coupon.getFullAmount().multiply(new BigDecimal(100)));
-           coupon.setCutAmount(coupon.getCutAmount() == null ? BigDecimal.ZERO:coupon.getCutAmount().multiply(new BigDecimal(100)));
-       }else if(CouponTypeEnum.DIRECT_CUT.code == coupon.getType()){
-           coupon.setCutAmount(coupon.getCutAmount()== null ? BigDecimal.ZERO:coupon.getCutAmount().multiply(new BigDecimal(100)));
-       }else if(CouponTypeEnum.DISCOUNT_CUT.code == coupon.getType()){
-           coupon.setDiscount(coupon.getDiscount() == null ? BigDecimal.ZERO:coupon.getDiscount());
-       }
-       if(CouponLifeTypeEnum.FOREVER.code != coupon.getIsForever()){
-           coupon.setStartPeriodDate(dto.getStartPeriodDate());
-           coupon.setEndPeriodDate(dto.getEndPeriodDate());
-       }
+        if(CouponTypeEnum.FULL_CUT.code == coupon.getType()){
+            coupon.setFullAmount(coupon.getFullAmount() == null ? BigDecimal.ZERO:coupon.getFullAmount().multiply(new BigDecimal(100)));
+            coupon.setCutAmount(coupon.getCutAmount() == null ? BigDecimal.ZERO:coupon.getCutAmount().multiply(new BigDecimal(100)));
+        }else if(CouponTypeEnum.DIRECT_CUT.code == coupon.getType()){
+            coupon.setCutAmount(coupon.getCutAmount()== null ? BigDecimal.ZERO:coupon.getCutAmount().multiply(new BigDecimal(100)));
+        }else if(CouponTypeEnum.DISCOUNT_CUT.code == coupon.getType()){
+            coupon.setDiscount(coupon.getDiscount() == null ? BigDecimal.ZERO:coupon.getDiscount());
+        }
+        if(CouponLifeTypeEnum.FOREVER.code != coupon.getIsForever()){
+            coupon.setStartPeriodDate(dto.getStartPeriodDate());
+            coupon.setEndPeriodDate(dto.getEndPeriodDate());
+        }
         return coupon;
     }
 
@@ -217,7 +215,7 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
                 vo.setSurplusAvailNum(vo.getGrantNum() - consumeNum);
             }else{
                 //未过期
-                if(NOW > vo.getEndPeriodDate()){
+                if(System.currentTimeMillis() > vo.getEndPeriodDate()){
                     //到期作废张数
                     vo.setExpireDeleNum(0);
                     //剩余可用张数

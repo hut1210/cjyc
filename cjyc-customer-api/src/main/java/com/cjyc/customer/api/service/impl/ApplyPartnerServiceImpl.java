@@ -42,8 +42,6 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
     @Resource
     private ICsBankInfoService bankInfoService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo applyPartner(ApplyPartnerDto dto) {
         Customer cust = customerDao.selectById(dto.getLoginId());
@@ -74,7 +72,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         bcb.setUserId(dto.getLoginId());
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
         bcb.setState(UseStateEnum.USABLE.code);
-        bcb.setCreateTime(NOW);
+        bcb.setCreateTime(System.currentTimeMillis());
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
     }
@@ -105,7 +103,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
             bankCardBindDao.delete(new QueryWrapper<BankCardBind>().lambda().eq(BankCardBind::getUserId,customer.getId()));
             checkDao.delete(new QueryWrapper<Check>().lambda().eq(Check::getUserId,dto.getLoginId()).eq(Check::getType,CheckTypeEnum.UPGRADE_PARTNER.code));
         }
-       //保存到审核表中
+        //保存到审核表中
         Check ck = new Check();
         BeanUtils.copyProperties(dto,ck);
         ck.setUserId(dto.getLoginId());
@@ -114,7 +112,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
         ck.setSocialCreditCode(dto.getSocialCreditCode());
         ck.setSource(CustomerSourceEnum.UPGRADE.code);
-        ck.setCreateTime(NOW);
+        ck.setCreateTime(System.currentTimeMillis());
         ck.setCreateUserId(dto.getLoginId());
         checkDao.insert(ck);
 
@@ -131,7 +129,7 @@ public class ApplyPartnerServiceImpl extends ServiceImpl<ICustomerDao, Customer>
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCardColour(RandomUtil.getIntRandom());
-        bcb.setCreateTime(NOW);
+        bcb.setCreateTime(System.currentTimeMillis());
         //获取银行编码
         BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
         if(bankInfo != null){

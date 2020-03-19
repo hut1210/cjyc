@@ -1,7 +1,7 @@
 package com.cjyc.web.api.service;
 
 import com.cjyc.common.model.dto.web.postal.PostalDto;
-import com.cjyc.common.model.entity.ChinaPostalCode;
+import com.cjyc.common.model.entity.PostalCode;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
@@ -17,7 +17,7 @@ import java.util.List;
  * @author JPG
  * @since 2020-03-16
  */
-public interface IChinaPostalCodeService extends IService<ChinaPostalCode> {
+public interface IPostalCodeService extends IService<PostalCode> {
 
     /**
      * 导入中国邮政区号

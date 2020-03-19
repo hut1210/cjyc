@@ -1,12 +1,11 @@
 package com.cjyc.web.api.service;
 
-import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
-import com.cjyc.common.model.entity.PublicPayBank;
+import com.cjyc.common.model.dto.web.payBank.PayBankDto;
+import com.cjyc.common.model.entity.PayBank;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.publicPay.PayBankVo;
-import org.apache.ibatis.annotations.Param;
+import com.cjyc.common.model.vo.web.payBank.PayBankVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -17,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author JPG
  * @since 2020-03-16
  */
-public interface IPublicPayBankService extends IService<PublicPayBank> {
+public interface IPayBankService extends IService<PayBank> {
 
     /**
      * 导入对公支付行号
@@ -40,7 +39,7 @@ public interface IPublicPayBankService extends IService<PublicPayBank> {
      * @param subBankName
      * @return
      */
-    PublicPayBank findPayBank(String subBankName);
+    PayBank findPayBank(String subBankName);
 
 
 

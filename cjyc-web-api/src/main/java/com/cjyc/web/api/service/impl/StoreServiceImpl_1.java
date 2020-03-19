@@ -76,8 +76,6 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public List<Store> getByCityCode(String cityCode) {
         return storeDao.findByCityCode(cityCode);
@@ -217,27 +215,27 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         List<Store> storeList = getStoreList(storeQueryDto);
 
         //if (!CollectionUtils.isEmpty(storeList)) {
-            // 生成导出数据
-            List<StoreExportExcel> exportExcelList = new ArrayList<>(10);
-            for (Store store : storeList) {
-                StoreExportExcel storeExportExcel = new StoreExportExcel();
-                BeanUtils.copyProperties(store,storeExportExcel);
-                // 查询业务中心所属大区
-                City city = cityDao.selectOne(new QueryWrapper<City>().lambda().eq(City::getCode, store.getProvinceCode()));
-                storeExportExcel.setRegionName(city.getParentName());
-                // 查询业务中心管辖区数量
-                Integer count = storeCityConDao.selectCount(new QueryWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId, store.getId()));
-                storeExportExcel.setAreaCount(count == null ? 0 : count);
-                exportExcelList.add(storeExportExcel);
-            }
-            String title = "业务中心";
-            String sheetName = "业务中心";
-            String fileName = "业务中心表.xls";
-            try {
-                ExcelUtil.exportExcel(exportExcelList, title, sheetName, StoreExportExcel.class, fileName, response);
-            } catch (IOException e) {
-                log.error("导出业务中心异常:{}",e);
-            }
+        // 生成导出数据
+        List<StoreExportExcel> exportExcelList = new ArrayList<>(10);
+        for (Store store : storeList) {
+            StoreExportExcel storeExportExcel = new StoreExportExcel();
+            BeanUtils.copyProperties(store,storeExportExcel);
+            // 查询业务中心所属大区
+            City city = cityDao.selectOne(new QueryWrapper<City>().lambda().eq(City::getCode, store.getProvinceCode()));
+            storeExportExcel.setRegionName(city.getParentName());
+            // 查询业务中心管辖区数量
+            Integer count = storeCityConDao.selectCount(new QueryWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId, store.getId()));
+            storeExportExcel.setAreaCount(count == null ? 0 : count);
+            exportExcelList.add(storeExportExcel);
+        }
+        String title = "业务中心";
+        String sheetName = "业务中心";
+        String fileName = "业务中心表.xls";
+        try {
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, StoreExportExcel.class, fileName, response);
+        } catch (IOException e) {
+            log.error("导出业务中心异常:{}",e);
+        }
         //}
     }
 
@@ -391,7 +389,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
                     store.setDetailAddr(storeExcel.getDetailAddr());
                     store.setState(CommonStateEnum.CHECKED.code);
                     store.setCreateUserId(loginId);
-                    store.setCreateTime(NOW);
+                    store.setCreateTime(System.currentTimeMillis());
                     store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
                     storeDao.insert(store);
                 }
@@ -409,8 +407,8 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Override
     public ResultVo<List<Store>> findAllStore() {
         List<Store> stores = storeDao.selectList(new QueryWrapper<Store>().lambda()
-                                            .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
-                                            .eq(Store::getState,CommonStateEnum.CHECKED.code));
+                .eq(Store::getIsDelete,DeleteStateEnum.NO_DELETE.code)
+                .eq(Store::getState,CommonStateEnum.CHECKED.code));
         return BaseResultUtil.success(stores);
     }
 
@@ -429,7 +427,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
         //获取该城市下已绑定的业务中心的区县code
         List<String> coverAreaCodeList = null;
         List<StoreCityCon> storeCityConList = storeCityConDao.selectList(new QueryWrapper<StoreCityCon>().lambda()
-                                                             .in(StoreCityCon::getAreaCode, areaCodeList));
+                .in(StoreCityCon::getAreaCode, areaCodeList));
         if(!CollectionUtils.isEmpty(storeCityConList)){
             coverAreaCodeList = storeCityConList.stream().map(StoreCityCon::getAreaCode).collect(Collectors.toList());
         }

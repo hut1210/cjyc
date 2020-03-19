@@ -60,8 +60,6 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     @Resource
     private ICityDao cityDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo<String> sortNode(SortNodeListDto paramsDto) {
         @NotNull List<SortNodeDto> list = paramsDto.getList();
@@ -106,7 +104,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             Line addLine = new Line();
             addLine = encapLine(addLine,dto);
             addLine.setLevel(CityLevelEnum.CITY_LEVEL.getLevel());
-            addLine.setCreateTime(NOW);
+            addLine.setCreateTime(System.currentTimeMillis());
             addLine.setCreateUserId(dto.getLoginId());
             lineDao.insert(addLine);
         }else{
@@ -114,13 +112,13 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             line = lineDao.selectById(dto.getLineId());
             if(line != null){
                 line = encapLine(line,dto);
-                line.setUpdateTime(NOW);
+                line.setUpdateTime(System.currentTimeMillis());
                 line.setUpdateUserId(dto.getLoginId());
                 lineDao.updateById(line);
             }
         }
-      return BaseResultUtil.success();
- }
+        return BaseResultUtil.success();
+    }
 
     @Override
     public ResultVo getDefaultWlFeeByCode(String fromCode, String toCode) {
@@ -151,23 +149,23 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         // 查询列表
         List<LineVo> lineVos = lineDao.findAllLine(dto);
         //if (!CollectionUtils.isEmpty(lineVos)) {
-            // 生成导出数据
-            List<LineExportExcel> exportExcelList = new ArrayList<>();
-            for (LineVo vo : lineVos) {
-                LineExportExcel lineExportExcel = new LineExportExcel();
-                BeanUtils.copyProperties(vo, lineExportExcel);
-                exportExcelList.add(lineExportExcel);
-            }
-            String title = "运输班线";
-            String sheetName = "运输班线";
-            String fileName = "运输班线.xls";
-            try {
-                //if(!CollectionUtils.isEmpty(exportExcelList)){
-                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, LineExportExcel.class, fileName, response);
-                //}
-            } catch (IOException e) {
-                log.error("导出运输班线异常:{}",e);
-            }
+        // 生成导出数据
+        List<LineExportExcel> exportExcelList = new ArrayList<>();
+        for (LineVo vo : lineVos) {
+            LineExportExcel lineExportExcel = new LineExportExcel();
+            BeanUtils.copyProperties(vo, lineExportExcel);
+            exportExcelList.add(lineExportExcel);
+        }
+        String title = "运输班线";
+        String sheetName = "运输班线";
+        String fileName = "运输班线.xls";
+        try {
+            //if(!CollectionUtils.isEmpty(exportExcelList)){
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, LineExportExcel.class, fileName, response);
+            //}
+        } catch (IOException e) {
+            log.error("导出运输班线异常:{}",e);
+        }
         //}
     }
 
@@ -211,7 +209,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
 
                     line.setDays(BigDecimal.valueOf(lineExcel.getDays()));
                     line.setName(lineExcel.getFromCity()+NoConstant.SEPARATOR+lineExcel.getToCity());
-                    line.setCreateTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+                    line.setCreateTime(System.currentTimeMillis());
                     line.setCreateUserId(loginId);
                     list.add(line);
                 }

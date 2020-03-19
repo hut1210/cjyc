@@ -70,8 +70,6 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Resource
     private ICsBankInfoService bankInfoService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo<BankCardVos> findBinkCard(AppDriverDto dto) {
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
@@ -113,7 +111,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
         driver.setCheckUserId(dto.getLoginId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         driverDao.updateById(driver);
 
         cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
@@ -154,7 +152,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             veh.setCarrierId(cdc.getCarrierId());
             veh.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
             veh.setCreateUserId(cdc.getCarrierId());
-            veh.setCreateTime(NOW);
+            veh.setCreateTime(System.currentTimeMillis());
             vehicleDao.insert(veh);
             if(dto.getDriverId() != null){
                 csVehicleService.saveTransport(null,dto,veh);
@@ -164,9 +162,9 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 return BaseResultUtil.fail("该车辆已存在,请检查");
             }
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
-                                    .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId, dto.getVehicleId()));
+                    .eq(dto.getVehicleId() != null,VehicleRunning::getVehicleId, dto.getVehicleId()));
             DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda()
-                                    .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId, dto.getVehicleId()));
+                    .eq(dto.getVehicleId() != null,DriverVehicleCon::getVehicleId, dto.getVehicleId()));
             if(vr != null && dvc != null){
                 //判断该运力是否在运输中
                 List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
@@ -258,7 +256,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             existDriver.setName(dto.getRealName());
             existDriver.setIdCard(dto.getIdCard());
             existDriver.setExistIdCard(dto.getIdCard());
-            existDriver.setCreateTime(NOW);
+            existDriver.setCreateTime(System.currentTimeMillis());
             existDriverDao.insert(existDriver);
             return BaseResultUtil.fail("账号已存在于该企业承运商中");
         }
@@ -302,7 +300,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             vr.setCarryCarNum(dto.getDefaultCarryNum());
             vr.setState(RunningStateEnum.EFFECTIVE.code);
             vr.setRunningState(VehicleRunStateEnum.FREE.code);
-            vr.setCreateTime(NOW);
+            vr.setCreateTime(System.currentTimeMillis());
             vehicleRunningDao.insert(vr);
         }else if(dto.getFlag() == 1 && dto.getVehicleId() != null){
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
@@ -385,7 +383,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setBankName(dto.getBankName());
         bcb.setState(UseStateEnum.USABLE.code);
-        bcb.setCreateTime(NOW);
+        bcb.setCreateTime(System.currentTimeMillis());
         bankCardBindDao.insert(bcb);
         return BaseResultUtil.success();
     }
@@ -486,7 +484,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                     vehicle.setCarrierId(Long.valueOf(urd.getDeptId()));
                     vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
                     vehicle.setCreateUserId(urd.getUserId());
-                    vehicle.setCreateTime(NOW);
+                    vehicle.setCreateTime(System.currentTimeMillis());
                     vehicleDao.insert(vehicle);
                     //保存运力
                     VehicleRunning vr = new VehicleRunning();
@@ -496,7 +494,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                     vr.setVehicleId(vehicle.getId());
                     vr.setState(RunningStateEnum.EFFECTIVE.code);
                     vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                    vr.setCreateTime(NOW);
+                    vr.setCreateTime(System.currentTimeMillis());
                     vehicleRunningDao.insert(vr);
                     //保存运力与司机关系
                     DriverVehicleCon dvc = new DriverVehicleCon();
@@ -556,7 +554,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 vehicle.setCarrierId(Long.valueOf(urd.getDeptId()));
                 vehicle.setOwnershipType(VehicleOwnerEnum.CARRIER.code);
                 vehicle.setCreateUserId(Long.valueOf(urd.getDeptId()));
-                vehicle.setCreateTime(NOW);
+                vehicle.setCreateTime(System.currentTimeMillis());
                 vehicleDao.insert(vehicle);
                 if(dto.getDriverId() != null){
                     csVehicleService.saveTransport(null,dto,vehicle);
@@ -615,7 +613,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
         driver.setCheckUserId(dto.getLoginId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         driverDao.updateById(driver);
 
         urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
@@ -625,7 +623,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("该司机不存在,请检查");
         }
         urd.setState(CommonStateEnum.FROZEN.code);
-        urd.setUpdateTime(NOW);
+        urd.setUpdateTime(System.currentTimeMillis());
         urd.setUpdateUserId(dto.getLoginId());
         userRoleDeptDao.updateById(urd);
         return BaseResultUtil.success();
@@ -702,7 +700,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             existDriver.setName(dto.getRealName());
             existDriver.setIdCard(dto.getIdCard());
             existDriver.setExistIdCard(dto.getIdCard());
-            existDriver.setCreateTime(NOW);
+            existDriver.setCreateTime(System.currentTimeMillis());
             existDriverDao.insert(existDriver);
             return BaseResultUtil.fail("账号已存在于该企业承运商中");
         }
@@ -740,7 +738,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         //更新状态(审核中)
         urd.setState(CommonStateEnum.IN_CHECK.code);
         urd.setMode(dto.getMode());
-        urd.setUpdateTime(NOW);
+        urd.setUpdateTime(System.currentTimeMillis());
         urd.setUpdateUserId(dto.getLoginId());
         userRoleDeptDao.updateById(urd);
         //运力信息
@@ -758,7 +756,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             vr.setCarryCarNum(dto.getDefaultCarryNum());
             vr.setState(RunningStateEnum.EFFECTIVE.code);
             vr.setRunningState(VehicleRunStateEnum.FREE.code);
-            vr.setCreateTime(NOW);
+            vr.setCreateTime(System.currentTimeMillis());
             vehicleRunningDao.insert(vr);
         }else if(dto.getFlag() == 1 && dto.getVehicleId() != null){
             VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda()
@@ -845,7 +843,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setBankName(dto.getBankName());
         bcb.setState(UseStateEnum.USABLE.code);
-        bcb.setCreateTime(NOW);
+        bcb.setCreateTime(System.currentTimeMillis());
         //获取银行编码
         BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
         if(bankInfo != null){
