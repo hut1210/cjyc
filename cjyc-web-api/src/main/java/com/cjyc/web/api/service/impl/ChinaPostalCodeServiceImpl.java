@@ -6,10 +6,14 @@ import com.cjyc.common.model.dto.web.postal.PostalImportExcel;
 import com.cjyc.common.model.entity.ChinaPostalCode;
 import com.cjyc.common.model.dao.IChinaPostalCodeDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carSeries.CarSeriesTree;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.web.api.service.IChinaPostalCodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -34,6 +39,8 @@ public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao,
 
     @Resource
     private IChinaPostalCodeDao chinaPostalCodeDao;
+    @Resource
+    private RedisUtils redisUtils;
 
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
@@ -66,8 +73,21 @@ public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao,
     }
 
     @Override
-    public ResultVo<List<ProvinceVo>> findChinaPostal(PostalDto dto) {
-        List<ProvinceVo> postal = chinaPostalCodeDao.findPostal(dto.getKeyword());
-        return BaseResultUtil.success(postal);
+    public ResultVo<List<ProvinceVo>> findChinaPostal(boolean isSearchCache, PostalDto dto) {
+        List<ProvinceVo> postalList = null;
+        if(isSearchCache){
+            //放入缓存
+            String key = RedisKeys.getPostalKey(dto.getKeyword());
+            String postalStr = redisUtils.hget(key,key);
+            postalList = JsonUtils.jsonToList(postalStr, ProvinceVo.class);
+            if(CollectionUtils.isEmpty(postalList)){
+                postalList = chinaPostalCodeDao.findPostal(dto.getKeyword());
+                redisUtils.hset(key, key, JsonUtils.objectToJson(postalList));
+                redisUtils.expire(key, 1, TimeUnit.DAYS);
+            }
+        }else{
+            postalList = chinaPostalCodeDao.findPostal(dto.getKeyword());
+        }
+        return BaseResultUtil.success(postalList);
     }
 }

@@ -1,4 +1,4 @@
-package com.cjyc.common.model.vo.driver.mine;
+package com.cjyc.common.model.vo.customer.customerInfo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -8,8 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 @Data
-public class BankCardVo implements Serializable {
-    private static final long serialVersionUID = 5058249513448361778L;
+public class CustomerCardInfoVo implements Serializable {
+    private static final long serialVersionUID = 3423369739383814445L;
 
     @ApiModelProperty("绑定银行卡id")
     @JsonSerialize(using= ToStringSerializer.class)

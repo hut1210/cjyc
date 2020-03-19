@@ -429,7 +429,7 @@ public class PingPayServiceImpl implements IPingPayService {
                 }
 
                 if(addLock){
-                    String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
+                    String lockKey = RedisKeys.getWlPayLockKey(orderCar.getNo());
                     String value = redisUtils.get(lockKey);
                     if (value != null && !value.equals(paramsDto.getLoginId().toString())) {
                         return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
@@ -437,7 +437,7 @@ public class PingPayServiceImpl implements IPingPayService {
                     if (value != null) {
                         redisUtils.delete(lockKey);
                     }
-                    if (!redisLock.lock(lockKey, paramsDto.getLoginId(), 1800000, 10, 300)) {
+                    if (!redisLock.lock(lockKey, paramsDto.getLoginId(), 300000, 10, 300)) {
                         return BaseResultUtil.fail("锁定车辆失败");
                     }
                     lockKeySet.add(lockKey);

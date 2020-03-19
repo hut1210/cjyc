@@ -26,12 +26,11 @@ public class OrderCarSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "型号", required = true)
     private String model;
 
-    @NotBlank(message = "车牌号不能为空")
     @Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "车牌号格式不正确，请检查")
-    @ApiModelProperty(value = "车牌号", required = true)
+    @ApiModelProperty(value = "车牌号")
     private String plateNo;
 
-    //@Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
+    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
     @ApiModelProperty(value = "vin码")
     private String vin;
 
@@ -43,10 +42,11 @@ public class OrderCarSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "是否新车 0-否 1-是", required = true)
     private Integer isNew;
 
-    @ApiModelProperty(value = "车值/万")
-    private int valuation;
+    @NotNull(message = "车值不能为空")
+    @ApiModelProperty(value = "车值/万", required = true)
+    private Integer valuation;
 
-    @ApiModelProperty(value = "保险费/元，保险费计算规则：车值<=10万：保险费0元；11万<=车值<=19万：保险费50元；20万<=车值<=29万：保险费10元,以此类推")
+    @ApiModelProperty(value = "保险费/元",hidden = true)
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "车辆应收干线费 单位：分",hidden = true)

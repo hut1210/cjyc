@@ -1,7 +1,5 @@
 package com.cjyc.common.model.enums.order;
 
-import com.cjyc.common.model.enums.UserTypeEnum;
-
 /**
  * 订单状态枚举
  * @author JPG

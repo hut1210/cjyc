@@ -201,19 +201,39 @@
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
         where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
-        and wwc.state = 100
+        and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
         order by ww.create_time desc
     </select>
 
     <select id="getTrunkCostList" parameterType="map" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
-        select ww.carrier_name as name,wwc.freight_fee as freightFee,ww.freight_pay_time as payTime,
-        dc.settle_type as settleType
+        select ww.no as wayBillNo,
+        ww.carrier_name as name,
+        wwc.freight_fee as freightFee,
+        ftb.amount as paidFreightFee,
+        ww.freight_pay_time as payTime,
+        dc.settle_type as settleType,
+        (CASE
+            when ww.freight_pay_state=2 then '付款中'
+            when ww.freight_pay_state=1 then '已付款'
+            when ww.freight_pay_state=-2 then '支付失败'
+        END) as payState,
+        (CASE
+            when ww.carrier_type=1 then '个人承运商'
+            when ww.carrier_type=2 then '企业承运商'
+            when ww.carrier_type=4 then '代驾'
+            when ww.carrier_type=5 then '拖车'
+        END) as carrierType,
+        dc.linkman_phone as phone,
+        wwc.start_city as pickUpPlace,
+        wwc.end_city as deliveryPlace
 
         from w_waybill_car wwc
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
+        left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
+        left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
         where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
-        and wwc.state = 100
+        and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
         order by ww.create_time desc
     </select>
 
@@ -361,7 +381,8 @@
         wo.input_store_name as inputStoreName,
         wo.customer_name as customerName,
         wo.customer_contract_id as customerContractId,
-        woc.finish_time as deliveryDate,woc.finish_time
+        woc.finish_time as deliveryDate,woc.finish_time,
+        woc.wl_pay_time as payTime
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
@@ -376,7 +397,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and cc.pay_mode=0 and wo.customer_type=1
+        where woc.wl_pay_state=2 and cc.pay_mode=0 and wo.customer_type=1 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  cc.pay_mode =#{payMode}
@@ -392,7 +413,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccp.settle_type=0 and wo.customer_type=3
+        where woc.wl_pay_state=2 and ccp.settle_type=0 and wo.customer_type=3 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  ccp.settle_type =#{payMode}
@@ -406,7 +427,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccc.settle_type=0 and wo.customer_type=2
+        where woc.wl_pay_state=2 and ccc.settle_type=0 and wo.customer_type=2 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  ccc.settle_type =#{payMode}
@@ -636,6 +657,7 @@
         and wt.complete_time &gt; 0
         and carrier_type in (1,2,4,5)
         and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
+        and ww.state=100
         <if test="waybillNo !=null and waybillNo.trim() !=''">
             and wt.no like concat('%',#{waybillNo},'%')
         </if>
@@ -944,6 +966,169 @@
         left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
 
         where ww.carrier_type in (1,2,4,5) and ww.state=100 and woc.no =#{no}
+    </select>
+    <select id="payableAccountSummary" resultType="java.math.BigDecimal">
+        select sum(wwc.freight_fee)
+        from w_task wt
+        left join w_task_car wtc on wt.id=wtc.task_id
+        left join w_waybill_car wwc on wwc.id = wtc.waybill_car_id
+        left join w_waybill ww on ww.no = wt.waybill_no
+        where wt.no in(
+                select wt.no
+                from w_task wt
+                left join w_waybill ww on ww.no = wt.waybill_no
+                left join d_carrier dc on dc.id = ww.carrier_id
+                where dc.settle_type = 1
+                and wt.complete_time > 0
+                and carrier_type in (1,2,4,5)
+                and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
+                and ww.state=100
+                <if test="waybillNo !=null and waybillNo.trim() !=''">
+                    and wt.no like concat('%',#{waybillNo},'%')
+                </if>
+                <if test="carrierName !=null and carrierName.trim() !=''">
+                    and ww.carrier_name like concat('%',#{carrierName},'%')
+                </if>
+                <if test="driverName !=null and driverName.trim() !=''">
+                    and wt.driver_name like concat('%',#{driverName},'%')
+                </if>
+                <if test="completeStartTime !=null ">
+                    and wt.complete_time &gt;=#{completeStartTime}
+                </if>
+                <if test="completeEndTime !=null ">
+                    and wt.complete_time &lt;=#{completeEndTime}
+                </if>
+                <if test="driverPhone !=null and driverPhone.trim() !=''">
+                    and wt.driver_phone like concat('%',#{driverPhone},'%')
+                </if>
+                <if test="vehiclePlateNo !=null and vehiclePlateNo.trim() !=''">
+                    and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
+                </if>
+                <if test="waybillType !=null">
+                    and ww.type = #{waybillType}
+                </if>
+                )
+    </select>
+    <select id="waitCollectSummary" resultType="java.math.BigDecimal">
+        select sum(freightFee) from (select
+        fp.invoice_no as invoiceNo,
+        fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
+        fp.apply_time as applyTime,
+        fp.applicant_id as applicantId,
+        ba.name as applicant
+        from f_payable fp
+        left join b_admin ba on ba.id = fp.applicant_id
+        where fp.state='0'
+        <if test="serialNumber !=null and serialNumber.trim() !=''">
+            and fp.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="applyStartTime !=null">
+            and fp.apply_time &gt;=#{applyStartTime}
+        </if>
+        <if test="applyEndTime !=null">
+            and fp.apply_time &lt;=#{applyEndTime}
+        </if>
+        <if test="applicant !=null and applicant.trim() !=''">
+            and ba.name like concat('%',#{applicant},'%')
+        </if>) t
+    </select>
+    <select id="paymentSummary" resultType="java.math.BigDecimal">
+        select sum(freightFee) from (
+        select fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
+        fp.invoice_no as invoiceNo,
+        fp.apply_time as applyTime,
+        fp.applicant_id as applicantId,
+        fp.confirm_id as confirmId,
+        fp.confirm_time as confirmTime,
+        ba.name as applicant,
+        bc.name as confirmMan
+        from f_payable fp
+        left join b_admin ba on ba.id = fp.applicant_id
+        left join b_admin bc on bc.id = fp.confirm_id
+        where fp.state='1'
+        <if test="serialNumber !=null and serialNumber.trim() !=''">
+            and fp.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="applyStartTime !=null">
+            and fp.apply_time &gt;=#{applyStartTime}
+        </if>
+        <if test="applyEndTime !=null">
+            and fp.apply_time &lt;=#{applyEndTime}
+        </if>
+        <if test="applicant !=null and applicant.trim() !=''">
+            and ba.name like concat('%',#{applicant},'%')
+        </if>
+
+        <if test="confirmStartTime !=null">
+            and fp.confirm_time &gt;=#{confirmStartTime}
+        </if>
+        <if test="confirmEndTime !=null">
+            and fp.confirm_time &lt;=#{confirmEndTime}
+        </if>
+        <if test="confirmMan !=null and confirmMan.trim() !=''">
+            and ba.name like concat('%',#{confirmMan},'%')
+        </if>
+        <if test="invoiceNo !=null and invoiceNo.trim!=''">
+            and fp.invoice_no like concat('%',#{invoiceNo},'%')
+        </if>) t
+    </select>
+    <select id="payablePaidSummary" resultType="java.util.Map">
+        SELECT sum(freightFee),sum(totalFreightPay) from (select fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
+        fp.invoice_no as invoiceNo,
+        fp.apply_time as applyTime,
+        fp.applicant_id as applicantId,
+        fp.confirm_id as confirmId,
+        fp.confirm_time as confirmTime,
+        fp.writeoff_id as writeoffId,
+        fp.writeoff_time as writeoffTime,
+        fp.total_freight_paid as totalFreightPay,
+        (fp.freight_fee-fp.total_freight_paid) as difference,
+        ba.name as applicant,
+        bc.name as confirmMan,
+        bd.name as writeOffMan
+        from f_payable fp
+        left join b_admin ba on ba.id = fp.applicant_id
+        left join b_admin bc on bc.id = fp.confirm_id
+        left join b_admin bd on bd.id = fp.writeoff_id
+        where fp.state='2'
+        <if test="serialNumber !=null and serialNumber.trim() !=''">
+            and fp.serial_number like concat('%',#{serialNumber},'%')
+        </if>
+        <if test="applyStartTime !=null">
+            and fp.apply_time &gt;=#{applyStartTime}
+        </if>
+        <if test="applyEndTime !=null">
+            and fp.apply_time &lt;=#{applyEndTime}
+        </if>
+        <if test="applicant !=null and applicant.trim() !=''">
+            and ba.name like concat('%',#{applicant},'%')
+        </if>
+
+        <if test="confirmStartTime !=null">
+            and fp.confirm_time &gt;=#{confirmStartTime}
+        </if>
+        <if test="confirmEndTime !=null">
+            and fp.confirm_time &lt;=#{confirmEndTime}
+        </if>
+        <if test="confirmMan !=null and confirmMan.trim() !=''">
+            and bc.name like concat('%',#{confirmMan},'%')
+        </if>
+
+        <if test="writeOffStartTime !=null">
+            and fp.writeoff_time &gt;=#{writeOffStartTime}
+        </if>
+        <if test="writeOffEndTime !=null">
+            and fp.writeoff_time &lt;=#{writeOffEndTime}
+        </if>
+        <if test="writeOffMan !=null and writeOffMan.trim() !=''">
+            and bd.name like concat('%',#{writeOffMan},'%')
+        </if>
+        <if test="invoiceNo !=null and invoiceNo.trim!=''">
+            and fp.invoice_no lifp.writeoff_timeke concat('%',#{invoiceNo},'%')
+        </if>) t
     </select>
 
 </mapper>

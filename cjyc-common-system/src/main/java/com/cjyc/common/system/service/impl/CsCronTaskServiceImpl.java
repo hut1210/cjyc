@@ -29,8 +29,6 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
     @Resource
     private IDriverCarCountDao driverCarCountDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public void saveCustomerOrder() {
         log.info("保存前一天客户下单统计开始执行。。。。。");
@@ -41,7 +39,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
                 CustomerCount count = new CustomerCount();
                 count.setCustomerId(order.getCustomerId());
                 count.setOrderNo(order.getNo());
-                count.setCreateTime(NOW);
+                count.setCreateTime(System.currentTimeMillis());
                 customerCountDao.insert(count);
             }
         }
@@ -51,7 +49,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
     public void saveDriverCar() {
         log.info("保存前一天司机完成运车统计开始执行。。。。。");
         //获取当天的开始时间
-        LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(NOW);
+        LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(System.currentTimeMillis());
         //获取前一天开始时间
         Long beforeStartDay = TimeStampUtil.subtractDays(LocalDateTimeUtil.getMillisByLDT(dayStartByLong),1);
         //获取前一天结束时间
@@ -64,7 +62,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
                 dcc.setCarNum(1);
                 dcc.setDriverId(vo.getDriverId());
                 dcc.setIncome(orderCar.getTotalFee());
-                dcc.setCreateTime(NOW);
+                dcc.setCreateTime(System.currentTimeMillis());
                 driverCarCountDao.insert(dcc);
             }
         }
@@ -76,7 +74,7 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
      */
     private List<Order> findBeforeDayOrder(){
         //获取当天的开始时间
-        LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(NOW);
+        LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(System.currentTimeMillis());
         //获取前一天开始时间
         Long beforeStartDay = TimeStampUtil.subtractDays(LocalDateTimeUtil.getMillisByLDT(dayStartByLong),1);
         //获取前一天结束时间
@@ -84,4 +82,5 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
         //查询前一天所有下的单
         return orderDao.findDayOrder(beforeStartDay, beforeEndDay);
     }
+
 }

@@ -169,8 +169,8 @@ public class OrderDetailResDto implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long checkUserId;
 
-    @ApiModelProperty(value = "订单状态：0待提交，2待分配，5待确认，10待复确认，15待预付款，25已确认，" +
-            "55运输中，88待付款，100已完成，111原返（待），112异常结束，113取消（待），114作废（待）")
+    @ApiModelProperty(value = "订单状态：0待提交，2待确认(客户提交)，5待确认(业务提交)，" +
+            "15待预付款，25待运输，55运输中，100已完成，113已取消，114已作废")
     private Integer state;
 
     @ApiModelProperty(value = "备注")

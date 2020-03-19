@@ -30,7 +30,7 @@ public interface IPingPayService {
 
     ResultVo cancelOrderRefund(String orderCode);
 
-    ResultVo<ValidateReceiptCarPayVo> validateCarPayState(CarPayStateDto reqDto, boolean b);
+    ResultVo<ValidateReceiptCarPayVo> validateCarPayState(CarPayStateDto reqDto, boolean isLock);
 
     ResultVo carCollectPay(CarCollectPayDto reqDto);
 

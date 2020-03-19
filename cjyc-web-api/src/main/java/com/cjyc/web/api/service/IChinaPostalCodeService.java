@@ -32,6 +32,6 @@ public interface IChinaPostalCodeService extends IService<ChinaPostalCode> {
      * @param dto
      * @return
      */
-    ResultVo<List<ProvinceVo>> findChinaPostal(PostalDto dto);
+    ResultVo<List<ProvinceVo>> findChinaPostal(boolean isSearchCache , PostalDto dto);
 
 }

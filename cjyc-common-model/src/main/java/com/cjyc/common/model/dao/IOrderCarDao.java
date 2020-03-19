@@ -293,4 +293,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     List<WaitCountLineVo> findWaitDispatchCarCountLineListForAppV2(@Param("param") WaitCountDto paramsDto);
 
     int countUnPayByOrderId(Long orderId);
+
+    int updateLocationForCancel(Long orderId);
 }

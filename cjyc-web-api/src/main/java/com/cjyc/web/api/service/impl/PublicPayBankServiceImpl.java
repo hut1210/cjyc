@@ -1,26 +1,24 @@
 package com.cjyc.web.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
 import com.cjyc.common.model.dto.web.publicPayBank.PayBankImportExcel;
 import com.cjyc.common.model.entity.PublicPayBank;
 import com.cjyc.common.model.dao.IPublicPayBankDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.BeanMapUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
+import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import com.cjyc.common.model.vo.web.publicPay.PayBankVo;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.web.api.service.IPublicPayBankService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -43,6 +42,8 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
 
     @Resource
     private IPublicPayBankDao payBankDao;
+    @Resource
+    private RedisUtils redisUtils;
 
     private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
@@ -74,9 +75,22 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
     }
 
     @Override
-    public ResultVo<PageVo<PayBankVo>> findPayBankInfo(PayBankDto dto) {
+    public ResultVo<PageVo<PayBankVo>> findPayBankInfo(boolean isSearchCache,PayBankDto dto) {
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<PayBankVo> payBankInfoList = payBankDao.findPayBankInfo(dto);
+        List<PayBankVo> payBankInfoList = null;
+        if(isSearchCache){
+            //放入缓存
+            String key = RedisKeys.getPayBankInfoKey(dto);
+            String payBankInfoStr = redisUtils.hget(key,key);
+            payBankInfoList = JsonUtils.jsonToList(payBankInfoStr, PayBankVo.class);
+            if(CollectionUtils.isEmpty(payBankInfoList)){
+                payBankInfoList = payBankDao.findPayBankInfo(dto);
+                redisUtils.hset(key, key, JsonUtils.objectToJson(payBankInfoList));
+                redisUtils.expire(key, 1, TimeUnit.DAYS);
+            }
+        }else{
+            payBankInfoList = payBankDao.findPayBankInfo(dto);
+        }
         PageInfo<PayBankVo> pageInfo = new PageInfo<>(payBankInfoList);
         return BaseResultUtil.success(pageInfo);
     }

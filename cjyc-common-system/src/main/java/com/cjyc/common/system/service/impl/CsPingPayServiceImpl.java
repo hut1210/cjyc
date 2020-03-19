@@ -37,7 +37,6 @@ import com.pingplusplus.model.Charge;
 import com.pingplusplus.model.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.pqc.math.linearalgebra.BigEndianConversions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -229,7 +228,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //Pingpp.overrideApiBase("https://sapi.pingxx.com");//此接口为ping++协助测试的接口 升级完成后注释掉 20181023 add
         System.setProperty("https.protocols", "TLSv1.2");//20181023 添加 (TLSv1.2升级配置)
         Pingpp.privateKeyPath = this.getClass().getClassLoader().getResource("your_rsa_private_key_pkcs.pem").getPath();
-
     }
 
     @Override
@@ -306,7 +304,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
 
                 if(addLock){
-                    String lockKey = RedisKeys.getWlCollectPayLockKey(orderCar.getNo());
+                    String lockKey = RedisKeys.getWlPayLockKey(orderCar.getNo());
                     String value = redisUtils.get(lockKey);
                     if (value != null && !value.equals(validateSweepCodeDto.getTaskId().toString())) {
                         return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
@@ -314,7 +312,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     if (value != null) {
                         redisUtils.delete(lockKey);
                     }
-                    if (!redisLock.lock(lockKey, validateSweepCodeDto.getTaskId(), 1800000, 10, 300)) {
+                    if (!redisLock.lock(lockKey, validateSweepCodeDto.getTaskId(), 300000, 10, 300)) {
                         return BaseResultUtil.fail("锁定车辆失败");
                     }
                     lockKeySet.add(lockKey);
@@ -1004,7 +1002,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //对公户打款
         //付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
         if(showPartnerVo.getCardType()==1){
+            log.info("开户行={}",showPartnerVo.getBankName());
             params.put("type", "b2b");
+            params.put("sub_bank", "交通银行股份有限公司珠海拱北支行");
+            params.put("sub_bank_code", "301585000042");
+            params.put("prov", "广东");
+            params.put("city", "珠海");
         }else{
             params.put("type", "b2c");
         }
@@ -1222,7 +1225,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Override
     public ResultVo unlockQrcode(String orderCarNo) {
         try{
-            String key = RedisKeys.getWlCollectPayLockKey(orderCarNo);
+            String key = RedisKeys.getWlPayLockKey(orderCarNo);
             redisUtils.delete(key);
         }catch (Exception e){
             return BaseResultUtil.fail("解锁扫码付款");
