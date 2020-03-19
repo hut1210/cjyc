@@ -106,8 +106,6 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     @Resource
     private ISysRoleService sysRoleService;
 
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     /**
      * 查询司机列表
      *
@@ -147,7 +145,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
             driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-            driver.setCreateTime(NOW);
+            driver.setCreateTime(System.currentTimeMillis());
             driver.setCreateUserId(dto.getLoginId());
             ResultData<Long> saveRd = csDriverService.saveDriverToPlatform(driver);
             if (!ReturnMsg.SUCCESS.getCode().equals(saveRd.getCode())) {
@@ -174,7 +172,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             carrier.setSettleType(ModeTypeEnum.TIME.code);
             carrier.setState(CommonStateEnum.WAIT_CHECK.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
-            carrier.setCreateTime(NOW);
+            carrier.setCreateTime(System.currentTimeMillis());
             carrier.setCreateUserId(dto.getLoginId());
             carrierDao.insert(carrier);
 
@@ -223,12 +221,12 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
             return BaseResultUtil.fail("司机信息同步失败，原因：" + rd.getMsg());
         }
-       // }
+        // }
 
         BeanUtils.copyProperties(dto,driver);
         driver.setName(dto.getRealName());
         driver.setId(dto.getDriverId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         driver.setCheckUserId(dto.getLoginId());
         super.updateById(driver);
 
@@ -321,10 +319,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //更新承运商
             carr.setState(CommonStateEnum.CHECKED.code);
         }
-        carr.setCheckTime(NOW);
+        carr.setCheckTime(System.currentTimeMillis());
         carr.setCheckUserId(dto.getLoginId());
         driver.setCheckUserId(dto.getLoginId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         driverDao.updateById(driver);
         carrierDriverConDao.updateById(cdc);
         carrierDao.updateById(carr);
@@ -364,7 +362,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             return BaseResultUtil.fail("司机信息错误，请检查");
         }
         //driver.setState(flag.equals(1)?
-                //SalemanStateEnum.REJECTED.code: SalemanStateEnum.D_CHECK.code);
+        //SalemanStateEnum.REJECTED.code: SalemanStateEnum.D_CHECK.code);
         driverDao.updateById(driver);
         return BaseResultUtil.success();
     }
@@ -382,23 +380,23 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         SelectDriverDto dto = getDriverDto(request);
         List<DriverVo> driverVos = encapPersonDriver(dto);
         //if (!CollectionUtils.isEmpty(driverVos)) {
-            // 生成导出数据
-            List<DriverExportExcel> exportExcelList = new ArrayList<>();
-            for (DriverVo vo : driverVos) {
-                DriverExportExcel driverExportExcel = new DriverExportExcel();
-                BeanUtils.copyProperties(vo, driverExportExcel);
-                exportExcelList.add(driverExportExcel);
-            }
-            String title = "司机管理";
-            String sheetName = "司机管理";
-            String fileName = "司机管理.xls";
-            try {
-                //if(!CollectionUtils.isEmpty(exportExcelList)){
-                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, DriverExportExcel.class, fileName, response);
-                //}
-            } catch (IOException e) {
-                log.error("导出司机管理信息异常:{}",e);
-            }
+        // 生成导出数据
+        List<DriverExportExcel> exportExcelList = new ArrayList<>();
+        for (DriverVo vo : driverVos) {
+            DriverExportExcel driverExportExcel = new DriverExportExcel();
+            BeanUtils.copyProperties(vo, driverExportExcel);
+            exportExcelList.add(driverExportExcel);
+        }
+        String title = "司机管理";
+        String sheetName = "司机管理";
+        String fileName = "司机管理.xls";
+        try {
+            //if(!CollectionUtils.isEmpty(exportExcelList)){
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, DriverExportExcel.class, fileName, response);
+            //}
+        } catch (IOException e) {
+            log.error("导出司机管理信息异常:{}",e);
+        }
         //}
     }
 
@@ -464,7 +462,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         vr.setOccupiedCarNum(0);
         vr.setState(RunningStateEnum.EFFECTIVE.code);
         vr.setRunningState(VehicleRunStateEnum.FREE.code);
-        vr.setCreateTime(NOW);
+        vr.setCreateTime(System.currentTimeMillis());
         vehicleRunningDao.insert(vr);
         //更新车辆信息
         Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda().eq(Vehicle::getPlateNo, dto.getPlateNo()));
@@ -551,7 +549,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             carrier.setSettleType(ModeTypeEnum.TIME.code);
             carrier.setState(CommonStateEnum.IN_CHECK.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
-            carrier.setCreateTime(NOW);
+            carrier.setCreateTime(System.currentTimeMillis());
             carrier.setCreateUserId(dto.getLoginId());
             carrierDao.insert(carrier);
 
@@ -564,7 +562,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
             driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
             driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-            driver.setCreateTime(NOW);
+            driver.setCreateTime(System.currentTimeMillis());
             driver.setCreateUserId(dto.getLoginId());
             super.save(driver);
             //保存司机与车辆关系
@@ -641,10 +639,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
             //更新承运商
             carrier.setState(CommonStateEnum.CHECKED.code);
         }
-        carrier.setCheckTime(NOW);
+        carrier.setCheckTime(System.currentTimeMillis());
         carrier.setCheckUserId(dto.getLoginId());
         driver.setCheckUserId(dto.getLoginId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         userRoleDeptDao.updateById(urd);
         driverDao.updateById(driver);
         carrierDao.updateById(carrier);
@@ -707,7 +705,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         BeanUtils.copyProperties(dto,driver);
         driver.setName(dto.getRealName());
         driver.setId(dto.getDriverId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         driver.setCheckUserId(dto.getLoginId());
         super.updateById(driver);
 
@@ -726,7 +724,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                 && !dvc.getVehicleId().equals(dto.getVehicleId())){
             //更新旧的车辆信息的carrierId
             Vehicle oleVehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
-                                            .eq(Vehicle::getCarrierId, carrier.getId()));
+                    .eq(Vehicle::getCarrierId, carrier.getId()));
             oleVehicle.setCarrierId(null);
             vehicleDao.updateById(oleVehicle);
 
@@ -836,7 +834,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                     carrier.setSettleType(ModeTypeEnum.TIME.code);
                     carrier.setState(CommonStateEnum.WAIT_CHECK.code);
                     carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
-                    carrier.setCreateTime(NOW);
+                    carrier.setCreateTime(System.currentTimeMillis());
                     carrier.setCreateUserId(loginId);
                     carrierDao.insert(carrier);
 
@@ -849,7 +847,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
                     driver.setIdentity(DriverIdentityEnum.GENERAL_DRIVER.code);
                     driver.setBusinessState(BusinessStateEnum.BUSINESS.code);
                     driver.setSource(DriverSourceEnum.SALEMAN_WEB.code);
-                    driver.setCreateTime(NOW);
+                    driver.setCreateTime(System.currentTimeMillis());
                     driver.setCreateUserId(loginId);
                     super.save(driver);
                     //保存司机角色机构关系
@@ -919,10 +917,10 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
         driverVehicleConDao.delete(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,dto.getDriverId()));
         //删除司机与角色绑定关系
         userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda()
-                                .eq(UserRoleDept::getUserId,dto.getDriverId())
-                                .eq(UserRoleDept::getDeptId,dto.getCarrierId())
-                                .eq(UserRoleDept::getDeptType,DeptTypeEnum.CARRIER.code)
-                                .eq(UserRoleDept::getUserType,UserTypeEnum.DRIVER.code));
+                .eq(UserRoleDept::getUserId,dto.getDriverId())
+                .eq(UserRoleDept::getDeptId,dto.getCarrierId())
+                .eq(UserRoleDept::getDeptType,DeptTypeEnum.CARRIER.code)
+                .eq(UserRoleDept::getUserType,UserTypeEnum.DRIVER.code));
         //删除承运商信息
         carrierDao.deleteById(dto.getCarrierId());
         //删除司机信息

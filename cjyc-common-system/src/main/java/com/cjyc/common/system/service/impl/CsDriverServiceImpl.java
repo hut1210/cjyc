@@ -83,8 +83,6 @@ public class CsDriverServiceImpl implements ICsDriverService {
     @Resource
     private IRoleDao roleDao;
 
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public Driver getById(Long userId, boolean b) {
         return driverDao.selectById(userId);
@@ -192,7 +190,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                     driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
                 }
                 driver.setCreateUserId(dto.getLoginId());
-                driver.setCreateTime(NOW);
+                driver.setCreateTime(System.currentTimeMillis());
                 driverDao.insert(driver);
             }
             //保存司机与承运商关系
@@ -229,7 +227,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vr.setState(RunningStateEnum.EFFECTIVE.code);
                 vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                vr.setCreateTime(NOW);
+                vr.setCreateTime(System.currentTimeMillis());
                 vehicleRunningDao.insert(vr);
             }
             return BaseResultUtil.success();
@@ -488,7 +486,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         vr.setCarryCarNum(dto.getDefaultCarryNum());
         vr.setState(RunningStateEnum.EFFECTIVE.code);
         vr.setRunningState(VehicleRunStateEnum.FREE.code);
-        vr.setCreateTime(NOW);
+        vr.setCreateTime(System.currentTimeMillis());
         vehicleRunningDao.insert(vr);
     }
 
@@ -603,7 +601,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 //承运商超级管理员登陆
                 driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
                 driver.setCreateUserId(dto.getLoginId());
-                driver.setCreateTime(NOW);
+                driver.setCreateTime(System.currentTimeMillis());
                 driverDao.insert(driver);
             }
             //保存司机与承运商关系
@@ -623,7 +621,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vr.setState(RunningStateEnum.EFFECTIVE.code);
                 vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                vr.setCreateTime(NOW);
+                vr.setCreateTime(System.currentTimeMillis());
                 vehicleRunningDao.insert(vr);
             }
             return BaseResultUtil.success();
@@ -746,7 +744,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 //承运商超级管理员登陆
                 driver.setSource(DriverSourceEnum.CARRIER_ADMIN.code);
                 driver.setCreateUserId(dto.getLoginId());
-                driver.setCreateTime(NOW);
+                driver.setCreateTime(System.currentTimeMillis());
                 driverDao.insert(driver);
             }
             //保存司机与承运商关系
@@ -766,7 +764,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
                 vr.setCarryCarNum(dto.getDefaultCarryNum());
                 vr.setState(RunningStateEnum.EFFECTIVE.code);
                 vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                vr.setCreateTime(NOW);
+                vr.setCreateTime(System.currentTimeMillis());
                 vehicleRunningDao.insert(vr);
             }
             return BaseResultUtil.success();

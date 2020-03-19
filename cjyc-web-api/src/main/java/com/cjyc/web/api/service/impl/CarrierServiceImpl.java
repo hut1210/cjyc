@@ -84,8 +84,6 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Resource
     private IPublicPayBankService payBankService;
 
-    private  Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     /**
      * 承运商超级管理员角色名称
      */
@@ -124,7 +122,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
             carrier.setCreateUserId(dto.getLoginId());
-            carrier.setCreateTime(NOW);
+            carrier.setCreateTime(System.currentTimeMillis());
             //审核通过将承运商信息同步到物流平台
             ResultData<AddDeptAndUserResp> rd = csCarrierService.saveCarrierToPlatform(carrier);
             if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -144,7 +142,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             driver.setIdCard(dto.getLegalIdCard());
             driver.setRealName(dto.getLinkman());
             driver.setCreateUserId(dto.getLoginId());
-            driver.setCreateTime(NOW);
+            driver.setCreateTime(System.currentTimeMillis());
             driverDao.insert(driver);
             driver.setUserId(rd.getData().getUserId());
             driver.setId(driver.getId());
@@ -218,7 +216,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         origCarrier.setState(CommonStateEnum.WAIT_CHECK.code);
         origCarrier.setId(dto.getCarrierId());
         origCarrier.setCheckUserId(dto.getLoginId());
-        origCarrier.setCheckTime(NOW);
+        origCarrier.setCheckTime(System.currentTimeMillis());
         //审核通过的更新到物流平台
         ResultData<Long> rd = csCarrierService.updateCarrierToPlatform(origCarrier, dto);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -251,9 +249,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         Carrier carrier = carrierDao.selectById(dto.getId());
         Driver driver = findDriver(carrier.getId());
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
-                                .eq(CarrierDriverCon::getCarrierId, carrier.getId())
-                                .eq(CarrierDriverCon::getDriverId, driver.getId())
-                                .ge(CarrierDriverCon::getRole, DriverRoleEnum.ADMIN.code));
+                .eq(CarrierDriverCon::getCarrierId, carrier.getId())
+                .eq(CarrierDriverCon::getDriverId, driver.getId())
+                .ge(CarrierDriverCon::getRole, DriverRoleEnum.ADMIN.code));
         if (null == carrier || null == driver || cdc == null) {
             return BaseResultUtil.fail("承运商信息错误，请检查");
         }
@@ -276,9 +274,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             carrier.setState(CommonStateEnum.CHECKED.code);
         }
         driver.setCheckUserId(dto.getLoginId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         carrier.setCheckUserId(dto.getLoginId());
-        carrier.setCheckTime(NOW);
+        carrier.setCheckTime(System.currentTimeMillis());
         carrierDriverConDao.updateById(cdc);
         driverDao.updateById(driver);
         super.updateById(carrier);
@@ -343,23 +341,23 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         SeleCarrierDto dto = getCarrierDto(request);
         List<CarrierVo> carrierVos = encapCarrierNew(dto);
         //if (!CollectionUtils.isEmpty(carrierVos)) {
-            // 生成导出数据
-            List<CarrierExportExcel> exportExcelList = new ArrayList<>();
-            for (CarrierVo vo : carrierVos) {
-                CarrierExportExcel carrierExportExcel = new CarrierExportExcel();
-                BeanUtils.copyProperties(vo, carrierExportExcel);
-                exportExcelList.add(carrierExportExcel);
-            }
-            String title = "承运商管理";
-            String sheetName = "承运商管理";
-            String fileName = "承运商管理.xls";
-            try {
-                //if(!CollectionUtils.isEmpty(exportExcelList)){
-                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarrierExportExcel.class, fileName, response);
-                //}
-            } catch (IOException e) {
-                log.error("导出承运商管理信息异常:{}",e);
-            }
+        // 生成导出数据
+        List<CarrierExportExcel> exportExcelList = new ArrayList<>();
+        for (CarrierVo vo : carrierVos) {
+            CarrierExportExcel carrierExportExcel = new CarrierExportExcel();
+            BeanUtils.copyProperties(vo, carrierExportExcel);
+            exportExcelList.add(carrierExportExcel);
+        }
+        String title = "承运商管理";
+        String sheetName = "承运商管理";
+        String fileName = "承运商管理.xls";
+        try {
+            //if(!CollectionUtils.isEmpty(exportExcelList)){
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarrierExportExcel.class, fileName, response);
+            //}
+        } catch (IOException e) {
+            log.error("导出承运商管理信息异常:{}",e);
+        }
         //}
     }
 
@@ -375,9 +373,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         if (dto.getCarrierId() == null) {
             //新增
             List<Driver> existDriverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
-                .eq(Driver::getPhone, dto.getLinkmanPhone())
-                .or()
-                .eq(Driver::getIdCard, dto.getLegalIdCard()));
+                    .eq(Driver::getPhone, dto.getLinkmanPhone())
+                    .or()
+                    .eq(Driver::getIdCard, dto.getLegalIdCard()));
             if (!CollectionUtils.isEmpty(existDriverList)) {
                 return BaseResultUtil.fail("该承运商账号已存在");
             }
@@ -397,7 +395,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
             carrier.setCreateUserId(dto.getLoginId());
-            carrier.setCreateTime(NOW);
+            carrier.setCreateTime(System.currentTimeMillis());
             super.save(carrier);
 
             //添加承运商司机管理员
@@ -411,7 +409,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             driver.setIdCard(dto.getLegalIdCard());
             driver.setRealName(dto.getLinkman());
             driver.setCreateUserId(dto.getLoginId());
-            driver.setCreateTime(NOW);
+            driver.setCreateTime(System.currentTimeMillis());
             driver.setUserId(userId);
             driverDao.insert(driver);
 
@@ -424,7 +422,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             userRoleDept.setUserType(UserTypeEnum.DRIVER.code);
             userRoleDept.setState(CommonStateEnum.WAIT_CHECK.code);
             userRoleDept.setMode(dto.getMode());
-            userRoleDept.setCreateTime(NOW);
+            userRoleDept.setCreateTime(System.currentTimeMillis());
             userRoleDept.setCreateUserId(dto.getLoginId());
             userRoleDeptDao.insert(userRoleDept);
 
@@ -463,8 +461,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 .eq(Driver::getPhone, carrier.getLinkmanPhone()));
         //Driver driver = findDriverNew(carrier.getId(), role);
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-            .eq(UserRoleDept::getDeptId, carrier.getId())
-            .eq(UserRoleDept::getUserId, driver.getId()));
+                .eq(UserRoleDept::getDeptId, carrier.getId())
+                .eq(UserRoleDept::getUserId, driver.getId()));
         if (null == carrier || null == driver || null == userRoleDept) {
             return BaseResultUtil.fail("承运商信息有误，请检查");
         }
@@ -486,9 +484,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             carrier.setState(CommonStateEnum.CHECKED.code);
         }
         driver.setCheckUserId(dto.getLoginId());
-        driver.setCheckTime(NOW);
+        driver.setCheckTime(System.currentTimeMillis());
         carrier.setCheckUserId(dto.getLoginId());
-        carrier.setCheckTime(NOW);
+        carrier.setCheckTime(System.currentTimeMillis());
         userRoleDeptDao.updateById(userRoleDept);
         driverDao.updateById(driver);
         super.updateById(carrier);
@@ -517,8 +515,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     ",未查询到角色信息");
         }
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
-            .eq(UserRoleDept::getDeptId, id)
-            .eq(UserRoleDept::getRoleId, role.getId()));
+                .eq(UserRoleDept::getDeptId, id)
+                .eq(UserRoleDept::getRoleId, role.getId()));
         if(userRoleDept == null){
             userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                     .eq(UserRoleDept::getDeptId, id)
@@ -604,7 +602,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         bcb.setUserType(UserTypeEnum.DRIVER.code);
         bcb.setState(UseStateEnum.USABLE.code);
         bcb.setCardColour(RandomUtil.getIntRandom());
-        bcb.setCreateTime(NOW);
+        bcb.setCreateTime(System.currentTimeMillis());
         //获取银行编码
         if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
             BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
@@ -726,51 +724,51 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return BaseResultUtil.fail("数据信息有误");
         }
 //        if (CommonStateEnum.WAIT_CHECK.code == urd.getState()) {
-            //待审核
-            if (!dto.getLinkmanPhone().equals(origCarrier.getLinkmanPhone())) {
-                //更换手机号
-                Role commonRole = csRoleService.getByName(CARRIER_COMMON_ROLE_NAME, 2);
-                if (commonRole == null) {
-                    return BaseResultUtil.fail("根据角色名称：" + CARRIER_COMMON_ROLE_NAME +
-                            ",未查询到角色信息");
-                }
-                //原承运商超级管理员司机
-                Driver origSuperDriver = driverDao.selectById(urd.getUserId());
-                if (origSuperDriver == null) {
-                    return BaseResultUtil.fail("承运商超级管理员信息错误，请检查");
-                }
-                //用户信息同步到物流平台
-                ResultData rd = updateRoleForCarrierToPlatform(origSuperDriver, driver, role, commonRole);
-                if (!ResultDataUtil.isSuccess(rd)) {
-                    return BaseResultUtil.fail("更新司机角色信息错误，原因：" + rd.getMsg());
-                }
-                urd.setRoleId(commonRole.getId());
-                userRoleDeptDao.updateById(urd);
-                UserRoleDept updateUrd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
+        //待审核
+        if (!dto.getLinkmanPhone().equals(origCarrier.getLinkmanPhone())) {
+            //更换手机号
+            Role commonRole = csRoleService.getByName(CARRIER_COMMON_ROLE_NAME, 2);
+            if (commonRole == null) {
+                return BaseResultUtil.fail("根据角色名称：" + CARRIER_COMMON_ROLE_NAME +
+                        ",未查询到角色信息");
+            }
+            //原承运商超级管理员司机
+            Driver origSuperDriver = driverDao.selectById(urd.getUserId());
+            if (origSuperDriver == null) {
+                return BaseResultUtil.fail("承运商超级管理员信息错误，请检查");
+            }
+            //用户信息同步到物流平台
+            ResultData rd = updateRoleForCarrierToPlatform(origSuperDriver, driver, role, commonRole);
+            if (!ResultDataUtil.isSuccess(rd)) {
+                return BaseResultUtil.fail("更新司机角色信息错误，原因：" + rd.getMsg());
+            }
+            urd.setRoleId(commonRole.getId());
+            userRoleDeptDao.updateById(urd);
+            UserRoleDept updateUrd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                     .eq(UserRoleDept::getUserId, driver.getId())
                     .eq(UserRoleDept::getDeptId, origCarrier.getId()));
-                updateUrd.setMode(dto.getMode());
-                updateUrd.setState(CommonStateEnum.WAIT_CHECK.code);
-                updateUrd.setRoleId(role.getId());
-                userRoleDeptDao.updateById(updateUrd);
-            }else {
-                //无需更换手机号
-                urd.setMode(dto.getMode());
-                urd.setState(CommonStateEnum.WAIT_CHECK.code);
-                userRoleDeptDao.updateById(urd);
-                //没换手机号
-                driver.setName(dto.getLinkman());
-                driver.setRealName(dto.getLinkman());
-                driver.setPhone(dto.getLinkmanPhone());
-                driverDao.updateById(driver);
-            }
+            updateUrd.setMode(dto.getMode());
+            updateUrd.setState(CommonStateEnum.WAIT_CHECK.code);
+            updateUrd.setRoleId(role.getId());
+            userRoleDeptDao.updateById(updateUrd);
+        }else {
+            //无需更换手机号
+            urd.setMode(dto.getMode());
+            urd.setState(CommonStateEnum.WAIT_CHECK.code);
+            userRoleDeptDao.updateById(urd);
+            //没换手机号
+            driver.setName(dto.getLinkman());
+            driver.setRealName(dto.getLinkman());
+            driver.setPhone(dto.getLinkmanPhone());
+            driverDao.updateById(driver);
+        }
 //        }
         //更新承运商
         BeanUtils.copyProperties(dto,origCarrier);
         origCarrier.setState(CommonStateEnum.WAIT_CHECK.code);
         origCarrier.setId(dto.getCarrierId());
         origCarrier.setCheckUserId(dto.getLoginId());
-        origCarrier.setCheckTime(NOW);
+        origCarrier.setCheckTime(System.currentTimeMillis());
         super.updateById(origCarrier);
 
         //更新银行卡信息(先删除后添加)
@@ -809,8 +807,8 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
      */
     private Driver findDriverNew(Long carrierId, Role role) {
         List<UserRoleDept> conList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda()
-            .eq(UserRoleDept::getDeptId, carrierId)
-            .eq(UserRoleDept::getRoleId, role.getId()));
+                .eq(UserRoleDept::getDeptId, carrierId)
+                .eq(UserRoleDept::getRoleId, role.getId()));
         Long driverId = null;
         if (!CollectionUtils.isEmpty(conList)) {
             driverId = conList.get(0).getUserId();
@@ -950,7 +948,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
                     carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
                     carrier.setCreateUserId(loginId);
-                    carrier.setCreateTime(NOW);
+                    carrier.setCreateTime(System.currentTimeMillis());
                     super.save(carrier);
 
                     //添加承运商司机管理员
@@ -964,7 +962,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     driver.setIdCard(carrierImportExcel.getLegalIdCard());
                     driver.setRealName(carrierImportExcel.getLinkman());
                     driver.setCreateUserId(loginId);
-                    driver.setCreateTime(NOW);
+                    driver.setCreateTime(System.currentTimeMillis());
                     driver.setUserId(userId);
                     driverDao.insert(driver);
 
@@ -976,7 +974,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     userRoleDept.setDeptType(2);
                     userRoleDept.setUserType(UserTypeEnum.DRIVER.code);
                     userRoleDept.setState(CommonStateEnum.WAIT_CHECK.code);
-                    userRoleDept.setCreateTime(NOW);
+                    userRoleDept.setCreateTime(System.currentTimeMillis());
                     userRoleDept.setCreateUserId(loginId);
                     userRoleDeptDao.insert(userRoleDept);
                     //保存银行卡信息
