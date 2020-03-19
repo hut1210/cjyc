@@ -918,7 +918,13 @@ public class FinanceServiceImpl implements IFinanceService {
         if(StringUtils.isEmpty(waybillNo)){
             BaseResultUtil.fail("运单单号不能为空！");
         }
+        // 根据运单号查看上游付款状态列表
         List<DriverUpstreamPaidInfoVo> listInfo = waybillCarDao.listDriverUpstreamPaidInfo(waybillNo);
+        // 订单金额分转元
+        listInfo.forEach(e ->{
+            e.setTotalFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
         PageInfo<DriverUpstreamPaidInfoVo> pageInfo = new PageInfo<>(listInfo);
         return BaseResultUtil.success(pageInfo);
     }
