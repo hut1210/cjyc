@@ -107,7 +107,7 @@ public class OrderController {
         if(!RegexUtil.isMobileSimple(reqDto.getBackContactPhone())){
             return BaseResultUtil.fail("收车人手机号格式不正确");
         }
-        if(CustomerTypeEnum.COOPERATOR.code == reqDto.getCustomerType() && PayModeEnum.COLLECT.code != reqDto.getPayType()){
+        if(CustomerTypeEnum.COOPERATOR.code == reqDto.getCustomerType() && reqDto.getPayType() != null && PayModeEnum.COLLECT.code != reqDto.getPayType()){
             return BaseResultUtil.fail("合伙人下单支付方式只能选择到付，请确认后重新下单");
         }
 
