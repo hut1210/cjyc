@@ -60,7 +60,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     @Resource
     private ICityDao cityDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<String> sortNode(SortNodeListDto paramsDto) {

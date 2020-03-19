@@ -83,7 +83,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     @Resource
     private IRoleDao roleDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public Driver getById(Long userId, boolean b) {

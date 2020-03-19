@@ -69,7 +69,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     @Value("${cjkj.dept_admin_id}")
     private Long YC_CT_DEPT_ID;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Transactional(rollbackFor = Exception.class)
     @Override

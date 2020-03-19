@@ -43,7 +43,7 @@ public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao,
     private RedisUtils redisUtils;
 
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public boolean importPostalCodeExcel(MultipartFile file, Long loginId) {

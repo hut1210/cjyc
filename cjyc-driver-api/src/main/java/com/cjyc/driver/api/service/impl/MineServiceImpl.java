@@ -70,7 +70,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
     @Resource
     private ICsBankInfoService bankInfoService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<BankCardVos> findBinkCard(AppDriverDto dto) {

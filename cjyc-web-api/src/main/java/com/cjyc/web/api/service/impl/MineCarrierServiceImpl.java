@@ -88,7 +88,7 @@ public class MineCarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> im
     @Resource
     private ICsCustomerService csCustomerService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<PageVo<MyWaybillVo>> findWaybill(MyWaybillDto dto) {

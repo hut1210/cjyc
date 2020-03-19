@@ -84,7 +84,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Resource
     private IPublicPayBankService payBankService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private  Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     /**
      * 承运商超级管理员角色名称

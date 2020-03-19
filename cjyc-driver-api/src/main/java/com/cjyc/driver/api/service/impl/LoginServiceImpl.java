@@ -61,7 +61,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     @Resource
     private ICsUserRoleDeptService csUserRoleDeptService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<DriverLoginVo> login(LoginDto dto) {

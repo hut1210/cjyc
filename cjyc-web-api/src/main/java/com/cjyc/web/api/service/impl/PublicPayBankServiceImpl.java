@@ -45,7 +45,7 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
     @Resource
     private RedisUtils redisUtils;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public boolean importPayBankExcel(MultipartFile file, Long loginId) {
