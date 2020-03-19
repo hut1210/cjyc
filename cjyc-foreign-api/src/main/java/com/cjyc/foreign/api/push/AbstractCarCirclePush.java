@@ -3,6 +3,7 @@ package com.cjyc.foreign.api.push;
 import com.alibaba.fastjson.JSONObject;
 import com.cjyc.foreign.api.utils.HttpClientUtil;
 import com.cjyc.foreign.api.utils.MD5Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -13,6 +14,7 @@ import java.util.Map;
  * @author zcm
  * @date 2020/3/19 8:29
  */
+@Slf4j
 public abstract class AbstractCarCirclePush implements IPushable{
     //返回接口key
     private static final String RESULT_KEY = "success";
@@ -36,17 +38,17 @@ public abstract class AbstractCarCirclePush implements IPushable{
                 return false;
             }
             jo.put("sign", md5Str);
-            System.out.println("新版_待加密内容：" + sb.toString());
         }
-        System.out.println("新版_接收到处理后数据为: " + jo.toJSONString());
-//        String result = HttpClientUtil.sendJsonPost(interUrl, jo.toJSONString(), null, null);
-//        if (StringUtils.isEmpty(result)) {
-//            throw new RuntimeException("请求接口: " + interUrl + "异常");
-//        }
-//        JSONObject resultJo = JSONObject.parseObject(result);
-//        if (resultJo.containsKey(RESULT_KEY) && resultJo.getBoolean(RESULT_KEY)) {
-//            return true;
-//        }
+        String result = HttpClientUtil.sendJsonPost(interUrl, jo.toJSONString(), null, null);
+        if (StringUtils.isEmpty(result)) {
+            log.error("请求接口失败，将在重发次数用尽之前重发");
+            return false;
+        }
+        log.info("请求数据：{}", jo.toJSONString());
+        JSONObject resultJo = JSONObject.parseObject(result);
+        if (resultJo.containsKey(RESULT_KEY) && resultJo.getBoolean(RESULT_KEY)) {
+            return true;
+        }
         return false;
     }
 }

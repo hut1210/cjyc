@@ -210,4 +210,4 @@ yc:
   99cc:
     clientId: 1237998740088164353
     confirmInterUrl: http://test.99chequan.com:8084/api/transport/yunCheOffer
-    stateInterUrl: http://test.99chequan.com:8084/api/updateYunCheOrderStatus
+    stateInterUrl: http://test.99chequan.com:8084/api/transport/updateYunCheOrderStatus
