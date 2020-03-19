@@ -378,13 +378,13 @@ public class FinanceServiceImpl implements IFinanceService {
 
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
 
-        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
+        BigDecimal ActualReceiptSummary = tradeBillService.ActualReceiptSummary(financeQueryDto);
         log.info("pv.size() ={}", pv.size());
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("receiptCount", pv.size());
         countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
 
-        countInfo.put("ActualReceiptSummary",incomeSummary.divide(new BigDecimal(100)));
+        countInfo.put("ActualReceiptSummary",ActualReceiptSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 

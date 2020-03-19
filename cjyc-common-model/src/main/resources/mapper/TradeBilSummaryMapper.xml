@@ -497,7 +497,13 @@
         where wo.state=100 and wo.customer_type=3
         <include refid="cooperatorSummary"></include>)
     </select>
-
+    <select id="ActualReceiptSummary" resultType="java.math.BigDecimal">
+        select sum(amount) from (select DISTINCT(ftb.id),ftb.amount from f_trade_bill ftb
+        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
+        where (ftbd.source_no in (select DISTINCT(woc.no)
+        <include refid="incomeSummaryCondition"></include>) or ftbd.source_no in  (select DISTINCT(wo.no)
+        <include refid="incomeSummaryCondition"></include>)) and ftb.state=2 and ftb.type!=20 and ftb.type!=21 order by ftb.id desc) t
+    </select>
 
 
 </mapper>

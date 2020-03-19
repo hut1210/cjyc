@@ -74,4 +74,9 @@ public class TradeBillSummaryServiceImpl implements ITradeBillSummaryService {
     public BigDecimal paidToCooperatorSummary(CooperatorSearchDto cooperatorSearchDto) {
         return MoneyUtil.nullToZero(tradeBillSummaryDao.paidToCooperatorSummary(cooperatorSearchDto));
     }
+
+    @Override
+    public BigDecimal ActualReceiptSummary(FinanceQueryDto financeQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.ActualReceiptSummary(financeQueryDto));
+    }
 }
