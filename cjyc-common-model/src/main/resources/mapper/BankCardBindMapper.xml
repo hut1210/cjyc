@@ -36,14 +36,18 @@
     <select id="findBinkCardInfo" resultType="com.cjyc.common.model.vo.driver.mine.BankCardVo"
                             parameterType="java.lang.Long">
         SELECT
-            sbcb.id AS cardId,
-            sbcb.card_no AS cardNo,
-            sbcb.bank_name AS bankName,
-            sbcb.card_colour AS cardColour
+            id AS cardId,
+            card_type AS cardType,
+            card_colour AS cardColour,
+            province_name AS provinceName,
+            area_name AS areaName,
+            card_name AS cardName,
+            card_no AS cardNo,
+            card_phone AS cardPhone
           FROM
-              s_bank_card_bind sbcb
-          where sbcb.user_id = #{carrierId} and sbcb.state = 1
-            order by sbcb.create_time desc
+              s_bank_card_bind
+          where user_id = #{carrierId} and state = 1
+          order by create_time desc
     </select>
 
     <!-- 根据用户userId和用户类型删除银行卡信息-->
@@ -57,6 +61,23 @@
             state = 1
             AND user_type = 2
             AND user_id = #{carrierId}
+    </select>
+
+    <!-- 获取用户银行卡信息-->
+    <select id="findCustomerBankCardInfo" resultType="com.cjyc.common.model.vo.customer.customerInfo.CustomerCardInfoVo"
+            parameterType="java.lang.Long">
+        SELECT
+            id AS cardId,
+            card_type AS cardType,
+            card_colour AS cardColour,
+            province_name AS provinceName,
+            area_name AS areaName,
+            card_name AS cardName,
+            card_no AS cardNo,
+            card_phone AS cardPhone
+        FROM
+            s_bank_card_bind
+        WHERE user_id = #{loginId} and state = 1
     </select>
 
 </mapper>

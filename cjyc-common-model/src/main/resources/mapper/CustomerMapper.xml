@@ -395,7 +395,8 @@
           SELECT
                 contract.id as id,
                 contract.contract_no AS contractNo,
-                contract.settle_period AS settlePeriod
+                contract.settle_period AS settlePeriod,
+                contract.settle_type AS settleType
             FROM
                 c_customer_contract contract
                 LEFT JOIN c_customer customer ON customer.id = contract.customer_id

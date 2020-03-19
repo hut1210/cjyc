@@ -5,6 +5,7 @@ import com.cjyc.common.model.dto.customer.AppCustomerDto;
 import com.cjyc.common.model.dto.web.customer.CustomerfuzzyListDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerInfo.CustomerCardInfoVo;
 import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
 import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
 
@@ -47,5 +48,12 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     ResultVo<AppCustomerInfoVo> findNewCustomerInfoNew(AppCustomerDto dto);
+
+    /**
+     * 获取用户银行卡信息
+     * @param dto
+     * @return
+     */
+    ResultVo<CustomerCardInfoVo> findPartnerBank(AppCustomerDto dto);
 
 }

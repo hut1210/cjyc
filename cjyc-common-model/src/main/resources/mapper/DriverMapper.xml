@@ -533,6 +533,28 @@
             order by dv.create_time desc
     </select>
 
+    <!--获取司机端我的车辆(下属司机)-->
+    <select id="findSubDriverVehicle" resultType="com.cjyc.common.model.vo.driver.mine.DriverVehicleVo">
+            SELECT
+                dv.id AS vehicleId,
+                dv.plate_no AS plateNo,
+                dv.default_carry_num AS carryCarNum,
+                dvr.occupied_car_num AS occupiedCarNum,
+                dd.id AS driverId,
+                dd.real_name AS realName,
+                dd.phone AS phone
+            FROM
+                d_vehicle dv
+                LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.vehicle_id = dv.id
+                LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
+                LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
+            WHERE
+                dv.carrier_id = #{carrierId}
+                AND dd.id = #{driverId}
+            ORDER BY
+                dv.create_time DESC
+    </select>
+
     <!--获取该承运商下符合条件的司机-->
     <select id="findCarrierAllDriver" resultType="com.cjyc.common.model.vo.FreeDriverVo">
         SELECT

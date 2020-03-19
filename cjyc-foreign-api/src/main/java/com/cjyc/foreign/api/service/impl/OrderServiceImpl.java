@@ -93,11 +93,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     private ResultVo<String> validateFee(OrderSubmitReqDto reqDto) {
         // 验证保险费
         BigDecimal totalInsuranceFee = BigDecimal.ZERO;// 总保险费-计算值
-        BigDecimal totalParamInsuranceFee = BigDecimal.ZERO;// 总保险费-参数值
         List<OrderCarSubmitReqDto> orderCarList = reqDto.getOrderCarList();
         for (OrderCarSubmitReqDto carSubmitReqDto : orderCarList) {
             int valuation = carSubmitReqDto.getValuation();// 车值
-            BigDecimal paramInsuranceFee = carSubmitReqDto.getAddInsuranceFee();// 保险费-参数值
             BigDecimal addInsuranceFee = BigDecimal.ZERO;// 每辆车保险费-计算值
             // 计算每辆车保险费
             if (valuation > 10) {
@@ -108,16 +106,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 addInsuranceFee = addInsuranceFee.add(BigDecimal.valueOf(50));
                 valuation = valuation - 10;
             }
-            // 验证每辆车保险费
-            if (!addInsuranceFee.equals(paramInsuranceFee)) {
-                log.info("车牌号【" + carSubmitReqDto.getPlateNo() + "】保险费金额不正确!");
-                log.info("车牌号【" + carSubmitReqDto.getPlateNo() + "】保险费金额为 "+ addInsuranceFee);
-                return BaseResultUtil.fail("车牌号【" + carSubmitReqDto.getPlateNo() + "】保险费金额不正确!");
-            }
 
             carSubmitReqDto.setAddInsuranceFee(addInsuranceFee);// 设置正确的保险费
             totalInsuranceFee = totalInsuranceFee.add(addInsuranceFee);
-            totalParamInsuranceFee = totalParamInsuranceFee.add(paramInsuranceFee);
         }
 
         // 验证线路费
@@ -132,22 +123,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail("线路费金额不正确!");
         }
 
-        // 验证订单总价 订单总价 = (线路费用 * 车辆数)+总保险费
-        BigDecimal totalFee = reqDto.getLineWlFreightFee().multiply(BigDecimal.valueOf(reqDto.getOrderCarList().size())).add(totalParamInsuranceFee);
-        if (!reqDto.getTotalFee().equals(totalFee)) {
-            log.info("===>订单金额不正确");
-            return BaseResultUtil.fail("订单金额不正确!");
-        }
-
         // 设置线路费与订单总价
-        //reqDto.setLineWlFreightFee(lineFee);
-        //reqDto.setTotalFee(lineFee.multiply(BigDecimal.valueOf(carNum)).add(totalInsuranceFee));
+        reqDto.setLineWlFreightFee(lineFee);
+        reqDto.setTotalFee(lineFee.multiply(BigDecimal.valueOf(orderCarList.size())).add(totalInsuranceFee));
 
         // 设置车辆干线费用
-        List<OrderCarSubmitReqDto> carList = reqDto.getOrderCarList();
-        if(!CollectionUtils.isEmpty(carList) && reqDto.getLineWlFreightFee() != null){
-            carList.forEach(dto -> dto.setTrunkFee(reqDto.getLineWlFreightFee()));
-        }
+        orderCarList.forEach(dto -> dto.setTrunkFee(lineFee));
 
         return null;
     }

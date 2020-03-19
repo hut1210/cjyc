@@ -53,7 +53,9 @@ public class OrderCarDetailResDto implements Serializable {
     @ApiModelProperty(value = "当前位置更新时间")
     private Long nowUpdateTime;
 
-    @ApiModelProperty(value = "状态：0待路由，5待提车调度，10待提车，12待自送交车，15提车中（待交车），25待干线调度<循环>（提车入库），35待干线提车<循环>，40干线中<循环>（待干线交车），45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），70待自取提车，100已签收")
+    @ApiModelProperty(value = "车辆状态：0待提车调度(待路由)，5待提车调度，10待提车，15提车中（待交车），" +
+            "25待干线调度<循环>（提车入库），35待干线提车<循环>，40干线中<循环>（待干线交车），" +
+            "45待配送调度（干线入库），50待配送提车，55配送中（待配送交车），100已签收")
     private Integer state;
 
     @ApiModelProperty(value = "提车状态(调度状态)：1待调度，5已调度，7无需调度")

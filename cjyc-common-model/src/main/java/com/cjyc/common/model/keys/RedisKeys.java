@@ -2,6 +2,7 @@ package com.cjyc.common.model.keys;
 
 import com.cjyc.common.model.dto.KeywordDto;
 import com.cjyc.common.model.dto.driver.mine.BankInfoDto;
+import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
 import com.cjyc.common.model.enums.CaptchaTypeEnum;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.google.common.collect.Lists;
@@ -53,14 +54,15 @@ public class RedisKeys {
     private final static String BANK_INFO = "bankInfo:bankName";
     private final static String CITY_TREE = "city:tree";
     private final static String KEYWORD_CITY_TREE = "keyword:city:tree";
+    private final static String KEYWORD_POSTAL_CODE = "keyword:postal:code";
+    private final static String PAY_BANK_INFO = "pay:bank:info";
 
     private final static String USER_KEY = "user";
 
     private final static String ROLE_BIZ_SCOPE_KEY = "role:biz:scope";
 
     private final static String NEW_TASK_NO_KEY = "new:task:no";
-    private final static String WL_PRE_PAY_LOCK = "wl:pre:pay:lock";
-    private final static String WL_COLLECT_PAY_LOCK = "wl:collect:pay:lock";
+    private final static String WL_PAY_LOCK = "wl:pay:lock";
 
     /**---------------driver-------------------------------------------------------------------*/
 
@@ -87,19 +89,8 @@ public class RedisKeys {
         return CJYC + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
-    public static String getWlCollectPayLockKey(String carNo) {
-        return  CJYC + I + WL_COLLECT_PAY_LOCK + I + carNo;
-    }
-    public static List<String> getWlCollectPayLockKeys(List<String> carNos) {
-        List<String> list = Lists.newArrayList();
-        for (String carNo : carNos) {
-            list.add(CJYC + I + WL_COLLECT_PAY_LOCK + I + carNo);
-        }
-        return list;
-    }
-
-    public static String getWlPrePayLock(String orderNo) {
-        return CJYC + I + WL_PRE_PAY_LOCK + I + orderNo;
+    public static String getWlPayLockKey(String carNo) {
+        return  CJYC + I + WL_PAY_LOCK + I + carNo;
     }
 
     /**
@@ -135,6 +126,10 @@ public class RedisKeys {
         return CJYC + I + CAR_SERIES + I + keyword;
     }
 
+    public static String getPostalKey(String keyword){
+        return CJYC + I + KEYWORD_POSTAL_CODE + I + keyword;
+    }
+
     public static String getThreeCityKey(String keyword){
         String key = CJYC + I + THREE_CITY;
         if(StringUtils.isNotBlank(keyword)){
@@ -145,6 +140,10 @@ public class RedisKeys {
 
     public static String getAppBankInfoKey(BankInfoDto dto){
         return CJYC + I + BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getKeyword();
+    }
+
+    public static String getPayBankInfoKey(PayBankDto dto){
+        return CJYC + I + PAY_BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getSubBankName() + I +dto.getPayBankNo();
     }
 
     public static String getWebBankInfoKey(KeywordDto dto){
@@ -170,33 +169,29 @@ public class RedisKeys {
     public static String getDispatchLock(String orderCarNo) {
         return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + orderCarNo;
     }
-    public static String getDispatchLock(Long id) {
-        return CJYC + I + DISPATCH_LOCK_CAR_KEY + I + id;
-    }
-
     public static String getAllotTaskKey(Long waybillCarId) {
         return CJYC + I + ALLOT_CAR_LOCK_KEY + I + waybillCarId;
     }
-    public static String getLoadLockKey(Object id) {
-        return CJYC + I + LOAD_LOCK_KEY + I + id;
+    public static String getLoadLockKey(Long taskCarId) {
+        return CJYC + I + LOAD_LOCK_KEY + I + taskCarId;
     }
-    public static String getUnloadLockKey(Object id) {
-        return CJYC + I + UNLOAD_LOCK_KEY + I + id;
+    public static String getUnloadLockKey(Long waybillCarId) {
+        return CJYC + I + UNLOAD_LOCK_KEY + I + waybillCarId;
     }
-    public static String getCancelLockKey(Object orderId) {
+    public static String getCancelLockKey(Long orderId) {
         return CJYC + I + CANCEL_LOCK_ORDER_KEY + I + orderId;
     }
 
-    public static String getInStoreLockKey(Object id) {
-        return CJYC + I + IN_STORE_LOCK_KEY + I + id;
+    public static String getInStoreLockKey(Long taskCarId) {
+        return CJYC + I + IN_STORE_LOCK_KEY + I + taskCarId;
     }
-    public static String getOutStoreLockKey(Object id) {
-        return CJYC + I + OUT_STORE_LOCK_KEY + I + id;
+    public static String getOutStoreLockKey(Long taskCarId) {
+        return CJYC + I + OUT_STORE_LOCK_KEY + I + taskCarId;
     }
-    public static String getReceiptLockKey(Object no) {
+    public static String getReceiptLockKey(String no) {
         return CJYC + I + RECEIPT_LOCK_KEY + I + no;
     }
-    public static String getOrderLockKey(Object id) {
+    public static String getOrderLockKey(Long id) {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
     }
 }

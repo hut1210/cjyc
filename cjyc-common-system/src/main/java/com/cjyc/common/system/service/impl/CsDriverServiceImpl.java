@@ -652,14 +652,14 @@ public class CsDriverServiceImpl implements ICsDriverService {
         }
         DriverVehicleCon dvc = driverVehicleConDao.selectOne(new QueryWrapper<DriverVehicleCon>().lambda().eq(DriverVehicleCon::getDriverId,driver.getId()));
         VehicleRunning vr = vehicleRunningDao.selectOne(new QueryWrapper<VehicleRunning>().lambda().eq(VehicleRunning::getDriverId,driver.getId()));
-        if(vr != null) {
+        /*if(vr != null) {
             List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                     .eq(Task::getVehicleRunningId,vr.getId())
                     .eq(Task::getState,TaskStateEnum.TRANSPORTING.code));
             if(!CollectionUtils.isEmpty(taskList)){
                 return BaseResultUtil.fail("该运力正在运输中，不可修改");
             }
-        }
+        }*/
         //更新架构组用户信息
         ResultData<Boolean> updateRd = csCustomerService.updateUserToPlatform(null,driver, dto.getPhone(),dto.getRealName());
         if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {

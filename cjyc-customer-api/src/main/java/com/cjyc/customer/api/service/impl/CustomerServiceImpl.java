@@ -1,6 +1,7 @@
 package com.cjyc.customer.api.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjyc.common.model.dao.IBankCardBindDao;
 import com.cjyc.common.model.dao.ICheckDao;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.IUserRoleDeptDao;
@@ -17,6 +18,7 @@ import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.customerInfo.CustomerCardInfoVo;
 import com.cjyc.common.model.vo.customer.customerInfo.AppCustomerInfoVo;
 import com.cjyc.common.model.vo.web.customer.CustomerFuzzyListVo;
 import com.cjyc.common.model.vo.web.customer.ShowPartnerVo;
@@ -43,6 +45,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
     private ICheckDao checkDao;
+    @Resource
+    private IBankCardBindDao bankCardBindDao;
 
     @Override
     public ResultVo fuzzyList(CustomerfuzzyListDto paramsDto) {
@@ -112,6 +116,16 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao, Customer> imp
             infoVo.setContactMan(check.getContactMan());
         }
         return BaseResultUtil.success(infoVo);
+    }
+
+    @Override
+    public ResultVo<CustomerCardInfoVo> findPartnerBank(AppCustomerDto dto) {
+        Customer customer = customerDao.selectById(dto.getLoginId());
+        if(null == customer){
+            return BaseResultUtil.fail("用户不存在，请联系管理员");
+        }
+        CustomerCardInfoVo userBankCardInfo = bankCardBindDao.findCustomerBankCardInfo(dto.getLoginId());
+        return BaseResultUtil.success(userBankCardInfo);
     }
 
 }

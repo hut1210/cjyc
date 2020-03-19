@@ -399,9 +399,15 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         Long carrierId = paramsDto.getCarrierId();
         Set<String> lockSet = new HashSet<>();
         try {
-            String lockKey = RedisKeys.getDispatchLock(paramsDto.getId());
+            /**1、添加运单信息*/
+            Waybill waybill = waybillDao.selectById(paramsDto.getId());
+            if (waybill == null) {
+                return BaseResultUtil.fail("运单不存在");
+            }
+
+            String lockKey = RedisKeys.getDispatchLock(waybill.getNo());
             if (!redisLock.lock(lockKey, 120000, 1, 100L)) {
-                return BaseResultUtil.fail("运单，其他人正在调度", paramsDto.getId());
+                return BaseResultUtil.fail("运单，其他人正在调度", waybill.getNo());
             }
             lockSet.add(lockKey);
 
@@ -410,11 +416,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     new UserInfo(dto.getLoadLinkUserId(), dto.getLoadLinkName(), dto.getLoadLinkPhone()),
                     new UserInfo(dto.getUnloadLinkUserId(), dto.getUnloadLinkName(), dto.getUnloadLinkPhone()),
                     orderCarNo);
-            /**1、添加运单信息*/
-            Waybill waybill = waybillDao.selectById(paramsDto.getId());
-            if (waybill == null) {
-                return BaseResultUtil.fail("运单不存在");
-            }
 
             validateReAllotCarrier(carrierInfo, waybill.getCarrierId());
             if (waybill.getState() >= WaybillStateEnum.TRANSPORTING.code) {
@@ -978,7 +979,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 return BaseResultUtil.fail("运单不存在");
             }
             //加锁
-            String lockKey = RedisKeys.getDispatchLock(waybill.getId());
+            String lockKey = RedisKeys.getDispatchLock(waybill.getNo());
             if (!redisLock.lock(lockKey, 120000, 1, 100L)) {
                 return BaseResultUtil.fail("运单{0}正在修改，请5秒后重试", waybill.getNo());
             }
