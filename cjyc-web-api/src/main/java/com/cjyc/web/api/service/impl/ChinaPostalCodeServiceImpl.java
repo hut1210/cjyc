@@ -42,9 +42,6 @@ public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao,
     @Resource
     private RedisUtils redisUtils;
 
-
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public boolean importPostalCodeExcel(MultipartFile file, Long loginId) {
         boolean result;
@@ -58,7 +55,7 @@ public class ChinaPostalCodeServiceImpl extends ServiceImpl<IChinaPostalCodeDao,
                     cpc.setPostalCode(postal.getPostalCode());
                     cpc.setAreaCode(postal.getAreaCode());
                     cpc.setCreateUserId(loginId);
-                    cpc.setCreateTime(NOW);
+                    cpc.setCreateTime(System.currentTimeMillis());
                     chinaPostalCodeDao.insert(cpc);
                 }
                 result = true;

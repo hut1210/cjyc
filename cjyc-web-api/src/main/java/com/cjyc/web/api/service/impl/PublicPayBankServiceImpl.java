@@ -45,8 +45,6 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
     @Resource
     private RedisUtils redisUtils;
 
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public boolean importPayBankExcel(MultipartFile file, Long loginId) {
         boolean result;
@@ -60,7 +58,7 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
                     ppb.setSubBankName(payBankImport.getSubBankName());
                     ppb.setAreaCode(payBankImport.getPayBankNo().substring(3,7));
                     ppb.setCreateUserId(loginId);
-                    ppb.setCreateTime(NOW);
+                    ppb.setCreateTime(System.currentTimeMillis());
                     payBankDao.insert(ppb);
                 }
                 result = true;

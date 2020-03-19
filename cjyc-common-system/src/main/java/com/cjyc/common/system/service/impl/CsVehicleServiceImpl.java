@@ -46,8 +46,6 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
     @Resource
     private ICarrierDao carrierDao;
 
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo<List<FreeVehicleVo>> findPersonFreeVehicle(KeywordDto dto) {
         //获取社会所有车辆
@@ -141,7 +139,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
         vr.setVehicleId(veh.getId());
         vr.setState(RunningStateEnum.EFFECTIVE.code);
         vr.setRunningState(VehicleRunStateEnum.FREE.code);
-        vr.setCreateTime(NOW);
+        vr.setCreateTime(System.currentTimeMillis());
         dvc.setVehicleId(veh.getId());
         vehicleRunningDao.insert(vr);
         driverVehicleConDao.insert(dvc);
@@ -157,7 +155,7 @@ public class CsVehicleServiceImpl implements ICsVehicleService {
                 .eq(veh.getId() != null,VehicleRunning::getVehicleId, veh.getId()));
         vr.setState(RunningStateEnum.EFFECTIVE.code);
         vr.setRunningState(VehicleRunStateEnum.FREE.code);
-        vr.setUpdateTime(NOW);
+        vr.setUpdateTime(System.currentTimeMillis());
         if(dto != null){
             dvc.setDriverId(dto.getDriverId());
             BeanUtils.copyProperties(dto,vr);

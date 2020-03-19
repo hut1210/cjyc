@@ -61,7 +61,6 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
 
     private static final String CUSTOMER_FIXED_PWD = YmlProperty.get("cjkj.customer.password");
     private static final String CUSTOMER_FIXED_DEPTID = YmlProperty.get("cjkj.dept_customer_id");
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Resource
     private ICustomerDao customerDao;
@@ -338,9 +337,9 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
         customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setCreateUserId(loginId);
-        customer.setCreateTime(NOW);
+        customer.setCreateTime(System.currentTimeMillis());
         customer.setCheckUserId(loginId);
-        customer.setCheckTime(NOW);
+        customer.setCheckTime(System.currentTimeMillis());
         customerDao.insert(customer);
         //保存用户角色机构关系
         csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), loginId);

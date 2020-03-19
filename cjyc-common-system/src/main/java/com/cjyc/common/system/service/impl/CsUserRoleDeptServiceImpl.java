@@ -29,8 +29,6 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
 
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo saveCustomerToUserRoleDept(Customer customer, Long roleId, Long loginId) {
@@ -44,7 +42,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
         }else{
             urd.setState(CommonStateEnum.WAIT_CHECK.code);
         }
-        urd.setCreateTime(NOW);
+        urd.setCreateTime(System.currentTimeMillis());
         urd.setCreateUserId(loginId);
         userRoleDeptDao.insert(urd);
         return BaseResultUtil.success();
@@ -66,7 +64,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
             urd.setState(CommonStateEnum.IN_CHECK.code);
         }
         urd.setUpdateUserId(loginId);
-        urd.setUpdateTime(NOW);
+        urd.setUpdateTime(System.currentTimeMillis());
         userRoleDeptDao.updateById(urd);
         return BaseResultUtil.success();
     }
@@ -87,7 +85,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
             urd.setState(CommonStateEnum.IN_CHECK.code);
             urd.setMode(carrier.getMode());
         }
-        urd.setCreateTime(NOW);
+        urd.setCreateTime(System.currentTimeMillis());
         urd.setCreateUserId(loginId);
         userRoleDeptDao.insert(urd);
         return BaseResultUtil.success(urd);
@@ -103,7 +101,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
         urd.setDeptType(DeptTypeEnum.CARRIER.code);
         urd.setUserType(UserTypeEnum.DRIVER.code);
         urd.setState(CommonStateEnum.WAIT_CHECK.code);
-        urd.setCreateTime(NOW);
+        urd.setCreateTime(System.currentTimeMillis());
         userRoleDeptDao.insert(urd);
         return BaseResultUtil.success(urd);
     }
@@ -127,7 +125,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
             urd.setMode(carrier.getMode());
         }
         urd.setUpdateUserId(loginId);
-        urd.setUpdateTime(NOW);
+        urd.setUpdateTime(System.currentTimeMillis());
         userRoleDeptDao.updateById(urd);
         return BaseResultUtil.success();
     }

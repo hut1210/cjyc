@@ -100,8 +100,6 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Resource
     private IPublicPayBankService payBankService;
 
-    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo<CustomerInfoVo> findCustomerInfo(ExistCustomreDto dto) {
         Customer customer = customerDao.findByPhone(dto.getPhone());
@@ -118,8 +116,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public ResultVo existCustomer(ExistCustomreDto dto) {
         Customer c = this.getOne(new QueryWrapper<Customer>().lambda()
-                        .eq(Customer::getContactPhone, dto.getPhone())
-                        .ne((dto.getCustomerId() != null && dto.getCustomerId() != 0),Customer::getId,dto.getCustomerId()));
+                .eq(Customer::getContactPhone, dto.getPhone())
+                .ne((dto.getCustomerId() != null && dto.getCustomerId() != 0),Customer::getId,dto.getCustomerId()));
         if(c != null){
             return BaseResultUtil.fail("该客户已存在，请检查");
         }
@@ -143,7 +141,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setCreateUserId(dto.getLoginId());
-        customer.setCreateTime(NOW);
+        customer.setCreateTime(System.currentTimeMillis());
         //新增个人用户信息到物流平台
         ResultData<Long> rd = csCustomerService.addCustomerToPlatform(customer);
         if (!ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
@@ -176,7 +174,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setName(dto.getContactMan());
             customer.setAlias(dto.getContactMan());
             customer.setCheckUserId(dto.getLoginId());
-            customer.setCheckTime(NOW);
+            customer.setCheckTime(System.currentTimeMillis());
             super.updateById(customer);
         }
         return BaseResultUtil.success();
@@ -206,8 +204,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setType(CustomerTypeEnum.ENTERPRISE.code);
             customer.setState(CustomerStateEnum.WAIT_LOGIN.code);
             customer.setSource(CustomerSourceEnum.WEB.code);
-            customer.setRegisterTime(NOW);
-            customer.setCreateTime(NOW);
+            customer.setRegisterTime(System.currentTimeMillis());
+            customer.setCreateTime(System.currentTimeMillis());
             customer.setCreateUserId(dto.getLoginId());
 
             //保存大客户信息到物流平台
@@ -351,7 +349,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     customer.setState(CustomerStateEnum.CHECKED.code);
                 }
             }
-            customer.setCheckTime(NOW);
+            customer.setCheckTime(System.currentTimeMillis());
             customer.setCheckUserId(dto.getLoginId());
             super.updateById(customer);
         }
@@ -432,10 +430,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 c.setSource(CustomerSourceEnum.UPGRADE.code);
                 c.setState(CustomerStateEnum.WAIT_LOGIN.code);
                 c.setCreateUserId(dto.getLoginId());
-                c.setCreateTime(NOW);
+                c.setCreateTime(System.currentTimeMillis());
                 super.updateById(c);
                 //合伙人附加信息
-                encapPartner(dto,null,c,NOW);
+                encapPartner(dto,null,c,System.currentTimeMillis());
                 return BaseResultUtil.success();
             }else{
                 //返回前端，flag重置为true
@@ -446,7 +444,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             return addPartner(dto);
         }else{
             //修改
-           return modifyPartner(dto);
+            return modifyPartner(dto);
         }
     }
 
@@ -464,11 +462,11 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setType(CustomerTypeEnum.COOPERATOR.code);
         customer.setState(CommonStateEnum.WAIT_CHECK.code);
-        customer.setRegisterTime(NOW);
-        customer.setCreateTime(NOW);
+        customer.setRegisterTime(System.currentTimeMillis());
+        customer.setCreateTime(System.currentTimeMillis());
         customer.setCreateUserId(dto.getLoginId());
         customerDao.insert(customer);
-        encapPartner(dto,null,customer,NOW);
+        encapPartner(dto,null,customer,System.currentTimeMillis());
         return BaseResultUtil.success();
     }
 
@@ -515,7 +513,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customerPartnerDao.removeByCustomerId(customer.getId());
             //删除合伙人银行卡信息
             bankCardBindDao.removeBandCarBind(customer.getId());
-            encapPartner(dto,null,customer,NOW);
+            encapPartner(dto,null,customer,System.currentTimeMillis());
         }
         return BaseResultUtil.success();
     }
@@ -560,8 +558,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Override
     public ResultVo getContractByCustomerId(Long customerId) {
         //获取当前时间戳
-        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-        List<Map<String,Object>> contractList = customerDao.getContractByCustomerId(customerId,now);
+        List<Map<String,Object>> contractList = customerDao.getContractByCustomerId(customerId,System.currentTimeMillis());
         return BaseResultUtil.success(contractList);
     }
 
@@ -576,7 +573,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if (!CollectionUtils.isEmpty(voList)) {
             //不可用的优惠券(使用过的或者是过期的)
             for (CustomerCouponVo couponVo : voList) {
-                if (couponVo.getIsUse() == 1 || (couponVo.getIsForever() == 0 && couponVo.getEndPeriodDate() > NOW)) {
+                if (couponVo.getIsUse() == 1 || (couponVo.getIsForever() == 0 && couponVo.getEndPeriodDate() > System.currentTimeMillis())) {
                     disCouponVos.add(couponVo);
                 } else {
                     couponVos.add(couponVo);
@@ -602,7 +599,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             sendVoList = new ArrayList<>();
             for(CustomerCouponSendVo sendVo : couponVos){
                 if(sendVo.getEndPeriodDate() != null){
-                    if(sendVo.getEndPeriodDate() > NOW){
+                    if(sendVo.getEndPeriodDate() > System.currentTimeMillis()){
                         sendVoList.add(sendVo);
                     }
                 }else{
@@ -619,23 +616,23 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         SelectCustomerDto dto = getSelectCustomerDto(request);
         List<CustomerVo> customerVos = encapClientCustomer(dto);
         //if (!CollectionUtils.isEmpty(customerVos)) {
-            // 生成导出数据
-            List<CustomerExportExcel> exportExcelList = new ArrayList<>();
-            for (CustomerVo vo : customerVos) {
-                CustomerExportExcel customerExportExcel = new CustomerExportExcel();
-                BeanUtils.copyProperties(vo, customerExportExcel);
-                exportExcelList.add(customerExportExcel);
-            }
-            String title = "C端客户";
-            String sheetName = "C端客户";
-            String fileName = "C端客户.xls";
-            try {
-                //if(!CollectionUtils.isEmpty(exportExcelList)){
-                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, CustomerExportExcel.class, fileName, response);
-                //}
-            } catch (IOException e) {
-                log.error("导出C端客户异常:{}",e);
-            }
+        // 生成导出数据
+        List<CustomerExportExcel> exportExcelList = new ArrayList<>();
+        for (CustomerVo vo : customerVos) {
+            CustomerExportExcel customerExportExcel = new CustomerExportExcel();
+            BeanUtils.copyProperties(vo, customerExportExcel);
+            exportExcelList.add(customerExportExcel);
+        }
+        String title = "C端客户";
+        String sheetName = "C端客户";
+        String fileName = "C端客户.xls";
+        try {
+            //if(!CollectionUtils.isEmpty(exportExcelList)){
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, CustomerExportExcel.class, fileName, response);
+            //}
+        } catch (IOException e) {
+            log.error("导出C端客户异常:{}",e);
+        }
         //}
     }
 
@@ -645,23 +642,23 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         SelectKeyCustomerDto dto = getKeyCustomerDto(request);
         List<ListKeyCustomerVo> keyCustomerList = encapKeyAccountCustomer(dto);
         //if (!CollectionUtils.isEmpty(keyCustomerList)) {
-            // 生成导出数据
-            List<KeyExportExcel> exportExcelList = new ArrayList<>();
-            for (ListKeyCustomerVo vo : keyCustomerList) {
-                KeyExportExcel keyExportExcel = new KeyExportExcel();
-                BeanUtils.copyProperties(vo, keyExportExcel);
-                exportExcelList.add(keyExportExcel);
-            }
-            String title = "大客户";
-            String sheetName = "大客户";
-            String fileName = "大客户.xls";
-            try {
-                //if(!CollectionUtils.isEmpty(exportExcelList)){
-                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, KeyExportExcel.class, fileName, response);
-                //}
-            } catch (IOException e) {
-                log.error("导出大客户异常:{}",e);
-            }
+        // 生成导出数据
+        List<KeyExportExcel> exportExcelList = new ArrayList<>();
+        for (ListKeyCustomerVo vo : keyCustomerList) {
+            KeyExportExcel keyExportExcel = new KeyExportExcel();
+            BeanUtils.copyProperties(vo, keyExportExcel);
+            exportExcelList.add(keyExportExcel);
+        }
+        String title = "大客户";
+        String sheetName = "大客户";
+        String fileName = "大客户.xls";
+        try {
+            //if(!CollectionUtils.isEmpty(exportExcelList)){
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, KeyExportExcel.class, fileName, response);
+            //}
+        } catch (IOException e) {
+            log.error("导出大客户异常:{}",e);
+        }
         //}
     }
 
@@ -670,23 +667,23 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         CustomerPartnerDto dto = getPartnerDto(request);
         List<CustomerPartnerVo> partnerVos = encapExportPartner(dto);
         //if (!CollectionUtils.isEmpty(partnerVos)) {
-            // 生成导出数据
-            List<PartnerExportExcel> exportExcelList = new ArrayList<>();
-            for (CustomerPartnerVo vo : partnerVos) {
-                PartnerExportExcel partnerExportExcel = new PartnerExportExcel();
-                BeanUtils.copyProperties(vo, partnerExportExcel);
-                exportExcelList.add(partnerExportExcel);
-            }
-            String title = "合伙人";
-            String sheetName = "合伙人";
-            String fileName = "合伙人.xls";
-            try {
-                //if(!CollectionUtils.isEmpty(exportExcelList)){
-                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, PartnerExportExcel.class, fileName, response);
-                //}
-            } catch (IOException e) {
-                log.error("导出合伙人信息异常:{}",e);
-            }
+        // 生成导出数据
+        List<PartnerExportExcel> exportExcelList = new ArrayList<>();
+        for (CustomerPartnerVo vo : partnerVos) {
+            PartnerExportExcel partnerExportExcel = new PartnerExportExcel();
+            BeanUtils.copyProperties(vo, partnerExportExcel);
+            exportExcelList.add(partnerExportExcel);
+        }
+        String title = "合伙人";
+        String sheetName = "合伙人";
+        String fileName = "合伙人.xls";
+        try {
+            //if(!CollectionUtils.isEmpty(exportExcelList)){
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, PartnerExportExcel.class, fileName, response);
+            //}
+        } catch (IOException e) {
+            log.error("导出合伙人信息异常:{}",e);
+        }
         //}
     }
 
@@ -775,7 +772,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
             return keyCustomerList;
         }
-       return Collections.emptyList();
+        return Collections.emptyList();
     }
 
     /**
@@ -803,10 +800,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * 封装合伙人附加信息&银行卡信息
      * @param dto
      * @param customer
-     * @param now
+     * @param NOW
      * @return
      */
-    private void encapPartner(PartnerDto dto,PartnerImportExcel partnerImport,Customer customer,Long now){
+    private void encapPartner(PartnerDto dto,PartnerImportExcel partnerImport,Customer customer,Long NOW){
         //新增合伙人附加信息c_customer_partner
         CustomerPartner cp = new CustomerPartner();
         if(dto != null){
@@ -828,7 +825,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         bcb.setUserType(UserTypeEnum.CUSTOMER.code);
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setState(UseStateEnum.USABLE.code);
-        bcb.setCreateTime(now);
+        bcb.setCreateTime(System.currentTimeMillis());
         //获取银行编码
         if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
             BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
@@ -860,7 +857,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerContract custCont = new CustomerContract();
                 BeanUtils.copyProperties(dto,custCont);
                 custCont.setCustomerId(customerId);
-                custCont.setCreateTime(NOW);
+                custCont.setCreateTime(System.currentTimeMillis());
                 list.add(custCont);
             }
         }
@@ -918,9 +915,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setPayMode(PayModeEnum.COLLECT.code);
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setCreateUserId(dto.getLoginId());
-        customer.setCreateTime(NOW);
+        customer.setCreateTime(System.currentTimeMillis());
         customer.setCheckUserId(dto.getLoginId());
-        customer.setCheckTime(NOW);
+        customer.setCheckTime(System.currentTimeMillis());
         super.save(customer);
         //保存用户角色机构关系
         csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), dto.getLoginId());
@@ -955,7 +952,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setName(dto.getContactMan());
         customer.setAlias(dto.getContactMan());
         customer.setCheckUserId(dto.getLoginId());
-        customer.setCheckTime(NOW);
+        customer.setCheckTime(System.currentTimeMillis());
         super.updateById(customer);
         return BaseResultUtil.success();
     }
@@ -965,8 +962,8 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     public ResultVo saveOrModifyKeyNew(KeyCustomerDto dto) {
         //判断该手机号是否在库中存在
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
-                            .eq(Customer::getContactPhone, dto.getContactPhone())
-                            .ne(dto.getCustomerId() != null,Customer::getId,dto.getCustomerId()));
+                .eq(Customer::getContactPhone, dto.getContactPhone())
+                .ne(dto.getCustomerId() != null,Customer::getId,dto.getCustomerId()));
         if(dto.getCustomerId() == null){
             if(customer != null){
                 return BaseResultUtil.fail("该客户已存在，请检查");
@@ -991,7 +988,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setAlias(dto.getName());
             customer.setType(CustomerTypeEnum.ENTERPRISE.code);
             customer.setSource(CustomerSourceEnum.WEB.code);
-            customer.setCreateTime(NOW);
+            customer.setCreateTime(System.currentTimeMillis());
             customer.setCreateUserId(dto.getLoginId());
             super.save(customer);
             //合同集合
@@ -1055,7 +1052,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
                     ck.setSocialCreditCode(dto.getSocialCreditCode());
                     ck.setSource(CustomerSourceEnum.UPGRADE.code);
-                    ck.setCreateTime(NOW);
+                    ck.setCreateTime(System.currentTimeMillis());
                     ck.setCreateUserId(dto.getLoginId());
                     checkDao.insert(ck);
 
@@ -1074,7 +1071,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     bcb.setCardColour(RandomUtil.getIntRandom());
                     bcb.setCardPhone(dto.getContactPhone());
                     bcb.setIdCard(customer.getIdCard());
-                    bcb.setCreateTime(NOW);
+                    bcb.setCreateTime(System.currentTimeMillis());
                     //获取银行编码
                     if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
                         BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
@@ -1167,7 +1164,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 //更新审核表
                 check.setState(CommonStateEnum.CHECKED.code);
                 check.setCheckUserId(dto.getLoginId());
-                check.setCheckTime(NOW);
+                check.setCheckTime(System.currentTimeMillis());
                 //更新关联表角色id
                 urd.setRoleId(role.getId());
             }
@@ -1179,7 +1176,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if(check != null){
                 check.setState(CommonStateEnum.REJECT.code);
                 check.setCheckUserId(dto.getLoginId());
-                check.setCheckTime(NOW);
+                check.setCheckTime(System.currentTimeMillis());
             }
         }else if(dto.getFlag() == FlagEnum.FROZEN.code){
             //冻结
@@ -1201,7 +1198,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
             urd.setState(CommonStateEnum.CHECKED.code);
         }
-        customer.setCheckTime(NOW);
+        customer.setCheckTime(System.currentTimeMillis());
         customer.setCheckUserId(dto.getLoginId());
         customerDao.updateById(customer);
         userRoleDeptDao.updateById(urd);
@@ -1293,10 +1290,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
         customer.setSource(CustomerSourceEnum.WEB.code);
         customer.setType(CustomerTypeEnum.COOPERATOR.code);
-        customer.setCreateTime(NOW);
+        customer.setCreateTime(System.currentTimeMillis());
         customer.setCreateUserId(dto.getLoginId());
         customerDao.insert(customer);
-        encapPartner(dto,null,customer,NOW);
+        encapPartner(dto,null,customer,System.currentTimeMillis());
         //保存用户角色机构关系
         csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),dto.getLoginId());
         return BaseResultUtil.success();
@@ -1318,7 +1315,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 .eq(UserRoleDept::getUserType, UserTypeEnum.CUSTOMER.code));
         //如果customer是审核状态 & type =1 则更新审核相关合伙人信息
         if(customer.getType() == CustomerTypeEnum.INDIVIDUAL.code
-           && urd.getState() == CommonStateEnum.CHECKED.code){
+                && urd.getState() == CommonStateEnum.CHECKED.code){
             //查询审核表中是否有该用户信息
             Check check = checkDao.selectOne(new QueryWrapper<Check>().lambda()
                     .eq(Check::getUserId, customer.getId())
@@ -1340,7 +1337,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             ck.setType(CheckTypeEnum.UPGRADE_PARTNER.code);
             ck.setSocialCreditCode(dto.getSocialCreditCode());
             ck.setSource(CustomerSourceEnum.UPGRADE.code);
-            ck.setCreateTime(NOW);
+            ck.setCreateTime(System.currentTimeMillis());
             ck.setCreateUserId(dto.getLoginId());
             checkDao.insert(ck);
 
@@ -1358,7 +1355,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             bcb.setUserType(UserTypeEnum.CUSTOMER.code);
             bcb.setState(UseStateEnum.USABLE.code);
             bcb.setCardColour(RandomUtil.getIntRandom());
-            bcb.setCreateTime(NOW);
+            bcb.setCreateTime(System.currentTimeMillis());
             //获取银行编码
             if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
                 BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
@@ -1396,7 +1393,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         customerPartnerDao.removeByCustomerId(customer.getId());
         //删除合伙人银行卡信息
         bankCardBindDao.removeBandCarBind(customer.getId());
-        encapPartner(dto,null,customer,NOW);
+        encapPartner(dto,null,customer,System.currentTimeMillis());
         return BaseResultUtil.success();
     }
 
@@ -1514,9 +1511,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     customer.setPayMode(PayModeEnum.COLLECT.code);
                     customer.setSource(CustomerSourceEnum.WEB.code);
                     customer.setCreateUserId(loginId);
-                    customer.setCreateTime(NOW);
+                    customer.setCreateTime(System.currentTimeMillis());
                     customer.setCheckUserId(loginId);
-                    customer.setCheckTime(NOW);
+                    customer.setCheckTime(System.currentTimeMillis());
                     super.save(customer);
                     //保存用户角色机构关系
                     csUserRoleDeptService.saveCustomerToUserRoleDept(customer, role.getId(), loginId);
@@ -1563,7 +1560,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     customer.setAlias(keyImportExcel.getName());
                     customer.setType(CustomerTypeEnum.ENTERPRISE.code);
                     customer.setSource(CustomerSourceEnum.WEB.code);
-                    customer.setCreateTime(NOW);
+                    customer.setCreateTime(System.currentTimeMillis());
                     customer.setCreateUserId(loginId);
                     super.save(customer);
                     //合同集合
@@ -1614,10 +1611,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                     customer.setCustomerNo(sendNoService.getNo(SendNoTypeEnum.CUSTOMER));
                     customer.setSource(CustomerSourceEnum.WEB.code);
                     customer.setType(CustomerTypeEnum.COOPERATOR.code);
-                    customer.setCreateTime(NOW);
+                    customer.setCreateTime(System.currentTimeMillis());
                     customer.setCreateUserId(loginId);
                     customerDao.insert(customer);
-                    encapPartner(null,partnerExcel,customer,NOW);
+                    encapPartner(null,partnerExcel,customer,System.currentTimeMillis());
                     //保存用户角色机构关系
                     csUserRoleDeptService.saveCustomerToUserRoleDept(customer,role.getId(),loginId);
                 }

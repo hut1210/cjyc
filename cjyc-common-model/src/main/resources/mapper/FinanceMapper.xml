@@ -209,7 +209,7 @@
         select ww.no as wayBillNo,
         ww.carrier_name as name,
         wwc.freight_fee as freightFee,
-        ftb.amount as paidFreightFee,
+        wwc.freight_fee as paidFreightFee,
         ww.freight_pay_time as payTime,
         dc.settle_type as settleType,
         (CASE
@@ -230,8 +230,6 @@
         from w_waybill_car wwc
         left join w_waybill ww on wwc.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
-        left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
-        left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
         where wwc.order_car_no = #{orderCarNo} and ww.type = #{type}
         and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
         order by ww.create_time desc
