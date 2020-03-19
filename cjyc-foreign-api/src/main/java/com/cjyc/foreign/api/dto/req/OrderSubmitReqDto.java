@@ -23,9 +23,10 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "操作人id", hidden = true)
     private Long loginId;
 
-    @NotNull(message = "订单来源不能为空")
+    @NotBlank(message = "订单来源不能为空")
+    @Pattern(regexp = "(9)",message = "请输入正确的订单来源")
     @ApiModelProperty(value = "订单来源默认传9：99车圈(C端客户)", required = true)
-    private Integer clientId;
+    private String clientId;
 
     @NotBlank(message = "客户电话不能为空")
     @Pattern(regexp = "^[1]\\d{10}$", message = "请输入正确的手机号")
@@ -56,9 +57,6 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "线路ID", required = true)
     private Long lineId;
 
-    @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")
-    private Integer pickType;
-
     @NotBlank(message = "提车联系人不能为空")
     @ApiModelProperty(value = "提车联系人", required = true)
     private String pickContactName;
@@ -67,9 +65,6 @@ public class OrderSubmitReqDto implements Serializable {
     @Pattern(regexp = "^[1]\\d{10}$", message = "请输入正确的手机号")
     @ApiModelProperty(value = "提车联系人电话", required = true)
     private String pickContactPhone;
-
-    @ApiModelProperty(value = "交付方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门")
-    private Integer backType;
 
     @NotBlank(message = "交付联系人不能为空")
     @ApiModelProperty(value = "交付联系人", required = true)
@@ -80,9 +75,10 @@ public class OrderSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "交付联系人电话", required = true)
     private String backContactPhone;
 
-    @NotNull(message = "支付方式不能为空")
+    @NotBlank(message = "支付方式不能为空")
+    @Pattern(regexp = "(0)",message = "请输入正确的支付方式")
     @ApiModelProperty(value = "支付方式：0到付(默认)", required = true)
-    private Integer payType;
+    private String payType;
 
     @NotNull(message = "线路费用不能为空")
     @ApiModelProperty(value = "线路费用/元", required = true)
@@ -94,4 +90,12 @@ public class OrderSubmitReqDto implements Serializable {
     @NotEmpty(message = "车辆信息不能为空")
     @ApiModelProperty(value = "车辆列表", required = true)
     private List<@Valid OrderCarSubmitReqDto> orderCarList;
+
+    public Integer getClientId() {
+        return Integer.valueOf(clientId);
+    }
+
+    public Integer getPayType() {
+        return Integer.valueOf(payType);
+    }
 }
