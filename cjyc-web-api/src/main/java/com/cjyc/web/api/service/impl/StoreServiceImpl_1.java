@@ -76,7 +76,7 @@ public class StoreServiceImpl_1 extends ServiceImpl<IStoreDao, Store> implements
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public List<Store> getByCityCode(String cityCode) {

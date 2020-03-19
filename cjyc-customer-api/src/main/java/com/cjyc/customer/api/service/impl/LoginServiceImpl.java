@@ -70,7 +70,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<CustomerLoginVo> login(LoginDto dto) {

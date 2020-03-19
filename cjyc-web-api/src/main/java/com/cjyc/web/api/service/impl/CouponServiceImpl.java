@@ -55,7 +55,7 @@ public class CouponServiceImpl extends ServiceImpl<ICouponDao,Coupon> implements
     @Resource
     private ICouponSendDao couponSendDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo saveOrModifyCoupon(CouponDto dto) {

@@ -100,7 +100,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
     @Resource
     private IPublicPayBankService payBankService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public ResultVo<CustomerInfoVo> findCustomerInfo(ExistCustomreDto dto) {

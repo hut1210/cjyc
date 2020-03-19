@@ -61,7 +61,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
 
     private static final String CUSTOMER_FIXED_PWD = YmlProperty.get("cjkj.customer.password");
     private static final String CUSTOMER_FIXED_DEPTID = YmlProperty.get("cjkj.dept_customer_id");
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Resource
     private ICustomerDao customerDao;

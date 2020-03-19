@@ -106,7 +106,7 @@ public class DriverServiceImpl extends ServiceImpl<IDriverDao, Driver> implement
     @Resource
     private ISysRoleService sysRoleService;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     /**
      * 查询司机列表

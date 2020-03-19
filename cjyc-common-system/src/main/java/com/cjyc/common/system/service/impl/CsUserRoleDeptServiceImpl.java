@@ -29,7 +29,7 @@ public class CsUserRoleDeptServiceImpl implements ICsUserRoleDeptService {
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+    private Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     @Transactional(rollbackFor = Exception.class)
