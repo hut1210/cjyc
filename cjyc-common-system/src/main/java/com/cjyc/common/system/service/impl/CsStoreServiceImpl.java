@@ -192,7 +192,7 @@ public class CsStoreServiceImpl implements ICsStoreService {
      * @since 2019/11/5 9:27
      */
     @Override
-    public List<Store> getBelongByAreaCode(String areaCode) {
+    public Store getBelongByAreaCode(String areaCode) {
         return storeDao.findBelongByAreaCode(areaCode);
     }
 
@@ -281,9 +281,5 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return true;
     }
 
-    @Override
-    public List<String> getStoreRangeById(Long orderEndStoreId) {
-        return null;
-    }
 
 }

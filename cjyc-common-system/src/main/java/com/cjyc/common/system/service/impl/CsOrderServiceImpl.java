@@ -1397,7 +1397,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 /*if (vo.getOrderEndCityCode() != null  && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }*/
-                if (validateIsArriveStoreOrCityRange(vo.getEndAreaCode(), vo.getOrderEndStoreId(), vo.getOrderEndCityCode())) {
+                if (validateIsArriveStoreOrCityRange(vo.getEndAreaCode(), vo.getEndCityCode(), vo.getOrderEndStoreId(), vo.getOrderEndCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }
                 //验证数据范围
@@ -1469,16 +1469,20 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success(dispatchAddCarVo);
     }
 
-    private boolean validateIsArriveStoreOrCityRange(String endAreaCode, Long orderEndStoreId, String orderEndCityCode) {
-        if(orderEndStoreId == null || orderEndStoreId <= 0){
-            //无业务中心
-
-        }else{
-            //有业务中心
-            List<String> list = csStoreService.getStoreRangeById(orderEndStoreId);
+    @Override
+    public boolean validateIsArriveStoreOrCityRange(String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode) {
+        //先验证是否到达所属业务中心
+        if (orderEndStoreId != null && orderEndStoreId > 0) {
+            Store store = csStoreService.getBelongByAreaCode(endAreaCode);
+            if (orderEndStoreId.equals(store.getId())) {
+                return true;
+            }
+        }
+        //其次验证城市
+        if (orderEndCityCode.equals(endCityCode)) {
+            return true;
         }
         return false;
-
     }
 
     /**

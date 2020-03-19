@@ -97,6 +97,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     private ICsPingPayService csPingPayService;
     @Resource
     private ICsPushMsgService csPushMsgService;
+    @Resource
+    private ICsOrderService csOrderService;
 
     /**
      * 同城调度
@@ -193,7 +195,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //【验证】配送调度，需验证干线调度是否完成
                 if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastTrunkWaybillCar(order.getEndCityCode(), orderCarId);
-                    if (!validateIsArriveEndCity(order, waybillCar)) {
+                    if (!csOrderService.validateIsArriveStoreOrCityRange(waybillCar.getEndAreaCode(), waybillCar.getEndCityCode(), order.getEndStoreId(), order.getEndCityCode())) {
                         return BaseResultUtil.fail("车辆{0}，尚未到达目的地所属业务中心或目的地城市范围内", orderCarNo);
                     }
                 }
@@ -661,14 +663,14 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         return carrierInfo;
     }
 
-    private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
+/*    private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
         if (waybillCar == null) {
             return false;
         }
         //先验证是否到达所属业务中心
         if (order.getEndStoreId() != null) {
-            List<Store> storeList = csStoreService.getBelongByAreaCode(waybillCar.getEndAreaCode());
-            if (!CollectionUtils.isEmpty(storeList) && storeList.stream().map(Store::getId).collect(Collectors.toList()).contains(order.getEndStoreId())) {
+            Store store = csStoreService.getBelongByAreaCode(waybillCar.getEndAreaCode());
+            if (store != null && store.getId().equals(order.getEndStoreId())) {
                 return true;
             }
         }
@@ -678,7 +680,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         return false;
 
-    }
+    }*/
 
     private WaybillCar fillWaybillCarAdmin(WaybillCar waybillCar, Integer type) {
         if (WaybillTypeEnum.PICK.code != type) {

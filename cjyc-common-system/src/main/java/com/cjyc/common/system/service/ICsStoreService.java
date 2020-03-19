@@ -28,7 +28,7 @@ public interface ICsStoreService {
      * @since 2019/11/5 9:27
      * @param areaCode
      */
-    List<Store> getBelongByAreaCode(String areaCode);
+    Store getBelongByAreaCode(String areaCode);
 
     /**
      * 根据ID查询业务中心
@@ -73,5 +73,4 @@ public interface ICsStoreService {
 
     boolean validateStoreParam(Long storeId, String storeName);
 
-    List<String> getStoreRangeById(Long orderEndStoreId);
 }
