@@ -457,10 +457,13 @@
             and wo.flag = #{state}
         </if>
         <if test="phone !=null and phone.trim() !=''">
-            wo.customer_phone like concat('%',#{phone},'%')
+            and wo.customer_phone like concat('%',#{phone},'%')
         </if>
         <if test="customerName !=null and customerName.trim() !=''">
-            wo.customer_name like concat('%',#{customerName},'%')
+            and wo.customer_name like concat('%',#{customerName},'%')
+        </if>
+        <if test="operator !=null and operator.trim() !=''">
+            and fep.operator like concat('%',#{operator},'%')
         </if>
     </sql>
     <select id="payToCooperatorSummary" resultType="java.math.BigDecimal">
