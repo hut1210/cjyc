@@ -123,7 +123,7 @@ public class ExportFinanceVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "差额")
     @Excel(name = "差额" ,orderNum = "17")
-    private BigDecimal Difference;
+    private BigDecimal difference;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "实收金额")
