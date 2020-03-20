@@ -9,6 +9,9 @@ import java.io.Serializable;
 public class PayBankDto extends BasePageDto implements Serializable {
     private static final long serialVersionUID = 5777438693363192382L;
 
+    @ApiModelProperty(value = "银行代码")
+    private String bankCode;
+
     @ApiModelProperty(value = "支行名称")
     private String subBankName;
 
