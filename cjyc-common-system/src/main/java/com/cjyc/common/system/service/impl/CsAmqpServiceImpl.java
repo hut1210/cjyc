@@ -46,12 +46,14 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         if(CollectionUtils.isEmpty(orderSet)){
             return;
         }
+        log.debug("【发送MQ消息】订单状态------------>" + JSON.toJSONString(orderSet));
         orderSet.forEach(o -> {
             Map<Object, Object> dataMap = Maps.newHashMap();
             dataMap.put("orderNo", o.getNo());
             dataMap.put("state", o.getState());
             dataMap.put("createTime", System.currentTimeMillis());
             if(AccountConstant.ACCOUNT_99CC.equals(o.getCustomerPhone())){
+                log.info("【发送MQ消息】99车圈-订单状态------------> " + JSON.toJSONString(dataMap));
                 send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_STATE, dataMap));
             }
         });
@@ -63,6 +65,7 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         if(order == null){
             return;
         }
+        log.info("【发送MQ消息】确认订单------------> " + JSON.toJSONString(order));
         BigDecimal pickTotalFee = BigDecimal.ZERO;
         BigDecimal trunkTotalFee = BigDecimal.ZERO;
         BigDecimal backTotalFee = BigDecimal.ZERO;
@@ -85,6 +88,7 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         dataMap.put("createTime", System.currentTimeMillis());//当前时间
 
         if(AccountConstant.ACCOUNT_99CC.equals(order.getCustomerPhone())){
+            log.info("【发送MQ消息】99车圈-确认订单------------> " + JSON.toJSONString(dataMap));
             send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_CONFIRM, dataMap));
         }
     }
@@ -100,7 +104,7 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
             //构建回调返回的数据
             CorrelationData correlationData = new CorrelationData(String.valueOf(UUID.randomUUID()));
             rabbitTemplate.convertAndSend(exchange, routingKey, JSON.toJSONString(message), correlationData);
-            log.info("Amqp >>> 发送消息到RabbitMQ, 消息内容: " + message);
+            log.info("【发送MQ消息】>>> 发送消息到RabbitMQ, 消息内容: " + message);
         } catch (AmqpException e) {
             log.error(e.getMessage(), e);
         }
@@ -112,11 +116,11 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
      */
     @Override
     public void confirm(CorrelationData correlationData, boolean isSendSuccess, String s) {
-        log.info("confirm回调方法>>>>>>>>>>>>>回调消息ID为: " + correlationData.getId());
+        log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>回调消息ID为: " + correlationData.getId());
         if (isSendSuccess) {
-            log.info("confirm回调方法>>>>>>>>>>>>>消息发送成功");
+            log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>消息发送成功");
         } else {
-            log.info("confirm回调方法>>>>>>>>>>>>>消息发送失败" + s);
+            log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>消息发送失败" + s);
         }
 
     }
