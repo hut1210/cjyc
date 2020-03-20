@@ -1491,7 +1491,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //先验证是否到达所属业务中心
         if (orderEndStoreId != null && orderEndStoreId > 0) {
             Store store = csStoreService.getBelongByAreaCode(endAreaCode);
-            if (orderEndStoreId.equals(store.getId())) {
+            if (store != null && orderEndStoreId.equals(store.getId())) {
                 return true;
             }
         }
