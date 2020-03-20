@@ -216,6 +216,12 @@ public class FinanceController {
         return financeService.applyReceiveSettlement(applyReceiveSettlementVo);
     }
 
+    @ApiOperation(value = "应收账款结算-待开票列表查询")
+    @PostMapping(value = "/listReceiveSettlementNeedInvoice")
+    public ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(@RequestBody ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo){
+        return financeService.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
+    }
+
 
 
 

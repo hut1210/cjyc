@@ -22,7 +22,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -1024,26 +1023,46 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo applyReceiveSettlement(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
         // 应收账款结算申请
-        return new ReceiveSettlementOperation(applyReceiveSettlementVo).applyReceiveSettlement();
+        return new ReceiveSettlementOperation(applyReceiveSettlementVo, null).applyReceiveSettlement();
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
+        return new ReceiveSettlementOperation(null, receiveSettlementNeedInvoiceVo).listReceiveSettlementNeedInvoice();
     }
 
     /**
-     * 上游账期功能封装类
+     * <p>上游账期功能实现封装类</p>
+     * <ol>
+     *     <li>应收账款结算申请</li>
+     *     <li>待开票列表查询</li>
+     *     <li>待开票列表-确认开票</li>
+     *     <li>待开票列表-撤回</li>
+     *     <li>待回款列表查询</li>
+     *     <li>待回款列表查询-核销</li>
+     *     <li>待回款列表查询-结算明细</li>
+     *     <li>已回款列表查询</li>
+     *     <li>已回款列表查询-结算明细</li>
+     * </ol>
      */
     private class ReceiveSettlementOperation {
+        // 接口请求参数
         final ApplyReceiveSettlementVo applyReceiveSettlementVo;
+        final ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo;
 
-        private ReceiveSettlementOperation(final ApplyReceiveSettlementVo applyReceiveSettlementVo) {
+        private ReceiveSettlementOperation(final ApplyReceiveSettlementVo applyReceiveSettlementVo, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
             this.applyReceiveSettlementVo = applyReceiveSettlementVo;
+            this.receiveSettlementNeedInvoiceVo = receiveSettlementNeedInvoiceVo;
         }
 
-        public ResultVo applyReceiveSettlement() {
+        // 应收账款结算申请逻辑处理
+        private ResultVo applyReceiveSettlement() {
             // 参数校验
             ResultVo result = validateApplyReceiveSettlementParams(applyReceiveSettlementVo);
             if (result.getCode() != ResultEnum.SUCCESS.getCode()) {
                 return result;
             }
-            // 应收账款结算申请逻辑处理
             return transactionTemplate.execute(status -> {
                 try {
                     // 新增发票
@@ -1098,13 +1117,25 @@ public class FinanceServiceImpl implements IFinanceService {
             });
         }
 
+        // 待开票列表查询
+        private ResultVo listReceiveSettlementNeedInvoice() {
+            List<ReceiveSettlementNeedInvoiceDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
+            // 金额分转元
+            listInfo.forEach(e -> {
+                e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
+                e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            });
+            // 列表分页
+            PageInfo<ReceiveSettlementNeedInvoiceDto> pageInfo = new PageInfo<>(listInfo);
+            return BaseResultUtil.success(pageInfo);
+
+        }
+
         /**
-         * <p>应收账款申请参数校验</p>
-         * <ol>
-         *     <li>应收运费,开票金额校验</li>
-         *     <li>订单车辆ID集合校验</li>
-         *     <li>发票参数校验</li>
-         * </ol>
+         * 应收账款申请参数校验：
+         * 1.应收运费,开票金额校验
+         * 2.订单车辆ID集合校验
+         * 3.发票参数校验
          *
          * @param applyReceiveSettlementVo
          * @return

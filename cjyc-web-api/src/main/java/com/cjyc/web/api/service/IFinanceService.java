@@ -121,4 +121,12 @@ public interface IFinanceService {
      * @return
      */
     ResultVo applyReceiveSettlement(ApplyReceiveSettlementVo applyReceiveSettlementVo);
+
+    /**
+     * <p>应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表</p>
+     *
+     * @param receiveSettlementNeedInvoiceVo
+     * @return
+     */
+    ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
 }
