@@ -1023,154 +1023,169 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo applyReceiveSettlement(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
-        // 参数校验
-        ResultVo result = validateApplyReceiveSettlementParams(applyReceiveSettlementVo);
-        if (result.getCode() != ResultEnum.SUCCESS.getCode()) {
-            return result;
-        }
-        // 应收账款结算申请逻辑处理
-        return transactionTemplate.execute(status -> {
-            try {
-                // 新增发票
-                Integer invoiceType = applyReceiveSettlementVo.getCustomerInvoiceVo().getType();
-                CustomerInvoice customerInvoice = new CustomerInvoice();
-                if (invoiceType != null) {
-                    if ((invoiceType > 0 && invoiceType < 4)) {
-                        CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
-                        BeanUtils.copyProperties(customerInvoiceVo, customerInvoice);
-                        customerInvoiceDao.insert(customerInvoice);
-                    }
-                }
-                // 新增应收账款
-                String serialNumber = "";
-                Admin admin = csAdminService.validate(applyReceiveSettlementVo.getLoginId());
-                receiveSettlementDao.insert(new ReceiveSettlement() {
-                    {
-                        // 结算流水号
-                        setSerialNumber(serialNumber);
-                        // 应收账款
-                        setReceivableFee(applyReceiveSettlementVo.getReceivableFee());
-                        // 开票金额
-                        setInvoiceFee(applyReceiveSettlementVo.getInvoiceFee());
-                        // 发票id
-                        setInvoiceId(customerInvoice.getId());
-                        // 结算申请状态
-                        setState(0);
-                        // 申请人id
-                        setApplicantId(applyReceiveSettlementVo.getLoginId());
-                        // 申请人
-                        setApplicantName(admin.getName());
-                        // 申请时间
-                        setApplyTime(LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli());
-                    }
-                });
-                // 新增账款明细
-                if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getCarIdList())) {
-                    applyReceiveSettlementVo.getCarIdList().forEach(e -> {
-                        receiveSettlementDetailDao.insert(new ReceiveSettlementDetail() {{
-                            // 结算流水号
-                            setSerialNumber(serialNumber);
-                            // 订单车id
-                            setOrderCarId(e);
-                        }});
-                    });
-                }
-            } catch (Exception e) {
-                log.error("应收账款结算申请发生异常！", e);
-                return BaseResultUtil.fail("应收账款结算申请失败！");
-            }
-            return BaseResultUtil.success("应收账款结算申请成功！");
-        });
+        // 应收账款结算申请
+        return new ReceiveSettlementOperation(applyReceiveSettlementVo).applyReceiveSettlement();
     }
 
     /**
-     * <p>应收账款申请参数校验</p>
-     * <ol>
-     *     <li>应收运费,开票金额校验</li>
-     *     <li>订单车辆ID集合校验</li>
-     *     <li>发票参数校验</li>
-     * </ol>
-     *
-     * @param applyReceiveSettlementVo
-     * @return
+     * 上游账期功能封装类
      */
-    private ResultVo validateApplyReceiveSettlementParams(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
-        BigDecimal receivableFee = applyReceiveSettlementVo.getReceivableFee();
-        BigDecimal invoiceFee = applyReceiveSettlementVo.getInvoiceFee();
-        if (receivableFee == null || receivableFee.compareTo(BigDecimal.ZERO) < 0) {
-            return BaseResultUtil.fail("应收运费不能为空或负值");
-        }
-        if (invoiceFee == null || invoiceFee.compareTo(BigDecimal.ZERO) < 0) {
-            return BaseResultUtil.fail("开票金额不能为空或负值");
-        }
-        if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getCarIdList())) {
-            return BaseResultUtil.fail("订单车辆ID集合不能为空");
-        }
-        CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
-        if (customerInvoiceVo != null && customerInvoiceVo.getType() != null) {
-            switch (customerInvoiceVo.getType()) {
-                case 1:
-                    if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
-                        return BaseResultUtil.fail("新增个人普票-客户名称不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
-                        return BaseResultUtil.fail("新增个人普票-收件人不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
-                        return BaseResultUtil.fail("新增个人普票-收件人电话不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
-                        return BaseResultUtil.fail("新增个人普票-邮寄地址不能为空");
-                    }
-                case 2:
-                    if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
-                        return BaseResultUtil.fail("新增公司普票-客户名称不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getTaxCode())) {
-                        return BaseResultUtil.fail("新增公司普票-纳税人识别号不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
-                        return BaseResultUtil.fail("新增公司普票-收件人不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
-                        return BaseResultUtil.fail("新增公司普票-收件人电话不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
-                        return BaseResultUtil.fail("新增公司普票-邮寄地址不能为空");
-                    }
-                case 3:
-                    if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
-                        return BaseResultUtil.fail("新增公司专票-客户名称不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getTaxCode())) {
-                        return BaseResultUtil.fail("新增公司专票-纳税人识别号不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getInvoiceAddress())) {
-                        return BaseResultUtil.fail("新增公司专票-地址不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getTel())) {
-                        return BaseResultUtil.fail("新增公司专票-电话不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getBankName())) {
-                        return BaseResultUtil.fail("新增公司专票-开户行不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getBankAccount())) {
-                        return BaseResultUtil.fail("新增公司专票-银行账号不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
-                        return BaseResultUtil.fail("新增公司专票-收件人不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
-                        return BaseResultUtil.fail("新增公司专票-收件人电话不能为空");
-                    }
-                    if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
-                        return BaseResultUtil.fail("新增公司专票-邮寄地址不能为空");
-                    }
-                default:
-                    //不做处理
-            }
-        }
-        return BaseResultUtil.success();
-    }
+    private class ReceiveSettlementOperation {
+        final ApplyReceiveSettlementVo applyReceiveSettlementVo;
 
+        private ReceiveSettlementOperation(final ApplyReceiveSettlementVo applyReceiveSettlementVo) {
+            this.applyReceiveSettlementVo = applyReceiveSettlementVo;
+        }
+
+        public ResultVo applyReceiveSettlement() {
+            // 参数校验
+            ResultVo result = validateApplyReceiveSettlementParams(applyReceiveSettlementVo);
+            if (result.getCode() != ResultEnum.SUCCESS.getCode()) {
+                return result;
+            }
+            // 应收账款结算申请逻辑处理
+            return transactionTemplate.execute(status -> {
+                try {
+                    // 新增发票
+                    Integer invoiceType = applyReceiveSettlementVo.getCustomerInvoiceVo().getType();
+                    CustomerInvoice customerInvoice = new CustomerInvoice();
+                    if (invoiceType != null) {
+                        if ((invoiceType > 0 && invoiceType < 4)) {
+                            CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
+                            BeanUtils.copyProperties(customerInvoiceVo, customerInvoice);
+                            customerInvoiceDao.insert(customerInvoice);
+                        }
+                    }
+                    // 新增应收账款
+                    String serialNumber = "";
+                    Admin admin = csAdminService.validate(applyReceiveSettlementVo.getLoginId());
+                    receiveSettlementDao.insert(new ReceiveSettlement() {
+                        {
+                            // 结算流水号
+                            setSerialNumber(serialNumber);
+                            // 应收账款
+                            setReceivableFee(applyReceiveSettlementVo.getReceivableFee());
+                            // 开票金额
+                            setInvoiceFee(applyReceiveSettlementVo.getInvoiceFee());
+                            // 发票id
+                            setInvoiceId(customerInvoice.getId());
+                            // 结算申请状态
+                            setState(0);
+                            // 申请人id
+                            setApplicantId(applyReceiveSettlementVo.getLoginId());
+                            // 申请人
+                            setApplicantName(admin.getName());
+                            // 申请时间
+                            setApplyTime(LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli());
+                        }
+                    });
+                    // 新增账款明细
+                    if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getCarIdList())) {
+                        applyReceiveSettlementVo.getCarIdList().forEach(e -> {
+                            receiveSettlementDetailDao.insert(new ReceiveSettlementDetail() {{
+                                // 结算流水号
+                                setSerialNumber(serialNumber);
+                                // 订单车id
+                                setOrderCarId(e);
+                            }});
+                        });
+                    }
+                } catch (Exception e) {
+                    log.error("应收账款结算申请发生异常！", e);
+                    return BaseResultUtil.fail("应收账款结算申请失败！");
+                }
+                return BaseResultUtil.success("应收账款结算申请成功！");
+            });
+        }
+
+        /**
+         * <p>应收账款申请参数校验</p>
+         * <ol>
+         *     <li>应收运费,开票金额校验</li>
+         *     <li>订单车辆ID集合校验</li>
+         *     <li>发票参数校验</li>
+         * </ol>
+         *
+         * @param applyReceiveSettlementVo
+         * @return
+         */
+        private ResultVo validateApplyReceiveSettlementParams(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
+            BigDecimal receivableFee = applyReceiveSettlementVo.getReceivableFee();
+            BigDecimal invoiceFee = applyReceiveSettlementVo.getInvoiceFee();
+            if (receivableFee == null || receivableFee.compareTo(BigDecimal.ZERO) < 0) {
+                return BaseResultUtil.fail("应收运费不能为空或负值");
+            }
+            if (invoiceFee == null || invoiceFee.compareTo(BigDecimal.ZERO) < 0) {
+                return BaseResultUtil.fail("开票金额不能为空或负值");
+            }
+            if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getCarIdList())) {
+                return BaseResultUtil.fail("订单车辆ID集合不能为空");
+            }
+            CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
+            if (customerInvoiceVo != null && customerInvoiceVo.getType() != null) {
+                switch (customerInvoiceVo.getType()) {
+                    case 1:
+                        if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
+                            return BaseResultUtil.fail("新增个人普票-客户名称不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
+                            return BaseResultUtil.fail("新增个人普票-收件人不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
+                            return BaseResultUtil.fail("新增个人普票-收件人电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
+                            return BaseResultUtil.fail("新增个人普票-邮寄地址不能为空");
+                        }
+                    case 2:
+                        if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
+                            return BaseResultUtil.fail("新增公司普票-客户名称不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getTaxCode())) {
+                            return BaseResultUtil.fail("新增公司普票-纳税人识别号不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
+                            return BaseResultUtil.fail("新增公司普票-收件人不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
+                            return BaseResultUtil.fail("新增公司普票-收件人电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
+                            return BaseResultUtil.fail("新增公司普票-邮寄地址不能为空");
+                        }
+                    case 3:
+                        if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
+                            return BaseResultUtil.fail("新增公司专票-客户名称不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getTaxCode())) {
+                            return BaseResultUtil.fail("新增公司专票-纳税人识别号不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getInvoiceAddress())) {
+                            return BaseResultUtil.fail("新增公司专票-地址不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getTel())) {
+                            return BaseResultUtil.fail("新增公司专票-电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getBankName())) {
+                            return BaseResultUtil.fail("新增公司专票-开户行不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getBankAccount())) {
+                            return BaseResultUtil.fail("新增公司专票-银行账号不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
+                            return BaseResultUtil.fail("新增公司专票-收件人不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
+                            return BaseResultUtil.fail("新增公司专票-收件人电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
+                            return BaseResultUtil.fail("新增公司专票-邮寄地址不能为空");
+                        }
+                    default:
+                        //不做处理
+                }
+            }
+            return BaseResultUtil.success();
+        }
+    }
 }
