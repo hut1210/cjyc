@@ -118,7 +118,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
         BigDecimal lineFee = line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100));
-        if (!(lineFee.doubleValue() == reqDto.getLineWlFreightFee().doubleValue())) {
+        if (lineFee.doubleValue() != reqDto.getLineWlFreightFee().doubleValue()) {
             log.info("===>线路费金额不正确");
             return BaseResultUtil.fail("线路费金额不正确!");
         }
