@@ -102,10 +102,23 @@ public interface IFinanceService {
     ResultVo<List<ExportFinanceDetailVo>> getFinanceDetailList(String no);
 
     /**
-     * 根据运单号查看上游付款状态列表
+     * <p>根据运单号查看上游付款状态列表</p>
      *
      * @param waybillNo
      * @return
      */
     ResultVo<PageVo<DriverUpstreamPaidInfoVo>> listDriverUpstreamPaidInfo(String waybillNo);
+
+    /**
+     * <p>应收账款结算申请</p>
+     * <ol>
+     *     <li>新增发票</li>
+     *     <li>新增应收账款</li>
+     *     <li>新增应收账款明细</li>
+     * </ol>
+     *
+     * @param applyReceiveSettlementVo
+     * @return
+     */
+    ResultVo applyReceiveSettlement(ApplyReceiveSettlementVo applyReceiveSettlementVo);
 }

@@ -176,12 +176,6 @@ public class FinanceController {
         return financeService.getPaymentList(financeQueryDto);
     }
 
-    @ApiOperation(value = "已收款(账期)列表")
-    @PostMapping(value = "/listPaymentDaysInfo")
-    public ResultVo<PageVo<PaymentVo>> listPaymentDaysInfo(@RequestBody PaymentDaysQueryDto paymentDaysQueryDto){
-        return financeService.listPaymentDaysInfo(paymentDaysQueryDto);
-    }
-
     @ApiOperation(value = "导出应收账款-已收款（时付）Excel")
     @GetMapping(value = "/exportPayment")
     public ResultVo exportPayment(HttpServletResponse response,FinanceQueryDto financeQueryDto){
@@ -209,5 +203,20 @@ public class FinanceController {
     public ResultVo<PageVo<PaidNewVo>> getPaidList(@RequestBody PayMentQueryDto payMentQueryDto){
         return financeService.getPaidListNew(payMentQueryDto);
     }
+
+    @ApiOperation(value = "已收款(账期)列表")
+    @PostMapping(value = "/listPaymentDaysInfo")
+    public ResultVo<PageVo<PaymentVo>> listPaymentDaysInfo(@RequestBody PaymentDaysQueryDto paymentDaysQueryDto){
+        return financeService.listPaymentDaysInfo(paymentDaysQueryDto);
+    }
+
+    @ApiOperation(value = "应收账款结算申请")
+    @PostMapping(value = "/applyReceiveSettlement")
+    public ResultVo applyReceiveSettlement(@RequestBody ApplyReceiveSettlementVo applyReceiveSettlementVo){
+        return financeService.applyReceiveSettlement(applyReceiveSettlementVo);
+    }
+
+
+
 
 }
