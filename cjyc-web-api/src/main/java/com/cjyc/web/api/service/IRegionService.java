@@ -27,7 +27,7 @@ public interface IRegionService {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo addRegion(RegionAddDto dto) throws Exception;
+    ResultVo addRegion(RegionAddDto dto);
 
     /**
      * 功能描述: 修改大区
@@ -36,7 +36,7 @@ public interface IRegionService {
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo modifyRegion(RegionUpdateDto dto) throws Exception;
+    ResultVo modifyRegion(RegionUpdateDto dto);
 
     /**
      * 功能描述: 删除大区
@@ -45,5 +45,5 @@ public interface IRegionService {
      * @param regionCode
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    ResultVo removeRegion(String regionCode) throws Exception;
+    ResultVo removeRegion(String regionCode);
 }

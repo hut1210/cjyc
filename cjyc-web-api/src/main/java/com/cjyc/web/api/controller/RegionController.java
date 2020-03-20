@@ -3,7 +3,6 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.dto.web.city.RegionAddDto;
 import com.cjyc.common.model.dto.web.city.RegionQueryDto;
 import com.cjyc.common.model.dto.web.city.RegionUpdateDto;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.city.RegionVo;
@@ -23,8 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Api(tags = "基础数据-大区管理")
 @RestController
-@Deprecated
-//@RequestMapping("/region")
+@RequestMapping("/region")
 public class RegionController {
     @Autowired
     private IRegionService regionService;
@@ -52,14 +50,7 @@ public class RegionController {
     @ApiOperation(value = "新增大区")
     @PostMapping("/addRegion")
     public ResultVo addRegion(@RequestBody @Validated RegionAddDto dto){
-        ResultVo resultVo = null;
-        try {
-            resultVo = regionService.addRegion(dto);
-        } catch (Exception e) {
-            log.error("新增大区异常",e);
-            resultVo = BaseResultUtil.fail("新增大区失败");
-        }
-        return resultVo;
+        return regionService.addRegion(dto);
     }
 
     /**
@@ -72,14 +63,7 @@ public class RegionController {
     @ApiOperation(value = "修改大区")
     @PostMapping("/modifyRegion")
     public ResultVo modifyRegion(@RequestBody @Validated RegionUpdateDto dto){
-        ResultVo resultVo = null;
-        try {
-            resultVo = regionService.modifyRegion(dto);
-        } catch (Exception e) {
-            log.error("修改大区异常",e);
-            resultVo = BaseResultUtil.fail("修改大区失败");
-        }
-        return resultVo;
+        return regionService.modifyRegion(dto);
     }
 
     /**
@@ -92,15 +76,6 @@ public class RegionController {
     @ApiOperation(value = "删除大区")
     @PostMapping("/removeRegion/{regionCode}")
     public ResultVo removeRegion(@PathVariable String regionCode){
-        ResultVo resultVo = null;
-        try {
-            resultVo = regionService.removeRegion(regionCode);
-        } catch (Exception e) {
-            log.error("删除大区异常",e);
-            resultVo = BaseResultUtil.fail("删除大区失败");
-        }
-        return resultVo;
+        return regionService.removeRegion(regionCode);
     }
-
-
 }

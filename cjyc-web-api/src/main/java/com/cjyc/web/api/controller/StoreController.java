@@ -1,5 +1,6 @@
 package com.cjyc.web.api.controller;
 
+import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
 import com.cjyc.common.model.dto.web.store.GetStoreDto;
 import com.cjyc.common.model.dto.web.store.StoreAddDto;
@@ -19,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +34,7 @@ import java.util.List;
  **/
 @Api(tags = "基础数据-业务中心")
 @RestController
-@Deprecated
-//@RequestMapping("/store")
+@RequestMapping("/store")
 public class StoreController {
     @Resource
     private IStoreService storeService;
@@ -45,7 +46,7 @@ public class StoreController {
     @ApiOperation(value = "根据二级城市编码查询业务中心")
     @PostMapping(value = "/get/{cityCode}")
     public ResultVo<List<Store>> getByCityCode(@PathVariable String cityCode) {
-        List<Store> list = storeService.getByCityCode(cityCode);
+        List<Store> list = storeService.findStore(cityCode);
         return BaseResultUtil.success(list);
     }
 
@@ -53,24 +54,53 @@ public class StoreController {
      * 根据角色查询角色所属机构下属业务中心
      * @author JPG
      */
+    @Deprecated
     @ApiOperation(value = "根据角色查询业务中心")
-    @PostMapping(value = "/get/by/{roleId}")
-    public ResultVo<List<Store>> getByRole(@PathVariable Long roleId) {
-        List<Store> list = storeService.getListByRoleId(roleId);
+    @PostMapping(value = "/get/by/{roleId}/{loginId}")
+    public ResultVo<List<Store>> getByRole(@PathVariable Long roleId,
+                                           @PathVariable Long loginId) {
+        BaseWebDto baseWebDto = new BaseWebDto();
+        baseWebDto.setRoleId(roleId);
+        baseWebDto.setLoginId(loginId);
+        List<Store> list = storeService.listByWebLogin(baseWebDto);
         return BaseResultUtil.success(list);
     }
 
     /**
-     * 根据角色查询角色所属机构下属业务中心
+     * v2.0
      * @author JPG
      */
-    @ApiOperation(value = "根据角色查询业务中心")
-    @PostMapping(value = "/get/vo/by/{roleId}")
-    public ResultVo<List<StoreVo>> getVoByRole(@PathVariable Long roleId) {
-        List<StoreVo> list = storeService.getVoListByRoleId(roleId);
+    @ApiOperation(value = "根据角色和登录ID查询业务中心")
+    @PostMapping(value = "/list/by/role/login")
+    public ResultVo<List<Store>> getByWebLogin(@RequestBody BaseWebDto reqDto) {
+        List<Store> list = storeService.listByWebLogin(reqDto);
         return BaseResultUtil.success(list);
     }
 
+    /**
+     * @author JPG
+     */
+    @Deprecated
+    @ApiOperation(value = "根据角色查询业务中心")
+    @PostMapping(value = "/get/vo/by/{roleId}/{loginId}")
+    public ResultVo<List<StoreVo>> getVoByRole(@PathVariable Long roleId,
+                                               @PathVariable Long loginId) {
+        BaseWebDto baseWebDto = new BaseWebDto();
+        baseWebDto.setRoleId(roleId);
+        baseWebDto.setLoginId(loginId);
+        List<StoreVo> list = storeService.listVoByWebLogin(baseWebDto);
+        return BaseResultUtil.success(list);
+    }
+    /**
+     * v2.0
+     * @author JPG
+     */
+    @ApiOperation(value = "根据角色和登录ID查询业务中心")
+    @PostMapping(value = "/list/vo/by/role/login")
+    public ResultVo<List<StoreVo>> getVoByWebLogin(@RequestBody BaseWebDto reqDto) {
+        List<StoreVo> list = storeService.listVoByWebLogin(reqDto);
+        return BaseResultUtil.success(list);
+    }
     /**
      * 根据角色查询角色所属机构下属业务中心
      * @author JPG
@@ -87,7 +117,7 @@ public class StoreController {
      * @author liuxingxiang
      * @date 2019/12/17
      * @param storeQueryDto
-     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.store.StoreVo>>
+     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.web.store.StoreVo>>
      */
     @ApiOperation(value = "分页查询业务中心列表", notes = "\t 请求接口为json格式")
     @PostMapping("/queryPage")
@@ -144,8 +174,7 @@ public class StoreController {
     @ApiOperation(value = "修改", notes = "\t 请求接口为json格式")
     @PostMapping("/modify")
     public ResultVo modify(@RequestBody @Validated StoreUpdateDto storeUpdateDto) {
-        boolean result = storeService.modify(storeUpdateDto);
-        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return storeService.modify(storeUpdateDto);
     }
 
     /**
@@ -171,7 +200,7 @@ public class StoreController {
      * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.Admin>>
      */
     @ApiOperation(value = "业务中心下用户列表信息", notes = "查询用户关联此用户中心角色信息")
-    @GetMapping("/listAdminsByStoreId/{storeId}")
+    //@GetMapping("/listAdminsByStoreId/{storeId}")
     public ResultVo<List<Admin>> listAdminsByStoreId(
             @ApiParam(name = "storeId", value = "业务中心标识", required = true)
             @PathVariable Long storeId){
@@ -228,5 +257,18 @@ public class StoreController {
     @PostMapping("/removeCoveredArea")
     public ResultVo removeCoveredArea(@RequestBody @Validated({StoreDto.AddAndRemoveCoveredArea.class}) StoreDto dto) {
         return storeService.removeCoveredArea(dto);
+    }
+
+    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importStoreExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importStoreExcel/{loginId}")
+    public ResultVo importStoreExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = storeService.importStoreExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "获取全部业务中心")
+    @PostMapping(value = "/findAllStore")
+    public ResultVo<List<Store>> findAllStore() {
+        return storeService.findAllStore();
     }
 }
