@@ -1068,7 +1068,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }else{
             log.info("webPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
-            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+            if (!redisLock.lock(lockKey, 300000, 10, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
         }
@@ -1179,7 +1179,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }else{
             log.info("salesPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
-            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+            if (!redisLock.lock(lockKey, 300000, 10, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
         }
