@@ -45,7 +45,7 @@ public class CooperatorPaidVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd mm:HH:ss");
+        return LocalDateTimeUtil.formatLong(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "结算类型")
@@ -86,7 +86,7 @@ public class CooperatorPaidVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
+        return LocalDateTimeUtil.formatLong(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "客户交付时间")
@@ -100,7 +100,7 @@ public class CooperatorPaidVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd mm:HH:ss");
+        return LocalDateTimeUtil.formatLong(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "订单金额")
