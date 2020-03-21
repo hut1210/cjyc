@@ -64,4 +64,12 @@ public interface ILineService extends IService<Line> {
      * @return
      */
     boolean importExcel(MultipartFile file, Long loginId);
+
+    /**
+     * 保存或更新班线
+     * @param file
+     * @param loginId
+     * @return
+     */
+    boolean saveOrUpdateExcel(MultipartFile file, Long loginId);
 }
