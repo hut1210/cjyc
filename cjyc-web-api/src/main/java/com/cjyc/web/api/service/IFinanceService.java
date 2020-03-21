@@ -129,4 +129,36 @@ public interface IFinanceService {
      * @return
      */
     ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
+
+    /**
+     * 应收账款-待开票-撤回
+     *
+     * @param serialNumber
+     * @return
+     */
+    ResultVo cancelReceiveSettlement(String serialNumber);
+
+    /**
+     * 应收账款-待开票-确认开票
+     *
+     * @param confirmInvoiceVo
+     * @return
+     */
+    ResultVo confirmInvoice(ConfirmInvoiceVo confirmInvoiceVo);
+
+    /**
+     * 应收账款-待回款-核销
+     *
+     * @param verificationReceiveSettlementVo
+     * @return
+     */
+    ResultVo verificationReceiveSettlement(VerificationReceiveSettlementVo verificationReceiveSettlementVo);
+
+    /**
+     * 应收账款结算-结算明细查询
+     *
+     * @param serialNumber
+     * @return
+     */
+    ResultVo<ReceiveSettlementInvoiceDetailDto> listReceiveSettlementDetail(String serialNumber);
 }

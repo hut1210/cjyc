@@ -72,4 +72,7 @@ public class ReceiveSettlement {
     @ApiModelProperty(value = "发票id")
     private Long invoiceId;
 
+    @ApiModelProperty(value = "发票号")
+    private String invoiceNo;
+
 }

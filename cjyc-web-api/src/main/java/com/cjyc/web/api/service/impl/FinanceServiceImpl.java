@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.entity.*;
@@ -1023,40 +1024,98 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo applyReceiveSettlement(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
         // 应收账款结算申请
-        return new ReceiveSettlementOperation(applyReceiveSettlementVo, null).applyReceiveSettlement();
+        return new ReceiveSettlementOperation(applyReceiveSettlementVo, null, null, null)
+                .applyReceiveSettlement();
     }
 
     @Override
     public ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
         // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
-        return new ReceiveSettlementOperation(null, receiveSettlementNeedInvoiceVo).listReceiveSettlementNeedInvoice();
+        List<ReceiveSettlementNeedInvoiceDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
+        // 金额分转元
+        listInfo.forEach(e -> {
+            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
+        PageInfo<ReceiveSettlementNeedInvoiceDto> pageInfo = new PageInfo<>(listInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo cancelReceiveSettlement(String serialNumber) {
+        return new ReceiveSettlementOperation(null, serialNumber, null, null)
+                .cancelReceiveSettlement();
+    }
+
+    @Override
+    public ResultVo confirmInvoice(ConfirmInvoiceVo confirmInvoiceVo) {
+        return new ReceiveSettlementOperation(null, null, confirmInvoiceVo, null)
+                .confirmInvoice();
+    }
+
+    @Override
+    public ResultVo verificationReceiveSettlement(VerificationReceiveSettlementVo verificationReceiveSettlementVo) {
+        return new ReceiveSettlementOperation(null, null, null, verificationReceiveSettlementVo)
+                .verificationReceiveSettlement();
+    }
+
+    @Override
+    public ResultVo<ReceiveSettlementInvoiceDetailDto> listReceiveSettlementDetail(String serialNumber) {
+        if (StringUtils.isEmpty(serialNumber)) {
+            return BaseResultUtil.fail("结算流水号不能为空！");
+        }
+        // 查询结算信息
+        ReceiveSettlement receiveSettlement = receiveSettlementDao.selectOne(new QueryWrapper<ReceiveSettlement>()
+                .lambda()
+                .eq(ReceiveSettlement::getSerialNumber, serialNumber)
+        );
+        // 查询结算明细
+        List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(new QueryWrapper<ReceiveSettlementDetail>()
+                .lambda()
+                .eq(ReceiveSettlementDetail::getSerialNumber, serialNumber)
+        );
+        // 查询发票信息
+        CustomerInvoice customerInvoice = customerInvoiceDao.selectOne(new QueryWrapper<CustomerInvoice>()
+                .lambda()
+                .eq(CustomerInvoice::getId, receiveSettlement.getInvoiceId()));
+        // 组装返回结果
+        ReceiveSettlementInvoiceDetailDto result = new ReceiveSettlementInvoiceDetailDto() {{
+            setReceiveSettlementInvoiceDetailList(listInfo);
+            setInvoice(customerInvoice);
+            setInvoiceNo(receiveSettlement.getInvoiceNo());
+        }};
+        return BaseResultUtil.success(result);
     }
 
     /**
-     * <p>上游账期功能实现封装类</p>
+     * <p>上游账期功能实现封装类，这里封装了增删改接口，查询接口没什么逻辑就访问外围了</p>
      * <ol>
      *     <li>应收账款结算申请</li>
-     *     <li>待开票列表查询</li>
      *     <li>待开票列表-确认开票</li>
      *     <li>待开票列表-撤回</li>
-     *     <li>待回款列表查询</li>
      *     <li>待回款列表查询-核销</li>
-     *     <li>待回款列表查询-结算明细</li>
-     *     <li>已回款列表查询</li>
-     *     <li>已回款列表查询-结算明细</li>
      * </ol>
      */
     private class ReceiveSettlementOperation {
         // 接口请求参数
         final ApplyReceiveSettlementVo applyReceiveSettlementVo;
-        final ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo;
+        final String serialNumber;
+        final ConfirmInvoiceVo confirmInvoiceVo;
+        final VerificationReceiveSettlementVo verificationReceiveSettlementVo;
 
-        private ReceiveSettlementOperation(final ApplyReceiveSettlementVo applyReceiveSettlementVo, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        private ReceiveSettlementOperation(ApplyReceiveSettlementVo applyReceiveSettlementVo, String serialNumber, ConfirmInvoiceVo confirmInvoiceVo, VerificationReceiveSettlementVo verificationReceiveSettlementVo) {
             this.applyReceiveSettlementVo = applyReceiveSettlementVo;
-            this.receiveSettlementNeedInvoiceVo = receiveSettlementNeedInvoiceVo;
+            this.serialNumber = serialNumber;
+            this.confirmInvoiceVo = confirmInvoiceVo;
+            this.verificationReceiveSettlementVo = verificationReceiveSettlementVo;
         }
 
-        // 应收账款结算申请逻辑处理
+        /**
+         * 应收账款结算申请逻辑处理
+         *
+         * @return
+         */
         private ResultVo applyReceiveSettlement() {
             // 参数校验
             ResultVo result = validateApplyReceiveSettlementParams(applyReceiveSettlementVo);
@@ -1089,7 +1148,7 @@ public class FinanceServiceImpl implements IFinanceService {
                             // 发票id
                             setInvoiceId(customerInvoice.getId());
                             // 结算申请状态
-                            setState(0);
+                            setState(1);
                             // 申请人id
                             setApplicantId(applyReceiveSettlementVo.getLoginId());
                             // 申请人
@@ -1117,18 +1176,72 @@ public class FinanceServiceImpl implements IFinanceService {
             });
         }
 
-        // 待开票列表查询
-        private ResultVo listReceiveSettlementNeedInvoice() {
-            List<ReceiveSettlementNeedInvoiceDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
-            // 金额分转元
-            listInfo.forEach(e -> {
-                e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
-                e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
-            });
-            // 列表分页
-            PageInfo<ReceiveSettlementNeedInvoiceDto> pageInfo = new PageInfo<>(listInfo);
-            return BaseResultUtil.success(pageInfo);
+        /**
+         * 应收账款-待开票-撤回
+         *
+         * @return
+         */
+        public ResultVo cancelReceiveSettlement() {
+            return transactionTemplate.execute(status -> {
+                try {
+                    // 删除结算信息
+                    receiveSettlementDao.delete(new QueryWrapper<ReceiveSettlement>()
+                            .lambda()
+                            .eq(ReceiveSettlement::getSerialNumber, serialNumber)
+                    );
+                    // 删除结算明细信息
+                    receiveSettlementDetailDao.delete(new QueryWrapper<ReceiveSettlementDetail>()
+                            .lambda()
+                            .eq(ReceiveSettlementDetail::getSerialNumber, serialNumber)
+                    );
 
+                } catch (Exception e) {
+                    log.error("应收账款-待开票-撤回发生异常！", e);
+                    return BaseResultUtil.fail("应收账款-待开票-撤回失败！");
+                }
+                return BaseResultUtil.success("应收账款-待开票-撤回成功！");
+            });
+        }
+
+        /**
+         * 应收账款-待开票-确认开票
+         *
+         * @return
+         */
+        public ResultVo confirmInvoice() {
+            int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
+                setInvoiceNo(confirmInvoiceVo.getInvoiceNo());
+                setConfirmId(confirmInvoiceVo.getCustomerId());
+                setConfirmName(confirmInvoiceVo.getCustomerName());
+                setConfirmTime(System.currentTimeMillis());
+                setState(2);
+            }}, new QueryWrapper<ReceiveSettlement>()
+                    .lambda()
+                    .eq(ReceiveSettlement::getSerialNumber, confirmInvoiceVo.getSerialNumber()));
+            if (updated > 0) {
+                return BaseResultUtil.fail("应收账款-待开票-确认开票失败！");
+            }
+            return BaseResultUtil.success("应收账款-待开票-确认开票成功！");
+        }
+
+        /**
+         * 应收账款-待回款-核销
+         *
+         * @return
+         */
+        public ResultVo verificationReceiveSettlement() {
+            int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
+                setVerificationId(verificationReceiveSettlementVo.getCustomerId());
+                setVerificationName(verificationReceiveSettlementVo.getCustomerName());
+                setState(3);
+                setVerificationTime(System.currentTimeMillis());
+            }}, new QueryWrapper<ReceiveSettlement>()
+                    .lambda()
+                    .eq(ReceiveSettlement::getSerialNumber, verificationReceiveSettlementVo.getSerialNumber()));
+            if (updated > 0) {
+                return BaseResultUtil.fail("应收账款-待回款-核销失败！");
+            }
+            return BaseResultUtil.success("应收账款-待回款-核销成功！");
         }
 
         /**
