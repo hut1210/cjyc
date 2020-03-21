@@ -211,37 +211,49 @@ public class FinanceController {
         return financeService.listPaymentDaysInfo(paymentDaysQueryDto);
     }
 
-    @ApiOperation(value = "应收账款结算申请")
+    @ApiOperation(value = "应收账款结算-待开票(账期)列表查询")
+    @PostMapping(value = "/listReceiveSettlementNeedInvoice")
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(@RequestBody ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        return financeService.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
+    }
+
+    @ApiOperation(value = "应收账款结算-待回款(账期)列表查询")
+    @PostMapping(value = "/listReceiveSettlementNeedPayed")
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedPayed(@RequestBody ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo) {
+        return financeService.listReceiveSettlementNeedPayed(receiveSettlementNeedPayedVo);
+    }
+
+    @ApiOperation(value = "应收账款结算-已收款(账期)列表查询")
+    @PostMapping(value = "/listReceiveSettlementPayed")
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(@RequestBody ReceiveSettlementPayedVo receiveSettlementPayedVo) {
+        return financeService.listReceiveSettlementPayed(receiveSettlementPayedVo);
+    }
+
+    @ApiOperation(value = "应收账款(账期)结算申请")
     @PostMapping(value = "/applyReceiveSettlement")
     public ResultVo applyReceiveSettlement(@RequestBody ApplyReceiveSettlementVo applyReceiveSettlementVo) {
         return financeService.applyReceiveSettlement(applyReceiveSettlementVo);
     }
 
-    @ApiOperation(value = "应收账款结算-待开票列表查询")
-    @PostMapping(value = "/listReceiveSettlementNeedInvoice")
-    public ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(@RequestBody ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
-        return financeService.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
-    }
-
-    @ApiOperation(value = "应收账款-待开票-撤回")
+    @ApiOperation(value = "应收账款(账期)-待开票-撤回")
     @PostMapping(value = "/cancelReceiveSettlement/{serialNumber}")
     public ResultVo cancelReceiveSettlement(@PathVariable String serialNumber) {
         return financeService.cancelReceiveSettlement(serialNumber);
     }
 
-    @ApiOperation(value = "应收账款-待开票-确认开票")
+    @ApiOperation(value = "应收账款(账期)-待开票-确认开票")
     @PostMapping(value = "/confirmInvoice")
     public ResultVo confirmInvoice(@RequestBody ConfirmInvoiceVo confirmInvoiceVo) {
         return financeService.confirmInvoice(confirmInvoiceVo);
     }
 
-    @ApiOperation(value = "应收账款-待回款-核销")
+    @ApiOperation(value = "应收账款(账期)-待回款-核销")
     @PostMapping(value = "/verificationReceiveSettlement")
     public ResultVo verificationReceiveSettlement(@RequestBody VerificationReceiveSettlementVo verificationReceiveSettlementVo) {
         return financeService.verificationReceiveSettlement(verificationReceiveSettlementVo);
     }
 
-    @ApiOperation(value = "应收账款结算-结算明细查询")
+    @ApiOperation(value = "应收账款结算(账期)-结算明细查询")
     @PostMapping(value = "/listReceiveSettlementDetail/{serialNumber}")
     public ResultVo<ReceiveSettlementInvoiceDetailDto> listReceiveSettlementDetail(@PathVariable String serialNumber) {
         return financeService.listReceiveSettlementDetail(serialNumber);

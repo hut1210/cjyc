@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * @Date:2020/3/20 15:57
  */
 @Data
-public class ReceiveSettlementNeedInvoiceDto {
+public class ReceiveSettlementDto {
 
     @ApiModelProperty(value = "应收运费")
     private BigDecimal receivableFee;

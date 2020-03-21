@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IReceiveSettlementDao">
 
-    <select id="listReceiveSettlementNeedInvoice" resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementNeedInvoiceDto">
+    <select id="listReceiveSettlement" resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
         SELECT rs.serial_number, rs.receivable_fee, rs.invoice_fee, rs.apply_time, rs.applicant_name, rs.confirm_time,
         rs.confirm_name, rs.verification_time, rs.verification_name, cci.type as invoiceType, cci.name as customerName,
         cci.tax_code, cci.invoice_address, cci.tel as phone, cci.bank_name, cci.bank_account, cci.pickup_person,
@@ -18,5 +18,15 @@
 <!--            </if>-->
 <!--        </where>-->
 <!--        ORDER BY create_time DESC-->
+    </select>
+    <select id="listReceiveSettlementNeedInvoice"
+            resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
+        SELECT rs.serial_number, rs.receivable_fee, rs.invoice_fee, rs.apply_time, rs.applicant_name, rs.confirm_time,
+        rs.confirm_name, rs.verification_time, rs.verification_name, cci.type as invoiceType, cci.name as customerName,
+        cci.tax_code, cci.invoice_address, cci.tel as phone, cci.bank_name, cci.bank_account, cci.pickup_person,
+        cci.pickup_phone, cci.pickup_address, cci.title
+        FROM r_settlement  rs
+            LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
+        WHERE rs.state in (0,2)
     </select>
 </mapper>

@@ -1213,7 +1213,10 @@
         LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
-        WHERE woc.wl_pay_state=2 AND cc.pay_mode=1 AND wo.customer_type=1
+        WHERE woc.wl_pay_state=2
+        AND cc.pay_mode=1
+        AND wo.customer_type=1
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM r_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no
         UNION
@@ -1224,7 +1227,10 @@
         LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
-        WHERE woc.wl_pay_state=2 ON ccp.settle_type=1 AND wo.customer_type=3
+        WHERE woc.wl_pay_state=2
+        AND ccp.settle_type=1
+        AND wo.customer_type=3
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM r_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no
         UNION
@@ -1235,7 +1241,10 @@
         LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
-        WHERE woc.wl_pay_state=2 AND ccc.settle_type=1 AND wo.customer_type=2
+        WHERE woc.wl_pay_state=2
+        AND ccc.settle_type=1
+        AND wo.customer_type=2
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM r_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no ) t ORDER BY t.finish_time DESC
     </select>

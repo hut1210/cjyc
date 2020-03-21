@@ -128,7 +128,7 @@ public interface IFinanceService {
      * @param receiveSettlementNeedInvoiceVo
      * @return
      */
-    ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
+    ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
 
     /**
      * 应收账款-待开票-撤回
@@ -161,4 +161,20 @@ public interface IFinanceService {
      * @return
      */
     ResultVo<ReceiveSettlementInvoiceDetailDto> listReceiveSettlementDetail(String serialNumber);
+
+    /**
+     * 应收账款结算-待回款(账期)列表查询
+     *
+     * @param receiveSettlementNeedPayedVo
+     * @return
+     */
+    ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedPayed(ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo);
+
+    /**
+     * 应收账款结算-已收款(账期)列表查询
+     *
+     * @param receiveSettlementPayedVo
+     * @return
+     */
+    ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementPayedVo receiveSettlementPayedVo);
 }

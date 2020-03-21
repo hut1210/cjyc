@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.finance;
 
 import com.cjyc.common.model.entity.CustomerInvoice;
+import com.cjyc.common.model.entity.ReceiveSettlement;
 import com.cjyc.common.model.entity.ReceiveSettlementDetail;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class ReceiveSettlementInvoiceDetailDto implements Serializable {
     @ApiModelProperty(value = "发票信息")
     private CustomerInvoice invoice;
 
-    @ApiModelProperty(value = "发票号")
-    private String invoiceNo;
+    @ApiModelProperty(value = "结算信息")
+    private ReceiveSettlement receiveSettlement;
 
 }

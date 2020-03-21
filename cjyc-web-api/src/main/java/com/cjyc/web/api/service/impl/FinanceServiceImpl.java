@@ -1029,16 +1029,48 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<ReceiveSettlementNeedInvoiceDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
         // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
-        List<ReceiveSettlementNeedInvoiceDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
+        ReceiveSettlement receiveSettlement = new ReceiveSettlement();
+        BeanUtils.copyProperties(receiveSettlementNeedInvoiceVo, receiveSettlement);
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
         // 金额分转元
         listInfo.forEach(e -> {
             e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
             e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
         });
         // 列表分页
-        PageInfo<ReceiveSettlementNeedInvoiceDto> pageInfo = new PageInfo<>(listInfo);
+        PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedPayed(ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo) {
+        // 应收账款结算-待回款列表查询, 此时查询结算状态为已确认和不需要开票的结算信息列表
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedPayedVo);
+        // 金额分转元
+        listInfo.forEach(e -> {
+            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
+        PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementPayedVo receiveSettlementPayedVo) {
+        // 应收账款结算-已收款列表查询, 此时查询结算状态为已收款的结算信息列表
+        ReceiveSettlement receiveSettlement = new ReceiveSettlement();
+        BeanUtils.copyProperties(receiveSettlementPayedVo, receiveSettlement);
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
+        // 金额分转元
+        listInfo.forEach(e -> {
+            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
+        PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -1076,16 +1108,39 @@ public class FinanceServiceImpl implements IFinanceService {
                 .eq(ReceiveSettlementDetail::getSerialNumber, serialNumber)
         );
         // 查询发票信息
-        CustomerInvoice customerInvoice = customerInvoiceDao.selectOne(new QueryWrapper<CustomerInvoice>()
-                .lambda()
-                .eq(CustomerInvoice::getId, receiveSettlement.getInvoiceId()));
+        CustomerInvoice customerInvoice = null;
+        if(receiveSettlement.getInvoiceId() != null){
+            customerInvoice = customerInvoiceDao.selectOne(new QueryWrapper<CustomerInvoice>()
+                    .lambda()
+                    .eq(CustomerInvoice::getId, receiveSettlement.getInvoiceId()));
+        }else{
+            customerInvoice = new CustomerInvoice();
+        }
+        // 金额分转元
+        moneyFenToYuan(receiveSettlement, listInfo);
         // 组装返回结果
+        CustomerInvoice finalCustomerInvoice = customerInvoice;
         ReceiveSettlementInvoiceDetailDto result = new ReceiveSettlementInvoiceDetailDto() {{
             setReceiveSettlementInvoiceDetailList(listInfo);
-            setInvoice(customerInvoice);
-            setInvoiceNo(receiveSettlement.getInvoiceNo());
+            setInvoice(finalCustomerInvoice);
+            setReceiveSettlement(receiveSettlement);
         }};
         return BaseResultUtil.success(result);
+    }
+
+    /**
+     * 金额分转元
+     *
+     * @param receiveSettlement
+     * @param listInfo
+     */
+    private void moneyFenToYuan(ReceiveSettlement receiveSettlement, List<ReceiveSettlementDetail> listInfo){
+//        listInfo.forEach(e -> {
+//            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
+//            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+//        });
+        receiveSettlement.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
+        receiveSettlement.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
     }
 
     /**
@@ -1182,6 +1237,9 @@ public class FinanceServiceImpl implements IFinanceService {
          * @return
          */
         public ResultVo cancelReceiveSettlement() {
+            if(StringUtils.isEmpty(serialNumber)){
+                return BaseResultUtil.fail("结算流水号不能为空！");
+            }
             return transactionTemplate.execute(status -> {
                 try {
                     // 删除结算信息
@@ -1209,10 +1267,22 @@ public class FinanceServiceImpl implements IFinanceService {
          * @return
          */
         public ResultVo confirmInvoice() {
+            if(StringUtils.isEmpty(confirmInvoiceVo.getSerialNumber())){
+                return BaseResultUtil.fail("结算流水号不能为空！");
+            }
+            if(confirmInvoiceVo.getCustomerId() == null){
+                return BaseResultUtil.fail("确认开票确认人id不能为空！");
+            }
+            String confirmName = null;
+            if(StringUtils.isEmpty(confirmInvoiceVo.getCustomerName())){
+                Admin admin = csAdminService.validate(confirmInvoiceVo.getCustomerId());
+                confirmName = admin.getName();
+            }
+            String finalConfirmName = confirmName;
             int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
                 setInvoiceNo(confirmInvoiceVo.getInvoiceNo());
                 setConfirmId(confirmInvoiceVo.getCustomerId());
-                setConfirmName(confirmInvoiceVo.getCustomerName());
+                setConfirmName(finalConfirmName);
                 setConfirmTime(System.currentTimeMillis());
                 setState(2);
             }}, new QueryWrapper<ReceiveSettlement>()
@@ -1230,9 +1300,21 @@ public class FinanceServiceImpl implements IFinanceService {
          * @return
          */
         public ResultVo verificationReceiveSettlement() {
+            if(StringUtils.isEmpty(verificationReceiveSettlementVo.getSerialNumber())){
+                return BaseResultUtil.fail("结算流水号不能为空！");
+            }
+            if(verificationReceiveSettlementVo.getCustomerId() == null){
+                return BaseResultUtil.fail("核销人id不能为空！");
+            }
+            String verificationName = null;
+            if(StringUtils.isEmpty(verificationReceiveSettlementVo.getCustomerName())){
+                Admin admin = csAdminService.validate(verificationReceiveSettlementVo.getCustomerId());
+                verificationName = admin.getName();
+            }
+            String finalVerificationName = verificationName;
             int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
                 setVerificationId(verificationReceiveSettlementVo.getCustomerId());
-                setVerificationName(verificationReceiveSettlementVo.getCustomerName());
+                setVerificationName(finalVerificationName);
                 setState(3);
                 setVerificationTime(System.currentTimeMillis());
             }}, new QueryWrapper<ReceiveSettlement>()
