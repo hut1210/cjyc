@@ -69,8 +69,6 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     @Value("${cjkj.dept_admin_id}")
     private Long YC_CT_DEPT_ID;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo saveAdmin(AddDto dto) {
@@ -186,7 +184,7 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
             dto.setOverwriteFlag(1);
         }
 //        if (dto.getDeptType() == null) {
-            dto.setDeptType(role.getRoleLevel());
+        dto.setDeptType(role.getRoleLevel());
 //        }
         //TODO 改写角色列表获取
         user.setRoleIdList(resolvePlatformRoleIds(rolesRd.getData(), dto, admin, role));
@@ -422,9 +420,9 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
     private void updateUserRoleDept(AssignRoleNewDto dto) {
         if (dto.getOverwriteFlag().equals(1)) {
             userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda()
-                .eq(UserRoleDept::getUserId, dto.getId())
-                .eq(UserRoleDept::getDeptType, UserTypeEnum.ADMIN.code)
-                .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
+                    .eq(UserRoleDept::getUserId, dto.getId())
+                    .eq(UserRoleDept::getDeptType, UserTypeEnum.ADMIN.code)
+                    .eq(UserRoleDept::getUserType, UserTypeEnum.ADMIN.code));
         }
         dto.getDeptIdList().forEach(dId -> {
             //关系表中存在有效关系无需变更否则新增一条
@@ -443,12 +441,12 @@ public class SalesmanServiceImpl extends ServiceImpl<IAdminDao, Admin> implement
                 userRoleDept.setDeptLevel(dto.getDeptType());
                 userRoleDept.setDeptType(UserTypeEnum.ADMIN.code);
                 userRoleDept.setUserType(UserTypeEnum.ADMIN.code);
-                userRoleDept.setCreateTime(NOW);
+                userRoleDept.setCreateTime(System.currentTimeMillis());
                 userRoleDept.setCreateUserId(dto.getLoginId());
                 userRoleDeptDao.insert(userRoleDept);
             }else {
                 userRoleDeptList.forEach(ur -> {
-                    ur.setUpdateTime(NOW);
+                    ur.setUpdateTime(System.currentTimeMillis());
                     ur.setUpdateUserId(dto.getLoginId());
                     userRoleDeptDao.updateById(ur);
                 });

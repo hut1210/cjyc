@@ -76,7 +76,7 @@ public class PaymentVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:dd");
     }
 
     @ApiModelProperty(value = "客户Id")
@@ -106,4 +106,19 @@ public class PaymentVo implements Serializable {
 
     @ApiModelProperty(value = "合同Id")
     private Long customerContractId;
+
+    @ApiModelProperty(value = "付款时间")
+    private Long payTime;
+
+    @Excel(name = "付款时间" ,orderNum = "15")
+    private String payTimeStr;
+
+    public String getPayTimeStr() {
+
+        Long date = getPayTime();
+        if (null == date || date <= 0L) {
+            return "";
+        }
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:dd");
+    }
 }

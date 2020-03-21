@@ -52,7 +52,7 @@ public class PaidNewVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd mm:HH:ss");
+        return LocalDateTimeUtil.formatLong(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "付款状态 0未付款 2已付款")

@@ -1,7 +1,5 @@
 package com.cjyc.foreign.api.utils;
 
-import com.cjyc.foreign.api.push.IOrderConfirmPushable;
-import com.cjyc.foreign.api.push.IOrderStatePushable;
 import com.cjyc.foreign.api.push.IPushable;
 import org.springframework.util.CollectionUtils;
 

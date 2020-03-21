@@ -181,8 +181,5 @@ public class DispatchController {
         return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
     }
 
-    public static void main(String[] args) {
-
-    }
 
 }

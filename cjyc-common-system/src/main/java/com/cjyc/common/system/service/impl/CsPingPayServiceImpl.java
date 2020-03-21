@@ -1004,10 +1004,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         if(showPartnerVo.getCardType()==1){
             log.info("开户行={}",showPartnerVo.getBankName());
             params.put("type", "b2b");
-            params.put("sub_bank", "交通银行股份有限公司珠海拱北支行");
-            params.put("sub_bank_code", "301585000042");
-            params.put("prov", "广东");
-            params.put("city", "珠海");
         }else{
             params.put("type", "b2c");
         }
@@ -1022,6 +1018,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         extra.put("card_number", showPartnerVo.getCardNo());
         //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
         extra.put("open_bank_code",showPartnerVo.getBankCode());
+        if(showPartnerVo.getCardType()==1){
+            extra.put("sub_bank", "交通银行股份有限公司珠海拱北支行");
+            extra.put("sub_bank_code", "301585000042");
+            extra.put("prov", "广东");
+            extra.put("city", "珠海");
+        }
 
         params.put("extra", extra);
 
@@ -1066,7 +1068,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }else{
             log.info("webPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
-            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+            if (!redisLock.lock(lockKey, 300000, 10, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
         }
@@ -1177,7 +1179,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }else{
             log.info("salesPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
-            if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
+            if (!redisLock.lock(lockKey, 300000, 10, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
         }
@@ -1270,18 +1272,30 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }else{
                     log.info("退款 start，orderId = {}",orderId);
                     TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
+                    if(tradeBill==null){
+                        return;
+                    }
                     String pingPayId = tradeBill.getPingPayId();
                     initPingApiKey();
-                    Map<String, Object> params = new HashMap<String, Object>();
-                    params.put("description", description); // 必传
-                    params.put("refund_mode", "to_source");//退款方式 原路退回
+                    if(pingPayId.startsWith("ch")){
+                        com.pingplusplus.model.Refund rf = null;
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("description", description);
+                        params.put("amount", tradeBill.getAmount());// 退款的金额, 单位为对应币种的最小货币单位，例如：人民币为分（如退款金额为 1 元，此处请填 100）。必须小于等于可退款金额，默认为全额退款
+                        rf = com.pingplusplus.model.Refund.create(tradeBill.getPingPayId(),params);
+                        log.info("退款 orderId ={},refund ={}",orderId,rf.toString());
+                    }else{
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("description", description); // 必传
+                        params.put("refund_mode", "to_source");//退款方式 原路退回
 
-                    PingxxMetaData pingxxMetaData = new PingxxMetaData();
-                    pingxxMetaData.setOrderNo(orderNo);
+                        PingxxMetaData pingxxMetaData = new PingxxMetaData();
+                        pingxxMetaData.setOrderNo(orderNo);
 
-                    Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
-                    params.put("metadata",meta);//自定义参数
-                    OrderRefund.create(pingPayId, params);
+                        Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
+                        params.put("metadata",meta);//自定义参数
+                        OrderRefund.create(pingPayId, params);
+                    }
 
                     //添加退款记录
                     try{

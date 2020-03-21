@@ -70,15 +70,13 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo<CustomerLoginVo> login(LoginDto dto) {
         Customer c = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone, dto.getPhone()));
         if(c == null){
             //添加数据
-           c = addToPlatform(dto.getPhone());
+            c = addToPlatform(dto.getPhone());
         }
         if(c != null){
             if(c.getType() == CustomerTypeEnum.ENTERPRISE.code){
@@ -128,8 +126,8 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         c.setType(CustomerTypeEnum.INDIVIDUAL.code);
         c.setState(CommonStateEnum.CHECKED.code);
         c.setSource(CustomerSourceEnum.APP.code);
-        c.setRegisterTime(NOW);
-        c.setCreateTime(NOW);
+        c.setRegisterTime(System.currentTimeMillis());
+        c.setCreateTime(System.currentTimeMillis());
         //新增用户信息到物流平台
         ResultData<Long> rd = comCustomerService.addCustomerToPlatform(c);
         c.setUserId(rd.getData());
@@ -291,7 +289,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         customer.setPayMode(CustomerPayEnum.TIME_PAY.code);
         customer.setType(CustomerTypeEnum.INDIVIDUAL.code);
         customer.setSource(CustomerSourceEnum.APP.code);
-        customer.setCreateTime(NOW);
+        customer.setCreateTime(System.currentTimeMillis());
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
             return BaseResultUtil.fail("C端客户角色不存在，请先添加");

@@ -1,11 +1,10 @@
 package com.cjyc.foreign.api.mqhandler;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjkj.mq.rabbit.bean.BasicRabbitMessage;
 import com.cjkj.mq.rabbit.sender.MessageSender;
-import com.cjyc.foreign.api.constant.MQConstant;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.foreign.api.push.IPushable;
 import com.cjyc.foreign.api.utils.PushUtil;
 import com.rabbitmq.client.Channel;
@@ -17,14 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -39,10 +36,6 @@ public class YcPushTask {
      */
     private static final ThreadPoolExecutor EXEC = new ThreadPoolExecutor(3, 10, 3, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(3), new ThreadPoolExecutor.DiscardOldestPolicy());
-    /**
-     * 失败回调次数统计
-     */
-    private ConcurrentHashMap<String, Integer> failTimes = new ConcurrentHashMap<>();
     //发送失败后重发策略
     private static Map<Integer, Integer> retryRule = new HashMap<>();
     //重发唯一标识
@@ -51,15 +44,17 @@ public class YcPushTask {
     private static final String BIZ_TYPE = "type";
     //业务数据key
     private static final String BIZ_DATA = "data";
+    //失败次数key
+    private static final String FAIL_TIMES = "fail:times:";
     static {
         retryRule.put(1, 600000);
         retryRule.put(2, 1800000);
         retryRule.put(3, 3600000);
-//        retryRule.put(4, 360);
-//        retryRule.put(5, 1440);
     }
     @Autowired
     private MessageSender messageSender;
+    @Autowired
+    private RedisUtils redisUtils;
     /**
     * @Description: 韵车mq消息推送消费
     * @Param: [message, channel]
@@ -67,8 +62,8 @@ public class YcPushTask {
     * @Author: zcm
     * @Date: 2020/3/13
     */
-//    @RabbitHandler
-//    @RabbitListener(queues = MQConstant.QUEUE_YC_PUSH)
+    @RabbitHandler
+    @RabbitListener(queues = "${mq.rabbit.yc.push.queue}")
     private void pushOrderStateFunc(Message message, Channel channel) {
         EXEC.execute(() -> {
             final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -85,14 +80,14 @@ public class YcPushTask {
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     return;
                 }
-                //TODO 判定消息业务类型
+                //判定消息业务类型
                 IPushable pushable = PushUtil.determinePushable(obj.getString(BIZ_TYPE));
                 if (null == pushable) {
                     log.error("此消息没有对应推送器，请检查! 数据为: {}", obj);
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     return;
                 }
-                //TODO 调用状态回调接口
+                //调用状态回调接口
                 if (pushable.push(obj.getJSONObject(BIZ_DATA))) {
                     //正常逻辑处理后在应答, 需要先调用推送接口并解析返回结果，成功后确认
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -100,11 +95,9 @@ public class YcPushTask {
                     //失败统计信息清空
                     String retryFlag = obj.getString(RETRY_FLAG);
                     if (!StringUtils.isEmpty(retryFlag)) {
-                        failTimes.remove(retryFlag);
+                        redisUtils.delete(FAIL_TIMES+retryFlag);
                     }
                 }else {
-                    //推送不成功
-                    log.error("推送信息失败：信息标识:{}", obj.getString(RETRY_FLAG));
                     //推送到对方接口失败，不是mq失败
                     onPushFail(message, channel, obj);
                 }
@@ -153,13 +146,9 @@ public class YcPushTask {
         String flag = msgJo.getString(RETRY_FLAG);
         if (StringUtils.isEmpty(flag)) {
             flag = UUID.randomUUID().toString();
-            log.info("接受时间 ：{} , 新信息标识：{} " , new Date(), flag);
             msgJo.put(RETRY_FLAG, flag);
-            failTimes.put(flag, 1);
-        }else {
-            log.info("接受时间 ： {} , 旧信息标识：{} ", new Date(), flag);
-            failTimes.put(flag, failTimes.get(flag) == null? 1: failTimes.get(flag) + 1);
         }
+        redisUtils.incrBy(FAIL_TIMES+flag, 1);
         //确认消息
         try {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -168,22 +157,25 @@ public class YcPushTask {
         }
         //检查第几次失败，然后发送到延迟队列中
         Optional<Integer> max = retryRule.keySet().stream().max((o1, o2) -> o1.compareTo(o2));
-        if (max.get() >= failTimes.get(flag)) {
-            //调用延迟重发
-            Integer delayTime = retryRule.get(
-                    failTimes.get(flag));
-            log.info("第{}次重发, 延迟时间：{}", failTimes.get(flag), delayTime);
-            BasicRabbitMessage brm = new BasicRabbitMessage();
-            brm.setExchangeName(message.getMessageProperties().getReceivedExchange());
-            brm.setRoutingKey(message.getMessageProperties().getReceivedRoutingKey());
-            brm.setMsg(msgJo);
-            brm.setUniqueSequence(flag);
-            brm.setBizCode("韵车推送");
-            messageSender.sendDelayRabbit(brm, delayTime);
-        }else {
-            log.info("消息重发超过最大次数，标识：{}", flag);
-            //不在重发
-            failTimes.remove(flag);
+        String timesStr = redisUtils.get(FAIL_TIMES + flag);
+        if (!StringUtils.isEmpty(timesStr)) {
+            if (max.get() >= Integer.parseInt(timesStr)) {
+                //调用延迟重发
+                Integer delayTime = retryRule.get(
+                        Integer.parseInt(timesStr));
+                log.info("第{}次重发, 延迟时间：{}, 标识: {}", timesStr, delayTime, flag);
+                BasicRabbitMessage brm = new BasicRabbitMessage();
+                brm.setExchangeName(message.getMessageProperties().getReceivedExchange());
+                brm.setRoutingKey(message.getMessageProperties().getReceivedRoutingKey());
+                brm.setMsg(msgJo);
+                brm.setUniqueSequence(flag);
+                brm.setBizCode("韵车推送");
+                messageSender.sendDelayRabbit(brm, delayTime);
+            }else {
+                log.info("消息重发超过最大次数，标识：{}", flag);
+                //不在重发
+                redisUtils.delete(FAIL_TIMES+flag);
+            }
         }
     }
 }

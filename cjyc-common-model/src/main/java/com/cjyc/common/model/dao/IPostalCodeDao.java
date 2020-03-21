@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.entity.ChinaPostalCode;
+import com.cjyc.common.model.entity.PostalCode;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import org.apache.ibatis.annotations.Param;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author JPG
  * @since 2020-03-16
  */
-public interface IChinaPostalCodeDao extends BaseMapper<ChinaPostalCode> {
+public interface IPostalCodeDao extends BaseMapper<PostalCode> {
 
     /**
      * 根据关键字获取省/地区

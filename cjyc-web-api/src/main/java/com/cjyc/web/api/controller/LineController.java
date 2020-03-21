@@ -98,4 +98,11 @@ public class LineController {
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
+    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/saveOrUpdateExcel/loginId(导入用户ID)格式")
+    @PostMapping("/saveOrUpdateExcel/{loginId}")
+    public ResultVo saveOrUpdateExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+        boolean result = lineService.saveOrUpdateExcel(file, loginId);
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
 }

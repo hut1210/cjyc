@@ -1,21 +1,19 @@
 package com.cjyc.web.api.service.impl;
 
 import com.cjkj.common.utils.ExcelUtil;
-import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
-import com.cjyc.common.model.dto.web.publicPayBank.PayBankImportExcel;
-import com.cjyc.common.model.entity.PublicPayBank;
-import com.cjyc.common.model.dao.IPublicPayBankDao;
+import com.cjyc.common.model.dto.web.payBank.PayBankDto;
+import com.cjyc.common.model.dto.web.payBank.PayBankImportExcel;
+import com.cjyc.common.model.entity.PayBank;
+import com.cjyc.common.model.dao.IPayBankDao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.postal.ProvinceVo;
-import com.cjyc.common.model.vo.web.publicPay.PayBankVo;
+import com.cjyc.common.model.vo.web.payBank.PayBankVo;
 import com.cjyc.common.system.util.RedisUtils;
-import com.cjyc.web.api.service.IPublicPayBankService;
+import com.cjyc.web.api.service.IPayBankService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +22,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -38,14 +35,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
-public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, PublicPayBank> implements IPublicPayBankService {
+public class PayBankServiceImpl extends ServiceImpl<IPayBankDao, PayBank> implements IPayBankService {
 
     @Resource
-    private IPublicPayBankDao payBankDao;
+    private IPayBankDao payBankDao;
     @Resource
     private RedisUtils redisUtils;
-
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
 
     @Override
     public boolean importPayBankExcel(MultipartFile file, Long loginId) {
@@ -54,13 +49,13 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
             List<PayBankImportExcel> payBankImportList = ExcelUtil.importExcel(file, 0, 1, PayBankImportExcel.class);
             if(!CollectionUtils.isEmpty(payBankImportList)){
                 for(PayBankImportExcel payBankImport : payBankImportList){
-                    PublicPayBank ppb = new PublicPayBank();
+                    PayBank ppb = new PayBank();
                     ppb.setBankCode(payBankImport.getBankCode());
                     ppb.setPayBankNo(payBankImport.getPayBankNo());
                     ppb.setSubBankName(payBankImport.getSubBankName());
                     ppb.setAreaCode(payBankImport.getPayBankNo().substring(3,7));
                     ppb.setCreateUserId(loginId);
-                    ppb.setCreateTime(NOW);
+                    ppb.setCreateTime(System.currentTimeMillis());
                     payBankDao.insert(ppb);
                 }
                 result = true;
@@ -96,8 +91,8 @@ public class PublicPayBankServiceImpl extends ServiceImpl<IPublicPayBankDao, Pub
     }
 
     @Override
-    public PublicPayBank findPayBank(String subBankName) {
-        PublicPayBank payBank = payBankDao.findPayBank(subBankName);
+    public PayBank findPayBank(String subBankName) {
+        PayBank payBank = payBankDao.findPayBank(subBankName);
         return payBank;
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 
 /**
@@ -67,5 +68,10 @@ public class InvoiceApplyExportExcel implements Serializable {
             return "已开票";
         }
         return "";
+    }
+
+    public String getAmount() {
+        DecimalFormat df2 =new DecimalFormat("#.00");
+        return amount.equals(BigDecimal.ZERO) ? "0.00" : df2.format(amount.doubleValue() / 100);
     }
 }

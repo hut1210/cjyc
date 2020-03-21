@@ -102,5 +102,7 @@ public interface ICsOrderService {
 
     ResultVo changeOrderCarCarryType(ChangeCarryTypeDto reqDto);
 
+    boolean validateIsArriveStoreOrCityRange(String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode);
+
     BigDecimal getCarWlFee(OrderCar orderCar);
 }

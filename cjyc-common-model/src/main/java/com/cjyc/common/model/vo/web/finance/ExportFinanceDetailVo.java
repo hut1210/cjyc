@@ -90,8 +90,29 @@ public class ExportFinanceDetailVo implements Serializable {
     }
 
     @ApiModelProperty(value = "承运商类型")
-    @Excel(name = "承运商类型" ,orderNum = "12")
     private String carrierType;
+
+    @Excel(name = "承运商类型" ,orderNum = "12")
+    private String carrierTypeStr;
+
+    public String getCarrierTypeStr() {
+        String type = getCarrierType();
+        if (type != null) {
+            if (type.equals("1")) {
+                return "个人承运商";
+            }
+            if (type.equals("2")) {
+                return "企业承运商";
+            }
+            if (type.equals("4")) {
+                return "代驾";
+            }
+            if (type.equals("5")) {
+                return "拖车";
+            }
+        }
+        return "";
+    }
 
     @ApiModelProperty(value = "承运商名称")
     @Excel(name = "承运商名称" ,orderNum = "13")

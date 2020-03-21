@@ -1,4 +1,4 @@
-package com.cjyc.common.model.dto.web.publicPayBank;
+package com.cjyc.common.model.dto.web.payBank;
 
 import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,6 +8,9 @@ import java.io.Serializable;
 @Data
 public class PayBankDto extends BasePageDto implements Serializable {
     private static final long serialVersionUID = 5777438693363192382L;
+
+    @ApiModelProperty(value = "银行代码")
+    private String bankCode;
 
     @ApiModelProperty(value = "支行名称")
     private String subBankName;

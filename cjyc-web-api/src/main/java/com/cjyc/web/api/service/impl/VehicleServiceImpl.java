@@ -52,8 +52,6 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
     @Resource
     private ITaskDao taskDao;
 
-    private static final Long NOW = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
-
     @Override
     public ResultVo saveVehicle(VehicleDto dto) {
         //判断车辆是否已有
@@ -65,7 +63,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         BeanUtils.copyProperties(dto, vehicle);
         vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
         vehicle.setCreateUserId(dto.getLoginId());
-        vehicle.setCreateTime(NOW);
+        vehicle.setCreateTime(System.currentTimeMillis());
         boolean result = super.save(vehicle);
         if(result){
             return BaseResultUtil.success();
@@ -121,7 +119,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         Vehicle vehicle = vehicleDao.selectById(dto.getVehicleId());
         vehicle.setDefaultCarryNum(dto.getDefaultCarryNum());
         vehicle.setCreateUserId(dto.getLoginId());
-        vehicle.setCreateTime(NOW);
+        vehicle.setCreateTime(System.currentTimeMillis());
         vehicleDao.updateById(vehicle);
         return BaseResultUtil.success();
     }
@@ -131,23 +129,23 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
         SelectVehicleDto dto = getVehicleDto(request);
         List<VehicleVo> vehicleVos = vehicleDao.findVehicle(dto);
         //if (!CollectionUtils.isEmpty(vehicleVos)) {
-            // 生成导出数据
-            List<VehicleExportExcel> exportExcelList = new ArrayList<>();
-            for (VehicleVo vo : vehicleVos) {
-                VehicleExportExcel vehicleExportExcel = new VehicleExportExcel();
-                BeanUtils.copyProperties(vo, vehicleExportExcel);
-                exportExcelList.add(vehicleExportExcel);
-            }
-            String title = "车辆管理";
-            String sheetName = "车辆管理";
-            String fileName = "车辆管理.xls";
-            try {
-                //if(!CollectionUtils.isEmpty(exportExcelList)){
-                    ExcelUtil.exportExcel(exportExcelList, title, sheetName, VehicleExportExcel.class, fileName, response);
-                //}
-            } catch (IOException e) {
-                log.error("导出车辆管理信息异常:{}",e);
-            }
+        // 生成导出数据
+        List<VehicleExportExcel> exportExcelList = new ArrayList<>();
+        for (VehicleVo vo : vehicleVos) {
+            VehicleExportExcel vehicleExportExcel = new VehicleExportExcel();
+            BeanUtils.copyProperties(vo, vehicleExportExcel);
+            exportExcelList.add(vehicleExportExcel);
+        }
+        String title = "车辆管理";
+        String sheetName = "车辆管理";
+        String fileName = "车辆管理.xls";
+        try {
+            //if(!CollectionUtils.isEmpty(exportExcelList)){
+            ExcelUtil.exportExcel(exportExcelList, title, sheetName, VehicleExportExcel.class, fileName, response);
+            //}
+        } catch (IOException e) {
+            log.error("导出车辆管理信息异常:{}",e);
+        }
         //}
     }
 
@@ -179,7 +177,7 @@ public class VehicleServiceImpl extends ServiceImpl<IVehicleDao, Vehicle> implem
                     BeanUtils.copyProperties(vehicleImportExcel, vehicle);
                     vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
                     vehicle.setCreateUserId(loginId);
-                    vehicle.setCreateTime(NOW);
+                    vehicle.setCreateTime(System.currentTimeMillis());
                     super.save(vehicle);
                 }
                 result = true;

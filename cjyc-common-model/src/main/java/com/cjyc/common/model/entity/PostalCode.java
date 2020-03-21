@@ -21,9 +21,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("s_public_pay_bank")
-@ApiModel(value="PublicPayBank对象", description="")
-public class PublicPayBank implements Serializable {
+@TableName("s_postal_code")
+@ApiModel(value="PostalCode对象", description="")
+public class PostalCode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,16 +31,16 @@ public class PublicPayBank implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "银行编码")
-    private String bankCode;
+    @ApiModelProperty(value = "省直辖市名称")
+    private String provinceName;
 
-    @ApiModelProperty(value = "支付行号")
-    private String payBankNo;
+    @ApiModelProperty(value = "地区名称")
+    private String areaName;
 
-    @ApiModelProperty(value = "支行名称")
-    private String subBankName;
+    @ApiModelProperty(value = "邮政编码")
+    private String postalCode;
 
-    @ApiModelProperty(value = "地区码")
+    @ApiModelProperty(value = "电话区号")
     private String areaCode;
 
     @ApiModelProperty(value = "创建人id")

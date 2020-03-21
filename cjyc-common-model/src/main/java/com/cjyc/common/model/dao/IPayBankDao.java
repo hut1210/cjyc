@@ -1,9 +1,9 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.web.publicPayBank.PayBankDto;
-import com.cjyc.common.model.entity.PublicPayBank;
+import com.cjyc.common.model.dto.web.payBank.PayBankDto;
+import com.cjyc.common.model.entity.PayBank;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.vo.web.publicPay.PayBankVo;
+import com.cjyc.common.model.vo.web.payBank.PayBankVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author JPG
  * @since 2020-03-16
  */
-public interface IPublicPayBankDao extends BaseMapper<PublicPayBank> {
+public interface IPayBankDao extends BaseMapper<PayBank> {
 
     /**
      * 获取对公支付银行信息
@@ -30,6 +30,6 @@ public interface IPublicPayBankDao extends BaseMapper<PublicPayBank> {
      * @param subBankName
      * @return
      */
-    PublicPayBank findPayBank(@Param("subBankName") String subBankName);
+    PayBank findPayBank(@Param("subBankName") String subBankName);
 
 }

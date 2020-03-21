@@ -58,7 +58,7 @@ public class ExportFinanceVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:dd");
     }
 
     /*@ApiModelProperty(value = "客户Id")
@@ -115,15 +115,15 @@ public class ExportFinanceVo implements Serializable {
     @Excel(name = "应收运费" ,orderNum = "15")
     private BigDecimal freightReceivable;
 
-    /*@JsonSerialize(using = BigDecimalSerizlizer.class)
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "开票金额")
-    @Excel(name = "车辆编号" ,orderNum = "16")
+    @Excel(name = "开票金额" ,orderNum = "16")
     private BigDecimal invoiceFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "差额")
-    @Excel(name = "车辆编号" ,orderNum = "17")
-    private BigDecimal Difference;*/
+    @Excel(name = "差额" ,orderNum = "17")
+    private BigDecimal difference;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "实收金额")
@@ -140,7 +140,7 @@ public class ExportFinanceVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:dd");
     }
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)

@@ -40,11 +40,11 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             } else {
                 resultVo = BaseResultUtil.fail("未查询到数据...");
             }
-            log.info("<===查询报价，返回参数：{}", JSON.toJSONString(resultVo));
         } catch (BeansException e) {
             log.error("===>查询报价出现异常：{}",e);
             resultVo = BaseResultUtil.fail("查询报价出现异常...");
         }
+        log.info("<===查询报价，返回参数：{}", JSON.toJSONString(resultVo));
         return resultVo;
     }
 }

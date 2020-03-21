@@ -1,53 +1,102 @@
 package com.cjyc.server.pay;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
 
 public class test {
 
-
-
     public static void main(String[] args) {
-        BigDecimal a1 = new BigDecimal(1111);
-        BigDecimal a2 = new BigDecimal(1000);
-        BigDecimal a3 = new BigDecimal(1000);
-        BigDecimal a4 = new BigDecimal(1000);
-        BigDecimal a5 = new BigDecimal(1000);
-        BigDecimal fee = new BigDecimal(2004);
 
-        BigDecimal sum = a1.add(a2).add(a3);
-
-        BigDecimal r1 = a1.divide(sum, 10, RoundingMode.DOWN);
-        BigDecimal r2 = a2.divide(sum, 10, RoundingMode.DOWN);
-
-        BigDecimal n1 = r1.multiply(fee).setScale(2, RoundingMode.HALF_DOWN);
-        BigDecimal n2 = r2.multiply(fee).setScale(2, RoundingMode.HALF_DOWN);
-        BigDecimal n3 = fee.subtract(n1).subtract(n2);
-        System.out.println(n1);
-        System.out.println(n2);
-        System.out.println(n3);
-
-        Map<String, Object> map = Maps.newHashMap();
-        for(int i = 0 ; i < 5 ; i++ ){
-            map.put("r" + i, 55);
+        List<Car> list = Lists.newArrayList();
+        for (int i = 0; i < 11; i++) {
+            Car car = new Car();
+            car.setCarNo("D20200319-00" + i);
+            car.setLineFee(new BigDecimal(0));
+            list.add(car);
         }
-        //computeUnabsoluteAvg(new BigDecimal(1000), map);
-
+        computeUnabsoluteAvg(new BigDecimal(2099.15), list);
 
     }
 
-    private static void computeUnabsoluteAvg(BigDecimal total, TreeMap<String, BigDecimal> args) {
-        BigDecimal sum = BigDecimal.ZERO;
-        //args.values().stream().map(bigDecimal -> {}).reduce()
-        for (Map.Entry<String, BigDecimal> entry : args.entrySet()) {
-            sum = sum.add(entry.getValue() == null ? BigDecimal.ZERO : entry.getValue());
+    private static void computeUnabsoluteAvg(BigDecimal total, List<Car> args) {
+
+        if (total == null || CollectionUtils.isEmpty(args)) {
+            return;
         }
-        for (Map.Entry<String, BigDecimal> entry : args.entrySet()) {
+
+        //求线路费用和
+        BigDecimal lineFeeSum = args.stream().map(Car::getLineFee).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (lineFeeSum.compareTo(BigDecimal.ZERO) == 0) {
+            lineFeeSum = new BigDecimal(args.size());
+            args.forEach(car -> car.setLineFee(BigDecimal.ONE));
+        }
+        //车辆实际费用（保留精度后）之和
+        BigDecimal carFeeSum = BigDecimal.ZERO;
+        for (Car car : args) {
+            BigDecimal ratio = BigDecimal.ZERO;
+            if (car.getLineFee() != null) {
+                //车辆实际费用 = 车辆线路费用 X 输入总费用 / 线路费用之和，保留精度，后位舍弃
+                ratio = car.getLineFee().multiply(total).divide(lineFeeSum, 2, RoundingMode.DOWN);
+            }
+            System.out.println(car.getCarNo() + ":" + ratio);
+            car.setCarFee(ratio);
+            //求和
+            carFeeSum = carFeeSum.add(ratio);
 
         }
+
+        System.out.println("---------------------------------------");
+        BigDecimal oneFen = BigDecimal.ONE.divide(new BigDecimal(100), 2, RoundingMode.DOWN);
+        BigDecimal cha = total.subtract(carFeeSum);
+        //总费用 与 车辆实际费用 差值
+        if (BigDecimal.ZERO.compareTo(cha) != 0) {
+            //不能均分
+            for (Car car : args) {
+                //运费
+                if (cha.compareTo(BigDecimal.ZERO) <= 0) {
+                    break;
+                }
+                car.setCarFee(car.getCarFee().add(oneFen));
+                cha = cha.subtract(oneFen);
+            }
+        }
+
+        args.forEach(c -> System.out.println(c.getCarFee()));
+
+    }
+
+}
+
+class Car {
+    private String carNo;
+    private BigDecimal lineFee;
+    private BigDecimal carFee;
+
+    public String getCarNo() {
+        return carNo;
+    }
+
+    public void setCarNo(String carNo) {
+        this.carNo = carNo;
+    }
+
+    public BigDecimal getLineFee() {
+        return lineFee;
+    }
+
+    public void setLineFee(BigDecimal lineFee) {
+        this.lineFee = lineFee;
+    }
+
+    public BigDecimal getCarFee() {
+        return carFee;
+    }
+
+    public void setCarFee(BigDecimal carFee) {
+        this.carFee = carFee;
     }
 }
