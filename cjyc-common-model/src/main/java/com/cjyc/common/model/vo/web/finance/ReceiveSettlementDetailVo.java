@@ -1,33 +1,24 @@
-package com.cjyc.common.model.entity;
+package com.cjyc.common.model.vo.web.finance;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
 /**
  * <p>
- * 应收账款结算详情表
+ * 应收账款结算详情参数Vo
  * </p>
  *
  * @author RenPL
  * @since 2020-3-20
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("s_settlement_detail")
-@ApiModel(value = "ReceiveSettlementDetail", description = "应收账款结算详情表")
-public class ReceiveSettlementDetail {
+@ApiModel(value = "ReceiveSettlementDetailVo", description = "应收账款结算详情参数Vo")
+public class ReceiveSettlementDetailVo {
 
     @ApiModelProperty(value = "id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "订单车辆id")
@@ -59,7 +50,7 @@ public class ReceiveSettlementDetail {
     @ApiModelProperty(value = "开票金额")
     private BigDecimal invoiceFee;
 
-        @ApiModelProperty(value = "始发地")
+    @ApiModelProperty(value = "始发地")
     private String startAddress;
 
     @ApiModelProperty(value = "目的地")

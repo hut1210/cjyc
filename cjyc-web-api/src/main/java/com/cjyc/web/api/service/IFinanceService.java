@@ -43,7 +43,7 @@ public interface IFinanceService {
      * @param paymentDaysQueryDto
      * @return
      */
-    ResultVo<PageVo<PaymentVo>> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto);
+    ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto);
 
     ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto);
 

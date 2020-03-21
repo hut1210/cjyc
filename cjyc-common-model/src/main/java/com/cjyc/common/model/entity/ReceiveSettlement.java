@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("r_settlement")
+@TableName("s_settlement")
 @ApiModel(value = "ReceiveSettlement", description = "应收账款结算表")
 public class ReceiveSettlement {
 

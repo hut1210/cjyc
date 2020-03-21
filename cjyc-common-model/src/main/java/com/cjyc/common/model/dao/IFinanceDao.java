@@ -29,7 +29,7 @@ public interface IFinanceDao extends BaseMapper {
      * @param paymentDaysQueryDto
      * @return
      */
-    List<PaymentVo> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto);
+    List<ReceiveOrderCarDto> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto);
 
     List<PaidVo> getPaidList(PayMentQueryDto payMentQueryDto);
 
