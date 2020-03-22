@@ -26,10 +26,10 @@ public interface IFinanceDao extends BaseMapper {
     /**
      * 账期应收账款列表查询
      *
-     * @param paymentDaysQueryDto
+     * @param financeQueryDto
      * @return
      */
-    List<ReceiveOrderCarDto> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto);
+    List<ReceiveOrderCarDto> listPaymentDaysInfo(FinanceQueryDto financeQueryDto);
 
     List<PaidVo> getPaidList(PayMentQueryDto payMentQueryDto);
 

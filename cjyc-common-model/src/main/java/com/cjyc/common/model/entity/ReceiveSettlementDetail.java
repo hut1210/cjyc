@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -24,7 +25,9 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @TableName("s_settlement_detail")
 @ApiModel(value = "ReceiveSettlementDetail", description = "应收账款结算详情表")
-public class ReceiveSettlementDetail {
+public class ReceiveSettlementDetail implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -35,8 +38,6 @@ public class ReceiveSettlementDetail {
 
     @ApiModelProperty(value = "结算流水号")
     private String serialNumber;
-
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
@@ -59,7 +60,7 @@ public class ReceiveSettlementDetail {
     @ApiModelProperty(value = "开票金额")
     private BigDecimal invoiceFee;
 
-        @ApiModelProperty(value = "始发地")
+    @ApiModelProperty(value = "始发地")
     private String startAddress;
 
     @ApiModelProperty(value = "目的地")

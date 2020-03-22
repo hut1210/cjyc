@@ -1207,7 +1207,7 @@
         </if>
     </sql>
     <!--账期应收账款列表查询sql-->
-    <select id="listPaymentDaysInfo" parameterType="com.cjyc.common.model.dto.web.finance.PaymentDaysQueryDto"
+    <select id="listPaymentDaysInfo" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.dto.web.finance.ReceiveOrderCarDto">
         SELECT * FROM
         <!--个人客户账期应收账款信息查询sql-->

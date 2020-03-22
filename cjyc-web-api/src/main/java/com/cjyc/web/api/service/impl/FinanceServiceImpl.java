@@ -405,18 +405,17 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto) {
-        PageHelper.startPage(paymentDaysQueryDto.getCurrentPage(), paymentDaysQueryDto.getPageSize());
-        List<ReceiveOrderCarDto> financeVoList = financeDao.listPaymentDaysInfo(paymentDaysQueryDto);
-        PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(financeVoList);
-//        FinanceQueryDto fqd = new FinanceQueryDto();
-//        List<PaymentVo> pv = financeDao.getPaymentList(fqd);
-//        BigDecimal receiptSummary = tradeBillService.receiptSummary(paymentDaysQueryDto);
-//        BigDecimal incomeSummary = tradeBillService.incomeSummary(paymentDaysQueryDto);
+    public ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(FinanceQueryDto financeQueryDto) {
+        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        List<ReceiveOrderCarDto> receiveOrderCarDtoList = financeDao.listPaymentDaysInfo(financeQueryDto);
+        List<ReceiveOrderCarDto> totalFinanceVoList = financeDao.listPaymentDaysInfo(new FinanceQueryDto());
+        BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
+        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
         Map<String, Object> countInfo = new HashMap<>();
-//        countInfo.put("receiptCount", pv.size());
-//        countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
-//        countInfo.put("ActualReceiptSummary",incomeSummary.divide(new BigDecimal(100)));
+        countInfo.put("receiptCount", totalFinanceVoList.size());
+        countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
+        countInfo.put("ActualReceiptSummary",incomeSummary.divide(new BigDecimal(100)));
+        PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(receiveOrderCarDtoList);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -1037,8 +1036,8 @@ public class FinanceServiceImpl implements IFinanceService {
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
         // 金额分转元
         listInfo.forEach(e -> {
-            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
-            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
         });
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
@@ -1051,8 +1050,8 @@ public class FinanceServiceImpl implements IFinanceService {
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedPayedVo);
         // 金额分转元
         listInfo.forEach(e -> {
-            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
-            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
         });
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
@@ -1069,8 +1068,8 @@ public class FinanceServiceImpl implements IFinanceService {
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
         // 金额分转元
         listInfo.forEach(e -> {
-            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
-            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
         });
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
@@ -1138,12 +1137,12 @@ public class FinanceServiceImpl implements IFinanceService {
      * @param listInfo
      */
     private void moneyFenToYuan(ReceiveSettlement receiveSettlement, List<ReceiveSettlementDetail> listInfo) {
-//        listInfo.forEach(e -> {
-//            e.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
-//            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
-//        });
-        receiveSettlement.setReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getReceivableFee(), MoneyUtil.PATTERN_TWO)));
-        receiveSettlement.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        listInfo.forEach(e -> {
+            e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
+            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        receiveSettlement.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+        receiveSettlement.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
     }
 
     /**
@@ -1206,9 +1205,9 @@ public class FinanceServiceImpl implements IFinanceService {
                             // 结算流水号
                             setSerialNumber(serialNumber);
                             // 应收账款
-                            setReceivableFee(applyReceiveSettlementVo.getReceivableFee());
+                            setTotalReceivableFee(applyReceiveSettlementVo.getTotalReceivableFee());
                             // 开票金额
-                            setInvoiceFee(applyReceiveSettlementVo.getInvoiceFee());
+                            setTotalInvoiceFee(applyReceiveSettlementVo.getTotalInvoiceFee());
                             // 发票id
                             setInvoiceId(customerInvoice.getId());
                             // 结算申请状态
@@ -1344,12 +1343,12 @@ public class FinanceServiceImpl implements IFinanceService {
          * @return
          */
         private ResultVo validateApplyReceiveSettlementParams(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
-            BigDecimal receivableFee = applyReceiveSettlementVo.getReceivableFee();
-            BigDecimal invoiceFee = applyReceiveSettlementVo.getInvoiceFee();
-            if (receivableFee == null || receivableFee.compareTo(BigDecimal.ZERO) < 0) {
+            BigDecimal totalReceivableFee = applyReceiveSettlementVo.getTotalReceivableFee();
+            BigDecimal totalInvoiceFee = applyReceiveSettlementVo.getTotalInvoiceFee();
+            if (totalReceivableFee == null || totalReceivableFee.compareTo(BigDecimal.ZERO) < 0) {
                 return BaseResultUtil.fail("应收运费不能为空或负值");
             }
-            if (invoiceFee == null || invoiceFee.compareTo(BigDecimal.ZERO) < 0) {
+            if (totalInvoiceFee == null || totalInvoiceFee.compareTo(BigDecimal.ZERO) < 0) {
                 return BaseResultUtil.fail("开票金额不能为空或负值");
             }
             if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getReceiveSettlementDetailList())) {

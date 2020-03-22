@@ -37,14 +37,6 @@ public interface IFinanceService {
 
     ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto);
 
-    /**
-     * 账期应收账款列表查询
-     *
-     * @param paymentDaysQueryDto
-     * @return
-     */
-    ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(PaymentDaysQueryDto paymentDaysQueryDto);
-
     ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto);
 
     ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
@@ -177,4 +169,12 @@ public interface IFinanceService {
      * @return
      */
     ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementPayedVo receiveSettlementPayedVo);
+
+    /**
+     * 账期应收账款列表查询
+     *
+     * @param financeQueryDto
+     * @return
+     */
+    ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(FinanceQueryDto financeQueryDto);
 }

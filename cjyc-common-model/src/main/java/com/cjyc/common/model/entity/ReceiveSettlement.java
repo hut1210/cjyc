@@ -34,10 +34,10 @@ public class ReceiveSettlement {
     private String serialNumber;
 
     @ApiModelProperty(value = "应收运费")
-    private BigDecimal receivableFee;
+    private BigDecimal totalReceivableFee;
 
     @ApiModelProperty(value = "开票金额")
-    private BigDecimal invoiceFee;
+    private BigDecimal totalInvoiceFee;
 
     @ApiModelProperty(value = "结算申请时间")
     private Long applyTime;

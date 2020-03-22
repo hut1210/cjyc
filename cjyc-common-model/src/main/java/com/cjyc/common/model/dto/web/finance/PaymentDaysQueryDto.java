@@ -26,26 +26,29 @@ public class PaymentDaysQueryDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
-    @ApiModelProperty(value = "省编号")
+    @ApiModelProperty(value = "交付日期开始时间")
+    private Long completeStartTime;
+
+    @ApiModelProperty(value = "交付日期结束时间")
+    private Long completeEndTime;
+
+    @ApiModelProperty(value = "始发地省编号")
     private String startProvinceCode;
 
-    @ApiModelProperty(value = "市编号")
+    @ApiModelProperty(value = "始发地市编号")
     private String startCityCode;
 
-    @ApiModelProperty(value = "区编号")
+    @ApiModelProperty(value = "始发地区编号")
     private String startAreaCode;
 
-    @ApiModelProperty(value = "省编号")
+    @ApiModelProperty(value = "目的地省编号")
     private String endProvinceCode;
 
-    @ApiModelProperty(value = "市编号")
+    @ApiModelProperty(value = "目的地市编号")
     private String endCityCode;
 
-    @ApiModelProperty(value = "区编号")
+    @ApiModelProperty(value = "目的地区编号")
     private String endAreaCode;
-
-    @ApiModelProperty(value = "客户类型")
-    private Integer type;
 
     @ApiModelProperty(value = "客户账号")
     private String contactPhone;
@@ -56,30 +59,27 @@ public class PaymentDaysQueryDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "结算类型")
     private Integer payMode;
 
-    @ApiModelProperty(value = "收款状态")
-    private String state;
-
-    @ApiModelProperty(value = "大区")
-    private String area;
-
     @ApiModelProperty(value = "品牌")
     private String brand;
 
     @ApiModelProperty(value = "车系")
     private String model;
 
+    @ApiModelProperty(value = "大区")
+    private String area;
+
     @ApiModelProperty(value = "业务中心")
     private String inputStoreName;
 
-    @ApiModelProperty(value = "交付日期开始时间")
-    private Long completeStartTime;
+    @ApiModelProperty(value = "客户类型")
+    private Integer type;
 
-    @ApiModelProperty(value = "交付日期结束时间")
-    private Long completeEndTime;
-
-    @ApiModelProperty(value = "收款开始时间")
-    private Long receiveStartTime;
-
-    @ApiModelProperty(value = "收款结束时间")
-    private Long receiveEndTime;
+//    @ApiModelProperty(value = "收款状态")
+//    private String state;
+//
+//    @ApiModelProperty(value = "收款开始时间")
+//    private Long receiveStartTime;
+//
+//    @ApiModelProperty(value = "收款结束时间")
+//    private Long receiveEndTime;
 }

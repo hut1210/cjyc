@@ -1,32 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cjyc.common.model.dao.IReceiveSettlementDao">
-
-    <select id="listReceiveSettlement" resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
-        SELECT rs.serial_number, rs.receivable_fee, rs.invoice_fee, rs.apply_time, rs.applicant_name, rs.confirm_time,
+    <sql id="Common_Column_List">
+        rs.serial_number, rs.total_receivable_fee, rs.total_invoice_fee, rs.apply_time, rs.applicant_name, rs.confirm_time,
         rs.confirm_name, rs.verification_time, rs.verification_name, cci.type as invoiceType, cci.name as customerName,
         cci.tax_code, cci.invoice_address, cci.tel as phone, cci.bank_name, cci.bank_account, cci.pickup_person,
         cci.pickup_phone, cci.pickup_address, cci.title
-        FROM r_settlement  rs
-            LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
-<!--        <where>-->
-<!--            <if test="name != null and name !=''">-->
-<!--                and ba.`name` LIKE CONCAT('%',#{name},'%')-->
-<!--            </if>-->
-<!--            <if test="roleId != null and roleId > 0">-->
-<!--                AND sur.role_id = #{roleId}-->
-<!--            </if>-->
-<!--        </where>-->
-<!--        ORDER BY create_time DESC-->
+    </sql>
+    <sql id="Common_Condition_List">
+        <if test="serialNumber != null and serialNumber !=''">
+            AND rs.serial_number LIKE CONCAT('%',#{serialNumber},'%')
+        </if>
+        <if test="taxCode != null and taxCode !=''">
+            AND cci.tax_code LIKE CONCAT('%',#{taxCode},'%')
+        </if>
+        <if test="bankAccount != null and bankAccount !=''">
+            AND cci.bank_account LIKE CONCAT('%',#{bankAccount},'%')
+        </if>
+        <if test="applicantName != null and applicantName !=''">
+            AND rs.applicant_name LIKE CONCAT('%',#{applicantName},'%')
+        </if>
+        <if test="invoiceType != null">
+            and cci.type = #{invoiceType}
+        </if>
+        <if test="customerName != null and customerName !=''">
+            AND cci.name LIKE CONCAT('%',#{customerName},'%')
+        </if>
+        <if test="confirmName != null and confirmName !=''">
+            AND rs.confirm_name LIKE CONCAT('%',#{confirmName},'%')
+        </if>
+        <if test="verificationName != null and verificationName !=''">
+            AND rs.verification_name LIKE CONCAT('%',#{verificationName},'%')
+        </if>
+        <if test="startApplyTime!= null">
+            AND rs.apply_time >= #{startApplyTime}
+        </if>
+        <if test="endApplyTime!= null">
+            AND woc.apply_time &lt;= #{endApplyTime}
+        </if>
+        <if test="startConfirmTime!= null">
+            AND rs.confirm_time >= #{startConfirmTime}
+        </if>
+        <if test="endConfirmTime!= null">
+            AND rs.confirm_time &lt;= #{endConfirmTime}
+        </if>
+        <if test="startVerificationTime!= null">
+            AND rs.verification_time >= #{startVerificationTime}
+        </if>
+        <if test="endVerificationTime!= null">
+            AND rs.verification_time &lt;= #{endVerificationTime}
+        </if>
+    </sql>
+    <select id="listReceiveSettlement" resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
+        SELECT
+        <include refid="Common_Column_List"/>
+        FROM r_settlement rs
+        LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
+        <where>
+            <include refid="Common_Condition_List"/>
+        </where>
+        ORDER BY rs.apply_time, rs.confirm_time, rs.verification_time DESC
     </select>
     <select id="listReceiveSettlementNeedInvoice"
             resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
-        SELECT rs.serial_number, rs.receivable_fee, rs.invoice_fee, rs.apply_time, rs.applicant_name, rs.confirm_time,
-        rs.confirm_name, rs.verification_time, rs.verification_name, cci.type as invoiceType, cci.name as customerName,
-        cci.tax_code, cci.invoice_address, cci.tel as phone, cci.bank_name, cci.bank_account, cci.pickup_person,
-        cci.pickup_phone, cci.pickup_address, cci.title
-        FROM r_settlement  rs
-            LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
+        SELECT
+        <include refid="Common_Column_List"/>
+        FROM r_settlement rs
+        LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
         WHERE rs.state in (0,2)
+        <include refid="Common_Condition_List"/>
+        ORDER BY rs.apply_time, rs.confirm_time, rs.verification_time DESC
     </select>
 </mapper>

@@ -15,10 +15,10 @@ import java.math.BigDecimal;
 public class ReceiveSettlementDto {
 
     @ApiModelProperty(value = "应收运费")
-    private BigDecimal receivableFee;
+    private BigDecimal totalReceivableFee;
 
     @ApiModelProperty(value = "开票金额")
-    private BigDecimal invoiceFee;
+    private BigDecimal totalInvoiceFee;
 
     @ApiModelProperty(value = "结算流水号")
     private String serialNumber;

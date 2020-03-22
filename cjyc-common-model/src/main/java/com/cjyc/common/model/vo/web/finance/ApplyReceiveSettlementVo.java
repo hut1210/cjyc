@@ -21,10 +21,10 @@ import java.util.List;
 public class ApplyReceiveSettlementVo {
 
     @ApiModelProperty(value = "应收运费")
-    private BigDecimal receivableFee;
+    private BigDecimal totalReceivableFee;
 
     @ApiModelProperty(value = "开票金额")
-    private BigDecimal invoiceFee;
+    private BigDecimal totalInvoiceFee;
 
     @ApiModelProperty(value = "客户发票")
     private CustomerInvoiceVo customerInvoiceVo;
