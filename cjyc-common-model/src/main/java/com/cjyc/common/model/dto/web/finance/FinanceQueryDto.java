@@ -80,4 +80,10 @@ public class FinanceQueryDto extends BasePageDto implements Serializable {
 
     @ApiModelProperty(value = "收款结束时间")
     private Long receiveEndTime;
+
+    @ApiModelProperty(value = "结算类型：0：时付 1：账期")
+    private Integer settleType;
+
+
+
 }

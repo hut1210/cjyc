@@ -6,6 +6,8 @@ import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
+import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -383,6 +385,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto) {
+        financeQueryDto.setSettleType(0);
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
 
@@ -399,22 +402,30 @@ public class FinanceServiceImpl implements IFinanceService {
         countInfo.put("receiptCount", pv.size());
         countInfo.put("receiptSummary", receiptSummary.divide(new BigDecimal(100)));
 
-        countInfo.put("ActualReceiptSummary", incomeSummary.divide(new BigDecimal(100)));
-        countInfo.put("ActualReceiptSummary",receiptSummary.divide(new BigDecimal(100)));
+        countInfo.put("ActualReceiptSummary", receiptSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
     public ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        financeQueryDto.setSettleType(1);
+        // 应收账款列表查询
         List<ReceiveOrderCarDto> receiveOrderCarDtoList = financeDao.listPaymentDaysInfo(financeQueryDto);
+        receiveOrderCarDtoList.forEach(e -> {
+            e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
+            e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 应收账款列表总条数查询
         List<ReceiveOrderCarDto> totalFinanceVoList = financeDao.listPaymentDaysInfo(new FinanceQueryDto());
-        BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
-        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
+        // 应收账款总额统计
+        BigDecimal receiveSummary = tradeBillService.receiptSummary(financeQueryDto);
+        // 实收账款总额统计
+        BigDecimal actualReceiveSummary = tradeBillService.ActualReceiptSummary(financeQueryDto);
         Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiptCount", totalFinanceVoList.size());
-        countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
-        countInfo.put("ActualReceiptSummary",incomeSummary.divide(new BigDecimal(100)));
+        countInfo.put("receiveCount", totalFinanceVoList.size());
+        countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(receiveSummary, MoneyUtil.PATTERN_TWO)));
+        countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(actualReceiveSummary, MoneyUtil.PATTERN_TWO)));
         PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(receiveOrderCarDtoList);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
@@ -1031,8 +1042,8 @@ public class FinanceServiceImpl implements IFinanceService {
         // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
         ReceiveSettlement receiveSettlement = new ReceiveSettlement();
         BeanUtils.copyProperties(receiveSettlementNeedInvoiceVo, receiveSettlement);
-        // 已结算申请
-        receiveSettlement.setState(1);
+        // 结算申请-已申请发票
+        receiveSettlement.setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
         // 金额分转元
         listInfo.forEach(e -> {
@@ -1064,7 +1075,7 @@ public class FinanceServiceImpl implements IFinanceService {
         ReceiveSettlement receiveSettlement = new ReceiveSettlement();
         BeanUtils.copyProperties(receiveSettlementPayedVo, receiveSettlement);
         // 已核销
-        receiveSettlement.setState(3);
+        receiveSettlement.setState(ReceiveSettlementStateEnum.VERIFICATION.code);
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
         // 金额分转元
         listInfo.forEach(e -> {
@@ -1137,12 +1148,16 @@ public class FinanceServiceImpl implements IFinanceService {
      * @param listInfo
      */
     private void moneyFenToYuan(ReceiveSettlement receiveSettlement, List<ReceiveSettlementDetail> listInfo) {
-        listInfo.forEach(e -> {
-            e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
-            e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
-        });
-        receiveSettlement.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
-        receiveSettlement.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        if (!CollectionUtils.isEmpty(listInfo)) {
+            listInfo.forEach(e -> {
+                e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
+                e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            });
+        }
+        if (receiveSettlement != null) {
+            receiveSettlement.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            receiveSettlement.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        }
     }
 
     /**
@@ -1183,18 +1198,15 @@ public class FinanceServiceImpl implements IFinanceService {
                 try {
                     // 新增发票
                     int needVoice = applyReceiveSettlementVo.getNeedVoice();
-
-                    // 需要开发票
                     CustomerInvoice customerInvoice = new CustomerInvoice();
-                    Integer state = -1;
-                    if (needVoice == 1) {
+                    // 默认不需要开发票
+                    Integer state = ReceiveSettlementStateEnum.UNNEEDED_INVOICE.code;
+                    // 需要开发票
+                    if (needVoice == NeedInvoiceStateEnum.NEEDED_INVOICE.code) {
                         CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
                         BeanUtils.copyProperties(customerInvoiceVo, customerInvoice);
                         customerInvoiceDao.insert(customerInvoice);
-                        state = 1;
-                    } else {
-                        // 不需要开票
-                        state = 0;
+                        state = ReceiveSettlementStateEnum.APPLY_INVOICE.code;
                     }
                     // 新增应收账款
                     String serialNumber = csSendNoService.getNo(SendNoTypeEnum.RECEIPT);
@@ -1205,9 +1217,9 @@ public class FinanceServiceImpl implements IFinanceService {
                             // 结算流水号
                             setSerialNumber(serialNumber);
                             // 应收账款
-                            setTotalReceivableFee(applyReceiveSettlementVo.getTotalReceivableFee());
+                            setTotalReceivableFee(MoneyUtil.yuanToFen(applyReceiveSettlementVo.getTotalReceivableFee()));
                             // 开票金额
-                            setTotalInvoiceFee(applyReceiveSettlementVo.getTotalInvoiceFee());
+                            setTotalInvoiceFee(MoneyUtil.yuanToFen(applyReceiveSettlementVo.getTotalInvoiceFee()));
                             // 发票id
                             setInvoiceId(customerInvoice.getId());
                             // 结算申请状态
@@ -1225,6 +1237,8 @@ public class FinanceServiceImpl implements IFinanceService {
                         applyReceiveSettlementVo.getReceiveSettlementDetailList().forEach(e -> {
                             ReceiveSettlementDetail receiveSettlementDetail = new ReceiveSettlementDetail();
                             BeanUtils.copyProperties(e, receiveSettlementDetail);
+                            receiveSettlementDetail.setFreightReceivable(MoneyUtil.yuanToFen(receiveSettlementDetail.getFreightReceivable()));
+                            receiveSettlementDetail.setInvoiceFee(MoneyUtil.yuanToFen(receiveSettlementDetail.getInvoiceFee()));
                             // 结算流水号
                             receiveSettlementDetail.setSerialNumber(serialNumber);
                             receiveSettlementDetailDao.insert(receiveSettlementDetail);
