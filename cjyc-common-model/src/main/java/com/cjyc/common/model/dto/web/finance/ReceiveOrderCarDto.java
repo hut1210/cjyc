@@ -97,4 +97,7 @@ public class ReceiveOrderCarDto implements Serializable {
 
     @ApiModelProperty(value = "合同Id")
     private Long customerContractId;
+
+    @ApiModelProperty(value = "剩余账期(天)")
+    private Integer hurryDays;
 }
