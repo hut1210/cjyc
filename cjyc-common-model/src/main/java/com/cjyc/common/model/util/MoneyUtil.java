@@ -11,6 +11,9 @@ public class MoneyUtil {
     public static BigDecimal yuanToFen(BigDecimal fee) {
         return fee == null ? null : fee.multiply(new BigDecimal(100));
     }
+    public static BigDecimal fenToYuan(BigDecimal fee) {
+        return fee == null ? null : fee.divide(new BigDecimal(100), 2, RoundingMode.DOWN);
+    }
 
     public static String fenToYuan(BigDecimal fee, String pattern) {
         DecimalFormat df = PATTERN_TWO.equals(pattern) ? DF_TWO : new DecimalFormat(pattern);

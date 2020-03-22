@@ -10,6 +10,14 @@ import java.util.List;
 public class test {
 
     public static void main(String[] args) {
+        String s = "\u202d18743423999\u202c";
+        System.out.println(s.trim());
+        String s1 = "18743423999";
+        System.out.println(s.trim().equals(s1));
+        String s2 = s.replace("\u202D", "").replace("\u202C", "").trim();
+        System.out.println(s2.equals(s1));
+
+
 
         List<Car> list = Lists.newArrayList();
         for (int i = 0; i < 11; i++) {
@@ -18,7 +26,7 @@ public class test {
             car.setLineFee(new BigDecimal(0));
             list.add(car);
         }
-        computeUnabsoluteAvg(new BigDecimal(2099.15), list);
+        //computeUnabsoluteAvg(new BigDecimal(2099.15), list);
 
     }
 

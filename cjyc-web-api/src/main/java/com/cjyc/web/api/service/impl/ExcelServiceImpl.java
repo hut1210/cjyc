@@ -46,7 +46,7 @@ public class ExcelServiceImpl implements IExcelService {
         vo.setNo(ocl.getOrderNo());
         vo.setCustomerName(fos[1].getCustomerName());
         vo.setCustomerTypeStr(getCustomerTypeStr(fos[1].getCustomerType()));
-        vo.setCreateTimeStr(LocalDateTimeUtil.formatLong(ocl.getCreateTime(), "yyyy/MM/dd"));
+        vo.setCreateTimeStr(LocalDateTimeUtil.formatLong(ocl.getCreateTime(), "yyyy/MM/dd HH:mm:ss"));
 
         BigDecimal oldTotalFee = fos[0].getTotalFee();
         BigDecimal oldWlFee = getWlFee(fos[0].getList());
@@ -63,6 +63,7 @@ public class ExcelServiceImpl implements IExcelService {
         vo.setNewTotalFee(MoneyUtil.fenToYuan(newTotalFee, MoneyUtil.PATTERN_TWO));
         vo.setNewWlTotalFee(MoneyUtil.fenToYuan(newWlFee, MoneyUtil.PATTERN_TWO));
         vo.setNewAgencyFee(MoneyUtil.fenToYuan(newTotalFee.subtract(newWlFee), MoneyUtil.PATTERN_TWO));
+        vo.setRemark(ocl.getReason());
         return vo;
     }
 
