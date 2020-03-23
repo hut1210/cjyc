@@ -64,6 +64,7 @@ public class ExcelServiceImpl implements IExcelService {
         vo.setNewWlTotalFee(MoneyUtil.fenToYuan(newWlFee, MoneyUtil.PATTERN_TWO));
         vo.setNewAgencyFee(MoneyUtil.fenToYuan(newTotalFee.subtract(newWlFee), MoneyUtil.PATTERN_TWO));
         vo.setRemark(ocl.getReason());
+        vo.setTest(newTotalFee);
         return vo;
     }
 
