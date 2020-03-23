@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 /**
@@ -16,12 +17,11 @@ import java.util.Objects;
 public class BigDecimalSerizlizer extends JsonSerializer<BigDecimal> {
     @Override
     public void serialize(BigDecimal amount, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        // 将金额分 转换为元 如果没有小数位，则加上小数位
-        if(!Objects.isNull(amount) && !amount.equals(new BigDecimal(0))){
-            String str = String.valueOf(amount.divide(new BigDecimal(100)));
-            if (!str.contains(".")) {
-                str = str + ".00";
-            }
+        // 将分转换为元，结果保留两位小数
+        if(!Objects.isNull(amount)){
+            DecimalFormat df =new DecimalFormat("0.00");
+            BigDecimal value = amount.divide(BigDecimal.valueOf(100));
+            String str = amount.equals(BigDecimal.ZERO) ? "0.00" : df.format(value);
             jsonGenerator.writeString(str);
         } else {
             jsonGenerator.writeString("0.00");
