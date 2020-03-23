@@ -236,9 +236,9 @@ public class FinanceController {
     }
 
     @ApiOperation(value = "应收账款(账期)-待开票-撤回")
-    @PostMapping(value = "/cancelReceiveSettlement/{serialNumber}")
-    public ResultVo cancelReceiveSettlement(@PathVariable String serialNumber) {
-        return financeService.cancelReceiveSettlement(serialNumber);
+    @PostMapping(value = "/cancelReceiveSettlement")
+    public ResultVo cancelReceiveSettlement(@RequestBody CancelInvoiceVo cancelInvoiceVo) {
+        return financeService.cancelReceiveSettlement(cancelInvoiceVo);
     }
 
     @ApiOperation(value = "应收账款(账期)-待开票-确认开票")

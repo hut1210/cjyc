@@ -7,7 +7,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -105,4 +104,9 @@ public interface ICsOrderService {
     boolean validateIsArriveStoreOrCityRange(String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode);
 
     BigDecimal getCarWlFee(OrderCar orderCar);
+
+    /**
+     * 每当当天结束时定时把所有订单的剩余账期(天)减一天
+     */
+    void paymentDaysSubtraction();
 }

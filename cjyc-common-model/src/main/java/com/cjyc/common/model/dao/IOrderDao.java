@@ -76,4 +76,9 @@ public interface IOrderDao extends BaseMapper<Order> {
     int countUnArriveStore(Long id);
 
     int updateForPaid(Long orderId);
+
+    /**
+     * 每当当天结束时定时把所有订单的剩余账期(天)减一天
+     */
+    void updatePaymentDays();
 }

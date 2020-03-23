@@ -1595,6 +1595,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 .add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
     }
 
+    @Override
+    public void paymentDaysSubtraction() {
+        //
+        orderDao.updatePaymentDays();
+    }
+
     /**
      * 均摊优惠券
      *

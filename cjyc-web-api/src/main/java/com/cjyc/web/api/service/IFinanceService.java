@@ -125,10 +125,10 @@ public interface IFinanceService {
     /**
      * 应收账款-待开票-撤回
      *
-     * @param serialNumber
+     * @param cancelInvoiceVo
      * @return
      */
-    ResultVo cancelReceiveSettlement(String serialNumber);
+    ResultVo cancelReceiveSettlement(CancelInvoiceVo cancelInvoiceVo);
 
     /**
      * 应收账款-待开票-确认开票
