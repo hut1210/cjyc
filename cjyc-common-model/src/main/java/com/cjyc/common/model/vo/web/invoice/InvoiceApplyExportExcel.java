@@ -1,7 +1,6 @@
 package com.cjyc.common.model.vo.web.invoice;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import lombok.Data;
 
@@ -26,7 +25,7 @@ public class InvoiceApplyExportExcel implements Serializable {
     @Excel(name = "申请时间" ,orderNum = "1",width = 15)
     private String applyTimeStr;
 
-    @Excel(name = "开票金额" ,orderNum = "2",width = 15)
+    @Excel(name = "开票金额" ,orderNum = "2",width = 15,type = 10)
     private BigDecimal amount;
 
     @Excel(name = "发票号" ,orderNum = "3",width = 15)
@@ -39,6 +38,7 @@ public class InvoiceApplyExportExcel implements Serializable {
     @Excel(name = "开票人" ,orderNum = "5",width = 15)
     private String operationName;
 
+    @Excel(name = "发票状态" ,orderNum = "6",width = 15,replace = {"申请中_1","已开票_2"})
     private Integer state;
 
     public String getApplyTimeStr() {
@@ -53,19 +53,6 @@ public class InvoiceApplyExportExcel implements Serializable {
         if (invoiceTime != null) {
             LocalDateTime localDateTime = LocalDateTimeUtil.convertLongToLDT(invoiceTime);
             return LocalDateTimeUtil.formatLDT(localDateTime,"yyyy/MM/dd");
-        }
-        return "";
-    }
-
-    @Excel(name = "发票状态" ,orderNum = "6",width = 15)
-    private String stateName;
-
-    public String getStateName() {
-        if (state != null && FieldConstant.INVOICE_APPLY_IN == state) {
-            return "申请中";
-        }
-        if (state != null && FieldConstant.INVOICE_FINISH == state) {
-            return "已开票";
         }
         return "";
     }
