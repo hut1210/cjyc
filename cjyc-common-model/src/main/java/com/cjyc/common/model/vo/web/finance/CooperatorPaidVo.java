@@ -23,7 +23,7 @@ public class CooperatorPaidVo implements Serializable {
     private String orderNo;
 
     @ApiModelProperty(value = "合伙人服务费")
-    @Excel(name = "伙人服务费" ,orderNum = "1")
+    @Excel(name = "伙人服务费" ,orderNum = "1",type = 10)
     private BigDecimal serviceFee;
 
     @ApiModelProperty(value = "付款状态")
@@ -104,11 +104,11 @@ public class CooperatorPaidVo implements Serializable {
     }
 
     @ApiModelProperty(value = "订单金额")
-    @Excel(name = "订单金额" ,orderNum = "13")
+    @Excel(name = "订单金额" ,orderNum = "13",type = 10)
     private BigDecimal totalFee;
 
     @ApiModelProperty(value = "总费用")
-    @Excel(name = "总费用" ,orderNum = "14")
+    @Excel(name = "总费用" ,orderNum = "14",type = 10)
     private BigDecimal wlFee;
 
     @ApiModelProperty(value = "付款类型（公户，个户）")

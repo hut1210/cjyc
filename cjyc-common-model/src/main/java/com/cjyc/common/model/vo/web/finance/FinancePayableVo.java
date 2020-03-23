@@ -50,7 +50,7 @@ public class FinancePayableVo implements Serializable {
     private Long remainDate;
 
     @ApiModelProperty(value = "应付运费")
-    @Excel(name = "应付运费" ,orderNum = "5")
+    @Excel(name = "应付运费" ,orderNum = "5",type = 10)
     private BigDecimal freightPayable;
 
     @ApiModelProperty(value = "运单类型 1提车运单，2干线运单，3送车运单")

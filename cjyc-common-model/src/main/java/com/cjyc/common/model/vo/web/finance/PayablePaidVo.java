@@ -14,6 +14,6 @@ import java.math.BigDecimal;
 public class PayablePaidVo extends SettlementVo{
 
     @ApiModelProperty(value = "差额")
-    @Excel(name = "差额" ,orderNum = "10")
+    @Excel(name = "差额" ,orderNum = "10",type = 10)
     private BigDecimal difference;
 }
