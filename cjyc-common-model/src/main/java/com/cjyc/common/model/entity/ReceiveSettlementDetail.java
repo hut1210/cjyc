@@ -67,6 +67,6 @@ public class ReceiveSettlementDetail implements Serializable {
     private String endAddress;
 
     @ApiModelProperty(value = "交付日期")
-    private String deliveryDate;
+    private Long deliveryDate;
 
 }

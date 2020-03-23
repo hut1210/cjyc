@@ -1218,7 +1218,7 @@
         WHERE woc.wl_pay_state=2
         AND cc.pay_mode=1
         AND wo.customer_type=1
-        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM r_settlement_detail rsd)
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no
         UNION
@@ -1232,7 +1232,7 @@
         WHERE woc.wl_pay_state=2
         AND ccp.settle_type=1
         AND wo.customer_type=3
-        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM r_settlement_detail rsd)
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no
         UNION
@@ -1246,7 +1246,7 @@
         WHERE woc.wl_pay_state=2
         AND ccc.settle_type=1
         AND wo.customer_type=2
-        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM r_settlement_detail rsd)
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no ) t ORDER BY t.finish_time DESC
     </select>

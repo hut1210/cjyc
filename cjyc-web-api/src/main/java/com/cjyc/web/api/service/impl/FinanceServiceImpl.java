@@ -422,11 +422,11 @@ public class FinanceServiceImpl implements IFinanceService {
         // 应收账款总额统计
         BigDecimal receiveSummary = tradeBillService.receiptSummary(financeQueryDto);
         // 实收账款总额统计
-        BigDecimal actualReceiveSummary = tradeBillService.ActualReceiptSummary(financeQueryDto);
+        //BigDecimal actualReceiveSummary = tradeBillService.ActualReceiptSummary(financeQueryDto);
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("receiveCount", totalFinanceVoList.size());
         countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(receiveSummary, MoneyUtil.PATTERN_TWO)));
-        countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(actualReceiveSummary, MoneyUtil.PATTERN_TWO)));
+        //countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(actualReceiveSummary, MoneyUtil.PATTERN_TWO)));
         PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(receiveOrderCarDtoList);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
@@ -1241,7 +1241,7 @@ public class FinanceServiceImpl implements IFinanceService {
                         }
                     });
                     // 新增账款明细
-                    if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getReceiveSettlementDetailList())) {
+                    if (!CollectionUtils.isEmpty(applyReceiveSettlementVo.getReceiveSettlementDetailList())) {
                         applyReceiveSettlementVo.getReceiveSettlementDetailList().forEach(e -> {
                             ReceiveSettlementDetail receiveSettlementDetail = new ReceiveSettlementDetail();
                             BeanUtils.copyProperties(e, receiveSettlementDetail);
@@ -1254,6 +1254,7 @@ public class FinanceServiceImpl implements IFinanceService {
                     }
                     log.info("应收账款结算申请结束！");
                 } catch (Exception e) {
+                    status.setRollbackOnly();
                     log.error("应收账款结算申请发生异常！", e);
                     return BaseResultUtil.fail("应收账款结算申请失败！");
                 }
@@ -1286,7 +1287,7 @@ public class FinanceServiceImpl implements IFinanceService {
                             .lambda()
                             .eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber())
                     );
-                    String cancelName = null;
+                    String cancelName = cancelInvoiceVo.getCustomerName();
                     if (StringUtils.isEmpty(cancelInvoiceVo.getCustomerName())) {
                         Admin admin = csAdminService.validate(cancelInvoiceVo.getCustomerId());
                         cancelName = admin.getName();
@@ -1294,6 +1295,7 @@ public class FinanceServiceImpl implements IFinanceService {
                     List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(new QueryWrapper<ReceiveSettlementDetail>().lambda().eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber()));
                     log.info("业务员：{}撤销结算流水号为：{}的结算申请数据：{}", cancelName, cancelInvoiceVo.getSerialNumber(), JsonUtil.toJson(listInfo));
                 } catch (Exception e) {
+                    status.setRollbackOnly();
                     log.error("应收账款-待开票-撤回发生异常！", e);
                     return BaseResultUtil.fail("应收账款-待开票-撤回失败！");
                 }
@@ -1313,7 +1315,7 @@ public class FinanceServiceImpl implements IFinanceService {
             if (confirmInvoiceVo.getCustomerId() == null) {
                 return BaseResultUtil.fail("确认开票确认人id不能为空！");
             }
-            String confirmName = null;
+            String confirmName = confirmInvoiceVo.getCustomerName();
             if (StringUtils.isEmpty(confirmInvoiceVo.getCustomerName())) {
                 Admin admin = csAdminService.validate(confirmInvoiceVo.getCustomerId());
                 confirmName = admin.getName();
@@ -1329,7 +1331,7 @@ public class FinanceServiceImpl implements IFinanceService {
             }}, new QueryWrapper<ReceiveSettlement>()
                     .lambda()
                     .eq(ReceiveSettlement::getSerialNumber, confirmInvoiceVo.getSerialNumber()));
-            if (updated > 0) {
+            if (updated < 1) {
                 return BaseResultUtil.fail("应收账款-待开票-确认开票失败！");
             }
             return BaseResultUtil.success("应收账款-待开票-确认开票成功！");
@@ -1347,7 +1349,7 @@ public class FinanceServiceImpl implements IFinanceService {
             if (verificationReceiveSettlementVo.getCustomerId() == null) {
                 return BaseResultUtil.fail("核销人id不能为空！");
             }
-            String verificationName = null;
+            String verificationName = verificationReceiveSettlementVo.getCustomerName();
             if (StringUtils.isEmpty(verificationReceiveSettlementVo.getCustomerName())) {
                 Admin admin = csAdminService.validate(verificationReceiveSettlementVo.getCustomerId());
                 verificationName = admin.getName();
@@ -1415,6 +1417,7 @@ public class FinanceServiceImpl implements IFinanceService {
                         if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
                             return BaseResultUtil.fail("新增个人普票-邮寄地址不能为空");
                         }
+                        break;
                     case 2:
                         if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
                             return BaseResultUtil.fail("新增公司普票-客户名称不能为空");
@@ -1431,6 +1434,7 @@ public class FinanceServiceImpl implements IFinanceService {
                         if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
                             return BaseResultUtil.fail("新增公司普票-邮寄地址不能为空");
                         }
+                        break;
                     case 3:
                         if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
                             return BaseResultUtil.fail("新增公司专票-客户名称不能为空");
@@ -1459,6 +1463,7 @@ public class FinanceServiceImpl implements IFinanceService {
                         if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
                             return BaseResultUtil.fail("新增公司专票-邮寄地址不能为空");
                         }
+                        break;
                     default:
                         //不做处理
                 }

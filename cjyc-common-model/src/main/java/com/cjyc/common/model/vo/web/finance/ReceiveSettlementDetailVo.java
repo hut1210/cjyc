@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -16,7 +17,9 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel(value = "ReceiveSettlementDetailVo", description = "应收账款结算详情参数Vo")
-public class ReceiveSettlementDetailVo {
+public class ReceiveSettlementDetailVo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "id")
     private Long id;
@@ -26,8 +29,6 @@ public class ReceiveSettlementDetailVo {
 
     @ApiModelProperty(value = "结算流水号")
     private String serialNumber;
-
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
@@ -57,6 +58,6 @@ public class ReceiveSettlementDetailVo {
     private String endAddress;
 
     @ApiModelProperty(value = "交付日期")
-    private String deliveryDate;
+    private Long deliveryDate;
 
 }
