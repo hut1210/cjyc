@@ -71,7 +71,7 @@ public class InvoiceApplyExportExcel implements Serializable {
     }
 
     public String getAmount() {
-        DecimalFormat df2 =new DecimalFormat("#.00");
+        DecimalFormat df2 =new DecimalFormat("0.00");
         return amount.equals(BigDecimal.ZERO) ? "0.00" : df2.format(amount.doubleValue() / 100);
     }
 }
