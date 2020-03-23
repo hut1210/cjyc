@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 @Data
 public class ExportTrunkSubListWaybillVo implements Serializable {
@@ -51,6 +52,13 @@ public class ExportTrunkSubListWaybillVo implements Serializable {
         Integer tc = getCarryCarNum();
         return (oc == null?"0": oc+"") + "/" + (tc == null?"0": tc+"");
     }
-
+    public String getFreightFee() {
+        if (freightFee == null) {
+            return "0";
+        }
+        DecimalFormat df =new DecimalFormat("0.00");
+        BigDecimal value = freightFee.divide(BigDecimal.valueOf(100));
+        return freightFee.equals(BigDecimal.ZERO) ? "0" : df.format(value);
+    }
 
 }
