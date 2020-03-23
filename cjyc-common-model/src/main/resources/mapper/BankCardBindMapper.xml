@@ -72,6 +72,7 @@
             card_type AS cardType,
             card_colour AS cardColour,
             province_name AS provinceName,
+            bank_name AS bankName,
             area_name AS areaName,
             card_name AS cardName,
             card_no AS cardNo,
