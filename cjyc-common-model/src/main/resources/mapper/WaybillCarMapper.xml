@@ -607,6 +607,7 @@
         oc.model as model,
         oc.plate_no as plateNo,
         oc.vin as vin,
+        oc.is_new as isNew,
         oc.order_no as orderNo,
         tb.driver_name as driverName,
         tb.driver_phone as driverPhone,

@@ -1231,12 +1231,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (order.getState() >= OrderStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("订单已完结，不能修改价格");
         }
+
         if (PayStateEnum.PAID.code == order.getWlPayState()){
-            BigDecimal subtract = MoneyUtil.nullToZero(order.getTotalFee()).subtract(paramsDto.getTotalFee());
-            LogUtil.warn("【订单改价】已支付订单改价，原始金额{}，修改后金额{}, 差价{}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
+            return BaseResultUtil.fail("订单已支付，不能修改价格");
+            /*BigDecimal oldAmount = MoneyUtil.fenToYuan(order.getTotalFee());
+            BigDecimal subtract = MoneyUtil.nullToZero(oldAmount).subtract(paramsDto.getTotalFee());
+            LogUtil.warn("【订单改价】已支付订单改价，原始金额{}，修改后金额{}, 差价{}", oldAmount, paramsDto.getTotalFee(), subtract);
             if(subtract.compareTo(BigDecimal.ZERO) > 0){
                 csSmsService.send(paramsDto.getLoginPhone(), "已支付订单改价，原始金额{0}，修改后金额{1}, 差价{2}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
-            }
+            }*/
         }
         //记录历史数据
         FullOrder oldOrder = getFullOrder(order);

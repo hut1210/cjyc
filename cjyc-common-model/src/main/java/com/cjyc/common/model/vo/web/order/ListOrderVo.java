@@ -80,14 +80,6 @@ public class ListOrderVo extends Order {
     @Excel(name = "合伙人服务费(元)",  orderNum = "8")
     private String totalAgencyFeeStr;
 
-
-    @Excel(name = "订单金额(元)", numFormat = "#0.00#", orderNum = "100")
-    private BigDecimal totalFeeTest;
-
-    public BigDecimal getTotalFeeTest() {
-        return MoneyUtil.fenToYuan(getTotalFee());
-    }
-
     public String getTotalFeeStr() {
         return MoneyUtil.fenToYuan(getTotalFee(), MoneyUtil.PATTERN_TWO);
     }

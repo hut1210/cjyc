@@ -4,7 +4,6 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.enums.CardTypeEnum;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,7 +37,7 @@ public class PaidNewVo implements Serializable {
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应付运费")
-    @Excel(name = "应付运费", orderNum = "3")
+    @Excel(name = "应付运费", orderNum = "3",type = 10)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "付款时间")
