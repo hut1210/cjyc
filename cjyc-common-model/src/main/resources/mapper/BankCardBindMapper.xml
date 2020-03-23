@@ -42,6 +42,7 @@
             province_name AS provinceName,
             area_name AS areaName,
             card_name AS cardName,
+            bank_name AS bankName,
             card_no AS cardNo,
             card_phone AS cardPhone
           FROM
@@ -72,6 +73,7 @@
             card_colour AS cardColour,
             province_name AS provinceName,
             area_name AS areaName,
+            bank_name AS bankName,
             card_name AS cardName,
             card_no AS cardNo,
             card_phone AS cardPhone

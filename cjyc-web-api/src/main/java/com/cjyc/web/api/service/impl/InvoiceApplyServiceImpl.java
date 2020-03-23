@@ -176,7 +176,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
         InvoiceQueryDto dto = getInvoiceQueryDto(request);
         // 查询列表
         List<InvoiceApply> list = getInvoiceApplyList(dto);
-        //if (!CollectionUtils.isEmpty(list)) {
+        if (!CollectionUtils.isEmpty(list)) {
             // 生成导出数据
             List<InvoiceApplyExportExcel> exportExcelList = new ArrayList<>(10);
             for (InvoiceApply invoiceApply : list) {
@@ -192,7 +192,7 @@ public class InvoiceApplyServiceImpl extends ServiceImpl<IInvoiceApplyDao, Invoi
             } catch (IOException e) {
                 log.error("发票申请记录表异常:",e);
             }
-        //}
+        }
     }
 
     private InvoiceQueryDto getInvoiceQueryDto(HttpServletRequest request) {
