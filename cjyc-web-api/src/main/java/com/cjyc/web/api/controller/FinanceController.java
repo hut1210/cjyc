@@ -205,7 +205,7 @@ public class FinanceController {
         return financeService.getPaidListNew(payMentQueryDto);
     }
 
-    @ApiOperation(value = "已收款(账期)列表")
+    @ApiOperation(value = "应收账款(账期)列表")
     @PostMapping(value = "/listPaymentDaysInfo")
     public ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(@RequestBody FinanceQueryDto financeQueryDto) {
         return financeService.listPaymentDaysInfo(financeQueryDto);
