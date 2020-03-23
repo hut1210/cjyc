@@ -27,9 +27,9 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     private String brand;
     @Excel(name = "车系", orderNum = "6",width = 15)
     private String model;
-    @Excel(name = "是否新车", orderNum = "7",width = 15)
+    @Excel(name = "是否新车", orderNum = "7",width = 15,replace = {"否_0","是_1"})
     private Integer isNew;
-    @Excel(name = "运费(元)", orderNum = "8",width = 15)
+    @Excel(name = "运费(元)", orderNum = "8",width = 15,type = 10)
     private BigDecimal freightFee;
     @Excel(name = "承运类型",orderNum = "9",width = 20)
     private Integer carrierType;
@@ -90,20 +90,6 @@ public class ExportLocalListWaybillCarVo implements Serializable {
                 str = "干线运单";break;
             case 3:
                 str = "送车运单";break;
-        }
-        return str;
-    }
-    public String getIsNew() {
-        if(isNew == null){
-            return "";
-        }
-        String str = null;
-        switch (isNew){
-            case 0:
-                str = "否";break;
-            case 1:
-                str = "是";break;
-
         }
         return str;
     }
