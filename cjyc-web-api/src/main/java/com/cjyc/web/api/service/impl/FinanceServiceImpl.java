@@ -1041,11 +1041,9 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
         // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
-        ReceiveSettlement receiveSettlement = new ReceiveSettlement();
-        BeanUtils.copyProperties(receiveSettlementNeedInvoiceVo, receiveSettlement);
         // 结算申请-已申请发票
-        receiveSettlement.setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
-        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
+        receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
         // 金额分转元
         listInfo.forEach(e -> {
             e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
@@ -1071,13 +1069,11 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementPayedVo receiveSettlementPayedVo) {
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
         // 应收账款结算-已收款列表查询, 此时查询结算状态为已收款的结算信息列表
-        ReceiveSettlement receiveSettlement = new ReceiveSettlement();
-        BeanUtils.copyProperties(receiveSettlementPayedVo, receiveSettlement);
         // 已核销
-        receiveSettlement.setState(ReceiveSettlementStateEnum.VERIFICATION.code);
-        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlement);
+        receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.VERIFICATION.code);
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
         // 金额分转元
         listInfo.forEach(e -> {
             e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
@@ -1364,7 +1360,7 @@ public class FinanceServiceImpl implements IFinanceService {
             }}, new QueryWrapper<ReceiveSettlement>()
                     .lambda()
                     .eq(ReceiveSettlement::getSerialNumber, verificationReceiveSettlementVo.getSerialNumber()));
-            if (updated > 0) {
+            if (updated < 1) {
                 return BaseResultUtil.fail("应收账款-待回款-核销失败！");
             }
             return BaseResultUtil.success("应收账款-待回款-核销成功！");
@@ -1382,7 +1378,7 @@ public class FinanceServiceImpl implements IFinanceService {
         private ResultVo validateApplyReceiveSettlementParams(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
             BigDecimal totalReceivableFee = applyReceiveSettlementVo.getTotalReceivableFee();
             BigDecimal totalInvoiceFee = applyReceiveSettlementVo.getTotalInvoiceFee();
-            if (StringUtils.isEmpty(applyReceiveSettlementVo.getCustomerId())) {
+            if (applyReceiveSettlementVo.getCustomerId() == null) {
                 return BaseResultUtil.fail("申请人id不能为空！");
             }
             if (totalReceivableFee == null || totalReceivableFee.compareTo(BigDecimal.ZERO) < 0) {
@@ -1392,14 +1388,43 @@ public class FinanceServiceImpl implements IFinanceService {
                 return BaseResultUtil.fail("开票金额不能为空或负值");
             }
             if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getReceiveSettlementDetailList())) {
-                return BaseResultUtil.fail("结算详情集合不能为空");
+                return BaseResultUtil.fail("结算单明细集合不能为空");
             } else {
                 for (ReceiveSettlementDetailVo e : applyReceiveSettlementVo.getReceiveSettlementDetailList()) {
                     if (e.getOrderCarId() == null) {
-                        return BaseResultUtil.fail("订单车辆id不能为空");
+                        return BaseResultUtil.fail("结算单明细-订单车辆id不能为空");
+                    }
+                    if (StringUtils.isEmpty(e.getCustomerName())) {
+                        return BaseResultUtil.fail("结算单明细-客户名称不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getNo())) {
+                        return BaseResultUtil.fail("结算单明细-车辆编码不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getVin())) {
+                        return BaseResultUtil.fail("结算单明细-vin码不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getBrand())) {
+                        return BaseResultUtil.fail("结算单明细-品牌不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getModel())) {
+                        return BaseResultUtil.fail("结算单明细-车系不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getStartAddress())) {
+                        return BaseResultUtil.fail("结算单明细-始发地不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getEndAddress())) {
+                        return BaseResultUtil.fail("结算单明细-目的地不能为空！");
+                    }
+                    if (e.getDeliveryDate() == null) {
+                        return BaseResultUtil.fail("结算单明细-交付日期不能为空！");
+                    }
+                    if (e.getFreightReceivable() == null || e.getFreightReceivable().compareTo(BigDecimal.ZERO) < 0) {
+                        return BaseResultUtil.fail("结算单明细-应收运费不能为空或负值");
+                    }
+                    if (e.getInvoiceFee() == null || e.getInvoiceFee().compareTo(BigDecimal.ZERO) < 0) {
+                        return BaseResultUtil.fail("结算单明细-开票金额不能为空或负值");
                     }
                 }
-
             }
             CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
             if (customerInvoiceVo != null && customerInvoiceVo.getType() != null) {

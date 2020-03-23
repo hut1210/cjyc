@@ -225,8 +225,8 @@ public class FinanceController {
 
     @ApiOperation(value = "应收账款结算-已收款(账期)列表查询")
     @PostMapping(value = "/listReceiveSettlementPayed")
-    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(@RequestBody ReceiveSettlementPayedVo receiveSettlementPayedVo) {
-        return financeService.listReceiveSettlementPayed(receiveSettlementPayedVo);
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(@RequestBody ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        return financeService.listReceiveSettlementPayed(receiveSettlementNeedInvoiceVo);
     }
 
     @ApiOperation(value = "应收账款(账期)结算申请")

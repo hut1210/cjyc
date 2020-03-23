@@ -16,16 +16,16 @@ public class ConfirmInvoiceVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "结算流水号")
+    @ApiModelProperty(value = "结算流水号", required = true)
     private String serialNumber;
 
-    @ApiModelProperty(value = "发票号")
+    @ApiModelProperty(value = "发票号", required = false)
     private String invoiceNo;
 
-    @ApiModelProperty(value = "业务员Id")
+    @ApiModelProperty(value = "业务员Id", required = true)
     private Long customerId;
 
-    @ApiModelProperty(value = "业务员名称")
+    @ApiModelProperty(value = "业务员名称", required = false)
     private String customerName;
 
 

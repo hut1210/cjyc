@@ -165,10 +165,10 @@ public interface IFinanceService {
     /**
      * 应收账款结算-已收款(账期)列表查询
      *
-     * @param receiveSettlementPayedVo
+     * @param receiveSettlementNeedInvoiceVo
      * @return
      */
-    ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementPayedVo receiveSettlementPayedVo);
+    ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
 
     /**
      * 账期应收账款列表查询

@@ -21,43 +21,43 @@ public class ReceiveSettlementDetailVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "id")
+    @ApiModelProperty(value = "id", hidden = true)
     private Long id;
 
-    @ApiModelProperty(value = "订单车辆id")
+    @ApiModelProperty(value = "订单车辆id", required = true)
     private Long orderCarId;
 
-    @ApiModelProperty(value = "结算流水号")
+    @ApiModelProperty(value = "结算流水号", hidden = true)
     private String serialNumber;
 
-    @ApiModelProperty(value = "客户名称")
+    @ApiModelProperty(value = "客户名称", required = true)
     private String customerName;
 
-    @ApiModelProperty(value = "车辆编码")
+    @ApiModelProperty(value = "车辆编码", required = true)
     private String no;
 
-    @ApiModelProperty(value = "vin码")
+    @ApiModelProperty(value = "vin码", required = true)
     private String vin;
 
-    @ApiModelProperty(value = "品牌")
+    @ApiModelProperty(value = "品牌", required = true)
     private String brand;
 
-    @ApiModelProperty(value = "车系")
+    @ApiModelProperty(value = "车系", required = true)
     private String model;
 
-    @ApiModelProperty(value = "应收运费")
+    @ApiModelProperty(value = "应收运费", required = true)
     private BigDecimal freightReceivable;
 
-    @ApiModelProperty(value = "开票金额")
+    @ApiModelProperty(value = "开票金额", required = true)
     private BigDecimal invoiceFee;
 
-    @ApiModelProperty(value = "始发地")
+    @ApiModelProperty(value = "始发地", required = true)
     private String startAddress;
 
-    @ApiModelProperty(value = "目的地")
+    @ApiModelProperty(value = "目的地", required = true)
     private String endAddress;
 
-    @ApiModelProperty(value = "交付日期")
+    @ApiModelProperty(value = "交付日期", required = true)
     private Long deliveryDate;
 
 }

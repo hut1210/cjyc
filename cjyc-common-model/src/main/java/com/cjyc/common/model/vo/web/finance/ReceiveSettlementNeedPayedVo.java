@@ -48,4 +48,13 @@ public class ReceiveSettlementNeedPayedVo implements Serializable {
 
     @ApiModelProperty(value = "确认开票人")
     private String confirmName;
+
+    @ApiModelProperty(value = "核销开始时间")
+    private Long startVerificationTime;
+
+    @ApiModelProperty(value = "核销结束时间")
+    private Long endVerificationTime;
+
+    @ApiModelProperty(value = "核销人")
+    private String verificationName;
 }

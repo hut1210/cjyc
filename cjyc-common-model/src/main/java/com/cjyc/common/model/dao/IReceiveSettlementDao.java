@@ -3,6 +3,7 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto;
 import com.cjyc.common.model.entity.ReceiveSettlement;
+import com.cjyc.common.model.vo.web.finance.ReceiveSettlementNeedInvoiceVo;
 import com.cjyc.common.model.vo.web.finance.ReceiveSettlementNeedPayedVo;
 
 import java.util.List;
@@ -20,11 +21,11 @@ public interface IReceiveSettlementDao extends BaseMapper<ReceiveSettlement> {
     /**
      * 待开票列表查询
      *
-     * @param receiveSettlement
+     * @param receiveSettlementNeedInvoiceVo
      * @return
      */
 
-    List<ReceiveSettlementDto> listReceiveSettlement(ReceiveSettlement receiveSettlement);
+    List<ReceiveSettlementDto> listReceiveSettlement(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
 
     /**
      * 应收账款结算-待回款列表查询

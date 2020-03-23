@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * <p>待开票列表查询请求参数封装实体类Vo</p>
+ * <p>待开票,已收款列表查询请求参数封装公共实体类Vo</p>
  *
  * @Author:RenPL
  * @Date:2020/3/20 15:57
@@ -39,5 +39,26 @@ public class ReceiveSettlementNeedInvoiceVo implements Serializable {
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "结算状态", hidden = true)
+    private Integer state;
+
+    @ApiModelProperty(value = "确认开票开始时间")
+    private Long startConfirmTime;
+
+    @ApiModelProperty(value = "确认开票结束时间")
+    private Long endConfirmTime;
+
+    @ApiModelProperty(value = "确认开票人")
+    private String confirmName;
+
+    @ApiModelProperty(value = "核销开始时间")
+    private Long startVerificationTime;
+
+    @ApiModelProperty(value = "核销结束时间")
+    private Long endVerificationTime;
+
+    @ApiModelProperty(value = "核销人")
+    private String verificationName;
 
 }

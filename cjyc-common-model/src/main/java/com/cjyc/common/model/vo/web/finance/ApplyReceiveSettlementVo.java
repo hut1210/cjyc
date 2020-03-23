@@ -20,25 +20,25 @@ import java.util.List;
 @ApiModel(value = "ReceiveSettlementVo", description = "应收账款结算申请Vo")
 public class ApplyReceiveSettlementVo {
 
-    @ApiModelProperty(value = "应收运费")
+    @ApiModelProperty(value = "应收运费", required = true)
     private BigDecimal totalReceivableFee;
 
-    @ApiModelProperty(value = "开票金额")
+    @ApiModelProperty(value = "开票金额", required = true)
     private BigDecimal totalInvoiceFee;
 
-    @ApiModelProperty(value = "客户发票")
+    @ApiModelProperty(value = "客户发票", required = false)
     private CustomerInvoiceVo customerInvoiceVo;
 
-    @ApiModelProperty(value = "订单车辆id集合")
+    @ApiModelProperty(value = "订单车辆id集合", required = true)
     private List<ReceiveSettlementDetailVo> receiveSettlementDetailList;
 
     @ApiModelProperty(value = "业务员Id", required = true)
     private Long customerId;
 
-    @ApiModelProperty(value = "业务员名称")
+    @ApiModelProperty(value = "业务员名称", required = false)
     private String customerName;
 
-    @ApiModelProperty(value = "是否需要开票：0：不需要 1：需要")
+    @ApiModelProperty(value = "是否需要开票：0：不需要 1：需要", required = true)
     private Integer needVoice;
 
 }

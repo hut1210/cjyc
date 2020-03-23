@@ -54,18 +54,17 @@
     <select id="listReceiveSettlement" resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
         SELECT
         <include refid="Common_Column_List"/>
-        FROM r_settlement rs
+        FROM s_settlement rs
         LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
-        <where>
-            <include refid="Common_Condition_List"/>
-        </where>
+        WHERE rs.state = #{state}
+        <include refid="Common_Condition_List"/>
         ORDER BY rs.apply_time, rs.confirm_time, rs.verification_time DESC
     </select>
     <select id="listReceiveSettlementNeedInvoice"
             resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
         SELECT
         <include refid="Common_Column_List"/>
-        FROM r_settlement rs
+        FROM s_settlement rs
         LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
         WHERE rs.state in (0,2)
         <include refid="Common_Condition_List"/>
