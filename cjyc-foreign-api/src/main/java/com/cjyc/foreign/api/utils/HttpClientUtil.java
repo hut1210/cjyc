@@ -56,7 +56,7 @@ public class HttpClientUtil {
             httpResponse = httpClient.execute(httpPost);
             result = EntityUtils.toString(httpResponse.getEntity(), charset);
         }catch (Exception e){
-            log.error("请求通信[\" + reqURL + \"]时偶遇异常,异常信息如下", e);
+            log.error("请求通信[" + reqUrl + "]时偶遇异常,异常信息如下", e);
         }
         return result;
     }
