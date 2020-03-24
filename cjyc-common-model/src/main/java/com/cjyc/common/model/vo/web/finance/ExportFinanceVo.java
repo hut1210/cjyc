@@ -107,27 +107,27 @@ public class ExportFinanceVo implements Serializable {
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "订单分摊金额")
-    @Excel(name = "订单分摊金额" ,orderNum = "14")
+    @Excel(name = "订单分摊金额" ,orderNum = "14",type = 10)
     private BigDecimal feeShare;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应收运费")
-    @Excel(name = "应收运费" ,orderNum = "15")
+    @Excel(name = "应收运费" ,orderNum = "15",type = 10)
     private BigDecimal freightReceivable;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "开票金额")
-    @Excel(name = "开票金额" ,orderNum = "16")
+    @Excel(name = "开票金额" ,orderNum = "16",type = 10)
     private BigDecimal invoiceFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "差额")
-    @Excel(name = "差额" ,orderNum = "17")
+    @Excel(name = "差额" ,orderNum = "17",type = 10)
     private BigDecimal difference;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "实收金额")
-    @Excel(name = "实收金额" ,orderNum = "18")
+    @Excel(name = "实收金额" ,orderNum = "18",type = 10)
     private BigDecimal amountReceived;
 
     @ApiModelProperty(value = "收款时间")
@@ -145,32 +145,32 @@ public class ExportFinanceVo implements Serializable {
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "提车成本")
-    @Excel(name = "提车成本" ,orderNum = "20")
+    @Excel(name = "提车成本" ,orderNum = "20",type = 10)
     private BigDecimal pickUpCarFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "干线成本")
-    @Excel(name = "干线成本" ,orderNum = "21")
+    @Excel(name = "干线成本" ,orderNum = "21",type = 10)
     private BigDecimal trunkLineFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "送车成本")
-    @Excel(name = "送车成本" ,orderNum = "22")
+    @Excel(name = "送车成本" ,orderNum = "22",type = 10)
     private BigDecimal carryCarFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "收入合计")
-    @Excel(name = "收入合计" ,orderNum = "23")
+    @Excel(name = "收入合计" ,orderNum = "23",type = 10)
     private BigDecimal totalIncome;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "成本合计")
-    @Excel(name = "成本合计" ,orderNum = "24")
+    @Excel(name = "成本合计" ,orderNum = "24",type = 10)
     private BigDecimal totalCost;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "毛利")
-    @Excel(name = "毛利" ,orderNum = "25")
+    @Excel(name = "毛利" ,orderNum = "25",type = 10)
     private BigDecimal grossProfit;
 
 

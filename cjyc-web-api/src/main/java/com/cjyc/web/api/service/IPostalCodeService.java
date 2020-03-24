@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.postal.PostalDto;
 import com.cjyc.common.model.entity.PostalCode;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.postal.AreaVo;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,5 +34,19 @@ public interface IPostalCodeService extends IService<PostalCode> {
      * @return
      */
     ResultVo<List<ProvinceVo>> findChinaPostal(boolean isSearchCache , PostalDto dto);
+
+    /**
+     * 查询所有的省/直辖市
+     * @return
+     */
+    ResultVo findAllProvince(boolean isSearchCache);
+
+    /**
+     * 根据省市名称查询下属区县
+     * @param isSearchCache
+     * @param provinceName
+     * @return
+     */
+    ResultVo<List<AreaVo>> findSubArea(boolean isSearchCache, String provinceName);
 
 }

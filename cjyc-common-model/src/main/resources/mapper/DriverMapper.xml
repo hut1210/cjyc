@@ -496,7 +496,7 @@
         LEFT JOIN s_role sr ON sr.id = surd.role_id
         <where>
             surd.state = ${@com.cjyc.common.model.enums.CommonStateEnum@CHECKED.code}
-            and surd.dept_id=#{carrierId} and run.driver_id is not null
+            and surd.dept_id=#{carrierId}
             <if test="keyword != null and keyword.trim() != ''">
                 and (
                 d.real_name like CONCAT('%',#{keyword},'%')
@@ -896,7 +896,8 @@
     </select>
 
     <!--根据承运商id获取下属司机信息-->
-    <select id="findDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo">
+    <select id="findDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo"
+                    parameterType="java.lang.Long">
           SELECT
             dc.id as carrierId,
             dd.id AS driverId,
@@ -917,7 +918,6 @@
         LEFT JOIN d_vehicle_running dvr ON dvr.driver_id = dd.id
         LEFT JOIN s_role sr ON sr.id = surd.role_id
         where dc.id = #{carrierId} and dc.type = 2 and surd.state &lt; 5
-        AND sr.role_id = #{roleId}
         order by dd.create_time desc,dd.check_time desc
     </select>
 

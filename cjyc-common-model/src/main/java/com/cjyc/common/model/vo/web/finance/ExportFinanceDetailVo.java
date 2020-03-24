@@ -52,7 +52,7 @@ public class ExportFinanceDetailVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
-    @Excel(name = "应付运费" ,orderNum = "8")
+    @Excel(name = "应付运费" ,orderNum = "8",type = 10)
     private String freightFeeStr;
 
     public String getFreightFeeStr() {
@@ -64,7 +64,7 @@ public class ExportFinanceDetailVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal paidFreightFee;
 
-    @Excel(name = "实付运费" ,orderNum = "9")
+    @Excel(name = "实付运费" ,orderNum = "9",type = 10)
     private String paidFreightFeeStr;
 
     public String getPaidFreightFeeStr() {

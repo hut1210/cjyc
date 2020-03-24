@@ -432,12 +432,8 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(urd == null){
             return BaseResultUtil.fail("该司机管理员不存在,请检查");
         }
-        Role role = csRoleService.getByName(YmlProperty.get("cjkj.carrier_sub_driver_role_name"), DeptTypeEnum.CARRIER.code);
-        if(role == null){
-            return BaseResultUtil.fail("下属司机角色不存在，请先添加");
-        }
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<DriverInfoVo> driverInfo = driverDao.findDriverInfoNew(Long.valueOf(urd.getDeptId()),role.getRoleId());
+        List<DriverInfoVo> driverInfo = driverDao.findDriverInfoNew(Long.valueOf(urd.getDeptId()));
         PageInfo<DriverInfoVo> pageInfo = new PageInfo(driverInfo);
         return BaseResultUtil.success(pageInfo);
     }
