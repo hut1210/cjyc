@@ -117,9 +117,9 @@ public class PaidNewVo implements Serializable {
         if (StringUtils.isEmpty(cardType)) {
             return "";
         }
-        if (CardTypeEnum.PUBLIC.code == 1) {
+        if (CardTypeEnum.PUBLIC.code == Integer.parseInt(cardType)) {
             return CardTypeEnum.PUBLIC.name;
-        } else if (CardTypeEnum.PRIVATE.code == 2) {
+        } else if (CardTypeEnum.PRIVATE.code == Integer.parseInt(cardType)) {
             return CardTypeEnum.PRIVATE.name;
         } else {
             return "";

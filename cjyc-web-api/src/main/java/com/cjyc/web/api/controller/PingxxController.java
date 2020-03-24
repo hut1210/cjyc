@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,6 +113,7 @@ public class PingxxController {
         return csPingPayService.validateCarPayState(validateSweepCodeDto, false);
     }
 
+    @Deprecated
     @ApiOperation(value = "解锁预付单")
     @PostMapping(value = "/prepay/unlock/{orderNo}")
     public ResultVo unlock(@PathVariable String orderNo) {
@@ -119,10 +121,21 @@ public class PingxxController {
         return csPingPayService.unlock(orderNo);
     }
 
+    @Deprecated
     @ApiOperation(value = "解锁扫码付款")
     @PostMapping(value = "/qrcode/unlock/{orderCarNo}")
     public ResultVo unlockQrcode(@PathVariable String orderCarNo) {
 
         return csPingPayService.unlockQrcode(orderCarNo);
+    }
+
+    @ApiOperation(value = "解除物流费支付锁")
+    @PostMapping(value = "/pay/unlock/{no}")
+    public ResultVo unlockPay(@PathVariable @Pattern(regexp = "^D$") String no) {
+        if(no.contains("-")){
+            return csPingPayService.unlockPayByCar(no);
+        }else{
+            return csPingPayService.unlockPayByOrder(no);
+        }
     }
 }

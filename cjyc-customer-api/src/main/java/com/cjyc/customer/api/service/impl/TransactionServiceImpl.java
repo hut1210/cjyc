@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.common.system.service.*;
@@ -633,7 +634,7 @@ public class TransactionServiceImpl implements ITransactionService {
             log.info(chargeType + " 物流费预付 orderNo =" + orderNo);
             updateForPrePay(pingxxMetaData);
 
-            String lockKey = getRandomNoKey(orderNo);
+            String lockKey = RedisKeys.getWlPayLockKey(orderNo);
             redisUtil.delete(lockKey);
             //验证订单金额是否一致
             checkOrderFee(orderNo, order.getAmount());
@@ -702,9 +703,6 @@ public class TransactionServiceImpl implements ITransactionService {
         }
     }
 
-    private String getRandomNoKey(String prefix) {
-        return "cjyc:random:no:prepay:" + prefix;
-    }
 
     @Override
     public TradeBill getTradeBillByOrderNo(String orderNo) {

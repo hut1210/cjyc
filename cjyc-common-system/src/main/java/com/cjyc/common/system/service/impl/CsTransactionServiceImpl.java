@@ -14,6 +14,7 @@ import com.cjyc.common.model.enums.PayStateEnum;
 import com.cjyc.common.model.enums.Pingxx.ChannelEnum;
 import com.cjyc.common.model.enums.Pingxx.LiveModeEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -599,15 +600,12 @@ public class CsTransactionServiceImpl implements ICsTransactionService {
                     }
                 }
             }
-            String lockKey =getRandomNoKey(orderNo);
+            String lockKey = RedisKeys.getWlPayLockKey(orderNo);
             redisUtil.delete(lockKey);
         }
 
     }
 
-    private String getRandomNoKey(String prefix) {
-        return "cjyc:random:no:prepay:" + prefix;
-    }
 
     @Override
     public TradeBill getTradeBillByOrderNo(String orderNo) {
