@@ -45,5 +45,4 @@ public class ImportOrderChangePriceVo {
     private String newTotalFee;
     @Excel(name = "备注", orderNum = "26")
     private String remark;
-
 }

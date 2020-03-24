@@ -13,6 +13,7 @@ import com.cjyc.common.model.entity.InvoiceApply;
 import com.cjyc.common.model.entity.InvoiceOrderCon;
 import com.cjyc.common.model.enums.InvoiceTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceApplyVo;
 import com.cjyc.customer.api.service.ICustomerInvoiceService;
@@ -67,7 +68,8 @@ public class InvoiceApplyServiceImpl extends SuperServiceImpl<IInvoiceApplyDao, 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVo applyInvoice(CustomerInvoiceAddDto dto) throws Exception {
-        if(!dto.getType().equals(InvoiceTypeEnum.PERSONAL_INVOICE.code)){
+        log.info("申请开具发票请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        if(!dto.getType().equals(InvoiceTypeEnum.PERSONAL_INVOICE.code+"")){
             if(StringUtils.isEmpty(dto.getTaxCode())){
                 return BaseResultUtil.fail("纳税人识别号不能为空");
             }

@@ -974,6 +974,20 @@ public class FinanceServiceImpl implements IFinanceService {
             if (cooperatorPaidVo.getState().equals("支付失败")) {
                 cooperatorPaidVo.setDescription("请联系管理员");
             }
+
+            //公户
+            if(cooperatorPaidVo!=null&&cooperatorPaidVo.getCardType().equals("公户")){
+                cooperatorPaidVo.setBankName("");
+                cooperatorPaidVo.setIDCard("");
+                cooperatorPaidVo.setCardName("");
+                cooperatorPaidVo.setCardNo("");
+            }else if(cooperatorPaidVo!=null&&cooperatorPaidVo.getCardType().equals("私户")){
+                cooperatorPaidVo.setPubCardNo("");
+                cooperatorPaidVo.setBankNameDetail("");
+                cooperatorPaidVo.setReceiveCardName("");
+                cooperatorPaidVo.setProvinceName("");
+                cooperatorPaidVo.setAreaName("");
+            }
         }
         return cooperatorPaidVoList;
     }

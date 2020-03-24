@@ -106,7 +106,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 addInsuranceFee = addInsuranceFee.add(BigDecimal.valueOf(50));
                 valuation = valuation - 10;
             }
-            while (valuation - 10 >= 0) {
+            while (valuation - 10 > 0) {
                 addInsuranceFee = addInsuranceFee.add(BigDecimal.valueOf(50));
                 valuation = valuation - 10;
             }

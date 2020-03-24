@@ -46,4 +46,20 @@
         </where>
     </select>
 
+    <!--查询所有的省/直辖市-->
+    <select id="findAllProvince" resultType="java.lang.String">
+        select province_name from s_postal_code group by province_name
+    </select>
+
+    <!--根据省/直辖市名称获取下属区县-->
+    <select id="findSubArea" resultType="com.cjyc.common.model.vo.web.postal.AreaVo"
+                parameterType="java.lang.String">
+      select
+          area_name AS areaName,
+          postal_code AS postalCode,
+          area_code AS areaCode
+      from s_postal_code
+      where province_name like concat('%',#{provinceName},'%')
+    </select>
+
 </mapper>

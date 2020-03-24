@@ -25,6 +25,7 @@
         <result column="company_id" property="companyId" />
         <result column="state" property="state" />
         <result column="pay_mode" property="payMode" />
+        <result column="settle_period" property="settlePeriod" />
         <result column="register_time" property="registerTime" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_time" property="createTime" />
@@ -34,7 +35,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, register_time, create_user_id, create_time, check_time, check_user_id
+        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, settle_period, register_time, create_user_id, create_time, check_time, check_user_id
     </sql>
 
     <sql id="Base_Column_Customer_List">

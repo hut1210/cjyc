@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dto.web.postal.PostalDto;
 import com.cjyc.common.model.dto.web.postal.PostalImportExcel;
@@ -10,6 +11,7 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.postal.AreaVo;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.web.api.service.IPostalCodeService;
@@ -83,5 +85,17 @@ public class PostalCodeServiceImpl extends ServiceImpl<IPostalCodeDao, PostalCod
             postalList = postalCodeDao.findPostal(dto.getKeyword());
         }
         return BaseResultUtil.success(postalList);
+    }
+
+    @Override
+    public ResultVo findAllProvince(boolean isSearchCache) {
+        List<String> provinceList = postalCodeDao.findAllProvince();
+        return BaseResultUtil.success(provinceList);
+    }
+
+    @Override
+    public ResultVo<List<AreaVo>> findSubArea(boolean isSearchCache, String provinceName) {
+        List<AreaVo> areaVoList = postalCodeDao.findSubArea(provinceName);
+        return BaseResultUtil.success(areaVoList);
     }
 }
