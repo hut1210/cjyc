@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
 import com.cjyc.common.system.service.*;
@@ -350,24 +351,29 @@ public class TransactionServiceImpl implements ITransactionService {
                 log.error("回调给承运商付款更新运单支付状态失败" + e.getMessage(), e);
             }
             //给司机发送短信提醒到账
-            Waybill waybill = waybillDao.findVoById(waybillId);
-            if (waybill != null) {
-                StringBuilder message = new StringBuilder("运单");
-                message.append(waybill.getNo());
-                message.append("已完成，并向您支付本单运费");
-                message.append(MoneyUtil.fenToYuan(waybill.getFreightFee(),MoneyUtil.PATTERN_TWO));
-                message.append("元。请查看绑定的银行账户（具体到账时间以银行信息为准）");
-                log.info("给司机发送短信提醒到账 message={}",message.toString());
-                BaseCarrierVo carrier = carrierDao.showCarrierById(waybill.getCarrierId());
-                if(carrier!=null&&carrier.getLinkmanPhone()!=null){
-                    try{
-                        MiaoxinSmsUtil.send(carrier.getLinkmanPhone(), message.toString());
-                    }catch (Exception e){
-                        log.error("给司机发送短信提醒失败" + e.getMessage(), e);
-                    }
+            try{
+                Waybill waybill = waybillDao.findVoById(waybillId);
+                if (waybill != null) {
+                    StringBuilder message = new StringBuilder("【韵车物流】运单");
+                    message.append(waybill.getNo());
+                    message.append("已完成，并向您支付本单运费");
+                    message.append(MoneyUtil.fenToYuan(waybill.getFreightFee(),MoneyUtil.PATTERN_TWO));
+                    message.append("元。请查看绑定的银行账户（具体到账时间以银行信息为准）");
+                    log.info("给司机发送短信提醒到账 message={}",message.toString());
+                    BaseCarrierVo carrier = carrierDao.showCarrierById(waybill.getCarrierId());
+                    if(carrier!=null&&carrier.getLinkmanPhone()!=null){
+                        try{
+                            MiaoxinSmsUtil.send(carrier.getLinkmanPhone(), message.toString());
+                        }catch (Exception e){
+                            log.error("给司机发送短信提醒失败" + e.getMessage(), e);
+                        }
 
+                    }
                 }
+            }catch (Exception e){
+                log.error("给司机发送短信提醒异常" + e.getMessage(), e);
             }
+
 
         }
         if (chargeType.equals(String.valueOf(ChargeTypeEnum.UNION_PAY_PARTNER.getCode()))) {
@@ -628,7 +634,7 @@ public class TransactionServiceImpl implements ITransactionService {
             log.info(chargeType + " 物流费预付 orderNo =" + orderNo);
             updateForPrePay(pingxxMetaData);
 
-            String lockKey = getRandomNoKey(orderNo);
+            String lockKey = RedisKeys.getWlPayLockKey(orderNo);
             redisUtil.delete(lockKey);
             //验证订单金额是否一致
             checkOrderFee(orderNo, order.getAmount());
@@ -697,9 +703,6 @@ public class TransactionServiceImpl implements ITransactionService {
         }
     }
 
-    private String getRandomNoKey(String prefix) {
-        return "cjyc:random:no:prepay:" + prefix;
-    }
 
     @Override
     public TradeBill getTradeBillByOrderNo(String orderNo) {

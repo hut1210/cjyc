@@ -1,13 +1,19 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cjkj.common.utils.JsonUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.entity.*;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
+import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.invoice.CustomerInvoiceVo;
 import com.cjyc.common.model.vo.web.finance.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsPingPayService;
@@ -16,13 +22,16 @@ import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.service.ITradeBillSummaryService;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -90,6 +99,15 @@ public class FinanceServiceImpl implements IFinanceService {
     @Resource
     private ITradeBillSummaryService tradeBillService;
 
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private IReceiveSettlementDao receiveSettlementDao;
+
+    @Autowired
+    private IReceiveSettlementDetailDao receiveSettlementDetailDao;
+
     @Override
     public ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
@@ -156,10 +174,10 @@ public class FinanceServiceImpl implements IFinanceService {
 
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
-        countInfo.put("costSummary",costSummary.divide(new BigDecimal(100)));
-        countInfo.put("grossProfit",grossProfit.divide(new BigDecimal(100)));
+        countInfo.put("costSummary", costSummary.divide(new BigDecimal(100)));
+        countInfo.put("grossProfit", grossProfit.divide(new BigDecimal(100)));
 
-        return BaseResultUtil.success(pageInfo,countInfo);
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
@@ -368,6 +386,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto) {
+        financeQueryDto.setSettleType(0);
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
 
@@ -382,9 +401,35 @@ public class FinanceServiceImpl implements IFinanceService {
         log.info("pv.size() ={}", pv.size());
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("receiptCount", pv.size());
-        countInfo.put("receiptSummary",receiptSummary.divide(new BigDecimal(100)));
+        countInfo.put("receiptSummary", receiptSummary.divide(new BigDecimal(100)));
 
-        countInfo.put("ActualReceiptSummary",receiptSummary.divide(new BigDecimal(100)));
+        countInfo.put("ActualReceiptSummary", receiptSummary.divide(new BigDecimal(100)));
+        return BaseResultUtil.success(pageInfo, countInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(FinanceQueryDto financeQueryDto) {
+        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        financeQueryDto.setSettleType(1);
+        // 应收账款列表查询
+        List<ReceiveOrderCarDto> receiveOrderCarDtoList = financeDao.listPaymentDaysInfo(financeQueryDto);
+        receiveOrderCarDtoList.forEach(e -> {
+            e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
+            e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
+            if(e.getSettlePeriod() == null || e.getSettlePeriod() == 0){
+                e.setRemainderSettlePeriod(0L);
+            }else {
+                e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
+            }
+        });
+        // 应收账款列表总条数查询
+        List<ReceiveOrderCarDto> totalFinanceVoList = financeDao.listPaymentDaysInfo(new FinanceQueryDto());
+        // 应收账款总额统计
+        BigDecimal receiveSummary = MoneyUtil.nullToZero(financeDao.receiptSummary(financeQueryDto));
+        Map<String, Object> countInfo = new HashMap<>();
+        countInfo.put("receiveCount", totalFinanceVoList.size());
+        countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(receiveSummary, MoneyUtil.PATTERN_TWO)));
+        PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(receiveOrderCarDtoList);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -438,7 +483,7 @@ public class FinanceServiceImpl implements IFinanceService {
         Map countInfo = getCountInfo();
         PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
         BigDecimal payableAccountSummary = financeDao.payableAccountSummary(payableQueryDto);
-        countInfo.put("payableAccountSummary",payableAccountSummary);
+        countInfo.put("payableAccountSummary", payableAccountSummary);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -509,7 +554,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
         Map countInfo = getCountInfo();
         BigDecimal waitCollectSummary = financeDao.waitCollectSummary(waitTicketCollectDto);
-        countInfo.put("waitCollectSummary",waitCollectSummary);
+        countInfo.put("waitCollectSummary", waitCollectSummary);
 
         return BaseResultUtil.success(pageInfo, countInfo);
     }
@@ -564,7 +609,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
         Map countInfo = getCountInfo();
         BigDecimal paymentSummary = financeDao.paymentSummary(waitPaymentDto);
-        countInfo.put("paymentSummary",paymentSummary);
+        countInfo.put("paymentSummary", paymentSummary);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -614,8 +659,8 @@ public class FinanceServiceImpl implements IFinanceService {
         Map map = financeDao.payablePaidSummary(payablePaidQueryDto);
         BigDecimal payableSummary = (BigDecimal) map.get("freightFee");
         BigDecimal payablePaidSummary = (BigDecimal) map.get("totalFreightPay");
-        countInfo.put("payableSummary",payableSummary);
-        countInfo.put("payablePaidSummary",payablePaidSummary);
+        countInfo.put("payableSummary", payableSummary);
+        countInfo.put("payablePaidSummary", payablePaidSummary);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -662,10 +707,10 @@ public class FinanceServiceImpl implements IFinanceService {
 
         //承运商应付款汇总
         BigDecimal carrierSummary = tradeBillService.payToCarrierSummary(payMentQueryDto);
-        countInfo.put("carrierSummary",carrierSummary.divide(new BigDecimal(100)));
+        countInfo.put("carrierSummary", carrierSummary.divide(new BigDecimal(100)));
         //承运商实付款汇总
         BigDecimal paidCarrierSummary = tradeBillService.paidToCarrierSummary(payMentQueryDto);
-        countInfo.put("paidCarrierSummary",paidCarrierSummary.divide(new BigDecimal(100)));
+        countInfo.put("paidCarrierSummary", paidCarrierSummary.divide(new BigDecimal(100)));
 
         return BaseResultUtil.success(pageInfo, countInfo);
     }
@@ -858,10 +903,10 @@ public class FinanceServiceImpl implements IFinanceService {
 
         //合伙人应付汇总
         BigDecimal payCooperatorSummary = tradeBillService.payToCooperatorSummary(cooperatorSearchDto);
-        countInfo.put("payCooperatorSummary",payCooperatorSummary.divide(new BigDecimal(100)));
+        countInfo.put("payCooperatorSummary", payCooperatorSummary.divide(new BigDecimal(100)));
         //合伙人实付汇总
         BigDecimal paidCooperatorSummary = tradeBillService.paidToCooperatorSummary(cooperatorSearchDto);
-        countInfo.put("paidToCooperatorSummary",paidCooperatorSummary.divide(new BigDecimal(100)));
+        countInfo.put("paidToCooperatorSummary", paidCooperatorSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -933,6 +978,20 @@ public class FinanceServiceImpl implements IFinanceService {
             if (cooperatorPaidVo.getState().equals("支付失败")) {
                 cooperatorPaidVo.setDescription("请联系管理员");
             }
+
+            //公户
+            if(cooperatorPaidVo!=null&&cooperatorPaidVo.getCardType().equals("公户")){
+                cooperatorPaidVo.setBankName("");
+                cooperatorPaidVo.setIDCard("");
+                cooperatorPaidVo.setCardName("");
+                cooperatorPaidVo.setCardNo("");
+            }else if(cooperatorPaidVo!=null&&cooperatorPaidVo.getCardType().equals("私户")){
+                cooperatorPaidVo.setPubCardNo("");
+                cooperatorPaidVo.setBankNameDetail("");
+                cooperatorPaidVo.setReceiveCardName("");
+                cooperatorPaidVo.setProvinceName("");
+                cooperatorPaidVo.setAreaName("");
+            }
         }
         return cooperatorPaidVoList;
     }
@@ -974,13 +1033,13 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<DriverUpstreamPaidInfoVo>> listDriverUpstreamPaidInfo(String waybillNo) {
-        if(StringUtils.isEmpty(waybillNo)){
+        if (StringUtils.isEmpty(waybillNo)) {
             BaseResultUtil.fail("运单单号不能为空！");
         }
         // 根据运单号查看上游付款状态列表
         List<DriverUpstreamPaidInfoVo> listInfo = waybillCarDao.listDriverUpstreamPaidInfo(waybillNo);
         // 订单金额分转元
-        listInfo.forEach(e ->{
+        listInfo.forEach(e -> {
             e.setTotalFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalFee(), MoneyUtil.PATTERN_TWO)));
         });
         // 列表分页
@@ -988,4 +1047,469 @@ public class FinanceServiceImpl implements IFinanceService {
         return BaseResultUtil.success(pageInfo);
     }
 
+    @Override
+    public ResultVo applyReceiveSettlement(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
+        // 应收账款结算申请
+        return new ReceiveSettlementOperation(applyReceiveSettlementVo, null, null, null)
+                .applyReceiveSettlement();
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
+        // 结算申请-已申请发票
+        receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
+        // 金额分转元
+        listInfo.forEach(e -> {
+            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
+        PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedPayed(ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo) {
+        // 应收账款结算-待回款列表查询, 此时查询结算状态为【已确认和不需要开票】的结算信息列表
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedPayedVo);
+        // 金额分转元
+        listInfo.forEach(e -> {
+            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
+        PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        // 应收账款结算-已收款列表查询, 此时查询结算状态为已收款的结算信息列表
+        // 已核销
+        receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.VERIFICATION.code);
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
+        // 金额分转元
+        listInfo.forEach(e -> {
+            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        });
+        // 列表分页
+        PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    @Override
+    public ResultVo cancelReceiveSettlement(CancelInvoiceVo cancelInvoiceVo) {
+        return new ReceiveSettlementOperation(null, cancelInvoiceVo, null, null)
+                .cancelReceiveSettlement();
+    }
+
+    @Override
+    public ResultVo confirmInvoice(ConfirmInvoiceVo confirmInvoiceVo) {
+        return new ReceiveSettlementOperation(null, null, confirmInvoiceVo, null)
+                .confirmInvoice();
+    }
+
+    @Override
+    public ResultVo verificationReceiveSettlement(VerificationReceiveSettlementVo verificationReceiveSettlementVo) {
+        return new ReceiveSettlementOperation(null, null, null, verificationReceiveSettlementVo)
+                .verificationReceiveSettlement();
+    }
+
+    @Override
+    public ResultVo<ReceiveSettlementInvoiceDetailDto> listReceiveSettlementDetail(String serialNumber) {
+        if (StringUtils.isEmpty(serialNumber)) {
+            return BaseResultUtil.fail("结算流水号不能为空！");
+        }
+        // 查询结算信息
+        ReceiveSettlement receiveSettlement = receiveSettlementDao.selectOne(new QueryWrapper<ReceiveSettlement>()
+                .lambda()
+                .eq(ReceiveSettlement::getSerialNumber, serialNumber)
+        );
+        // 查询结算明细
+        List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(new QueryWrapper<ReceiveSettlementDetail>()
+                .lambda()
+                .eq(ReceiveSettlementDetail::getSerialNumber, serialNumber)
+        );
+        // 查询发票信息
+        CustomerInvoice customerInvoice = null;
+        if (receiveSettlement.getInvoiceId() != null) {
+            customerInvoice = customerInvoiceDao.selectOne(new QueryWrapper<CustomerInvoice>()
+                    .lambda()
+                    .eq(CustomerInvoice::getId, receiveSettlement.getInvoiceId()));
+        } else {
+            customerInvoice = new CustomerInvoice();
+        }
+        // 金额分转元
+        moneyFenToYuan(receiveSettlement, listInfo);
+        // 组装返回结果
+        CustomerInvoice finalCustomerInvoice = customerInvoice;
+        ReceiveSettlementInvoiceDetailDto result = new ReceiveSettlementInvoiceDetailDto() {{
+            setReceiveSettlementInvoiceDetailList(listInfo);
+            setInvoice(finalCustomerInvoice);
+            setReceiveSettlement(receiveSettlement);
+        }};
+        return BaseResultUtil.success(result);
+    }
+
+    /**
+     * 金额分转元
+     *
+     * @param receiveSettlement
+     * @param listInfo
+     */
+    private void moneyFenToYuan(ReceiveSettlement receiveSettlement, List<ReceiveSettlementDetail> listInfo) {
+        if (!CollectionUtils.isEmpty(listInfo)) {
+            listInfo.forEach(e -> {
+                e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
+                e.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            });
+        }
+        if (receiveSettlement != null) {
+            receiveSettlement.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+            receiveSettlement.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(receiveSettlement.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+        }
+    }
+
+    /**
+     * <p>上游账期功能实现封装类，这里封装了增删改接口，查询接口没什么逻辑就访问外围了</p>
+     * <ol>
+     *     <li>应收账款结算申请</li>
+     *     <li>待开票列表-确认开票</li>
+     *     <li>待开票列表-撤回</li>
+     *     <li>待回款列表查询-核销</li>
+     * </ol>
+     */
+    private class ReceiveSettlementOperation {
+        // 接口请求参数
+        final ApplyReceiveSettlementVo applyReceiveSettlementVo;
+        final CancelInvoiceVo cancelInvoiceVo;
+        final ConfirmInvoiceVo confirmInvoiceVo;
+        final VerificationReceiveSettlementVo verificationReceiveSettlementVo;
+
+        private ReceiveSettlementOperation(ApplyReceiveSettlementVo applyReceiveSettlementVo, CancelInvoiceVo cancelInvoiceVo, ConfirmInvoiceVo confirmInvoiceVo, VerificationReceiveSettlementVo verificationReceiveSettlementVo) {
+            this.applyReceiveSettlementVo = applyReceiveSettlementVo;
+            this.cancelInvoiceVo = cancelInvoiceVo;
+            this.confirmInvoiceVo = confirmInvoiceVo;
+            this.verificationReceiveSettlementVo = verificationReceiveSettlementVo;
+        }
+
+        /**
+         * 应收账款结算申请逻辑处理
+         *
+         * @return
+         */
+        private ResultVo applyReceiveSettlement() {
+            // 参数校验
+            ResultVo result = validateApplyReceiveSettlementParams(applyReceiveSettlementVo);
+            if (result.getCode() != ResultEnum.SUCCESS.getCode()) {
+                return result;
+            }
+            return transactionTemplate.execute(status -> {
+                try {
+                    log.info("应收账款结算申请开始！");
+                    // 新增发票
+                    int needVoice = applyReceiveSettlementVo.getNeedVoice();
+                    CustomerInvoice customerInvoice = new CustomerInvoice();
+                    // 默认不需要开发票
+                    Integer state = ReceiveSettlementStateEnum.UNNEEDED_INVOICE.code;
+                    // 需要开发票
+                    if (needVoice == NeedInvoiceStateEnum.NEEDED_INVOICE.code) {
+                        CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
+                        BeanUtils.copyProperties(customerInvoiceVo, customerInvoice);
+                        customerInvoiceDao.insert(customerInvoice);
+                        state = ReceiveSettlementStateEnum.APPLY_INVOICE.code;
+                    }
+                    // 新增应收账款
+                    String serialNumber = csSendNoService.getNo(SendNoTypeEnum.RECEIPT);
+                    String applicantName = applyReceiveSettlementVo.getCustomerName();
+                    if (StringUtils.isEmpty(applicantName)) {
+                        Admin admin = csAdminService.validate(applyReceiveSettlementVo.getCustomerId());
+                        applicantName = admin.getName();
+                    }
+
+                    Integer finalState = state;
+                    String finalApplicantName = applicantName;
+                    receiveSettlementDao.insert(new ReceiveSettlement() {
+                        {
+                            // 结算流水号
+                            setSerialNumber(serialNumber);
+                            // 应收账款
+                            setTotalReceivableFee(MoneyUtil.yuanToFen(applyReceiveSettlementVo.getTotalReceivableFee()));
+                            // 开票金额
+                            setTotalInvoiceFee(MoneyUtil.yuanToFen(applyReceiveSettlementVo.getTotalInvoiceFee()));
+                            // 发票id
+                            setInvoiceId(customerInvoice.getId());
+                            // 结算申请状态
+                            setState(finalState);
+                            // 申请人id
+                            setApplicantId(applyReceiveSettlementVo.getCustomerId());
+                            // 申请人
+                            setApplicantName(finalApplicantName);
+                            // 申请时间
+                            setApplyTime(System.currentTimeMillis());
+                        }
+                    });
+                    // 新增账款明细
+                    if (!CollectionUtils.isEmpty(applyReceiveSettlementVo.getReceiveSettlementDetailList())) {
+                        applyReceiveSettlementVo.getReceiveSettlementDetailList().forEach(e -> {
+                            ReceiveSettlementDetail receiveSettlementDetail = new ReceiveSettlementDetail();
+                            BeanUtils.copyProperties(e, receiveSettlementDetail);
+                            receiveSettlementDetail.setFreightReceivable(MoneyUtil.yuanToFen(receiveSettlementDetail.getFreightReceivable()));
+                            receiveSettlementDetail.setInvoiceFee(MoneyUtil.yuanToFen(receiveSettlementDetail.getInvoiceFee()));
+                            // 结算流水号
+                            receiveSettlementDetail.setSerialNumber(serialNumber);
+                            receiveSettlementDetailDao.insert(receiveSettlementDetail);
+                        });
+                    }
+                    log.info("应收账款结算申请结束！");
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    log.error("应收账款结算申请发生异常！", e);
+                    return BaseResultUtil.fail("应收账款结算申请失败！");
+                }
+                return BaseResultUtil.success("应收账款结算申请成功！");
+            });
+        }
+
+        /**
+         * 应收账款-待开票-撤回
+         *
+         * @return
+         */
+        public ResultVo cancelReceiveSettlement() {
+            if (StringUtils.isEmpty(cancelInvoiceVo.getSerialNumber())) {
+                return BaseResultUtil.fail("结算流水号不能为空！");
+            }
+            if (StringUtils.isEmpty(cancelInvoiceVo.getCustomerId())) {
+                return BaseResultUtil.fail("撤回业务员id不能为空！");
+            }
+            return transactionTemplate.execute(status -> {
+                try {
+                    // 删除结算信息
+                    receiveSettlementDao.delete(new QueryWrapper<ReceiveSettlement>()
+                            .lambda()
+                            .eq(ReceiveSettlement::getSerialNumber, cancelInvoiceVo.getSerialNumber())
+                    );
+
+                    // 删除结算明细信息
+                    receiveSettlementDetailDao.delete(new QueryWrapper<ReceiveSettlementDetail>()
+                            .lambda()
+                            .eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber())
+                    );
+                    String cancelName = cancelInvoiceVo.getCustomerName();
+                    if (StringUtils.isEmpty(cancelInvoiceVo.getCustomerName())) {
+                        Admin admin = csAdminService.validate(cancelInvoiceVo.getCustomerId());
+                        cancelName = admin.getName();
+                    }
+                    List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(new QueryWrapper<ReceiveSettlementDetail>().lambda().eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber()));
+                    log.info("业务员：{}撤销结算流水号为：{}的结算申请数据：{}", cancelName, cancelInvoiceVo.getSerialNumber(), JsonUtil.toJson(listInfo));
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    log.error("应收账款-待开票-撤回发生异常！", e);
+                    return BaseResultUtil.fail("应收账款-待开票-撤回失败！");
+                }
+                return BaseResultUtil.success("应收账款-待开票-撤回成功！");
+            });
+        }
+
+        /**
+         * 应收账款-待开票-确认开票
+         *
+         * @return
+         */
+        public ResultVo confirmInvoice() {
+            if (StringUtils.isEmpty(confirmInvoiceVo.getSerialNumber())) {
+                return BaseResultUtil.fail("结算流水号不能为空！");
+            }
+            if (confirmInvoiceVo.getCustomerId() == null) {
+                return BaseResultUtil.fail("确认开票确认人id不能为空！");
+            }
+            String confirmName = confirmInvoiceVo.getCustomerName();
+            if (StringUtils.isEmpty(confirmInvoiceVo.getCustomerName())) {
+                Admin admin = csAdminService.validate(confirmInvoiceVo.getCustomerId());
+                confirmName = admin.getName();
+            }
+            log.info("业务员：{}确认开票结算流水号为：{}", confirmName, confirmInvoiceVo.getSerialNumber());
+            String finalConfirmName = confirmName;
+            int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
+                setInvoiceNo(confirmInvoiceVo.getInvoiceNo());
+                setConfirmId(confirmInvoiceVo.getCustomerId());
+                setConfirmName(finalConfirmName);
+                setConfirmTime(System.currentTimeMillis());
+                setState(ReceiveSettlementStateEnum.CONFIRM_INVOICE.code);
+            }}, new QueryWrapper<ReceiveSettlement>()
+                    .lambda()
+                    .eq(ReceiveSettlement::getSerialNumber, confirmInvoiceVo.getSerialNumber()));
+            if (updated < 1) {
+                return BaseResultUtil.fail("应收账款-待开票-确认开票失败！");
+            }
+            return BaseResultUtil.success("应收账款-待开票-确认开票成功！");
+        }
+
+        /**
+         * 应收账款-待回款-核销
+         *
+         * @return
+         */
+        public ResultVo verificationReceiveSettlement() {
+            if (StringUtils.isEmpty(verificationReceiveSettlementVo.getSerialNumber())) {
+                return BaseResultUtil.fail("结算流水号不能为空！");
+            }
+            if (verificationReceiveSettlementVo.getCustomerId() == null) {
+                return BaseResultUtil.fail("核销人id不能为空！");
+            }
+            String verificationName = verificationReceiveSettlementVo.getCustomerName();
+            if (StringUtils.isEmpty(verificationReceiveSettlementVo.getCustomerName())) {
+                Admin admin = csAdminService.validate(verificationReceiveSettlementVo.getCustomerId());
+                verificationName = admin.getName();
+            }
+            log.info("业务员：{}核销结算流水号为：{}", verificationName, verificationReceiveSettlementVo.getSerialNumber());
+            String finalVerificationName = verificationName;
+            int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
+                setVerificationId(verificationReceiveSettlementVo.getCustomerId());
+                setVerificationName(finalVerificationName);
+                setState(ReceiveSettlementStateEnum.VERIFICATION.code);
+                setVerificationTime(System.currentTimeMillis());
+            }}, new QueryWrapper<ReceiveSettlement>()
+                    .lambda()
+                    .eq(ReceiveSettlement::getSerialNumber, verificationReceiveSettlementVo.getSerialNumber()));
+            if (updated < 1) {
+                return BaseResultUtil.fail("应收账款-待回款-核销失败！");
+            }
+            return BaseResultUtil.success("应收账款-待回款-核销成功！");
+        }
+
+        /**
+         * 应收账款申请参数校验：
+         * 1.应收运费,开票金额校验
+         * 2.订单车辆ID集合校验
+         * 3.发票参数校验
+         *
+         * @param applyReceiveSettlementVo
+         * @return
+         */
+        private ResultVo validateApplyReceiveSettlementParams(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
+            BigDecimal totalReceivableFee = applyReceiveSettlementVo.getTotalReceivableFee();
+            BigDecimal totalInvoiceFee = applyReceiveSettlementVo.getTotalInvoiceFee();
+            if (applyReceiveSettlementVo.getCustomerId() == null) {
+                return BaseResultUtil.fail("申请人id不能为空！");
+            }
+            if (totalReceivableFee == null || totalReceivableFee.compareTo(BigDecimal.ZERO) < 0) {
+                return BaseResultUtil.fail("应收运费不能为空或负值");
+            }
+            if (totalInvoiceFee == null || totalInvoiceFee.compareTo(BigDecimal.ZERO) < 0) {
+                return BaseResultUtil.fail("开票金额不能为空或负值");
+            }
+            if (CollectionUtils.isEmpty(applyReceiveSettlementVo.getReceiveSettlementDetailList())) {
+                return BaseResultUtil.fail("结算单明细集合不能为空");
+            } else {
+                for (ReceiveSettlementDetailVo e : applyReceiveSettlementVo.getReceiveSettlementDetailList()) {
+                    if (e.getOrderCarId() == null) {
+                        return BaseResultUtil.fail("结算单明细-订单车辆id不能为空");
+                    }
+                    if (StringUtils.isEmpty(e.getCustomerName())) {
+                        return BaseResultUtil.fail("结算单明细-客户名称不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getNo())) {
+                        return BaseResultUtil.fail("结算单明细-车辆编码不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getVin())) {
+                        return BaseResultUtil.fail("结算单明细-vin码不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getBrand())) {
+                        return BaseResultUtil.fail("结算单明细-品牌不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getModel())) {
+                        return BaseResultUtil.fail("结算单明细-车系不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getStartAddress())) {
+                        return BaseResultUtil.fail("结算单明细-始发地不能为空！");
+                    }
+                    if (StringUtils.isEmpty(e.getEndAddress())) {
+                        return BaseResultUtil.fail("结算单明细-目的地不能为空！");
+                    }
+                    if (e.getDeliveryDate() == null) {
+                        return BaseResultUtil.fail("结算单明细-交付日期不能为空！");
+                    }
+                    if (e.getFreightReceivable() == null || e.getFreightReceivable().compareTo(BigDecimal.ZERO) < 0) {
+                        return BaseResultUtil.fail("结算单明细-应收运费不能为空或负值");
+                    }
+                    if (e.getInvoiceFee() == null || e.getInvoiceFee().compareTo(BigDecimal.ZERO) < 0) {
+                        return BaseResultUtil.fail("结算单明细-开票金额不能为空或负值");
+                    }
+                }
+            }
+            CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
+            if (customerInvoiceVo != null && customerInvoiceVo.getType() != null) {
+                switch (customerInvoiceVo.getType()) {
+                    case 1:
+                        if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
+                            return BaseResultUtil.fail("新增个人普票-客户名称不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
+                            return BaseResultUtil.fail("新增个人普票-收件人不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
+                            return BaseResultUtil.fail("新增个人普票-收件人电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
+                            return BaseResultUtil.fail("新增个人普票-邮寄地址不能为空");
+                        }
+                        break;
+                    case 2:
+                        if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
+                            return BaseResultUtil.fail("新增公司普票-客户名称不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getTaxCode())) {
+                            return BaseResultUtil.fail("新增公司普票-纳税人识别号不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
+                            return BaseResultUtil.fail("新增公司普票-收件人不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
+                            return BaseResultUtil.fail("新增公司普票-收件人电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
+                            return BaseResultUtil.fail("新增公司普票-邮寄地址不能为空");
+                        }
+                        break;
+                    case 3:
+                        if (StringUtils.isEmpty(customerInvoiceVo.getName())) {
+                            return BaseResultUtil.fail("新增公司专票-客户名称不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getTaxCode())) {
+                            return BaseResultUtil.fail("新增公司专票-纳税人识别号不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getInvoiceAddress())) {
+                            return BaseResultUtil.fail("新增公司专票-地址不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getTel())) {
+                            return BaseResultUtil.fail("新增公司专票-电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getBankName())) {
+                            return BaseResultUtil.fail("新增公司专票-开户行不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getBankAccount())) {
+                            return BaseResultUtil.fail("新增公司专票-银行账号不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPerson())) {
+                            return BaseResultUtil.fail("新增公司专票-收件人不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupPhone())) {
+                            return BaseResultUtil.fail("新增公司专票-收件人电话不能为空");
+                        }
+                        if (StringUtils.isEmpty(customerInvoiceVo.getPickupAddress())) {
+                            return BaseResultUtil.fail("新增公司专票-邮寄地址不能为空");
+                        }
+                        break;
+                    default:
+                        //不做处理
+                }
+            }
+            return BaseResultUtil.success();
+        }
+    }
 }

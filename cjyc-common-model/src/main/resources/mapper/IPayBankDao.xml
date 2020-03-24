@@ -32,8 +32,11 @@
         FROM
             s_pay_bank
         <where>
+            <if test="bankCode != null and bankCode.trim() != ''">
+                 bank_code like concat('%',#{bankCode},'%')
+            </if>
             <if test="payBankNo != null and payBankNo.trim() != ''">
-                pay_bank_no like concat('%',#{payBankNo},'%')
+                and pay_bank_no like concat('%',#{payBankNo},'%')
             </if>
             <if test="subBankName != null and subBankName.trim() != ''">
                 and sub_bank_name like concat('%',#{subBankName},'%')

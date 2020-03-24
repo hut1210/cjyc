@@ -8,6 +8,7 @@ import com.cjyc.common.system.service.ICsPingxxService;
 import com.google.common.collect.Maps;
 import com.pingplusplus.Pingpp;
 import com.pingplusplus.exception.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class CsPingxxServiceImpl implements ICsPingxxService {
 
 
@@ -34,7 +36,8 @@ public class CsPingxxServiceImpl implements ICsPingxxService {
         params.put("description", pm.getDescription()); // 备注：订单号
 
         Map<String, Object> meta = BeanMapUtil.beanToMap(pm.getMetaDataEntiy());
-        params.put("metadata",meta);//自定义参数
+        params.put("metadata", meta);//自定义参数
+        log.info("createOrderByModel={}",params.toString());
         return Order.create(params);
 
     }
@@ -42,9 +45,10 @@ public class CsPingxxServiceImpl implements ICsPingxxService {
     @Override
     public Order payOrderByModel(PingOrderModel pm) throws FileNotFoundException, InvalidRequestException, APIException, ChannelException, RateLimitException, APIConnectionException, AuthenticationException {
         Order pingOrder = createOrderByModel(pm);
-        if(pingOrder != null){
+        if (pingOrder != null) {
             pingOrder = payPingOrder(pm.getApp(), pm.getMetaDataEntiy().getChannel(), pm.getAmount(), pingOrder.getId());
         }
+        log.info("payOrderByModel pingOrder={}", pingOrder.toString());
         return pingOrder;
     }
 
@@ -63,6 +67,6 @@ public class CsPingxxServiceImpl implements ICsPingxxService {
         Pingpp.apiKey = PingProperty.apiKey;
         //Pingpp.overrideApiBase("https://sapi.pingxx.com");//此接口为ping++协助测试的接口 升级完成后注释掉 20181023 add
         System.setProperty("https.protocols", "TLSv1.2");//20181023 添加 (TLSv1.2升级配置)
-        Pingpp.privateKeyPath = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX+"your_rsa_private_key_pkcs.pem").getPath();
+        Pingpp.privateKeyPath = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "your_rsa_private_key_pkcs.pem").getPath();
     }
 }

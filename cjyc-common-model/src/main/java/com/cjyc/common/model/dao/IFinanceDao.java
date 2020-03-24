@@ -23,6 +23,14 @@ public interface IFinanceDao extends BaseMapper {
 
     List<PaymentVo> getPaymentList(FinanceQueryDto financeQueryDto);
 
+    /**
+     * 账期应收账款列表查询
+     *
+     * @param financeQueryDto
+     * @return
+     */
+    List<ReceiveOrderCarDto> listPaymentDaysInfo(FinanceQueryDto financeQueryDto);
+
     List<PaidVo> getPaidList(PayMentQueryDto payMentQueryDto);
 
     List<CollectReceiveVo> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
@@ -74,4 +82,12 @@ public interface IFinanceDao extends BaseMapper {
     BigDecimal paymentSummary(WaitPaymentDto waitPaymentDto);
 
     Map payablePaidSummary(PayablePaidQueryDto payablePaidQueryDto);
+
+    /**
+     * 应收账款总额统计
+     *
+     * @param financeQueryDto
+     * @return
+     */
+    BigDecimal receiptSummary(FinanceQueryDto financeQueryDto);
 }

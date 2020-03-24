@@ -40,15 +40,18 @@ public interface ICsPingPayService {
     Charge getOutOfStockQrCode(WebOutOfStockDto webOutOfStockDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
-    Charge salesPrePay(SalesPrePayDto salesPrePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
+    ResultVo salesPrePay(SalesPrePayDto salesPrePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
             APIConnectionException, AuthenticationException, FileNotFoundException;
 
-
+    @Deprecated
     ResultVo unlock(String orderNo);
 
+    @Deprecated
     ResultVo unlockQrcode(String orderCarNo);
 
     void cancelOrderRefund(Long orderId);
 
+    ResultVo unlockPayByOrder(String no);
 
+    ResultVo unlockPayByCar(String no);
 }

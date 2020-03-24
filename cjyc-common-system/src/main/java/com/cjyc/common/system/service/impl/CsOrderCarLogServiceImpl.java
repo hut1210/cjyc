@@ -46,6 +46,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
             orderCarLog.setType(logTypeEnum.getCode());
             orderCarLog.setOuterLog(String.valueOf(log[0]));
             orderCarLog.setInnerLog(String.valueOf(log[1]));
+            orderCarLog.setRemark(log.length > 2 ? String.valueOf(log[2]) : null);
             orderCarLog.setCreateTime(System.currentTimeMillis());
             if(userInfo != null){
                 orderCarLog.setCreateUser(userInfo.getName());

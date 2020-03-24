@@ -60,14 +60,12 @@ public class PingPayController {
     @PostMapping("/prepay/sweepSalesCode")
     public ResultVo prepay(HttpServletRequest request, @RequestBody SalesPrePayDto salesPrePayDto){
         salesPrePayDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
-        Charge charge;
         try {
-            charge = pingPayService.salesPrePay(salesPrePayDto);
+            return pingPayService.salesPrePay(salesPrePayDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);
             return BaseResultUtil.fail(500,"业务员预付款出示二维码异常");
         }
-        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
 }

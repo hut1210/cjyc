@@ -106,7 +106,7 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "发车联系人", required = true)
     private String pickContactName;
     @NotBlank(message = "发车联系人电话不能为空")
-    @Pattern(regexp = "(^[1]\\d{10}$)", message = "发车人手机号格式不正确")
+    //@Pattern(regexp = "(^[1]\\d{10}$)", message = "发车人手机号格式不正确")
     @ApiModelProperty(value = "发车联系人电话", required = true)
     private String pickContactPhone;
     @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门, 4.物流上门", required = true)
@@ -115,7 +115,7 @@ public class CommitOrderDto {
     @ApiModelProperty(value = "收车联系人", required = true)
     private String backContactName;
     @NotBlank(message = "收车联系人电话不能为空")
-    @Pattern(regexp = "(^[1]\\d{10}$)", message = "收车人手机号格式不正确")
+    //@Pattern(regexp = "(^[1]\\d{10}$)", message = "收车人手机号格式不正确")
     @ApiModelProperty(value = "收车联系人电话", required = true)
     private String backContactPhone;
     @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")

@@ -1104,14 +1104,14 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
     }
 
-    private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
+  /*  private boolean validateIsArriveEndCity(Order order, WaybillCar waybillCar) {
         if (waybillCar == null) {
             return false;
         }
         //先验证是否到达所属业务中心
         if (order.getEndStoreId() != null) {
-            List<Store> storeList = csStoreService.getBelongByAreaCode(waybillCar.getEndAreaCode());
-            if (!CollectionUtils.isEmpty(storeList) && storeList.stream().map(Store::getId).collect(Collectors.toList()).contains(order.getEndStoreId())) {
+            Store store = csStoreService.getBelongByAreaCode(waybillCar.getEndAreaCode());
+            if (store != null && store.getId().equals(order.getEndStoreId())) {
                 return true;
             }
         }
@@ -1121,7 +1121,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         return false;
 
-    }
+    }*/
 
     @Override
     public ResultVo receipt(ReceiptTaskDto paramsDto) {

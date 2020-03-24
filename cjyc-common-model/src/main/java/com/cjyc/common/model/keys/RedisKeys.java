@@ -86,8 +86,8 @@ public class RedisKeys {
         return CJYC + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
-    public static String getWlPayLockKey(String carNo) {
-        return  CJYC + I + WL_PAY_LOCK + I + carNo;
+    public static String getWlPayLockKey(String no) {
+        return  CJYC + I + WL_PAY_LOCK + I + no;
     }
 
     /**
@@ -140,7 +140,7 @@ public class RedisKeys {
     }
 
     public static String getPayBankInfoKey(PayBankDto dto){
-        return CJYC + I + PAY_BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getSubBankName() + I +dto.getPayBankNo();
+        return CJYC + I + PAY_BANK_INFO + I + dto.getCurrentPage() + I + dto.getPageSize() + I + dto.getBankCode() + I + dto.getSubBankName() + I +dto.getPayBankNo();
     }
 
     public static String getWebBankInfoKey(KeywordDto dto){

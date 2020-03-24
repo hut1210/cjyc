@@ -52,7 +52,7 @@ public class ExportFinanceDetailVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
-    @Excel(name = "应付运费" ,orderNum = "8")
+    @Excel(name = "应付运费" ,orderNum = "8",type = 10)
     private String freightFeeStr;
 
     public String getFreightFeeStr() {
@@ -64,7 +64,7 @@ public class ExportFinanceDetailVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal paidFreightFee;
 
-    @Excel(name = "实付运费" ,orderNum = "9")
+    @Excel(name = "实付运费" ,orderNum = "9",type = 10)
     private String paidFreightFeeStr;
 
     public String getPaidFreightFeeStr() {
@@ -90,8 +90,29 @@ public class ExportFinanceDetailVo implements Serializable {
     }
 
     @ApiModelProperty(value = "承运商类型")
-    @Excel(name = "承运商类型" ,orderNum = "12")
     private String carrierType;
+
+    @Excel(name = "承运商类型" ,orderNum = "12")
+    private String carrierTypeStr;
+
+    public String getCarrierTypeStr() {
+        String type = getCarrierType();
+        if (type != null) {
+            if (type.equals("1")) {
+                return "个人承运商";
+            }
+            if (type.equals("2")) {
+                return "企业承运商";
+            }
+            if (type.equals("4")) {
+                return "代驾";
+            }
+            if (type.equals("5")) {
+                return "拖车";
+            }
+        }
+        return "";
+    }
 
     @ApiModelProperty(value = "承运商名称")
     @Excel(name = "承运商名称" ,orderNum = "13")

@@ -63,7 +63,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     WaybillCar findUnConnectCar(String cityCode);
 
-    WaybillCar findLastTrunkWaybillCar(@Param("cityCode") String cityCode,@Param("orderCarId") Long orderCarId);
+    WaybillCar findLastWaybillCar(@Param("orderCarId") Long orderCarId);
 
     WaybillCar findLastPrevByArea(@Param("orderCarId") Long orderCarId, @Param("areaList") List<String> areaList);
 

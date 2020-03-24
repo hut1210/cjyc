@@ -142,7 +142,7 @@ public class PingPayServiceImpl implements IPingPayService {
             }
         }else{
             log.info("pay orderNo ="+orderNo);
-            String lockKey =getRandomNoKey(orderNo);
+            String lockKey =RedisKeys.getWlPayLockKey(orderNo);
             if (!redisLock.lock(lockKey, 1800000, 99, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
@@ -176,9 +176,6 @@ public class PingPayServiceImpl implements IPingPayService {
         return order;
     }
 
-    private String getRandomNoKey(String prefix) {
-        return "cjyc:random:no:prepay:" + prefix;
-    }
 
     private Order payOrder(OrderModel om) throws InvalidRequestException, APIException,
             ChannelException, RateLimitException, APIConnectionException, AuthenticationException,FileNotFoundException {

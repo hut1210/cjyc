@@ -192,7 +192,7 @@ public class CsStoreServiceImpl implements ICsStoreService {
      * @since 2019/11/5 9:27
      */
     @Override
-    public List<Store> getBelongByAreaCode(String areaCode) {
+    public Store getBelongByAreaCode(String areaCode) {
         return storeDao.findBelongByAreaCode(areaCode);
     }
 
@@ -281,5 +281,16 @@ public class CsStoreServiceImpl implements ICsStoreService {
         return true;
     }
 
+    @Override
+    public Store getStoreFromMap(Map<Long, Store> map, Long storeId) {
+        Store store;
+        if (map.containsKey(storeId)) {
+            store = map.get(storeId);
+        } else {
+            store = storeDao.selectById(storeId);
+            map.put(storeId, store);
+        }
+        return store;
+    }
 
 }

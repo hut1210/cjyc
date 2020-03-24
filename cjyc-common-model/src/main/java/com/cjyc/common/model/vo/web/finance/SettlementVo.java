@@ -23,7 +23,7 @@ public class SettlementVo {
     private String serialNumber;
 
     @ApiModelProperty(value = "应付运费")
-    @Excel(name = "应付总运费" ,orderNum = "1")
+    @Excel(name = "应付总运费" ,orderNum = "1",type = 10)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "状态")
@@ -96,6 +96,6 @@ public class SettlementVo {
     private String writeOffMan;
 
     @ApiModelProperty(value = "实付总运费")
-    @Excel(name = "实付总运费" ,orderNum = "2")
+    @Excel(name = "实付总运费" ,orderNum = "2",type = 10)
     private BigDecimal totalFreightPay;
 }

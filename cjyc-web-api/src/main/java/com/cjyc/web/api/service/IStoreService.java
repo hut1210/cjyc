@@ -3,11 +3,15 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import com.cjyc.common.model.dto.web.city.StoreDto;
-import com.cjyc.common.model.dto.web.store.*;
+import com.cjyc.common.model.dto.web.store.GetStoreDto;
+import com.cjyc.common.model.dto.web.store.StoreAddDto;
+import com.cjyc.common.model.dto.web.store.StoreQueryDto;
+import com.cjyc.common.model.dto.web.store.StoreUpdateDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.store.StoreVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +29,8 @@ public interface IStoreService extends IService<Store> {
 
     List<Store> getByAreaCode(String areaCode);
     List<Store> getByCityCode(String areaCode);
-
+    List<Store> listByWebLogin(BaseWebDto reqDto);
+    List<StoreVo> listVoByWebLogin(BaseWebDto reqDto);
     /**
      * 分页查询
      * @param storeQueryDto
@@ -45,7 +50,7 @@ public interface IStoreService extends IService<Store> {
      * @param storeUpdateDto
      * @return
      */
-    boolean modify(StoreUpdateDto storeUpdateDto);
+    ResultVo modify(StoreUpdateDto storeUpdateDto);
 
     /**
      * 导出Excel
@@ -97,15 +102,11 @@ public interface IStoreService extends IService<Store> {
      */
     ResultVo removeCoveredArea(StoreDto dto);
 
-    @Deprecated
     List<Store> getListByRoleId(Long roleId);
-    List<Store> listByWebLogin(BaseWebDto reqDto);
 
     List<Store> get(GetStoreDto reqDto);
-    @Deprecated
-    List<StoreVo> getVoListByRoleId(Long roleId);
 
-    List<StoreVo> listVoByWebLogin(BaseWebDto reqDto);
+    List<StoreVo> getVoListByRoleId(Long roleId);
 
     /**
      * 功能描述: 删除业务中心
@@ -116,5 +117,23 @@ public interface IStoreService extends IService<Store> {
      */
     ResultVo remove(Long id);
 
+    /**
+     * 导入Excel文件
+     * @param file
+     * @return
+     */
+    boolean importStoreExcel(MultipartFile file, Long loginId);
 
+    /**
+     * 获取全部业务中心
+     * @return
+     */
+    ResultVo<List<Store>> findAllStore();
+
+    /**
+     * web端获取该城市下所有区的业务中心
+     * @param cityCode
+     * @return
+     */
+    List<Store> findStore(String cityCode);
 }

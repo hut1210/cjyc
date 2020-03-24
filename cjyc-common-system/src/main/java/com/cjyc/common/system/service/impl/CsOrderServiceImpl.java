@@ -2,7 +2,6 @@ package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
-import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
@@ -18,6 +17,7 @@ import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.*;
@@ -37,6 +37,7 @@ import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -106,6 +107,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
     private ICsOrderChangeLogService csOrderChangeLogService;
     @Resource
     private ICsAmqpService csAmqpService;
+    @Resource
+    private ICsOrderCarLogService csOrderCarLogService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -342,6 +345,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
             }
             //copy属性
             BeanUtils.copyProperties(paramsDto, order);
+            if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType() && PayModeEnum.COLLECT.code != order.getPayType()){
+                throw new ParameterException("合伙人下单支付方式只能选择到付，请确认后重新下单");
+            }
             if(order.getCustomerId() == null){
                 throw new ParameterException("客户身份信息有误, 请联系管理员");
             }
@@ -502,8 +508,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (validVo.getCode() != ResultEnum.SUCCESS.getCode()) {
                 return BaseResultUtil.fail(validVo.getMsg());
             }
-
-            if (order.getEndStoreId() == null || order.getEndStoreId() <= 0) {
+            if (order.getStartStoreId() == null || order.getStartStoreId() < 0) {
+                return BaseResultUtil.fail("始发地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
+            }
+            if (order.getEndStoreId() == null || order.getEndStoreId() < 0) {
                 return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
             }
             if(!RegexUtil.isMobileSimple(order.getPickContactPhone())){
@@ -1136,7 +1144,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (!redisLock.lock(lockKey, 120000, 1, 200)) {
                 return BaseResultUtil.fail("当前订单{0}正在操作，请稍后尝试", paramsDto.getOrderId());
             }
-
+            UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
             //取消订单
             Order order = orderDao.selectById(paramsDto.getOrderId());
             if (order == null) {
@@ -1157,21 +1165,34 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 List<WaybillCar> waybillCars = waybillCarDao.findListByOrderCarIds(collect);
                 waybillCars.forEach(wc -> csWaybillService.cancelWaybillCar(wc));
             }
-            //取消所有在库状态
+            //出库
+            Map<Long, Store> storeMap = Maps.newHashMap();
+            orderCars.forEach(orderCar -> {
+                if(orderCar.getNowStoreId() != null && orderCar.getNowStoreId() > 0){
+                    Store store = csStoreService.getStoreFromMap(storeMap, orderCar.getNowStoreId());
+                    csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_OUT_STORE,
+                            new String[]{MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getOutterLog(), store.getName()),
+                                    MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getInnerLog(), store.getName(), paramsDto.getLoginName(), paramsDto.getLoginPhone()),
+                            "取消订单出库"},
+                            userInfo);
+                }
+            });
             orderCarDao.updateLocationForCancel(order.getId());
+
+
             //退款
             csPingPayService.cancelOrderRefund(order.getId());
 
             //添加操作日志
             orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.CANCEL,
                     new String[]{oldStateName, OrderStateEnum.F_CANCEL.name, paramsDto.getReason()},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
+                    userInfo);
 
             //记录订单日志
             csOrderLogService.asyncSave(order, OrderLogEnum.CANCEL,
                     new String[]{OrderLogEnum.CANCEL.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
-                    new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType()));
+                    userInfo);
             //TODO 发送消息
             return BaseResultUtil.success();
         } finally {
@@ -1211,12 +1232,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if (order.getState() >= OrderStateEnum.FINISHED.code) {
             return BaseResultUtil.fail("订单已完结，不能修改价格");
         }
+
         if (PayStateEnum.PAID.code == order.getWlPayState()){
-            BigDecimal subtract = MoneyUtil.nullToZero(order.getTotalFee()).subtract(paramsDto.getTotalFee());
-            LogUtil.warn("【订单改价】已支付订单改价，原始金额{}，修改后金额{}, 差价{}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
+            return BaseResultUtil.fail("订单已支付，不能修改价格");
+            /*BigDecimal oldAmount = MoneyUtil.fenToYuan(order.getTotalFee());
+            BigDecimal subtract = MoneyUtil.nullToZero(oldAmount).subtract(paramsDto.getTotalFee());
+            LogUtil.warn("【订单改价】已支付订单改价，原始金额{}，修改后金额{}, 差价{}", oldAmount, paramsDto.getTotalFee(), subtract);
             if(subtract.compareTo(BigDecimal.ZERO) > 0){
                 csSmsService.send(paramsDto.getLoginPhone(), "已支付订单改价，原始金额{0}，修改后金额{1}, 差价{2}", order.getTotalFee(), paramsDto.getTotalFee(), subtract);
-            }
+            }*/
         }
         //记录历史数据
         FullOrder oldOrder = getFullOrder(order);
@@ -1394,6 +1418,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 /*if (vo.getOrderEndCityCode() != null  && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }*/
+                if (!validateIsArriveStoreOrCityRange(vo.getEndAreaCode(), vo.getEndCityCode(), vo.getOrderEndStoreId(), vo.getOrderEndCityCode())) {
+                    return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
+                }
                 //验证数据范围
                 if (bizScope.getCode() != BizScopeEnum.CHINA.code) {
                     if (vo.getStartBelongStoreId() == null || !storeIds.contains(vo.getStartBelongStoreId())) {
@@ -1463,6 +1490,22 @@ public class CsOrderServiceImpl implements ICsOrderService {
         return BaseResultUtil.success(dispatchAddCarVo);
     }
 
+    @Override
+    public boolean validateIsArriveStoreOrCityRange(String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode) {
+        //先验证是否到达所属业务中心
+        if (orderEndStoreId != null && orderEndStoreId > 0) {
+            Store store = csStoreService.getBelongByAreaCode(endAreaCode);
+            if (store != null && orderEndStoreId.equals(store.getId())) {
+                return true;
+            }
+        }
+        //其次验证城市
+        if (orderEndCityCode.equals(endCityCode)) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 拷贝订单开始城市
      *
@@ -1510,10 +1553,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @since 2019/10/29 8:30
      */
     private List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
-        if (totalFee == null || totalFee.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
-        if (CollectionUtils.isEmpty(orderCarlist)) {
+        if (totalFee == null || CollectionUtils.isEmpty(orderCarlist)) {
             return orderCarlist;
         }
 
@@ -1521,42 +1561,35 @@ public class CsOrderServiceImpl implements ICsOrderService {
         for (OrderCar oc : orderCarlist) {
             carTotalFee = carTotalFee.add(getCarWlFee(oc));
         }
-        if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
+
         if(totalFee.compareTo(carTotalFee) < 0){
             throw new ParameterException("订单金额不能小于物流费");
         }
-        BigDecimal avg = totalFee.divide(carTotalFee, 8, RoundingMode.FLOOR);
+        boolean isAvg = carTotalFee.compareTo(BigDecimal.ZERO) == 0;
+
         BigDecimal avgTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            BigDecimal avgCar = getCarWlFee(oc).multiply(avg).setScale(0, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal avgCar;
+            if(isAvg){
+                avgCar = BigDecimal.ONE.multiply(totalFee).divide(new BigDecimal(orderCarlist.size()), 0, BigDecimal.ROUND_HALF_DOWN);
+            }else{
+                avgCar = getCarWlFee(oc).multiply(totalFee).divide(carTotalFee, 0, BigDecimal.ROUND_HALF_DOWN);
+            }
             //赋值
             oc.setTotalFee(avgCar);
             //统计
             avgTotalFee = avgTotalFee.add(avgCar);
         }
-
-        BigDecimal remainder = totalFee.subtract(avgTotalFee);
-
-        if (remainder.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
-
-        BigDecimal[] bigDecimals = remainder.divideAndRemainder(new BigDecimal(orderCarlist.size()));
-        BigDecimal rAvg = bigDecimals[0];
-        BigDecimal rRemainder = bigDecimals[1];
-        for (OrderCar oc : orderCarlist) {
-            if (rRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                oc.setTotalFee(oc.getTotalFee().add(rAvg).add(BigDecimal.ONE));
-                rRemainder = rRemainder.subtract(BigDecimal.ONE);
-            } else {
-                oc.setTotalFee(oc.getTotalFee().add(rAvg));
+        BigDecimal cha = totalFee.subtract(avgTotalFee);
+        if (cha.compareTo(BigDecimal.ZERO) > 0) {
+            for (OrderCar oc : orderCarlist) {
+                if (cha.compareTo(BigDecimal.ZERO) > 0) {
+                    oc.setTotalFee(oc.getTotalFee().add(BigDecimal.ONE));
+                    cha = cha.subtract(BigDecimal.ONE);
+                }
             }
         }
-
         return orderCarlist;
-
     }
     @Override
     public BigDecimal getCarWlFee(OrderCar orderCar) {
@@ -1583,37 +1616,32 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         BigDecimal carTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            carTotalFee = carTotalFee.add(oc.getPickFee()).add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee());
+            carTotalFee = carTotalFee.add(getCarWlFee(oc));
         }
         if (carTotalFee.compareTo(BigDecimal.ZERO) <= 0) {
             return orderCarlist;
         }
 
-        BigDecimal avg = couponOffsetFee.divide(carTotalFee, 8, RoundingMode.FLOOR);
         BigDecimal avgTotalFee = BigDecimal.ZERO;
         for (OrderCar oc : orderCarlist) {
-            BigDecimal avgCar = (oc.getPickFee().add(oc.getTrunkFee()).add(oc.getBackFee()).add(oc.getAddInsuranceFee())).multiply(avg);
-            avgCar = avgCar.setScale(0, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal avgCar = getCarWlFee(oc).multiply(couponOffsetFee).divide(carTotalFee, 0, RoundingMode.DOWN);
             oc.setTotalFee(avgCar);
             avgTotalFee = avgTotalFee.add(avgCar);
         }
 
-        BigDecimal remainder = couponOffsetFee.subtract(avgTotalFee);
-        if (remainder.compareTo(BigDecimal.ZERO) <= 0) {
-            return orderCarlist;
-        }
-        BigDecimal[] bigDecimals = remainder.divideAndRemainder(new BigDecimal(orderCarlist.size()));
-        BigDecimal rAvg = bigDecimals[0];
-        BigDecimal rRemainder = bigDecimals[1];
-        for (OrderCar oc : orderCarlist) {
-            if (rRemainder.compareTo(BigDecimal.ZERO) > 0) {
-                oc.setCouponOffsetFee(oc.getTotalFee().add(rAvg).add(BigDecimal.ONE));
-                rRemainder = rRemainder.subtract(BigDecimal.ONE);
-            } else {
-                oc.setCouponOffsetFee(oc.getTotalFee().add(rAvg));
+        BigDecimal cha = couponOffsetFee.subtract(avgTotalFee);
+        if (cha.compareTo(BigDecimal.ZERO) <= 0) {
+            for (OrderCar oc : orderCarlist) {
+                if (cha.compareTo(BigDecimal.ZERO) <= 0) {
+                    break;
+                }
+                oc.setCouponOffsetFee(oc.getTotalFee().add(BigDecimal.ONE));
+                cha = cha.subtract(BigDecimal.ONE);
             }
         }
         return orderCarlist;
     }
+
+
 
 }

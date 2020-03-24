@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dto.web.order.CancelOrderDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderCarDto;
 import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
@@ -20,6 +21,7 @@ import com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.common.system.service.ICsOrderService;
+import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
 import com.cjyc.foreign.api.dto.req.OrderCarSubmitReqDto;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
 import com.cjyc.foreign.api.dto.req.OrderSubmitReqDto;
@@ -27,10 +29,12 @@ import com.cjyc.foreign.api.dto.res.OrderCarDetailResDto;
 import com.cjyc.foreign.api.dto.res.OrderCarTransportDetailResDto;
 import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 import com.cjyc.foreign.api.service.IOrderService;
+import com.cjyc.foreign.api.utils.LoginAccountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -102,7 +106,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 addInsuranceFee = addInsuranceFee.add(BigDecimal.valueOf(50));
                 valuation = valuation - 10;
             }
-            while (valuation - 10 >= 0) {
+            while (valuation - 10 > 0) {
                 addInsuranceFee = addInsuranceFee.add(BigDecimal.valueOf(50));
                 valuation = valuation - 10;
             }
@@ -118,7 +122,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             return BaseResultUtil.fail("线路不存在，请重新选择城市");
         }
         BigDecimal lineFee = line.getDefaultWlFee() == null ? BigDecimal.ZERO : line.getDefaultWlFee().divide(new BigDecimal(100));
-        if (!lineFee.equals(reqDto.getLineWlFreightFee())) {
+        if (lineFee.doubleValue() != reqDto.getLineWlFreightFee().doubleValue()) {
             log.info("===>线路费金额不正确");
             return BaseResultUtil.fail("线路费金额不正确!");
         }
@@ -179,6 +183,55 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         ResultVo<OrderDetailResDto> resultVo = BaseResultUtil.success(orderDetailResDto);
         log.info("<===99车圈-查询订单详情,返回参数：{}", JSON.toJSONString(resultVo));
         return resultVo;
+    }
+
+    @Override
+    public ResultVo<String> cancelOrder(CancelOrderReqDto reqDto) {
+        String account = LoginAccountUtil.getLoginAccount();
+        if (StringUtils.isEmpty(account)) {
+            return BaseResultUtil.fail("登录账号信息有误，请检查!");
+        }
+        //查询订单信息是否存在
+        Order order = super.getOne(new QueryWrapper<Order>().lambda()
+                .eq(Order::getNo, reqDto.getOrderNo()));
+        if (null == order) {
+            return BaseResultUtil.fail("订单编号有误，请检查!");
+        }
+        Customer customer = csCustomerService.getByPhone(account, true);
+        if (null == customer) {
+            return BaseResultUtil.fail("用户信息有误，请检查!");
+        }
+        if (order.getCustomerId() != null && customer.getId() != null &&
+                !order.getCustomerId().equals(customer.getId())) {
+            return BaseResultUtil.fail("订单不属于该用户，请检查!");
+        }
+        //请求信息封装
+        CancelOrderDto dto = new CancelOrderDto();
+        dto.setOrderId(order.getId());
+        dto.setLoginId(customer.getId());
+        dto.setLoginPhone(customer.getContactPhone());
+        dto.setLoginName(customer.getName());
+        dto.setLoginType(UserTypeEnum.CUSTOMER);
+        ResultVo cancelVo = csOrderService.cancel(dto);
+        if (isResultSuccess(cancelVo)) {
+            return BaseResultUtil.getVo(cancelVo.getCode(), cancelVo.getMsg(),
+                    reqDto.getOrderNo());
+        }else {
+            return cancelVo;
+        }
+    }
+
+    /**
+     * 检查返回结果是否成功
+     *
+     * @param resultVo
+     * @return
+     */
+    private boolean isResultSuccess(ResultVo resultVo) {
+        if (null == resultVo) {
+            return false;
+        }
+        return ResultEnum.SUCCESS.getCode().equals(resultVo.getCode());
     }
 
     private void getTransportInfo(OrderDetailResDto orderDetailResDto) {

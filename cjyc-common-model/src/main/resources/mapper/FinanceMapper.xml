@@ -1131,5 +1131,120 @@
             and fp.invoice_no lifp.writeoff_timeke concat('%',#{invoiceNo},'%')
         </if>) t
     </select>
-
+    <!--账期应收账款列表查询开始-->
+    <!--账期应收账款列表查询公共sql-->
+    <sql id="PAYMENT_DAYS_COMMON_SQL">
+        SELECT DISTINCT(woc.no),woc.vin,woc.brand,woc.model,
+        wo.customer_id AS customerId,wo.customer_type AS type,zcity.name AS largeArea,
+        '账期' AS payModeName,woc.total_fee AS freightReceivable,
+        if(woc.wl_pay_state=2,woc.total_fee,0) AS freightPay,
+        woc.order_no AS orderNo,
+        wo.start_province,wo.start_city,
+        wo.start_city AS startAddress,
+        wo.end_city AS endAddress,
+        woc.now_area_code,wo.input_store_id,
+        wo.input_store_name AS inputStoreName,
+        wo.customer_name AS customerName,
+        wo.customer_contract_id AS customerContractId,
+        woc.finish_time AS deliveryDate,
+        wo.finish_time AS orderDeliveryDate,
+        woc.id AS orderCarId,
+        ccc.settle_period
+        FROM w_order_car woc
+        LEFT JOIN w_order wo ON woc.order_id = wo.id
+        LEFT JOIN c_customer cc ON cc.id = wo.customer_id
+    </sql>
+    <!--账期应收账款列表查询条件sql-->
+    <sql id="PAYMENT_DAYS_CONDITION">
+        <if test="no != null and no.trim() != ''">
+            AND woc.no LIKE concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            AND  woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            AND  woc.order_no LIKE concat('%',#{orderNo},'%')
+        </if>
+        <if test="area != null and area.trim() != ''">
+            AND zcity.code = #{area}
+        </if>
+        <if test="type != null">
+            AND cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            AND  cc.name  LIKE concat('%',#{customerName},'%')
+        </if>
+        <if test="brand != null and brand.trim() != ''">
+            AND woc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            AND woc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            AND wo.input_store_name = #{inputStoreName}
+        </if>
+        <if test="completeStartTime!= null">
+            AND woc.finish_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            AND woc.finish_time &lt;= #{completeEndTime}
+        </if>
+        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+            AND wo.start_province_code = #{startProvinceCode}
+        </if>
+        <if test="startCityCode != null and startCityCode.trim() != ''">
+            AND wo.start_city_code = #{startCityCode}
+        </if>
+        <if test="startAreaCode != null and startAreaCode.trim() != ''">
+            AND wo.start_area_code = #{startAreaCode}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+            AND wo.end_province_code = #{endProvinceCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            AND wo.end_city_code = #{endCityCode}
+        </if>
+        <if test="endAreaCode != null and endAreaCode.trim() != ''">
+            AND wo.end_area_code = #{endAreaCode}
+        </if>
+    </sql>
+    <!--账期应收账款列表查询sql-->
+    <select id="listPaymentDaysInfo" resultType="com.cjyc.common.model.dto.web.finance.ReceiveOrderCarDto">
+        SELECT * FROM (
+        <!--企业客户账期应收账款信息查询sql-->
+        <include refid="PAYMENT_DAYS_COMMON_SQL"></include>
+        LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id
+        LEFT JOIN w_waybill_car wwc ON wwc.order_car_no = woc.no
+        LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
+        LEFT JOIN s_city zc ON zc.code = wo.start_province_code
+        LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
+        WHERE woc.wl_pay_state=2
+        AND ccc.settle_type=1
+        AND wo.customer_type=2
+        AND wo.state=100
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
+        <include refid="PAYMENT_DAYS_CONDITION"></include>
+        GROUP BY woc.no ) t ORDER BY t.deliveryDate DESC
+    </select>
+    <!--企业客户账期应收账款汇总sql-->
+    <select id="receiptSummary" resultType="java.math.BigDecimal">
+        SELECT sum(t.total_fee) FROM (
+        SELECT DISTINCT(woc.no),woc.total_fee
+        FROM w_order_car woc
+        LEFT JOIN w_order wo ON woc.order_id = wo.id
+        LEFT JOIN c_customer cc ON cc.id = wo.customer_id
+        LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id
+        LEFT JOIN w_waybill_car wwc ON wwc.order_car_no = woc.no
+        LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
+        LEFT JOIN s_city zc ON zc.code = wo.start_province_code
+        LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
+        WHERE woc.wl_pay_state=2
+        AND ccc.settle_type=1
+        AND wo.customer_type=2
+        AND wo.state=100
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
+        <include refid="PAYMENT_DAYS_CONDITION"></include>
+        GROUP BY woc.no ) t
+    </select>
+    <!--账期应收账款列表查询结束-->
 </mapper>

@@ -4,7 +4,6 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.enums.CardTypeEnum;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,7 +37,7 @@ public class PaidNewVo implements Serializable {
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "应付运费")
-    @Excel(name = "应付运费", orderNum = "3")
+    @Excel(name = "应付运费", orderNum = "3",type = 10)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "付款时间")
@@ -52,7 +51,7 @@ public class PaidNewVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd mm:HH:ss");
+        return LocalDateTimeUtil.formatLong(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "付款状态 0未付款 2已付款")
@@ -118,9 +117,9 @@ public class PaidNewVo implements Serializable {
         if (StringUtils.isEmpty(cardType)) {
             return "";
         }
-        if (CardTypeEnum.PUBLIC.code == 1) {
+        if (CardTypeEnum.PUBLIC.code == Integer.parseInt(cardType)) {
             return CardTypeEnum.PUBLIC.name;
-        } else if (CardTypeEnum.PRIVATE.code == 2) {
+        } else if (CardTypeEnum.PRIVATE.code == Integer.parseInt(cardType)) {
             return CardTypeEnum.PRIVATE.name;
         } else {
             return "";

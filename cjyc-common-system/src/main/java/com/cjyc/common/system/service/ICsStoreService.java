@@ -9,6 +9,7 @@ import com.cjyc.common.model.vo.salesman.store.StoreLoopAdminVo;
 import com.cjyc.common.model.vo.salesman.store.StoreVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 公用业务中心类
@@ -28,7 +29,7 @@ public interface ICsStoreService {
      * @since 2019/11/5 9:27
      * @param areaCode
      */
-    List<Store> getBelongByAreaCode(String areaCode);
+    Store getBelongByAreaCode(String areaCode);
 
     /**
      * 根据ID查询业务中心
@@ -72,4 +73,6 @@ public interface ICsStoreService {
     ResultVo<List<StoreLoopAdminVo>> listLoopAdmin(StoreListLoopAdminDto loginId);
 
     boolean validateStoreParam(Long storeId, String storeName);
+
+    Store getStoreFromMap(Map<Long, Store> map, Long storeId);
 }

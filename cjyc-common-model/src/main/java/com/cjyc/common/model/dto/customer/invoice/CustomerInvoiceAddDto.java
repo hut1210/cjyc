@@ -38,7 +38,7 @@ public class CustomerInvoiceAddDto implements Serializable {
     @NotBlank(message = "客户名称不能为空")
     private String name;
 
-    @ApiModelProperty(value = "纳税人识别号",required = true)
+    @ApiModelProperty(value = "纳税人识别号")
     private String taxCode;
 
     @ApiModelProperty(value = "地址")

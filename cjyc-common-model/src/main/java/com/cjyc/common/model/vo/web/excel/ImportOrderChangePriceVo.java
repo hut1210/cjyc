@@ -20,7 +20,7 @@ public class ImportOrderChangePriceVo {
     private String customerName;
     @Excel(name = "客户类型", orderNum = "4")
     private String customerTypeStr;
-    @Excel(name = "修改时间", width = 15, orderNum = "5")
+    @Excel(name = "修改时间", width = 20, orderNum = "5")
     private String createTimeStr;
 
     @Excel(name = "旧状态", width = 18, orderNum = "11")
@@ -43,5 +43,6 @@ public class ImportOrderChangePriceVo {
     private String newWlTotalFee;
     @Excel(name = "新订单金额", orderNum = "25")
     private String newTotalFee;
-
+    @Excel(name = "备注", orderNum = "26")
+    private String remark;
 }
