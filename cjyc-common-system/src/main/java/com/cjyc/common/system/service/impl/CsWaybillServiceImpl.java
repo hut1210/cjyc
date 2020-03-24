@@ -194,9 +194,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //【验证】配送调度，需验证干线调度是否完成
                 if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastWaybillCar(orderCarId);
-                    String startAreaCode = waybillCar == null ? order.getStartAreaCode() : waybillCar.getEndAreaCode();
-                    String startCityCode = waybillCar == null ? order.getStartCityCode() : waybillCar.getEndCityCode();
-                    if (!csOrderService.validateIsArriveStoreOrCityRange(startAreaCode, startCityCode, order.getEndStoreId(), order.getEndCityCode())) {
+                    String endAreaCode = waybillCar == null ? order.getStartAreaCode() : waybillCar.getEndAreaCode();
+                    String endCityCode = waybillCar == null ? order.getStartCityCode() : waybillCar.getEndCityCode();
+                    Long endStoreId = waybillCar == null ? order.getStartStoreId() : waybillCar.getEndStoreId();
+                    if (!csOrderService.validateIsArriveStoreOrCityRange(endStoreId, endAreaCode, endCityCode, order.getEndStoreId(), order.getEndCityCode())) {
                         return BaseResultUtil.fail("车辆{0}，尚未到达目的地所属业务中心或目的地城市范围内", orderCarNo);
                     }
                 }
