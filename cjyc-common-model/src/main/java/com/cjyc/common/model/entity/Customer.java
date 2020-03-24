@@ -91,6 +91,9 @@ public class Customer implements Serializable {
     @ApiModelProperty(value = "结算方式：0时付，1账期")
     private Integer payMode;
 
+    @ApiModelProperty(value = "账期/天")
+    private Integer settlePeriod;
+
     @ApiModelProperty(value = "注册时间，用户自己注册APP或者首次登陆操作APP时间")
     private Long registerTime;
 
