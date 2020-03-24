@@ -44,7 +44,7 @@ public class FinanceTask {
     private void paymentDaysTask() {
         log.info("每天结束时定时把所有订单的剩余账期(天)减一天");
         try {
-            orderService.paymentDaysSubtraction();
+            //orderService.paymentDaysSubtraction();
         } catch (Exception e) {
             log.error("剩余账期(天)减一天失败!", e);
         }
