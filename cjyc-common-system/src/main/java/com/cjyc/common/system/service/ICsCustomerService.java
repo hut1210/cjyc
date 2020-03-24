@@ -97,4 +97,5 @@ public interface ICsCustomerService {
     boolean validateActive(Long id);
 
     ResultVo<Customer> validateAndGetActive(Long id);
+
 }

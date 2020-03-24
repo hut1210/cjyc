@@ -59,6 +59,9 @@ public class ReceiveOrderCarDto implements Serializable {
     @ApiModelProperty(value = "交付时间")
     private Long deliveryDate;
 
+    @ApiModelProperty(value = "订单交付时间", hidden = true)
+    private Long orderDeliveryDate;
+
     @ApiModelProperty(value = "交付时间")
     private String deliveryDateStr;
 
@@ -98,6 +101,9 @@ public class ReceiveOrderCarDto implements Serializable {
     @ApiModelProperty(value = "合同Id")
     private Long customerContractId;
 
+    @ApiModelProperty(value = "账期(天)", hidden = true)
+    private Integer settlePeriod;
+
     @ApiModelProperty(value = "剩余账期(天)")
-    private Integer hurryDays;
+    private Long remainderSettlePeriod;
 }

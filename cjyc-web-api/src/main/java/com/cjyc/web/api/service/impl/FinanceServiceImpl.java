@@ -416,17 +416,15 @@ public class FinanceServiceImpl implements IFinanceService {
         receiveOrderCarDtoList.forEach(e -> {
             e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
             e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
+            e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
         });
         // 应收账款列表总条数查询
         List<ReceiveOrderCarDto> totalFinanceVoList = financeDao.listPaymentDaysInfo(new FinanceQueryDto());
         // 应收账款总额统计
-        BigDecimal receiveSummary = tradeBillService.receiptSummary(financeQueryDto);
-        // 实收账款总额统计
-        //BigDecimal actualReceiveSummary = tradeBillService.ActualReceiptSummary(financeQueryDto);
+        BigDecimal receiveSummary = financeDao.receiptSummary(financeQueryDto);
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("receiveCount", totalFinanceVoList.size());
         countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(receiveSummary, MoneyUtil.PATTERN_TWO)));
-        //countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(actualReceiveSummary, MoneyUtil.PATTERN_TWO)));
         PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(receiveOrderCarDtoList);
         return BaseResultUtil.success(pageInfo, countInfo);
     }
