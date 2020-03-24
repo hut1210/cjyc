@@ -12,7 +12,6 @@ import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
-import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
@@ -137,6 +136,10 @@ public class TaskServiceImpl implements ITaskService {
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    // 实际装车时间不为空时，显示实际装车时间
+                    if (waybillCar.getLoadTime() != null) {
+                        carDetailVo.setExpectStartTime(waybillCar.getLoadTime());
+                    }
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
                     // 给详细地址拼接市区
