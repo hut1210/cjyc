@@ -181,7 +181,7 @@
         left join w_task wt on wtc.task_id = wt.id
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
-        where wwc.state=100
+        where wwc.state=100 and woc.state=100
         <include refid="financeSummary"></include>) t
     </select>
     <select id="refundSummary" resultType="java.math.BigDecimal">

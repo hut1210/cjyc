@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.web.postal.PostalDto;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.postal.AreaVo;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import com.cjyc.web.api.service.IPostalCodeService;
 import io.swagger.annotations.Api;
@@ -35,5 +36,17 @@ public class PostalCodeController {
     @PostMapping(value = "/findChinaPostal")
     public ResultVo<List<ProvinceVo>> findChinaPostal(@RequestBody PostalDto dto) {
         return postalCodeService.findChinaPostal(true,dto);
+    }
+
+    @ApiOperation(value = "查询所有的省")
+    @PostMapping(value = "/findAllProvince")
+    public ResultVo findAllProvince() {
+        return postalCodeService.findAllProvince(true);
+    }
+
+    @ApiOperation(value = "根据省/直辖市名称查询下属区县")
+    @PostMapping(value = "/findSubArea/{provinceName}")
+    public ResultVo<List<AreaVo>> findSubArea(@PathVariable String provinceName) {
+        return postalCodeService.findSubArea(true,provinceName);
     }
 }
