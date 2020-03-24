@@ -81,8 +81,8 @@ public class PaidNewVo implements Serializable {
         }
     }
 
-    @ApiModelProperty(value = "运输路线")
-    @Excel(name = "运输路线", orderNum = "8")
+    @ApiModelProperty(value = "指导线路")
+    @Excel(name = "指导线路", orderNum = "8")
     private String guideLine;
 
     @ApiModelProperty(value = "承运商")
