@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * @Date:2019/11/29 15:59
  */
 @Data
-public class OutTransfer {
+public class OutTransferBody {
 
     @ApiModelProperty("付款人帐号")
     private String pay_acno;
@@ -51,7 +51,7 @@ public class OutTransfer {
     @ApiModelProperty("同城异地标志")
     private String area_flag;
 
-    public OutTransfer(String pay_acno, String pay_acname, String rcv_bank_name, String rcv_acno, String rcv_acname, String rcv_exg_code, String rcv_bank_no, String cur_code, BigDecimal amt, String cert_no, String summary, String bank_flag, String area_flag) {
+    public OutTransferBody(String pay_acno, String pay_acname, String rcv_bank_name, String rcv_acno, String rcv_acname, String rcv_exg_code, String rcv_bank_no, String cur_code, BigDecimal amt, String cert_no, String summary, String bank_flag, String area_flag) {
         this.pay_acno = pay_acno;
         this.pay_acname = pay_acname;
         this.rcv_bank_name = rcv_bank_name;
@@ -65,5 +65,18 @@ public class OutTransfer {
         this.summary = summary;
         this.bank_flag = bank_flag;
         this.area_flag = area_flag;
+    }
+
+    public String getOutTransferBody(OutTransferBody outTransferBody){
+
+        return "<body><pay_acno>"+ outTransferBody.getPay_acno()+"</pay_acno>" +
+                "<pay_acname>"+ outTransferBody.getPay_acname()+"</pay_acname>"+
+                "<rcv_bank_name>"+ outTransferBody.getRcv_bank_name()+"</rcv_bank_name>" +
+                "<rcv_acno>"+ outTransferBody.getRcv_acno()+"</rcv_acno>" +
+                "<rcv_acname>"+ outTransferBody.getRcv_acname()+"</rcv_acname>"+
+                "<cur_code>CNY</cur_code>" +
+                "<amt>"+ outTransferBody.getAmt()+"</amt>" +
+                "<cert_no>"+ outTransferBody.getCert_no()+"</cert_no>" +
+                "<bank_flag>"+ outTransferBody.getBank_flag()+"</bank_flag></body>";
     }
 }
