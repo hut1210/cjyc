@@ -2,7 +2,6 @@ package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
-import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
@@ -1598,12 +1597,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 .add(MoneyUtil.nullToZero(orderCar.getTrunkFee()))
                 .add(MoneyUtil.nullToZero(orderCar.getBackFee()))
                 .add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
-    }
-
-    @Override
-    public void paymentDaysSubtraction() {
-        //
-        orderDao.updatePaymentDays();
     }
 
     /**

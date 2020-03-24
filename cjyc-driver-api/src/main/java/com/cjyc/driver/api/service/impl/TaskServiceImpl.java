@@ -14,7 +14,6 @@ import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
-import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.TimeStampUtil;
@@ -36,8 +35,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -248,6 +249,10 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 if (waybillCar != null) {
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
+                    // 实际装车时间不为空时，提车日期设置为装车时间
+                    if (waybillCar.getLoadTime() != null) {
+                        carDetailVo.setExpectStartTime(waybillCar.getLoadTime());
+                    }
 
                     // 给详细地址拼接市区
                     carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());

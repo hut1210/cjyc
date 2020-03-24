@@ -104,9 +104,4 @@ public interface ICsOrderService {
     boolean validateIsArriveStoreOrCityRange(String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode);
 
     BigDecimal getCarWlFee(OrderCar orderCar);
-
-    /**
-     * 每当当天结束时定时把所有订单的剩余账期(天)减一天
-     */
-    void paymentDaysSubtraction();
 }
