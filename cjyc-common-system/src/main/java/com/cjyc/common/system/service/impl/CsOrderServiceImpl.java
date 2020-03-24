@@ -509,8 +509,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (validVo.getCode() != ResultEnum.SUCCESS.getCode()) {
                 return BaseResultUtil.fail(validVo.getMsg());
             }
-
-            if (order.getEndStoreId() == null || order.getEndStoreId() <= 0) {
+            if (order.getStartStoreId() == null || order.getStartStoreId() < 0) {
+                return BaseResultUtil.fail("始发地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
+            }
+            if (order.getEndStoreId() == null || order.getEndStoreId() < 0) {
                 return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
             }
             if(!RegexUtil.isMobileSimple(order.getPickContactPhone())){

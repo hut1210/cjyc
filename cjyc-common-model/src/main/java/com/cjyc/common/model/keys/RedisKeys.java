@@ -86,8 +86,8 @@ public class RedisKeys {
         return CJYC + I + NEW_TASK_NO_KEY + I + waybillNo;
     }
 
-    public static String getWlPayLockKey(String carNo) {
-        return  CJYC + I + WL_PAY_LOCK + I + carNo;
+    public static String getWlPayLockKey(String no) {
+        return  CJYC + I + WL_PAY_LOCK + I + no;
     }
 
     /**

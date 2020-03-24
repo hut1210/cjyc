@@ -87,7 +87,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
 
     private String getRandomNo(SendNoTypeEnum type, int randomLength) {
         String driverNo = null;
-        String lockKey = getRandomNoKey(type.prefix);
+        String lockKey = getRandomNosKey(type.prefix);
         try {
             String s = redisUtil.get(lockKey);
             if (!redisLock.lock(lockKey, 20000, 99, 200)) {
@@ -259,7 +259,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
         return "cjyc:send:no:set:" + prefix + ":" + time;
     }
 
-    private String getRandomNoKey(String prefix) {
+    private String getRandomNosKey(String prefix) {
         return "cjyc:random:no:" + prefix;
     }
 

@@ -1068,7 +1068,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         }else{
             log.info("webPrePay orderNo ="+orderNo);
-            String lockKey =getRandomNoKey(orderNo);
+            String lockKey = RedisKeys.getWlPayLockKey(orderNo);
             if (!redisLock.lock(lockKey, 300000, 10, 200)) {
                 throw new CommonException("订单正在支付中","1");
             }
@@ -1179,7 +1179,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         }else{
             log.info("salesPrePay orderNo ="+orderNo);
-            String lockKey =getRandomNoKey(orderNo);
+            String lockKey =RedisKeys.getWlPayLockKey(orderNo);
             if (!redisLock.lock(lockKey, 300000, 10, 200)) {
                 return BaseResultUtil.fail("订单正在支付中");
             }
@@ -1217,7 +1217,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Override
     public ResultVo unlock(String orderNo) {
         try {
-            String key = getRandomNoKey(orderNo);
+            String key = RedisKeys.getWlPayLockKey(orderNo);
             redisUtils.delete(key);
         }catch (Exception e){
             return BaseResultUtil.fail("解锁预付单失败");
@@ -1234,6 +1234,29 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             return BaseResultUtil.fail("解锁扫码付款");
         }
         return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo unlockPayByOrder(String no) {
+        try {
+            String pattern = RedisKeys.getWlPayLockKey(no);
+            Set<String> lockSet = redisUtils.keys(pattern);
+            redisUtils.delete(lockSet);
+            return BaseResultUtil.success();
+        } catch (Exception e) {
+            return BaseResultUtil.fail("解锁失败");
+        }
+    }
+
+    @Override
+    public ResultVo unlockPayByCar(String no) {
+        try {
+            String key = RedisKeys.getWlPayLockKey(no);
+            redisUtils.delete(key);
+            return BaseResultUtil.success();
+        } catch (Exception e) {
+            return BaseResultUtil.fail("解锁失败");
+        }
     }
 
     @Override
@@ -1321,9 +1344,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }
     }
 
-    private String getRandomNoKey(String prefix) {
-        return "cjyc:random:no:prepay:" + prefix;
-    }
+
 
     public Transfer allinpayTransferDriverCreate(BaseCarrierVo baseCarrierVo,Waybill waybill) throws AuthenticationException, InvalidRequestException,
             APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {

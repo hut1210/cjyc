@@ -512,16 +512,14 @@
         where start_city_code = #{cityCode}
         and state = 105
     </select>
-    <select id="findLastTrunkWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
+    <select id="findLastWaybillCar" resultType="com.cjyc.common.model.entity.WaybillCar">
         select
         wc.*
         from w_waybill w
         join w_waybill_car wc on wc.waybill_id = w.id
         where w.state &lt;= 100
         and order_car_id = #{orderCarId}
-        and type = 2
-        and wc.end_city_code = #{cityCode}
-        order by wc.id desc
+        order by w.type desc, wc.id desc
         limit 1
 
     </select>

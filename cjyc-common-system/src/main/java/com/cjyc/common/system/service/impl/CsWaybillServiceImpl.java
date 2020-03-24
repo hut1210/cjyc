@@ -41,7 +41,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -194,8 +193,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
                 //【验证】配送调度，需验证干线调度是否完成
                 if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
-                    WaybillCar waybillCar = waybillCarDao.findLastTrunkWaybillCar(order.getEndCityCode(), orderCarId);
-                    if (!csOrderService.validateIsArriveStoreOrCityRange(waybillCar.getEndAreaCode(), waybillCar.getEndCityCode(), order.getEndStoreId(), order.getEndCityCode())) {
+                    WaybillCar waybillCar = waybillCarDao.findLastWaybillCar(orderCarId);
+                    String startAreaCode = waybillCar == null ? order.getStartAreaCode() : waybillCar.getEndAreaCode();
+                    String startCityCode = waybillCar == null ? order.getStartCityCode() : waybillCar.getEndCityCode();
+                    if (!csOrderService.validateIsArriveStoreOrCityRange(startAreaCode, startCityCode, order.getEndStoreId(), order.getEndCityCode())) {
                         return BaseResultUtil.fail("车辆{0}，尚未到达目的地所属业务中心或目的地城市范围内", orderCarNo);
                     }
                 }
