@@ -896,7 +896,8 @@
     </select>
 
     <!--根据承运商id获取下属司机信息-->
-    <select id="findDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo">
+    <select id="findDriverInfoNew" resultType="com.cjyc.common.model.vo.driver.mine.DriverInfoVo"
+                    parameterType="java.lang.Long">
           SELECT
             dc.id as carrierId,
             dd.id AS driverId,
