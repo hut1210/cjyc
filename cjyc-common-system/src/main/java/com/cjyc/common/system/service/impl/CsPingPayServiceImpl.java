@@ -3,6 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.Pingxx.model.OrderModel;
 import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingxxMetaData;
+import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
@@ -1162,7 +1163,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public Charge salesPrePay(SalesPrePayDto salesPrePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
+    public ResultVo salesPrePay(SalesPrePayDto salesPrePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
         OrderModel om = new OrderModel();
         //创建Charge对象
         Charge charge = new Charge();
@@ -1173,14 +1174,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             com.cjyc.common.model.entity.Order o = orderDao.findByNo(orderNo);
             if(o!=null){
                 if(o.getWlPayState()==2){
-                    throw new CommonException("订单已支付完成","1");
+                    return BaseResultUtil.fail("订单已支付完成");
                 }
             }
         }else{
             log.info("salesPrePay orderNo ="+orderNo);
             String lockKey =getRandomNoKey(orderNo);
             if (!redisLock.lock(lockKey, 300000, 10, 200)) {
-                throw new CommonException("订单正在支付中","1");
+                return BaseResultUtil.fail("订单正在支付中");
             }
         }
         //try {
@@ -1210,7 +1211,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         /*} catch (Exception e) {
             log.error("业务员预付款出示二维码异常",e);
         }*/
-        return charge;
+        return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
     @Override
