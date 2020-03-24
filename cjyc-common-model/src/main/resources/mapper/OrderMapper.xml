@@ -561,8 +561,4 @@
         and wc.state &lt; 100
         and (wc.now_store_id is null or wc.now_store_id != w.end_store_id)
     </select>
-
-    <update id="updatePaymentDays">
-        UPDATE w_order SET hurry_days = hurry_days - 1 WHERE state = 100
-    </update>
 </mapper>
