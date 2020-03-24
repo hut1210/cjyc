@@ -218,10 +218,10 @@
             when ww.freight_pay_state=-2 then '支付失败'
         END) as payState,
         (CASE
-            when ww.carrier_type=1 then '个人承运商'
-            when ww.carrier_type=2 then '企业承运商'
-            when ww.carrier_type=4 then '代驾'
-            when ww.carrier_type=5 then '拖车'
+            when ww.carrier_type=1 then '干线-个人承运商'
+            when ww.carrier_type=2 then '干线-企业承运商'
+            when ww.carrier_type=4 then '同城-代驾'
+            when ww.carrier_type=5 then '同城-拖车'
         END) as carrierType,
         dc.linkman_phone as phone,
         wwc.start_city as pickUpPlace,
