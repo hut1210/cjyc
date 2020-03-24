@@ -63,6 +63,6 @@ public class InvoiceApplyExportExcel implements Serializable {
         }
         DecimalFormat df =new DecimalFormat("0.00");
         BigDecimal value = amount.divide(BigDecimal.valueOf(100));
-        return amount.equals(BigDecimal.ZERO) ? "0.00" : df.format(value);
+        return amount.equals(BigDecimal.ZERO) ? "0" : df.format(value);
     }
 }
