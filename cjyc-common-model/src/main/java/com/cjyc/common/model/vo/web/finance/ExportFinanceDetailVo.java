@@ -99,16 +99,16 @@ public class ExportFinanceDetailVo implements Serializable {
         String type = getCarrierType();
         if (type != null) {
             if (type.equals("1")) {
-                return "个人承运商";
+                return "干线-个人承运商";
             }
             if (type.equals("2")) {
-                return "企业承运商";
+                return "干线-企业承运商";
             }
             if (type.equals("4")) {
-                return "代驾";
+                return "同城-代驾";
             }
             if (type.equals("5")) {
-                return "拖车";
+                return "同城-拖车";
             }
         }
         return "";
