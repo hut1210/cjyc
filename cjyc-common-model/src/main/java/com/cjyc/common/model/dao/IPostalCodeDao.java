@@ -2,6 +2,7 @@ package com.cjyc.common.model.dao;
 
 import com.cjyc.common.model.entity.PostalCode;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.web.postal.AreaVo;
 import com.cjyc.common.model.vo.web.postal.ProvinceVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,5 +24,18 @@ public interface IPostalCodeDao extends BaseMapper<PostalCode> {
      * @return
      */
     List<ProvinceVo> findPostal(@Param("keyword") String keyword);
+
+    /**
+     * 查询所有的省/直辖市
+     * @return
+     */
+    List<String> findAllProvince();
+
+    /**
+     * 根据省/直辖市名称获取该下属区县
+     * @param provinceName
+     * @return
+     */
+    List<AreaVo> findSubArea(@Param("provinceName") String provinceName);
 
 }
