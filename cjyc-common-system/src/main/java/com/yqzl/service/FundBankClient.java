@@ -1,7 +1,11 @@
 package com.yqzl.service;
 
 import com.cjyc.common.model.vo.ResultVo;
+import com.yqzl.model.request.FundAccountQueryRequest;
+import com.yqzl.model.request.FundTransferQueryRequest;
 import com.yqzl.model.request.FundTransferRequest;
+import com.yqzl.model.response.FundAccountQueryResponse;
+import com.yqzl.model.response.FundTransferQueryResponse;
 import com.yqzl.model.response.FundTransferResponse;
 
 /**
@@ -18,4 +22,21 @@ public interface FundBankClient {
      * @return 请求结果
      */
     ResultVo<FundTransferResponse> doTransfer(FundTransferRequest fundTransferRequest);
+
+    /**
+     * 转账交易结果查询
+     *
+     * @param fundTransferQueryRequest
+     * @return
+     */
+    ResultVo<FundTransferQueryResponse> doTransferQuery(FundTransferQueryRequest fundTransferQueryRequest);
+
+    /**
+     * 账户信息查询
+     *
+     * @param fundAccountQueryRequest
+     * @return
+     */
+    ResultVo<FundAccountQueryResponse> doAccountQuery(FundAccountQueryRequest fundAccountQueryRequest);
+
 }
