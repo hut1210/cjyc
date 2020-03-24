@@ -1221,9 +1221,10 @@
         WHERE woc.wl_pay_state=2
         AND ccc.settle_type=1
         AND wo.customer_type=2
+        AND wo.state=100
         AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
-        GROUP BY woc.no ) t ORDER BY t.finish_time DESC
+        GROUP BY woc.no ) t ORDER BY t.deliveryDate DESC
     </select>
     <!--企业客户账期应收账款汇总sql-->
     <select id="receiptSummary" resultType="java.math.BigDecimal">
@@ -1240,9 +1241,10 @@
         WHERE woc.wl_pay_state=2
         AND ccc.settle_type=1
         AND wo.customer_type=2
+        AND wo.state=100
         AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
-        GROUP BY woc.no ) t ORDER BY t.finish_time DESC
+        GROUP BY woc.no ) t
     </select>
     <!--账期应收账款列表查询结束-->
 </mapper>
