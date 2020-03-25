@@ -194,8 +194,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 //【验证】配送调度，需验证干线调度是否完成
                 if (paramsDto.getType() == WaybillTypeEnum.BACK.code) {
                     WaybillCar waybillCar = waybillCarDao.findLastWaybillCar(orderCarId);
-                    String endAreaCode = waybillCar == null ? order.getStartAreaCode() : waybillCar.getEndAreaCode();
-                    String endCityCode = waybillCar == null ? order.getStartCityCode() : waybillCar.getEndCityCode();
+                    String endAreaCode = waybillCar == null ? order.getStartAreaCode() : waybillCar.getStartAreaCode();
+                    String endCityCode = waybillCar == null ? order.getStartCityCode() : waybillCar.getStartCityCode();
                     Long endStoreId = waybillCar == null ? order.getStartStoreId() : waybillCar.getEndStoreId();
                     if (!csOrderService.validateIsArriveStoreOrCityRange(endStoreId, endAreaCode, endCityCode, order.getEndStoreId(), order.getEndCityCode())) {
                         return BaseResultUtil.fail("车辆{0}，尚未到达目的地所属业务中心或目的地城市范围内", orderCarNo);
@@ -1402,7 +1402,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
     @Override
-    public WaybillCar getWaybillCarByIdFromMap(Map<Long, WaybillCar> waybillCarMap, Long waybillCarId) {
+    public WaybillCar getWaybillCarFromMap(Map<Long, WaybillCar> waybillCarMap, Long waybillCarId) {
         WaybillCar wc;
         if (waybillCarMap.containsKey(waybillCarId)) {
             wc = waybillCarMap.get(waybillCarId);
@@ -1530,37 +1530,50 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             }
             BigDecimal oldTotalFee = BigDecimal.ZERO;
             Set<WaybillCar> waybillCars = Sets.newHashSet();
+            Map<Long, OrderCar> orderCarMap = Maps.newHashMap();
+            Map<Long, WaybillCar> waybillCarMap = Maps.newHashMap();
+            Map<Long, Order> orderMap = Maps.newHashMap();
             for (Long waybillCarId : carIdList) {
                 if (waybillCarId == null) {
                     continue;
                 }
-
-                WaybillCar waybillCar = waybillCarDao.selectById(waybillCarId);
+                WaybillCar waybillCar = getWaybillCarFromMap(waybillCarMap, waybillCarId);
                 if (waybillCar == null) {
-                    throw new ParameterException("ID为{0}的车辆不存在", waybillCarId);
+                    return BaseResultUtil.fail("ID为{0}的车辆不存在", waybillCarId);
                 }
+                String orderCarNo = waybillCar.getOrderCarNo();
                 String lockKey = RedisKeys.getUnloadLockKey(waybillCarId);
                 if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("运单车辆{0}正在卸车，请5秒后重试", waybillCar.getOrderCarNo());
+                    return BaseResultUtil.fail("运单车辆{0}正在卸车，请5秒后重试", orderCarNo);
                 }
+                /*if (waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
+                    return BaseResultUtil.fail("{0}未装车，请使用删除车辆功能", orderCarNo);
+                }*/
                 lockSet.add(lockKey);
                 if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
-                    throw new ParameterException("车辆{0}已完结, 不能卸载", waybillCar.getOrderCarNo());
+                    return BaseResultUtil.fail("车辆{0}已完结, 不能卸载", orderCarNo);
                 }
                 if (!waybillCar.getWaybillId().equals(waybill.getId())) {
-                    throw new ParameterException("车辆{0}不属于运单{1}，不能卸载", waybillCar.getOrderCarNo(), waybill.getNo());
+                    return BaseResultUtil.fail("车辆{0}不属于运单{1}，不能卸载", orderCarNo, waybill.getNo());
                 }
                 //验证订单车辆状态
-                OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
+                OrderCar orderCar = getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 if (orderCar == null) {
-                    throw new ParameterException("运单车辆，不存在");
+                    return BaseResultUtil.fail("运单车辆，不存在");
                 }
                 //验证订单状态
-                Order order = orderDao.selectById(orderCar.getOrderId());
+                Order order = getOrderFromMap(orderMap, orderCar.getOrderId());
                 if (order == null) {
-                    throw new ParameterException("运单中车辆{0}，所属订单车辆不存在", orderCar.getOrderNo());
+                    return BaseResultUtil.fail("运单中车辆{0}，所属订单车辆不存在", orderCarNo);
                 }
+
+            }
+
+            for (Long waybillCarId : carIdList) {
+                WaybillCar waybillCar = getWaybillCarFromMap(waybillCarMap, waybillCarId);
+                OrderCar orderCar = getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
+                Order order = getOrderFromMap(orderMap, orderCar.getOrderId());
 
                 boolean isChangeAddress = false;
                 //验证是否变更地址

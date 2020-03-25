@@ -1402,7 +1402,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         } else if (paramsDto.getDispatchType() == WaybillTypeEnum.BACK.code) {
             /**送车*/
-            list = orderCarDao.findBackCarEndpoint(orderCarIdList, paramsDto.getSort());
+                list = orderCarDao.findBackCarEndpoint(orderCarIdList, paramsDto.getSort());
             for (WaybillCarVo vo : list) {
                 //验证状态
                 if (vo.getBackState() >= OrderCarLocalStateEnum.DISPATCHED.code) {
@@ -1417,7 +1417,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 /*if (vo.getOrderEndCityCode() != null  && !vo.getOrderEndCityCode().equals(vo.getStartCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }*/
-                if (!validateIsArriveStoreOrCityRange(vo.getStartStoreId(), vo.getEndAreaCode(), vo.getEndCityCode(), vo.getOrderEndStoreId(), vo.getOrderEndCityCode())) {
+                if (!validateIsArriveStoreOrCityRange(vo.getStartStoreId(), vo.getStartAreaCode(), vo.getStartCityCode(), vo.getOrderEndStoreId(), vo.getOrderEndCityCode())) {
                     return BaseResultUtil.fail("车辆{0},干线尚未调度到订单目的地城市范围内，不能送车调度", vo.getOrderCarNo());
                 }
                 //验证数据范围
