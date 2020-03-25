@@ -3,6 +3,8 @@ package com.cjyc.web.api.controller;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.config.YQZLProperty;
 import com.yqzl.constant.EnumBankProCode;
+import com.yqzl.model.request.FundAccountQueryRequest;
+import com.yqzl.model.request.FundTransferQueryRequest;
 import com.yqzl.model.request.FundTransferRequest;
 import com.yqzl.service.FundBankClient;
 import com.yqzl.service.FundBankClientFactory;
@@ -41,5 +43,33 @@ public class YqzlController {
         // 企业用户号
         fundTransferRequest.setUserNo(YQZLProperty.userNo);
         return bankOperations.doTransfer(fundTransferRequest);
+    }
+
+    @ApiOperation(value = "银企直联-转账交易查询")
+    @PostMapping(value = "/transferQuery")
+    public ResultVo doTransferQuery(FundTransferQueryRequest fundTransferQueryRequest) {
+        // 根据银行渠道信息找银行产品实现类，找不到就异常
+        FundBankClient bankOperations = fundBankClientFactory.get(fundTransferQueryRequest.getBankProCode());
+        // 交通银行
+        fundTransferQueryRequest.setBankProCode(EnumBankProCode.COMM_BANK.name());
+        // 企业代码
+        fundTransferQueryRequest.setCorpNo(YQZLProperty.corpNo);
+        // 企业用户号
+        fundTransferQueryRequest.setUserNo(YQZLProperty.userNo);
+        return bankOperations.doTransferQuery(fundTransferQueryRequest);
+    }
+
+    @ApiOperation(value = "银企直联-账户信息查询")
+    @PostMapping(value = "/accountQuery")
+    public ResultVo doAccountQuery(FundAccountQueryRequest fundAccountQueryRequest) {
+        // 根据银行渠道信息找银行产品实现类，找不到就异常
+        FundBankClient bankOperations = fundBankClientFactory.get(fundAccountQueryRequest.getBankProCode());
+        // 交通银行
+        fundAccountQueryRequest.setBankProCode(EnumBankProCode.COMM_BANK.name());
+        // 企业代码
+        fundAccountQueryRequest.setCorpNo(YQZLProperty.corpNo);
+        // 企业用户号
+        fundAccountQueryRequest.setUserNo(YQZLProperty.userNo);
+        return bankOperations.doAccountQuery(fundAccountQueryRequest);
     }
 }
