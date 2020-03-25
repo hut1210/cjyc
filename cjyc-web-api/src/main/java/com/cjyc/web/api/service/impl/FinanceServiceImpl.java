@@ -416,9 +416,9 @@ public class FinanceServiceImpl implements IFinanceService {
         receiveOrderCarDtoList.forEach(e -> {
             e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
             e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
-            if(e.getSettlePeriod() == null || e.getSettlePeriod() == 0){
+            if (e.getSettlePeriod() == null || e.getSettlePeriod() == 0) {
                 e.setRemainderSettlePeriod(0L);
-            }else {
+            } else {
                 e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
             }
         });
@@ -980,12 +980,12 @@ public class FinanceServiceImpl implements IFinanceService {
             }
 
             //公户
-            if(cooperatorPaidVo!=null&&cooperatorPaidVo.getCardType().equals("公户")){
+            if (cooperatorPaidVo != null && cooperatorPaidVo.getCardType().equals("公户")) {
                 cooperatorPaidVo.setBankName("");
                 cooperatorPaidVo.setIDCard("");
                 cooperatorPaidVo.setCardName("");
                 cooperatorPaidVo.setCardNo("");
-            }else if(cooperatorPaidVo!=null&&cooperatorPaidVo.getCardType().equals("私户")){
+            } else if (cooperatorPaidVo != null && cooperatorPaidVo.getCardType().equals("私户")) {
                 cooperatorPaidVo.setPubCardNo("");
                 cooperatorPaidVo.setBankNameDetail("");
                 cooperatorPaidVo.setReceiveCardName("");
@@ -1060,28 +1060,60 @@ public class FinanceServiceImpl implements IFinanceService {
         // 结算申请-已申请发票
         receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
+        // 计算金额汇总
+        Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementAmt(receiveSettlementNeedInvoiceVo);
+        // 计算总条数
+        List<ReceiveSettlementDto> listTemp = receiveSettlementDao.listReceiveSettlement(new ReceiveSettlementNeedInvoiceVo() {{
+            setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
+        }});
         // 金额分转元
-        listInfo.forEach(e -> {
-            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
-            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
-        });
+        if(!CollectionUtils.isEmpty(listInfo)) {
+            listInfo.forEach(e -> {
+                e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+                e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            });
+        }
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        return BaseResultUtil.success(pageInfo);
+        Map<String, Object> countInfo = new HashMap<>();
+        countInfo.put("receiveCount", CollectionUtils.isEmpty(listTemp) ? 0 : listTemp.size());
+        if (summaryMap != null) {
+            countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
+            countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("actualReceiveSummary"), MoneyUtil.PATTERN_TWO)));
+        } else {
+            countInfo.put("receiveSummary", BigDecimal.ZERO);
+            countInfo.put("actualReceiveSummary", BigDecimal.ZERO);
+        }
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
     public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedPayed(ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo) {
         // 应收账款结算-待回款列表查询, 此时查询结算状态为【已确认和不需要开票】的结算信息列表
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedPayedVo);
+        // 计算金额汇总
+        Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementNeedPayedAmt(receiveSettlementNeedPayedVo);
+        // 计算总条数
+        List<ReceiveSettlementDto> listTemp = receiveSettlementDao.listReceiveSettlementNeedInvoice(new ReceiveSettlementNeedPayedVo());
         // 金额分转元
-        listInfo.forEach(e -> {
-            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
-            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
-        });
+        if(!CollectionUtils.isEmpty(listInfo)) {
+            listInfo.forEach(e -> {
+                e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+                e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            });
+        }
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        return BaseResultUtil.success(pageInfo);
+        Map<String, Object> countInfo = new HashMap<>();
+        countInfo.put("receiveCount", CollectionUtils.isEmpty(listTemp) ? 0 : listTemp.size());
+        if (summaryMap != null) {
+            countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
+            countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("actualReceiveSummary"), MoneyUtil.PATTERN_TWO)));
+        } else {
+            countInfo.put("receiveSummary", BigDecimal.ZERO);
+            countInfo.put("actualReceiveSummary", BigDecimal.ZERO);
+        }
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
@@ -1090,14 +1122,31 @@ public class FinanceServiceImpl implements IFinanceService {
         // 已核销
         receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.VERIFICATION.code);
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
+        // 计算金额汇总
+        Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementAmt(receiveSettlementNeedInvoiceVo);
+        // 计算总条数
+        List<ReceiveSettlementDto> listTemp = receiveSettlementDao.listReceiveSettlement(new ReceiveSettlementNeedInvoiceVo() {{
+            setState(ReceiveSettlementStateEnum.VERIFICATION.code);
+        }});
         // 金额分转元
-        listInfo.forEach(e -> {
-            e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
-            e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
-        });
+        if(!CollectionUtils.isEmpty(listInfo)) {
+            listInfo.forEach(e -> {
+                e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
+                e.setTotalInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+            });
+        }
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        return BaseResultUtil.success(pageInfo);
+        Map<String, Object> countInfo = new HashMap<>();
+        countInfo.put("receiveCount", CollectionUtils.isEmpty(listTemp) ? 0 : listTemp.size());
+        if (summaryMap != null) {
+            countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
+            countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("actualReceiveSummary"), MoneyUtil.PATTERN_TWO)));
+        } else {
+            countInfo.put("receiveSummary", BigDecimal.ZERO);
+            countInfo.put("actualReceiveSummary", BigDecimal.ZERO);
+        }
+        return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
