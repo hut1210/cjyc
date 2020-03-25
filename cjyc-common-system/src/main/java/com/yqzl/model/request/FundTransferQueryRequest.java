@@ -42,10 +42,10 @@ public class FundTransferQueryRequest {
     @ApiModelProperty("保留字段")
     private String reserved;
 
-    @ApiModelProperty("查询标志")
+    @ApiModelProperty(value = "查询标志", required = true)
     private String queryFlag;
 
-    @ApiModelProperty("原流水号")
+    @ApiModelProperty(value = "原流水号", required = true)
     private String oglSerialNo;
 
 }

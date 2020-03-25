@@ -3,8 +3,6 @@ package com.yqzl.model;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 /**
  * @Author:Hut
  * @Date:2019/11/29 15:59
@@ -37,7 +35,7 @@ public class OutTransferBody {
     private String curCode;
 
     @ApiModelProperty("金额")
-    private BigDecimal amt;
+    private String amt;
 
     @ApiModelProperty("企业凭证编号")
     private String certNo;
@@ -51,7 +49,7 @@ public class OutTransferBody {
     @ApiModelProperty("同城异地标志")
     private String areaFlag;
 
-    public OutTransferBody(String payAcno, String payAcname, String rcvBankName, String rcvAcno, String rcvAcname, String rcvExgCode, String rcvBankNo, String curCode, BigDecimal amt, String certNo, String summary, String bankFlag, String areaFlag) {
+    public OutTransferBody(String payAcno, String payAcname, String rcvBankName, String rcvAcno, String rcvAcname, String rcvExgCode, String rcvBankNo, String curCode, String amt, String certNo, String summary, String bankFlag, String areaFlag) {
         this.payAcno = payAcno;
         this.payAcname = payAcname;
         this.rcvBankName = rcvBankName;

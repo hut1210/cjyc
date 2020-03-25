@@ -220,3 +220,7 @@ tldf:
   bankacct: 110061002018800020878
   pfxPath: 20010000002141804.p12
   tltcerPath: allinpay-pds.cer
+# 企业代码
+yqzl:
+  corp_no: "0008146710"
+  user_no: "00003"

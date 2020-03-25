@@ -1,6 +1,7 @@
 package com.yqzl.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.XML;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -19,8 +20,6 @@ import com.yqzl.util.SocketUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
 
 /**
  * 交通银行实现类
@@ -62,9 +61,11 @@ public class CommBankClientImpl implements FundBankClient {
         // 请求银行
         String bankResponse = SocketUtil.doSocket(bankRequestParams);
         // 银行返回报文解析 + 组装返回参数
-        JSONObject jsonObject = (JSONObject) JSONObject.parse(bankResponse);
-        FundTransferResponse response = fillTransferResponseParams(jsonObject);
-        return BaseResultUtil.success(response);
+        if (!StringUtils.isEmpty(bankResponse)) {
+            bankResponse = bankResponse.substring(bankResponse.indexOf("<ap>"));
+        }
+        JSONObject jsonObject = XML.toJSONObject(bankResponse);
+        return fillTransferResponseParams(jsonObject);
     }
 
     @Override
@@ -83,9 +84,11 @@ public class CommBankClientImpl implements FundBankClient {
         // 请求银行
         String bankResponse = SocketUtil.doSocket(bankRequestParams);
         // 银行返回报文解析 + 组装返回参数
-        JSONObject jsonObject = (JSONObject) JSONObject.parse(bankResponse);
-        FundTransferQueryResponse response = fillTransferQueryResponseParams(jsonObject);
-        return BaseResultUtil.success(response);
+        if (!StringUtils.isEmpty(bankResponse)) {
+            bankResponse = bankResponse.substring(bankResponse.indexOf("<ap>"));
+        }
+        JSONObject jsonObject = XML.toJSONObject(bankResponse);
+        return fillTransferQueryResponseParams(jsonObject);
     }
 
     /**
@@ -94,9 +97,33 @@ public class CommBankClientImpl implements FundBankClient {
      * @param jsonObject
      * @return
      */
-    private FundTransferQueryResponse fillTransferQueryResponseParams(JSONObject jsonObject) {
-        FundTransferQueryResponse response = new FundTransferQueryResponse();
-        return response;
+    private ResultVo fillTransferQueryResponseParams(JSONObject jsonObject) {
+        JSONObject apObject = (JSONObject) jsonObject.get("ap");
+        JSONObject headObject = (JSONObject) apObject.get("head");
+        JSONObject bodyObject = (JSONObject) apObject.get("body");
+        // 交易码
+        String transCode = (String) headObject.get("particular_code");
+        // 交易返回信息
+        String transName = (String) headObject.get("particular_info");
+        if (!"0000".equals(transCode)) {
+            return BaseResultUtil.fail(transName);
+        }
+        // 返回数据
+        String oglSerialNo = (String) bodyObject.get("ogl_serial_no");
+        Integer stat = (Integer) bodyObject.get("stat");
+        String errMsg = (String) bodyObject.get("err_msg");
+        String payAcno = (String) bodyObject.get("pay_acno");
+        String payBankNo = (String) bodyObject.get("pay_bank_no");
+        String rcvAcno = (String) bodyObject.get("rcv_acno");
+        String rcvBankNo = (String) bodyObject.get("rcv_bank_no");
+        Double amt = (Double) bodyObject.get("amt");
+        Long certNo = (Long) bodyObject.get("cert_no");
+        if (stat != 1) {
+            log.info("请求出错,错误码：{}， 错误信息：{}", stat, errMsg);
+            return BaseResultUtil.fail(errMsg);
+        }
+        FundTransferQueryResponse response = new FundTransferQueryResponse(oglSerialNo, stat, errMsg, payAcno, payBankNo, rcvAcno, rcvBankNo, amt, certNo);
+        return BaseResultUtil.success(response);
     }
 
     /**
@@ -145,9 +172,11 @@ public class CommBankClientImpl implements FundBankClient {
         // 请求银行
         String bankResponse = SocketUtil.doSocket(bankRequestParams);
         // 银行返回报文解析 + 组装返回参数
-        JSONObject jsonObject = (JSONObject) JSONObject.parse(bankResponse);
-        FundAccountQueryResponse response = fillAccountQueryResponseParams(jsonObject);
-        return BaseResultUtil.success(response);
+        if (!StringUtils.isEmpty(bankResponse)) {
+            bankResponse = bankResponse.substring(bankResponse.indexOf("<ap>"));
+        }
+        JSONObject jsonObject = XML.toJSONObject(bankResponse);
+        return fillAccountQueryResponseParams(jsonObject);
     }
 
     /**
@@ -156,9 +185,29 @@ public class CommBankClientImpl implements FundBankClient {
      * @param jsonObject
      * @return
      */
-    private FundAccountQueryResponse fillAccountQueryResponseParams(JSONObject jsonObject) {
-        FundAccountQueryResponse fundAccountQueryResponse = new FundAccountQueryResponse();
-        return fundAccountQueryResponse;
+    private ResultVo fillAccountQueryResponseParams(JSONObject jsonObject) {
+        JSONObject apObject = (JSONObject) jsonObject.get("ap");
+        JSONObject headObject = (JSONObject) apObject.get("head");
+        JSONObject bodyObject = (JSONObject) apObject.get("body");
+        // 交易码
+        String transCode = (String) headObject.get("particular_code");
+        // 交易返回信息
+        String transName = (String) headObject.get("particular_info");
+        if (!"0000".equals(transCode)) {
+            log.info("交易码：{}， 交易信息：{}", transCode, transName);
+            return BaseResultUtil.fail(transName);
+        }
+        // 返回数据
+        String data = (String) bodyObject.get("serial_record");
+        if (!StringUtils.isEmpty(data)) {
+            String[] arr = data.split("\\|");
+            if (arr != null && arr.length > 19 && !"0".equals(arr[19])) {
+                log.info("错误码：{}， 错误信息：{}", arr[19], arr[18]);
+                return BaseResultUtil.fail(arr[18]);
+            }
+        }
+        FundAccountQueryResponse fundAccountQueryResponse = new FundAccountQueryResponse(data);
+        return BaseResultUtil.success(fundAccountQueryResponse);
     }
 
     /**
@@ -168,7 +217,7 @@ public class CommBankClientImpl implements FundBankClient {
      * @return
      */
     private String fillAccountQueryRequestParams(FundAccountQueryRequest request) {
-        Head head = new Head(request.getCorpNo(), request.getUserNo(),TRANSFER_ACCOUNT_QUERY_CODE, "", "", "", "", "", "");
+        Head head = new Head(request.getCorpNo(), request.getUserNo(), TRANSFER_ACCOUNT_QUERY_CODE, "", "", "", "", "", "");
         StringBuilder msg = new StringBuilder(head.getHead(head));
         OutAccountQueryBody outAccountQueryBody = new OutAccountQueryBody(request.getAcno());
         msg.append(outAccountQueryBody.getOutAccountQueryBody(outAccountQueryBody));
@@ -194,9 +243,30 @@ public class CommBankClientImpl implements FundBankClient {
      * @param jsonObject
      * @return
      */
-    private FundTransferResponse fillTransferResponseParams(JSONObject jsonObject) {
-        FundTransferResponse fundTransferResponse = new FundTransferResponse();
-        return fundTransferResponse;
+    private ResultVo fillTransferResponseParams(JSONObject jsonObject) {
+        JSONObject apObject = (JSONObject) jsonObject.get("ap");
+        JSONObject headObject = (JSONObject) apObject.get("head");
+        // 交易码
+        String transCode = (String) headObject.get("particular_code");
+        // 交易返回信息
+        String transName = (String) headObject.get("particular_info");
+        Integer ansCode = (Integer) headObject.get("ans_code");
+        String ansInfo = (String) headObject.get("ans_info");
+        // 交易时间
+        Integer trTime = (Integer) headObject.get("tr_time");
+        // 交易流水号
+        String serialNo = (String) headObject.get("serial_no");
+        if (!"0000".equals(transCode)) {
+            log.info("交易码：{}， 交易信息：{}", transCode, transName);
+            return BaseResultUtil.fail(transName);
+        }
+        if (ansCode != 0) {
+            log.info("错误码：{}， 错误信息：{}", ansCode, ansInfo);
+            return BaseResultUtil.fail(ansInfo);
+
+        }
+        FundTransferResponse fundTransferResponse = new FundTransferResponse(trTime, serialNo);
+        return BaseResultUtil.success(fundTransferResponse);
     }
 
     /**
@@ -208,8 +278,8 @@ public class CommBankClientImpl implements FundBankClient {
     private String fillTransferRequestParams(FundTransferRequest request) {
         Head head = new Head(request.getCorpNo(), request.getUserNo(), TRANSFER_TRANS_CODE, "", "", "", "", "", "");
         StringBuilder msg = new StringBuilder(head.getHead(head));
-        OutTransferBody outTransferBody = new OutTransferBody("", "", "", "", "",
-                "", "", "", new BigDecimal(0), "", "", "", "");
+        OutTransferBody outTransferBody = new OutTransferBody(request.getPayAcno(), request.getPayAcname(), request.getRcvBankName(), request.getRcvAcno(), request.getRcvAcname(),
+                request.getRcvExgCode(), request.getRcvBankNo(), request.getCurCode(), request.getAmt().toString(), request.getCertNo(), request.getSummary(), request.getBankFlag(), request.getAreaFlag());
         msg.append(outTransferBody.getOutTransferBody(outTransferBody));
         return msg.toString();
     }
@@ -236,9 +306,6 @@ public class CommBankClientImpl implements FundBankClient {
         }
         if (StringUtils.isEmpty(request.getRcvAcname())) {
             return BaseResultUtil.fail("收款人户名不能为空！");
-        }
-        if (StringUtils.isEmpty(request.getRcvExgCode())) {
-            return BaseResultUtil.fail("收款方交换号不能为空！");
         }
         if (StringUtils.isEmpty(request.getCurCode())) {
             return BaseResultUtil.fail("币种不能为空！");
