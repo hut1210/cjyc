@@ -814,7 +814,7 @@ public class FinanceServiceImpl implements IFinanceService {
         for (PaymentVo paymentVo : financeVoList) {
             paymentVo.setFreightPay(paymentVo.getFreightPay() != null ? paymentVo.getFreightPay().divide(new BigDecimal(100)) : null);
             paymentVo.setFreightReceivable(paymentVo.getFreightReceivable() != null ? paymentVo.getFreightReceivable().divide(new BigDecimal(100)) : null);
-            if (paymentVo != null && paymentVo.getType() != null) {
+            /*if (paymentVo != null && paymentVo.getType() != null) {
                 if (paymentVo.getType() == 2) {//企业
                     Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
                     paymentVo.setPayModeName(settleType != null && settleType == 0 ? "时付" : "账期");
@@ -822,7 +822,7 @@ public class FinanceServiceImpl implements IFinanceService {
                     Integer settleType = financeDao.getCustomerPartnerById(paymentVo.getCustomerId());
                     paymentVo.setPayModeName(settleType != null && settleType == 0 ? "时付" : "账期");
                 }
-            }
+            }*/
         }
         return financeVoList;
     }

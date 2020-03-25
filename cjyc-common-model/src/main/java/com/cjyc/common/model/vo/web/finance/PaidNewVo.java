@@ -28,8 +28,18 @@ public class PaidNewVo implements Serializable {
     private String waybillNo;
 
     @ApiModelProperty(value = "交付日期")
-    @Excel(name = "交付日期", orderNum = "1")
     private Long completeTime;
+
+    @Excel(name = "交付日期", orderNum = "1")
+    private String completeTimeStr;
+
+    public String getCompleteTimeStr() {
+        Long date = getCompleteTime();
+        if (null == date || date <= 0L) {
+            return "";
+        }
+        return LocalDateTimeUtil.formatLong(date, "yyyy-MM-dd HH:mm:ss");
+    }
 
     @ApiModelProperty(value = "结算类型")
     @Excel(name = "结算类型", orderNum = "2")
