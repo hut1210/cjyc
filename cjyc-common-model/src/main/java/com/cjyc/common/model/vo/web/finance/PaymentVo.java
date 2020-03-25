@@ -26,8 +26,8 @@ public class PaymentVo implements Serializable {
     @ApiModelProperty(value = "品牌")
     @Excel(name = "品牌" ,orderNum = "1")
     private String brand;
-    @ApiModelProperty(value = "型号")
-    @Excel(name = "型号" ,orderNum = "2")
+    @ApiModelProperty(value = "车系")
+    @Excel(name = "车系" ,orderNum = "2")
     private String model;
     @ApiModelProperty(value = "vin码")
     @Excel(name = "vin码" ,orderNum = "3")

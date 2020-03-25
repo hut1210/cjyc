@@ -270,6 +270,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         if (CollectionUtils.isEmpty(list)) {
             return BaseResultUtil.fail("订单信息丢失");
         }
+        //TODO 批量收车仅支持同收车人
         if (list.size() > 1) {
             return BaseResultUtil.fail("仅支持同一订单内的车辆签收");
         }

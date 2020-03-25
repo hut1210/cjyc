@@ -162,6 +162,9 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "目的地业务中心详细地址")
     private String endStoreNameDetail;
 
+    @ApiModelProperty(value = "线路ID")
+    private Long lineId;
+
     public BigDecimal getWlTotalFee() {
         return wlTotalFee == null ? new BigDecimal(0) : wlTotalFee;
     }

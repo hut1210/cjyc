@@ -81,10 +81,11 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         dataMap.put("orderNo", order.getNo()); // 订单编号
         dataMap.put("state", order.getState()); //状态
         dataMap.put("expectEndDate", order.getExpectEndDate()); // 预计到达日期
-        dataMap.put("pickFee", pickTotalFee); //提车费
-        dataMap.put("trunkFee", trunkTotalFee);//物流费
-        dataMap.put("backFee", backTotalFee);//送车费
-        dataMap.put("addInsuranceFee", addInsuranceTotalFee);//保险费
+        dataMap.put("pickFee", MoneyUtil.fenToYuan(pickTotalFee)); //提车费
+        dataMap.put("trunkFee",  MoneyUtil.fenToYuan(trunkTotalFee));//物流费
+        dataMap.put("backFee",  MoneyUtil.fenToYuan(backTotalFee));//送车费
+        dataMap.put("addInsuranceFee",  MoneyUtil.fenToYuan(addInsuranceTotalFee));//保险费
+        dataMap.put("totalFee",  MoneyUtil.fenToYuan(order.getTotalFee()));//总费用
         dataMap.put("createTime", System.currentTimeMillis());//当前时间
 
         if(AccountConstant.ACCOUNT_99CC.equals(order.getCustomerPhone())){
