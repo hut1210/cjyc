@@ -27,7 +27,7 @@ import java.math.BigDecimal;
  *
  * @author RenPL 2020-3-15
  */
-@Service
+@Service("commBankClientImpl")
 @Slf4j
 public class CommBankClientImpl implements FundBankClient {
 
@@ -106,7 +106,7 @@ public class CommBankClientImpl implements FundBankClient {
      * @return
      */
     private String fillTransferQueryRequestParams(FundTransferQueryRequest request) {
-        Head head = new Head(TRANSFER_TRANS_QUERY_CODE, "", "", "", "", "", "");
+        Head head = new Head(request.getCorpNo(), request.getUserNo(), TRANSFER_TRANS_QUERY_CODE, "", "", "", "", "", "");
         StringBuilder msg = new StringBuilder(head.getHead(head));
         OutTransferQueryBody outTransferQueryBody = new OutTransferQueryBody(request.getQueryFlag(), request.getOglSerialNo());
         msg.append(outTransferQueryBody.getOutTransferQueryBody(outTransferQueryBody));
@@ -120,15 +120,6 @@ public class CommBankClientImpl implements FundBankClient {
      * @return
      */
     private ResultVo validateTransferQueryParams(FundTransferQueryRequest request) {
-        if (StringUtils.isEmpty(request.getBankProCode())) {
-            return BaseResultUtil.fail("账务中心支持的银行产品编码不能为空！");
-        }
-        if (StringUtils.isEmpty(request.getCorpNo())) {
-            return BaseResultUtil.fail("企业代码不能为空！");
-        }
-        if (StringUtils.isEmpty(request.getUserNo())) {
-            return BaseResultUtil.fail("企业用户号不能为空！");
-        }
         if (request.getQueryFlag() == null) {
             return BaseResultUtil.fail("查询标志不能为空！");
         }
@@ -177,7 +168,7 @@ public class CommBankClientImpl implements FundBankClient {
      * @return
      */
     private String fillAccountQueryRequestParams(FundAccountQueryRequest request) {
-        Head head = new Head(TRANSFER_ACCOUNT_QUERY_CODE, "", "", "", "", "", "");
+        Head head = new Head(request.getCorpNo(), request.getUserNo(),TRANSFER_ACCOUNT_QUERY_CODE, "", "", "", "", "", "");
         StringBuilder msg = new StringBuilder(head.getHead(head));
         OutAccountQueryBody outAccountQueryBody = new OutAccountQueryBody(request.getAcno());
         msg.append(outAccountQueryBody.getOutAccountQueryBody(outAccountQueryBody));
@@ -191,15 +182,6 @@ public class CommBankClientImpl implements FundBankClient {
      * @return
      */
     private ResultVo validateAccountQueryParams(FundAccountQueryRequest request) {
-        if (StringUtils.isEmpty(request.getBankProCode())) {
-            return BaseResultUtil.fail("账务中心支持的银行产品编码不能为空！");
-        }
-        if (StringUtils.isEmpty(request.getCorpNo())) {
-            return BaseResultUtil.fail("企业代码不能为空！");
-        }
-        if (StringUtils.isEmpty(request.getUserNo())) {
-            return BaseResultUtil.fail("企业用户号不能为空！");
-        }
         if (StringUtils.isEmpty(request.getAcno())) {
             return BaseResultUtil.fail("账号不能为空！");
         }
@@ -220,11 +202,11 @@ public class CommBankClientImpl implements FundBankClient {
     /**
      * 转账-组装请求银行参数
      *
-     * @param fundTransferRequest
+     * @param request
      * @return
      */
-    private String fillTransferRequestParams(FundTransferRequest fundTransferRequest) {
-        Head head = new Head(TRANSFER_TRANS_CODE, "", "", "", "", "", "");
+    private String fillTransferRequestParams(FundTransferRequest request) {
+        Head head = new Head(request.getCorpNo(), request.getUserNo(), TRANSFER_TRANS_CODE, "", "", "", "", "", "");
         StringBuilder msg = new StringBuilder(head.getHead(head));
         OutTransferBody outTransferBody = new OutTransferBody("", "", "", "", "",
                 "", "", "", new BigDecimal(0), "", "", "", "");
@@ -240,15 +222,6 @@ public class CommBankClientImpl implements FundBankClient {
      */
     private ResultVo validateTransferParams(FundTransferRequest request) {
 
-        if (StringUtils.isEmpty(request.getBankProCode())) {
-            return BaseResultUtil.fail("账务中心支持的银行产品编码不能为空！");
-        }
-        if (StringUtils.isEmpty(request.getCorpNo())) {
-            return BaseResultUtil.fail("企业代码不能为空！");
-        }
-        if (StringUtils.isEmpty(request.getUserNo())) {
-            return BaseResultUtil.fail("企业用户号不能为空！");
-        }
         if (StringUtils.isEmpty(request.getPayAcno())) {
             return BaseResultUtil.fail("付款人帐号不能为空！");
         }

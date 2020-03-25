@@ -1,6 +1,5 @@
 package com.yqzl.model;
 
-import com.yqzl.config.YqzlProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,30 +14,30 @@ public class Head {
 
     @ApiModelProperty("交易码")
     @NotNull
-    private String tr_code;
+    private String trCode;
 
     @ApiModelProperty("企业代码")
     @NotNull
-    private String corp_no;
+    private String corpNo;
 
     @ApiModelProperty("企业用户号")
     @NotNull
-    private String user_no;
+    private String userNo;
 
     @ApiModelProperty("发起方序号")
-    private String req_no;
+    private String reqNo;
 
     @ApiModelProperty("交易日期 YYYYMMdd")
     @NotNull
-    private String tr_acdt;
+    private String trAcdt;
 
     @ApiModelProperty("时间 hhmmss")
     @NotNull
-    private String tr_time;
+    private String trTime;
 
     @ApiModelProperty("原子交易数")
     @NotNull
-    private String atom_tr_count;
+    private String atomTrCount;
 
     @ApiModelProperty("渠道标志")
     @NotNull
@@ -48,25 +47,27 @@ public class Head {
     @NotNull
     private String reserved;
 
-    public Head(@NotNull String tr_code, String req_no, @NotNull String tr_acdt, @NotNull String tr_time, @NotNull String atom_tr_count, @NotNull String channel, @NotNull String reserved) {
-        this.tr_code = tr_code;
-        this.req_no = req_no;
-        this.tr_acdt = tr_acdt;
-        this.tr_time = tr_time;
-        this.atom_tr_count = atom_tr_count;
+    public Head(String corpNo, String userNo, String trCode, String reqNo, String trAcdt, String trTime, String atomTrCount, String channel, String reserved) {
+        this.corpNo = corpNo;
+        this.userNo = userNo;
+        this.trCode = trCode;
+        this.reqNo = reqNo;
+        this.trAcdt = trAcdt;
+        this.trTime = trTime;
+        this.atomTrCount = atomTrCount;
         this.channel = channel;
         this.reserved = reserved;
     }
 
     public String getHead(Head head) {
-        return "<head><tr_code>"+head.getTr_code()+"</tr_code>" +
-                "<corp_no>"+YqzlProperty.corp_no +"</corp_no>" +
-                "<user_no>"+YqzlProperty.user_no+"</user_no>"+
-                "<req_no>"+head.getReq_no()+"</req_no>" +
-                "<tr_acdt>"+head.getTr_acdt()+"</tr_acdt>" +
-                "<tr_time>"+head.getTr_time()+"</tr_time>" +
-                "<atom_tr_count>"+head.getAtom_tr_count()+"</atom_tr_count>" +
+        return "<head><tr_code>" + head.getTrCode() + "</tr_code>" +
+                "<corp_no>" + head.getCorpNo() + "</corp_no>" +
+                "<user_no>" + head.getUserNo() + "</user_no>" +
+                "<req_no>" + head.getReqNo() + "</req_no>" +
+                "<tr_acdt>" + head.getTrAcdt() + "</tr_acdt>" +
+                "<tr_time>" + head.getTrTime() + "</tr_time>" +
+                "<atom_tr_count>" + head.getAtomTrCount() + "</atom_tr_count>" +
                 "<channel >0</channel>" +
-                "<reserved>"+head.getReserved()+"</reserved></head>";
+                "<reserved>" + head.getReserved() + "</reserved></head>";
     }
 }

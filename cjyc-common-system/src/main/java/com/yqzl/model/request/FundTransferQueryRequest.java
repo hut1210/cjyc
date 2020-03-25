@@ -11,14 +11,12 @@ import lombok.Data;
 @Data
 public class FundTransferQueryRequest {
 
-    @ApiModelProperty(value = "账务中心支持的银行产品编码:  COMM_BANK:交通银行", required = true)
+    @ApiModelProperty(value = "账务中心支持的银行产品编码， 默认走COMM_BANK:交通银行")
     private String bankProCode;
 
     /**
      * 请求体head信息
      */
-    @ApiModelProperty(value = "交易码", required = true)
-    private String trCode;
 
     @ApiModelProperty(value = "企业代码", hidden = true)
     private String corpNo;

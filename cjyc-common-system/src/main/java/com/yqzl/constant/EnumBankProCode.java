@@ -10,7 +10,7 @@ public enum EnumBankProCode {
     /**
      * 交通银行
      */
-    COMM_BANK("CommBankClientImpl"),
+    COMM_BANK("commBankClientImpl"),
     ;
 
     EnumBankProCode(final String beanName) {

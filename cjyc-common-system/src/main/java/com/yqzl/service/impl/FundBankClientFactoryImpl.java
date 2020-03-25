@@ -28,7 +28,7 @@ public class FundBankClientFactoryImpl implements FundBankClientFactory, BeanFac
         }
         try {
             final String beanName = EnumBankProCode.fromCode(bankProCode).getBeanName();
-            return beanFactory.getBean(beanName, FundBankClient.class);
+            return (FundBankClient) beanFactory.getBean(beanName);
         } catch (Exception e) {
             log.warn("获取银行 bankProCode [{}] 的客户端实现类失败", bankProCode, e);
             throw new CannotFoundBankClientException(e);

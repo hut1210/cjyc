@@ -11,6 +11,7 @@ import com.yqzl.service.FundBankClientFactory;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,10 +35,9 @@ public class YqzlController {
     @ApiOperation(value = "银企直联-转账交易")
     @PostMapping(value = "/transfer")
     public ResultVo doTransfer(FundTransferRequest fundTransferRequest) {
-        // 根据银行渠道信息找银行产品实现类，找不到就异常
-        FundBankClient bankOperations = fundBankClientFactory.get(fundTransferRequest.getBankProCode());
-        // 交通银行
-        fundTransferRequest.setBankProCode(EnumBankProCode.COMM_BANK.name());
+        // 根据银行渠道信息找银行产品实现类，找不到就异常, 默认：交通银行
+        String bankProCode = fundTransferRequest.getBankProCode();
+        FundBankClient bankOperations = fundBankClientFactory.get(StringUtils.isEmpty(bankProCode) ? EnumBankProCode.COMM_BANK.name() : bankProCode);
         // 企业代码
         fundTransferRequest.setCorpNo(YQZLProperty.corpNo);
         // 企业用户号
@@ -48,10 +48,9 @@ public class YqzlController {
     @ApiOperation(value = "银企直联-转账交易查询")
     @PostMapping(value = "/transferQuery")
     public ResultVo doTransferQuery(FundTransferQueryRequest fundTransferQueryRequest) {
-        // 根据银行渠道信息找银行产品实现类，找不到就异常
-        FundBankClient bankOperations = fundBankClientFactory.get(fundTransferQueryRequest.getBankProCode());
-        // 交通银行
-        fundTransferQueryRequest.setBankProCode(EnumBankProCode.COMM_BANK.name());
+        // 根据银行渠道信息找银行产品实现类，找不到就异常, 默认：交通银行
+        String bankProCode = fundTransferQueryRequest.getBankProCode();
+        FundBankClient bankOperations = fundBankClientFactory.get(StringUtils.isEmpty(bankProCode) ? EnumBankProCode.COMM_BANK.name() : bankProCode);
         // 企业代码
         fundTransferQueryRequest.setCorpNo(YQZLProperty.corpNo);
         // 企业用户号
@@ -62,10 +61,9 @@ public class YqzlController {
     @ApiOperation(value = "银企直联-账户信息查询")
     @PostMapping(value = "/accountQuery")
     public ResultVo doAccountQuery(FundAccountQueryRequest fundAccountQueryRequest) {
-        // 根据银行渠道信息找银行产品实现类，找不到就异常
-        FundBankClient bankOperations = fundBankClientFactory.get(fundAccountQueryRequest.getBankProCode());
-        // 交通银行
-        fundAccountQueryRequest.setBankProCode(EnumBankProCode.COMM_BANK.name());
+        // 根据银行渠道信息找银行产品实现类，找不到就异常, 默认：交通银行
+        String bankProCode = fundAccountQueryRequest.getBankProCode();
+        FundBankClient bankOperations = fundBankClientFactory.get(StringUtils.isEmpty(bankProCode) ? EnumBankProCode.COMM_BANK.name() : bankProCode);
         // 企业代码
         fundAccountQueryRequest.setCorpNo(YQZLProperty.corpNo);
         // 企业用户号
