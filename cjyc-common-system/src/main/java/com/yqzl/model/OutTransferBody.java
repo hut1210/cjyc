@@ -13,70 +13,70 @@ import java.math.BigDecimal;
 public class OutTransferBody {
 
     @ApiModelProperty("付款人帐号")
-    private String pay_acno;
+    private String payAcno;
 
     @ApiModelProperty("付款人户名")
-    private String pay_acname;
+    private String payAcname;
 
     @ApiModelProperty("收款方行名")
-    private String rcv_bank_name;
+    private String rcvBankName;
 
     @ApiModelProperty("收款人帐号")
-    private String rcv_acno;
+    private String rcvAcno;
 
     @ApiModelProperty("收款人户名")
-    private String rcv_acname;
+    private String rcvAcname;
 
     @ApiModelProperty("收款方交换号")
-    private String rcv_exg_code;
+    private String rcvExgCode;
 
     @ApiModelProperty("收款方联行号")
-    private String rcv_bank_no;
+    private String rcvBankNo;
 
     @ApiModelProperty("币种")
-    private String cur_code;
+    private String curCode;
 
     @ApiModelProperty("金额")
     private BigDecimal amt;
 
     @ApiModelProperty("企业凭证编号")
-    private String cert_no;
+    private String certNo;
 
     @ApiModelProperty("附言")
     private String summary;
 
     @ApiModelProperty("银行标志")
-    private String bank_flag;
+    private String bankFlag;
 
     @ApiModelProperty("同城异地标志")
-    private String area_flag;
+    private String areaFlag;
 
-    public OutTransferBody(String pay_acno, String pay_acname, String rcv_bank_name, String rcv_acno, String rcv_acname, String rcv_exg_code, String rcv_bank_no, String cur_code, BigDecimal amt, String cert_no, String summary, String bank_flag, String area_flag) {
-        this.pay_acno = pay_acno;
-        this.pay_acname = pay_acname;
-        this.rcv_bank_name = rcv_bank_name;
-        this.rcv_acno = rcv_acno;
-        this.rcv_acname = rcv_acname;
-        this.rcv_exg_code = rcv_exg_code;
-        this.rcv_bank_no = rcv_bank_no;
-        this.cur_code = cur_code;
+    public OutTransferBody(String payAcno, String payAcname, String rcvBankName, String rcvAcno, String rcvAcname, String rcvExgCode, String rcvBankNo, String curCode, BigDecimal amt, String certNo, String summary, String bankFlag, String areaFlag) {
+        this.payAcno = payAcno;
+        this.payAcname = payAcname;
+        this.rcvBankName = rcvBankName;
+        this.rcvAcno = rcvAcno;
+        this.rcvAcname = rcvAcname;
+        this.rcvExgCode = rcvExgCode;
+        this.rcvBankNo = rcvBankNo;
+        this.curCode = curCode;
         this.amt = amt;
-        this.cert_no = cert_no;
+        this.certNo = certNo;
         this.summary = summary;
-        this.bank_flag = bank_flag;
-        this.area_flag = area_flag;
+        this.bankFlag = bankFlag;
+        this.areaFlag = areaFlag;
     }
 
-    public String getOutTransferBody(OutTransferBody outTransferBody){
+    public String getOutTransferBody(OutTransferBody outTransferBody) {
 
-        return "<body><pay_acno>"+ outTransferBody.getPay_acno()+"</pay_acno>" +
-                "<pay_acname>"+ outTransferBody.getPay_acname()+"</pay_acname>"+
-                "<rcv_bank_name>"+ outTransferBody.getRcv_bank_name()+"</rcv_bank_name>" +
-                "<rcv_acno>"+ outTransferBody.getRcv_acno()+"</rcv_acno>" +
-                "<rcv_acname>"+ outTransferBody.getRcv_acname()+"</rcv_acname>"+
+        return "<body><pay_acno>" + outTransferBody.getPayAcno() + "</pay_acno>" +
+                "<pay_acname>" + outTransferBody.getPayAcname() + "</pay_acname>" +
+                "<rcv_bank_name>" + outTransferBody.getRcvBankName() + "</rcv_bank_name>" +
+                "<rcv_acno>" + outTransferBody.getRcvAcno() + "</rcv_acno>" +
+                "<rcv_acname>" + outTransferBody.getRcvAcname() + "</rcv_acname>" +
                 "<cur_code>CNY</cur_code>" +
-                "<amt>"+ outTransferBody.getAmt()+"</amt>" +
-                "<cert_no>"+ outTransferBody.getCert_no()+"</cert_no>" +
-                "<bank_flag>"+ outTransferBody.getBank_flag()+"</bank_flag></body>";
+                "<amt>" + outTransferBody.getAmt() + "</amt>" +
+                "<cert_no>" + outTransferBody.getCertNo() + "</cert_no>" +
+                "<bank_flag>" + outTransferBody.getBankFlag() + "</bank_flag></body>";
     }
 }

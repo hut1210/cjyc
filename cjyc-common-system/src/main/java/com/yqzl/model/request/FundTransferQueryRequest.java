@@ -1,7 +1,14 @@
 package com.yqzl.model.request;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+/**
+ * 银行转账流水查询请求对象
+ *
+ * @author RenPL 2020-3-15
+ */
+@Data
 public class FundTransferQueryRequest {
 
     @ApiModelProperty(value = "账务中心支持的银行产品编码:  COMM_BANK:交通银行", required = true)
@@ -36,5 +43,11 @@ public class FundTransferQueryRequest {
 
     @ApiModelProperty("保留字段")
     private String reserved;
+
+    @ApiModelProperty("查询标志")
+    private String queryFlag;
+
+    @ApiModelProperty("原流水号")
+    private String oglSerialNo;
 
 }

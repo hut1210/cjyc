@@ -5,7 +5,9 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.yqzl.model.Head;
+import com.yqzl.model.OutAccountQueryBody;
 import com.yqzl.model.OutTransferBody;
+import com.yqzl.model.OutTransferQueryBody;
 import com.yqzl.model.request.FundAccountQueryRequest;
 import com.yqzl.model.request.FundTransferQueryRequest;
 import com.yqzl.model.request.FundTransferRequest;
@@ -29,35 +31,183 @@ import java.math.BigDecimal;
 @Slf4j
 public class CommBankClientImpl implements FundBankClient {
 
+    /**
+     * 转账交易吗
+     */
+    private static String TRANSFER_TRANS_CODE = "210201";
+
+    /**
+     * 转账查询交易吗
+     */
+    private static String TRANSFER_TRANS_QUERY_CODE = "310204";
+
+    /**
+     * 账户交易吗
+     */
+    private static String TRANSFER_ACCOUNT_QUERY_CODE = "310101";
+
     @Override
-    public ResultVo<FundTransferResponse> doTransfer(FundTransferRequest fundTransferRequest) {
+    public ResultVo doTransfer(Object obj) {
+        FundTransferRequest request = null;
+        if (obj instanceof FundTransferRequest) {
+            request = (FundTransferRequest) obj;
+        }
         // 转账参数校验
-        ResultVo validateResult = validateParams(fundTransferRequest);
+        ResultVo validateResult = validateTransferParams(request);
         if (ResultEnum.SUCCESS.getCode() != validateResult.getCode()) {
             return validateResult;
         }
         // 组装请求银行参数
-        String bankRequestParams = fillTransferRequestParams(fundTransferRequest);
+        String bankRequestParams = fillTransferRequestParams(request);
         // 请求银行
         String bankResponse = SocketUtil.doSocket(bankRequestParams);
         // 银行返回报文解析 + 组装返回参数
         JSONObject jsonObject = (JSONObject) JSONObject.parse(bankResponse);
-        FundTransferResponse fundTransferResponse = fillTransferResponseParams(jsonObject);
-        return BaseResultUtil.success(fundTransferResponse);
+        FundTransferResponse response = fillTransferResponseParams(jsonObject);
+        return BaseResultUtil.success(response);
     }
 
     @Override
-    public ResultVo<FundTransferQueryResponse> doTransferQuery(FundTransferQueryRequest fundTransferQueryRequest) {
-        return null;
-    }
-
-    @Override
-    public ResultVo<FundAccountQueryResponse> doAccountQuery(FundAccountQueryRequest fundAccountQueryRequest) {
-        return null;
+    public ResultVo doTransferQuery(Object obj) {
+        FundTransferQueryRequest request = null;
+        if (obj instanceof FundTransferQueryRequest) {
+            request = (FundTransferQueryRequest) obj;
+        }
+        // 转账查询参数校验
+        ResultVo validateResult = validateTransferQueryParams(request);
+        if (ResultEnum.SUCCESS.getCode() != validateResult.getCode()) {
+            return validateResult;
+        }
+        // 组装请求银行参数
+        String bankRequestParams = fillTransferQueryRequestParams(request);
+        // 请求银行
+        String bankResponse = SocketUtil.doSocket(bankRequestParams);
+        // 银行返回报文解析 + 组装返回参数
+        JSONObject jsonObject = (JSONObject) JSONObject.parse(bankResponse);
+        FundTransferQueryResponse response = fillTransferQueryResponseParams(jsonObject);
+        return BaseResultUtil.success(response);
     }
 
     /**
-     * 银行返回报文解析 + 组装返回参数
+     * 转账查询-银行返回报文解析 + 组装返回参数
+     *
+     * @param jsonObject
+     * @return
+     */
+    private FundTransferQueryResponse fillTransferQueryResponseParams(JSONObject jsonObject) {
+        FundTransferQueryResponse response = new FundTransferQueryResponse();
+        return response;
+    }
+
+    /**
+     * 转账查询-组装请求银行参数
+     *
+     * @param request
+     * @return
+     */
+    private String fillTransferQueryRequestParams(FundTransferQueryRequest request) {
+        Head head = new Head(TRANSFER_TRANS_QUERY_CODE, "", "", "", "", "", "");
+        StringBuilder msg = new StringBuilder(head.getHead(head));
+        OutTransferQueryBody outTransferQueryBody = new OutTransferQueryBody(request.getQueryFlag(), request.getOglSerialNo());
+        msg.append(outTransferQueryBody.getOutTransferQueryBody(outTransferQueryBody));
+        return msg.toString();
+    }
+
+    /**
+     * 转账查询-参数校验
+     *
+     * @param request
+     * @return
+     */
+    private ResultVo validateTransferQueryParams(FundTransferQueryRequest request) {
+        if (StringUtils.isEmpty(request.getBankProCode())) {
+            return BaseResultUtil.fail("账务中心支持的银行产品编码不能为空！");
+        }
+        if (StringUtils.isEmpty(request.getCorpNo())) {
+            return BaseResultUtil.fail("企业代码不能为空！");
+        }
+        if (StringUtils.isEmpty(request.getUserNo())) {
+            return BaseResultUtil.fail("企业用户号不能为空！");
+        }
+        if (request.getQueryFlag() == null) {
+            return BaseResultUtil.fail("查询标志不能为空！");
+        }
+        if (StringUtils.isEmpty(request.getOglSerialNo())) {
+            return BaseResultUtil.fail("原流水号不能为空！");
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo doAccountQuery(Object obj) {
+        FundAccountQueryRequest request = null;
+        if (obj instanceof FundAccountQueryRequest) {
+            request = (FundAccountQueryRequest) obj;
+        }
+        // 账户信息查询参数校验
+        ResultVo validateResult = validateAccountQueryParams(request);
+        if (ResultEnum.SUCCESS.getCode() != validateResult.getCode()) {
+            return validateResult;
+        }
+        // 组装请求银行参数
+        String bankRequestParams = fillAccountQueryRequestParams(request);
+        // 请求银行
+        String bankResponse = SocketUtil.doSocket(bankRequestParams);
+        // 银行返回报文解析 + 组装返回参数
+        JSONObject jsonObject = (JSONObject) JSONObject.parse(bankResponse);
+        FundAccountQueryResponse response = fillAccountQueryResponseParams(jsonObject);
+        return BaseResultUtil.success(response);
+    }
+
+    /**
+     * 账户查询-银行返回报文解析 + 组装返回参数
+     *
+     * @param jsonObject
+     * @return
+     */
+    private FundAccountQueryResponse fillAccountQueryResponseParams(JSONObject jsonObject) {
+        FundAccountQueryResponse fundAccountQueryResponse = new FundAccountQueryResponse();
+        return fundAccountQueryResponse;
+    }
+
+    /**
+     * 账户查询-组装请求银行参数
+     *
+     * @param request
+     * @return
+     */
+    private String fillAccountQueryRequestParams(FundAccountQueryRequest request) {
+        Head head = new Head(TRANSFER_ACCOUNT_QUERY_CODE, "", "", "", "", "", "");
+        StringBuilder msg = new StringBuilder(head.getHead(head));
+        OutAccountQueryBody outAccountQueryBody = new OutAccountQueryBody(request.getAcno());
+        msg.append(outAccountQueryBody.getOutAccountQueryBody(outAccountQueryBody));
+        return msg.toString();
+    }
+
+    /**
+     * 账户信息查询参数校验
+     *
+     * @param request
+     * @return
+     */
+    private ResultVo validateAccountQueryParams(FundAccountQueryRequest request) {
+        if (StringUtils.isEmpty(request.getBankProCode())) {
+            return BaseResultUtil.fail("账务中心支持的银行产品编码不能为空！");
+        }
+        if (StringUtils.isEmpty(request.getCorpNo())) {
+            return BaseResultUtil.fail("企业代码不能为空！");
+        }
+        if (StringUtils.isEmpty(request.getUserNo())) {
+            return BaseResultUtil.fail("企业用户号不能为空！");
+        }
+        if (StringUtils.isEmpty(request.getAcno())) {
+            return BaseResultUtil.fail("账号不能为空！");
+        }
+        return BaseResultUtil.success();
+    }
+
+    /**
+     * 转账-银行返回报文解析 + 组装返回参数
      *
      * @param jsonObject
      * @return
@@ -68,13 +218,13 @@ public class CommBankClientImpl implements FundBankClient {
     }
 
     /**
-     * 组装请求银行参数
+     * 转账-组装请求银行参数
      *
      * @param fundTransferRequest
      * @return
      */
     private String fillTransferRequestParams(FundTransferRequest fundTransferRequest) {
-        Head head = new Head("210201", "", "", "", "", "", "");
+        Head head = new Head(TRANSFER_TRANS_CODE, "", "", "", "", "", "");
         StringBuilder msg = new StringBuilder(head.getHead(head));
         OutTransferBody outTransferBody = new OutTransferBody("", "", "", "", "",
                 "", "", "", new BigDecimal(0), "", "", "", "");
@@ -83,53 +233,50 @@ public class CommBankClientImpl implements FundBankClient {
     }
 
     /**
-     * 转账参数校验
+     * 转账-参数校验
      *
-     * @param fundTransferRequest
+     * @param request
      * @return
      */
-    private ResultVo validateParams(FundTransferRequest fundTransferRequest) {
+    private ResultVo validateTransferParams(FundTransferRequest request) {
 
-        if (StringUtils.isEmpty(fundTransferRequest.getBankProCode())) {
+        if (StringUtils.isEmpty(request.getBankProCode())) {
             return BaseResultUtil.fail("账务中心支持的银行产品编码不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getTrCode())) {
-            return BaseResultUtil.fail("交易码不能为空！");
-        }
-        if (StringUtils.isEmpty(fundTransferRequest.getCorpNo())) {
+        if (StringUtils.isEmpty(request.getCorpNo())) {
             return BaseResultUtil.fail("企业代码不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getUserNo())) {
+        if (StringUtils.isEmpty(request.getUserNo())) {
             return BaseResultUtil.fail("企业用户号不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getPayAcno())) {
+        if (StringUtils.isEmpty(request.getPayAcno())) {
             return BaseResultUtil.fail("付款人帐号不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getPayAcname())) {
+        if (StringUtils.isEmpty(request.getPayAcname())) {
             return BaseResultUtil.fail("付款人户名不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getRcvBankName())) {
+        if (StringUtils.isEmpty(request.getRcvBankName())) {
             return BaseResultUtil.fail("收款方行名不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getRcvAcno())) {
+        if (StringUtils.isEmpty(request.getRcvAcno())) {
             return BaseResultUtil.fail("收款人帐号不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getRcvAcname())) {
+        if (StringUtils.isEmpty(request.getRcvAcname())) {
             return BaseResultUtil.fail("收款人户名不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getRcvExgCode())) {
+        if (StringUtils.isEmpty(request.getRcvExgCode())) {
             return BaseResultUtil.fail("收款方交换号不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getCurCode())) {
+        if (StringUtils.isEmpty(request.getCurCode())) {
             return BaseResultUtil.fail("币种不能为空！");
         }
-        if (fundTransferRequest.getAmt() == null) {
+        if (request.getAmt() == null) {
             return BaseResultUtil.fail("金额不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getCertNo())) {
+        if (StringUtils.isEmpty(request.getCertNo())) {
             return BaseResultUtil.fail("企业凭证编号不能为空！");
         }
-        if (StringUtils.isEmpty(fundTransferRequest.getBankFlag())) {
+        if (StringUtils.isEmpty(request.getBankFlag())) {
             return BaseResultUtil.fail("银行标志不能为空！");
         }
         return BaseResultUtil.success();

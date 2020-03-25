@@ -1,7 +1,14 @@
 package com.yqzl.model.request;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+/**
+ * 账户信息查询请求对象
+ *
+ * @author RenPL 2020-3-15
+ */
+@Data
 public class FundAccountQueryRequest {
 
     @ApiModelProperty(value = "账务中心支持的银行产品编码:  COMM_BANK:交通银行", required = true)
@@ -36,5 +43,8 @@ public class FundAccountQueryRequest {
 
     @ApiModelProperty("保留字段")
     private String reserved;
+
+    @ApiModelProperty("帐号")
+    private String acno;
 
 }
