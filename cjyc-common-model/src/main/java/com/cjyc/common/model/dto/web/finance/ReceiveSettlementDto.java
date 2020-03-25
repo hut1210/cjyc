@@ -74,4 +74,7 @@ public class ReceiveSettlementDto {
     @ApiModelProperty(value = "发票号")
     private String title;
 
+    @ApiModelProperty(value = "总条数")
+    private Integer totalReceivableNum;
+
 }
