@@ -1080,7 +1080,7 @@
         </if>) t
     </select>
     <select id="payablePaidSummary" resultType="java.util.Map">
-        SELECT sum(freightFee),sum(totalFreightPay) from (select fp.serial_number as serialNumber,
+        SELECT sum(freightFee) as freightFee,sum(totalFreightPay) as totalFreightPay from (select fp.serial_number as serialNumber,
         fp.freight_fee as freightFee,
         fp.invoice_no as invoiceNo,
         fp.apply_time as applyTime,
