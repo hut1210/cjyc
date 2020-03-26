@@ -5,6 +5,7 @@ import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -177,4 +178,39 @@ public interface IFinanceService {
      * @return
      */
     ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(FinanceQueryDto financeQueryDto);
+
+    /**
+     * 导出应收账款（账期）Excel
+     *
+     * @param financeQueryDto
+     * @return
+     */
+    ResultVo exportPaymentDaysInfo(HttpServletResponse response, FinanceQueryDto financeQueryDto);
+
+    /**
+     * 导出应收账款-待开票（账期）Excel
+     *
+     * @param response
+     * @param receiveSettlementNeedInvoiceVo
+     * @return
+     */
+    ResultVo exportReceiveSettlementNeedInvoice(HttpServletResponse response, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
+
+    /**
+     * 导出应收账款-待回款（账期）Excel
+     *
+     * @param response
+     * @param receiveSettlementNeedPayedVo
+     * @return
+     */
+    ResultVo exportReceiveSettlementNeedPayed(HttpServletResponse response, ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo);
+
+    /**
+     * 导出应收账款-已收款（账期）Excel
+     *
+     * @param response
+     * @param receiveSettlementNeedInvoiceVo
+     * @return
+     */
+    ResultVo exportReceiveSettlementPayed(HttpServletResponse response, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
 }

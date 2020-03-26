@@ -211,10 +211,22 @@ public class FinanceController {
         return financeService.listPaymentDaysInfo(financeQueryDto);
     }
 
+    @ApiOperation(value = "导出应收账款（账期）Excel")
+    @GetMapping(value = "/exportPaymentDaysInfo")
+    public ResultVo exportPaymentDaysInfo(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
+        return financeService.exportPaymentDaysInfo(response, financeQueryDto);
+    }
+
     @ApiOperation(value = "应收账款结算-待开票(账期)列表查询")
     @PostMapping(value = "/listReceiveSettlementNeedInvoice")
     public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(@RequestBody ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
         return financeService.listReceiveSettlementNeedInvoice(receiveSettlementNeedInvoiceVo);
+    }
+
+    @ApiOperation(value = "导出应收账款-待开票（账期）Excel")
+    @GetMapping(value = "/exportReceiveSettlementNeedInvoice")
+    public ResultVo exportReceiveSettlementNeedInvoice(HttpServletResponse response, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        return financeService.exportReceiveSettlementNeedInvoice(response, receiveSettlementNeedInvoiceVo);
     }
 
     @ApiOperation(value = "应收账款结算-待回款(账期)列表查询")
@@ -223,10 +235,22 @@ public class FinanceController {
         return financeService.listReceiveSettlementNeedPayed(receiveSettlementNeedPayedVo);
     }
 
+    @ApiOperation(value = "导出应收账款-待回款（账期）Excel")
+    @GetMapping(value = "/exportReceiveSettlementNeedPayed")
+    public ResultVo exportReceiveSettlementNeedPayed(HttpServletResponse response, ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo) {
+        return financeService.exportReceiveSettlementNeedPayed(response, receiveSettlementNeedPayedVo);
+    }
+
     @ApiOperation(value = "应收账款结算-已收款(账期)列表查询")
     @PostMapping(value = "/listReceiveSettlementPayed")
     public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(@RequestBody ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
         return financeService.listReceiveSettlementPayed(receiveSettlementNeedInvoiceVo);
+    }
+
+    @ApiOperation(value = "导出应收账款-已收款（账期）Excel")
+    @GetMapping(value = "/exportReceiveSettlementPayed")
+    public ResultVo exportReceiveSettlementPayed(HttpServletResponse response, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
+        return financeService.exportReceiveSettlementPayed(response, receiveSettlementNeedInvoiceVo);
     }
 
     @ApiOperation(value = "应收账款(账期)结算申请")
