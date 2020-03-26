@@ -7,6 +7,7 @@ import com.cjyc.common.model.dto.web.WayBillCarrierDto;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
@@ -699,6 +700,8 @@ public class TransactionServiceImpl implements ITransactionService {
                     userInfo);
 
             csPushMsgService.send(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_PAID_ORDER, order.getNo());
+
+            order.setState(OrderStateEnum.CHECKED.code);
             csAmqpService.sendOrderState(order);
         }
     }
