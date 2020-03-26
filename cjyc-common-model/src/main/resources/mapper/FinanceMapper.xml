@@ -1177,6 +1177,9 @@
         <if test="customerName != null  and customerName.trim() != ''">
             AND  cc.name  LIKE concat('%',#{customerName},'%')
         </if>
+        <if test="contactPhone != null and contactPhone.trim() != ''">
+            AND cc.contact_phone = #{contactPhone}
+        </if>
         <if test="brand != null and brand.trim() != ''">
             AND woc.brand = #{brand}
         </if>
