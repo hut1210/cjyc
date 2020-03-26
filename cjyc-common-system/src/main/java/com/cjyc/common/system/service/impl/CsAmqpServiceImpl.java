@@ -3,6 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.constant.AccountConstant;
 import com.cjyc.common.model.constant.AmqpConstant;
+import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.MQMessage;
@@ -31,7 +32,8 @@ import java.util.UUID;
 public class CsAmqpServiceImpl implements ICsAmqpService {
     @Resource
     private RabbitTemplate rabbitTemplate;
-
+    @Resource
+    private IOrderDao orderDao;
     @Async
     @Override
     public void sendOrderState(Order order) {

@@ -70,4 +70,21 @@
         <include refid="Common_Condition_List"/>
         ORDER BY rs.apply_time, rs.confirm_time, rs.verification_time DESC
     </select>
+    <select id="summaryReceiveSettlementAmt" resultType="java.util.Map">
+        SELECT
+        SUM(rs.total_receivable_fee) AS receiveSummary, SUM(rs.total_invoice_fee) AS actualReceiveSummary
+        FROM s_settlement rs
+        LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
+        WHERE rs.state = #{state}
+        <include refid="Common_Condition_List"/>
+    </select>
+    <select id="summaryReceiveSettlementNeedPayedAmt" resultType="java.util.Map">
+        SELECT
+        SUM(rs.total_receivable_fee) AS receiveSummary, SUM(rs.total_invoice_fee) AS actualReceiveSummary
+        FROM s_settlement rs
+        LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
+        WHERE rs.state in (0,2)
+        <include refid="Common_Condition_List"/>
+    </select>
+
 </mapper>

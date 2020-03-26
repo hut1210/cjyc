@@ -17,6 +17,7 @@ import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
+import com.cjyc.common.model.util.RegexUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -80,6 +81,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
         if(order.getState() > OrderStateEnum.WAIT_SUBMIT.code){
             return BaseResultUtil.fail("订单已经提交过");
+        }
+        if (!RegexUtil.isMobileSimple(order.getPickContactPhone())) {
+            return BaseResultUtil.fail("发车人手机号格式不正确");
+        }
+        if (!RegexUtil.isMobileSimple(order.getBackContactPhone())) {
+            return BaseResultUtil.fail("收车人手机号格式不正确");
         }
         if(order.getLineId() == null || order.getLineId() <= 0){
             Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);

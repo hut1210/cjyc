@@ -215,6 +215,7 @@
         (CASE
             when ww.freight_pay_state=2 then '付款中'
             when ww.freight_pay_state=1 then '已付款'
+            when ww.freight_pay_state=0 then '未付款'
             when ww.freight_pay_state=-2 then '支付失败'
         END) as payState,
         (CASE
@@ -558,7 +559,7 @@
         sbcb.card_no as cardNo,
         sbcb.bank_name as bankName,
         fep.operator,
-        if(ww.freight_pay_state=1,ww.freight_pay_time,0) as payTime,
+        ww.freight_pay_time as payTime,
         sbcb.card_type as cardType,
         sbcb.id_card as idCard,
         sbcb.province_name as provinceName,
@@ -943,15 +944,20 @@
                 when ww.type=3 then '送车运单'
         END) as wayBillTypeName,
         if(dc.settle_type=0,'时付','账期') as settleType,
-        ww.freight_fee as freightFee,
-        ftb.amount as paidFreightFee,
+        wwc.freight_fee as freightFee,
+        wwc.freight_fee as paidFreightFee,
         (CASE
             when ww.freight_pay_state=2 then '付款中'
             when ww.freight_pay_state=1 then '已付款'
+            when ww.freight_pay_state=0 then '未付款'
             when ww.freight_pay_state=-2 then '支付失败'
         END) as payState,
         ww.freight_pay_time as payTime,
         ww.carrier_type as carrierType,
+        (CASE
+            when dc.type=1 then '个人司机'
+            when dc.type=2 then '承运商'
+        END) as carrierTypeStr,
         ww.carrier_name as carrierName,
         dc.linkman_phone as carrierPhone,
         wwc.start_city as pickUpPlace,
@@ -964,7 +970,7 @@
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
 
-        where ww.carrier_type in (1,2,4,5) and ww.state=100 and woc.no =#{no}
+        where ww.carrier_type in (1,2,4,5) and wwc.state=100 and woc.no =#{no}
     </select>
     <select id="payableAccountSummary" resultType="java.math.BigDecimal">
         select sum(wwc.freight_fee)
@@ -1147,7 +1153,8 @@
         woc.finish_time AS deliveryDate,
         wo.finish_time AS orderDeliveryDate,
         woc.id AS orderCarId,
-        ccc.settle_period
+        ccc.settle_period,
+        cc.contact_phone
         FROM w_order_car woc
         LEFT JOIN w_order wo ON woc.order_id = wo.id
         LEFT JOIN c_customer cc ON cc.id = wo.customer_id
@@ -1171,6 +1178,9 @@
         </if>
         <if test="customerName != null  and customerName.trim() != ''">
             AND  cc.name  LIKE concat('%',#{customerName},'%')
+        </if>
+        <if test="contactPhone != null and contactPhone.trim() != ''">
+            AND cc.contact_phone = #{contactPhone}
         </if>
         <if test="brand != null and brand.trim() != ''">
             AND woc.brand = #{brand}

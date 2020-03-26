@@ -95,7 +95,7 @@ public class ExportFinanceDetailVo implements Serializable {
     @Excel(name = "承运商类型" ,orderNum = "12")
     private String carrierTypeStr;
 
-    public String getCarrierTypeStr() {
+    /*public String getCarrierTypeStr() {
         String type = getCarrierType();
         if (type != null) {
             if (type.equals("1")) {
@@ -112,7 +112,7 @@ public class ExportFinanceDetailVo implements Serializable {
             }
         }
         return "";
-    }
+    }*/
 
     @ApiModelProperty(value = "承运商名称")
     @Excel(name = "承运商名称" ,orderNum = "13")
