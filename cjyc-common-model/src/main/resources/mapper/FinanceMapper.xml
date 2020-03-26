@@ -1151,7 +1151,8 @@
         woc.finish_time AS deliveryDate,
         wo.finish_time AS orderDeliveryDate,
         woc.id AS orderCarId,
-        ccc.settle_period
+        ccc.settle_period,
+        cc.contact_phone
         FROM w_order_car woc
         LEFT JOIN w_order wo ON woc.order_id = wo.id
         LEFT JOIN c_customer cc ON cc.id = wo.customer_id
