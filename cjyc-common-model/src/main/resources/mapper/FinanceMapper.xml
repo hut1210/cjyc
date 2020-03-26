@@ -952,6 +952,10 @@
         END) as payState,
         ww.freight_pay_time as payTime,
         ww.carrier_type as carrierType,
+        (CASE
+            when dc.type=1 then '个人司机'
+            when dc.type=2 then '承运商'
+        END) as carrierTypeStr,
         ww.carrier_name as carrierName,
         dc.linkman_phone as carrierPhone,
         wwc.start_city as pickUpPlace,
