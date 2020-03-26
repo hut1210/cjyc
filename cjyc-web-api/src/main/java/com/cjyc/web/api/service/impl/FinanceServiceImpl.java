@@ -422,15 +422,39 @@ public class FinanceServiceImpl implements IFinanceService {
                 e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
             }
         });
-        // 应收账款列表总条数查询
-        List<ReceiveOrderCarDto> totalFinanceVoList = financeDao.listPaymentDaysInfo(new FinanceQueryDto());
         // 应收账款总额统计
         BigDecimal receiveSummary = MoneyUtil.nullToZero(financeDao.receiptSummary(financeQueryDto));
-        Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiveCount", totalFinanceVoList.size());
+        // 总条数统计
+        Map<String, Object> countInfo = statisticCount();
         countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(receiveSummary, MoneyUtil.PATTERN_TWO)));
         PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(receiveOrderCarDtoList);
         return BaseResultUtil.success(pageInfo, countInfo);
+    }
+
+    /**
+     * 应收账款4个按钮的数字显示
+     *
+     * @return
+     */
+    private Map<String, Object> statisticCount(){
+        Map<String, Object> countInfo = new HashMap<>();
+        // 应收账款列表总条数查询
+        List<ReceiveOrderCarDto> receiveFinanceCount = financeDao.listPaymentDaysInfo(new FinanceQueryDto());
+        // 等待开票[账期]总条数
+        List<ReceiveSettlementDto> needInvoiceCount = receiveSettlementDao.listReceiveSettlement(new ReceiveSettlementNeedInvoiceVo() {{
+            setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
+        }});
+        // 等待回款[账期]总条数
+        List<ReceiveSettlementDto> needPayedCount = receiveSettlementDao.listReceiveSettlementNeedInvoice(new ReceiveSettlementNeedPayedVo());
+        // 已收款[账期]总条数
+        List<ReceiveSettlementDto> payedCount = receiveSettlementDao.listReceiveSettlement(new ReceiveSettlementNeedInvoiceVo() {{
+            setState(ReceiveSettlementStateEnum.VERIFICATION.code);
+        }});
+        countInfo.put("receiveFinanceCount", CollectionUtils.isEmpty(receiveFinanceCount) ? 0 : receiveFinanceCount.size());
+        countInfo.put("needInvoiceCount", CollectionUtils.isEmpty(needInvoiceCount) ? 0 : needInvoiceCount.size());
+        countInfo.put("needPayedCount", CollectionUtils.isEmpty(needPayedCount) ? 0 : needPayedCount.size());
+        countInfo.put("payedCount", CollectionUtils.isEmpty(payedCount) ? 0 : payedCount.size());
+        return countInfo;
     }
 
     @Override
@@ -1062,10 +1086,6 @@ public class FinanceServiceImpl implements IFinanceService {
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
         // 计算金额汇总
         Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementAmt(receiveSettlementNeedInvoiceVo);
-        // 计算总条数
-        List<ReceiveSettlementDto> listTemp = receiveSettlementDao.listReceiveSettlement(new ReceiveSettlementNeedInvoiceVo() {{
-            setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
-        }});
         // 金额分转元
         if(!CollectionUtils.isEmpty(listInfo)) {
             listInfo.forEach(e -> {
@@ -1075,8 +1095,8 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiveCount", CollectionUtils.isEmpty(listTemp) ? 0 : listTemp.size());
+        // 总条数统计
+        Map<String, Object> countInfo = statisticCount();
         if (summaryMap != null) {
             countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
             countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("actualReceiveSummary"), MoneyUtil.PATTERN_TWO)));
@@ -1093,8 +1113,6 @@ public class FinanceServiceImpl implements IFinanceService {
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedPayedVo);
         // 计算金额汇总
         Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementNeedPayedAmt(receiveSettlementNeedPayedVo);
-        // 计算总条数
-        List<ReceiveSettlementDto> listTemp = receiveSettlementDao.listReceiveSettlementNeedInvoice(new ReceiveSettlementNeedPayedVo());
         // 金额分转元
         if(!CollectionUtils.isEmpty(listInfo)) {
             listInfo.forEach(e -> {
@@ -1104,8 +1122,7 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiveCount", CollectionUtils.isEmpty(listTemp) ? 0 : listTemp.size());
+        Map<String, Object> countInfo = statisticCount();
         if (summaryMap != null) {
             countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
             countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("actualReceiveSummary"), MoneyUtil.PATTERN_TWO)));
@@ -1124,10 +1141,6 @@ public class FinanceServiceImpl implements IFinanceService {
         List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
         // 计算金额汇总
         Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementAmt(receiveSettlementNeedInvoiceVo);
-        // 计算总条数
-        List<ReceiveSettlementDto> listTemp = receiveSettlementDao.listReceiveSettlement(new ReceiveSettlementNeedInvoiceVo() {{
-            setState(ReceiveSettlementStateEnum.VERIFICATION.code);
-        }});
         // 金额分转元
         if(!CollectionUtils.isEmpty(listInfo)) {
             listInfo.forEach(e -> {
@@ -1137,8 +1150,8 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiveCount", CollectionUtils.isEmpty(listTemp) ? 0 : listTemp.size());
+        // 统计总条数
+        Map<String, Object> countInfo = statisticCount();
         if (summaryMap != null) {
             countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
             countInfo.put("actualReceiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("actualReceiveSummary"), MoneyUtil.PATTERN_TWO)));
