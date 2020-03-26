@@ -106,4 +106,7 @@ public class ReceiveOrderCarDto implements Serializable {
 
     @ApiModelProperty(value = "剩余账期(天)")
     private Long remainderSettlePeriod;
+
+    @ApiModelProperty(value = "客户账号")
+    private String contactPhone;
 }
