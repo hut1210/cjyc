@@ -483,7 +483,7 @@ public class FinanceServiceImpl implements IFinanceService {
         Map countInfo = getCountInfo();
         PageInfo<FinancePayableVo> pageInfo = new PageInfo<>(financeVoList);
         BigDecimal payableAccountSummary = financeDao.payableAccountSummary(payableQueryDto);
-        countInfo.put("payableAccountSummary", payableAccountSummary);
+        countInfo.put("payableAccountSummary", new BigDecimal(MoneyUtil.fenToYuan(payableAccountSummary, MoneyUtil.PATTERN_TWO)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -554,7 +554,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
         Map countInfo = getCountInfo();
         BigDecimal waitCollectSummary = financeDao.waitCollectSummary(waitTicketCollectDto);
-        countInfo.put("waitCollectSummary", waitCollectSummary);
+        countInfo.put("waitCollectSummary", new BigDecimal(MoneyUtil.fenToYuan(waitCollectSummary, MoneyUtil.PATTERN_TWO)));
 
         return BaseResultUtil.success(pageInfo, countInfo);
     }
@@ -609,7 +609,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
         Map countInfo = getCountInfo();
         BigDecimal paymentSummary = financeDao.paymentSummary(waitPaymentDto);
-        countInfo.put("paymentSummary", paymentSummary);
+        countInfo.put("paymentSummary", new BigDecimal(MoneyUtil.fenToYuan(paymentSummary, MoneyUtil.PATTERN_TWO)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -659,8 +659,8 @@ public class FinanceServiceImpl implements IFinanceService {
         Map map = financeDao.payablePaidSummary(payablePaidQueryDto);
         BigDecimal payableSummary = (BigDecimal) map.get("freightFee");
         BigDecimal payablePaidSummary = (BigDecimal) map.get("totalFreightPay");
-        countInfo.put("payableSummary", payableSummary);
-        countInfo.put("payablePaidSummary", payablePaidSummary);
+        countInfo.put("payableSummary", new BigDecimal(MoneyUtil.fenToYuan(payableSummary, MoneyUtil.PATTERN_TWO)));
+        countInfo.put("payablePaidSummary", new BigDecimal(MoneyUtil.fenToYuan(payablePaidSummary, MoneyUtil.PATTERN_TWO)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
