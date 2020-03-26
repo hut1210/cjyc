@@ -968,7 +968,7 @@
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
 
-        where ww.carrier_type in (1,2,4,5) and ww.state=100 and woc.no =#{no}
+        where ww.carrier_type in (1,2,4,5) and wwc.state=100 and woc.no =#{no}
     </select>
     <select id="payableAccountSummary" resultType="java.math.BigDecimal">
         select sum(wwc.freight_fee)
