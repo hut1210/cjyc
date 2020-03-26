@@ -71,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private IOrderCarLogDao orderCarLogDao;
     @Resource
     private ICsPushMsgService csPushMsgService;
+    @Resource
+    private ICsOrderService csOrderService;
 
 
     @Override
@@ -96,6 +98,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             order.setLineId(line.getId());
         }
         fillOrderStoreInfoForSave(order);
+        csOrderService.fillOrderInputStore(order);
         order.setState(OrderStateEnum.WAIT_CHECK.code);
         orderDao.updateById(order);
 
