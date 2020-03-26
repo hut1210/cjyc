@@ -558,7 +558,7 @@
         sbcb.card_no as cardNo,
         sbcb.bank_name as bankName,
         fep.operator,
-        if(ww.freight_pay_state=1,ww.freight_pay_time,0) as payTime,
+        ww.freight_pay_time as payTime,
         sbcb.card_type as cardType,
         sbcb.id_card as idCard,
         sbcb.province_name as provinceName,
