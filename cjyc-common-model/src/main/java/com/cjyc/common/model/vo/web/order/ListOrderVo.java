@@ -215,6 +215,8 @@ public class ListOrderVo extends Order {
                 str = "用户端APP"; break;
             case 7:
                 str = "用户端小程序"; break;
+            case 9:
+                str = "99车圈"; break;
         }
         return str;
     }
