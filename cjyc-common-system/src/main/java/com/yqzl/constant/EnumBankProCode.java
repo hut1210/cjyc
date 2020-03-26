@@ -1,7 +1,7 @@
 package com.yqzl.constant;
 
 /**
- * 资金系统支持的银行产品枚举
+ * 财务中心支持的银行产品枚举
  *
  * @author RenPL 2020-3-15
  */

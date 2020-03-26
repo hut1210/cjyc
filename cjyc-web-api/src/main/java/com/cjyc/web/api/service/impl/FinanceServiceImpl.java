@@ -1491,6 +1491,12 @@ public class FinanceServiceImpl implements IFinanceService {
                     }
                 }
             }
+            /**
+             * 不需要开票下面的开票就不校验
+             */
+            if(NeedInvoiceStateEnum.UNNEEDED_INVOICE.code == applyReceiveSettlementVo.getNeedVoice()){
+                return BaseResultUtil.success();
+            }
             CustomerInvoiceVo customerInvoiceVo = applyReceiveSettlementVo.getCustomerInvoiceVo();
             if (customerInvoiceVo != null && customerInvoiceVo.getType() != null) {
                 switch (customerInvoiceVo.getType()) {
