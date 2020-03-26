@@ -943,7 +943,7 @@
                 when ww.type=3 then '送车运单'
         END) as wayBillTypeName,
         if(dc.settle_type=0,'时付','账期') as settleType,
-        ww.freight_fee as freightFee,
+        wwc.freight_fee as freightFee,
         ftb.amount as paidFreightFee,
         (CASE
             when ww.freight_pay_state=2 then '付款中'
