@@ -10,7 +10,6 @@ import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
-import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
@@ -122,15 +121,11 @@ public class TaskServiceImpl implements ITaskService {
             if (BizScopeEnum.NONE.code == bizScope.getCode()) {
                 return BaseResultUtil.fail("您没有访问权限!");
             }
-
             dto.setStoreIds(bizScope.getStoreIds());
 
             CarDetailVo carDetailVo = null;
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
-                String detailState = dto.getDetailState();
-                //WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
-
                 dto.setWaybillCarId(taskCar.getWaybillCarId());
                 WaybillCar waybillCar = waybillCarDao.selectWaybillCar(dto);
                 if (waybillCar != null) {
@@ -151,7 +146,7 @@ public class TaskServiceImpl implements ITaskService {
                     carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                     // 获取车辆运输图片
-                    getCarPhotoImg(carDetailVo, detailState, waybillCar,waybill);
+                    getCarPhotoImg(carDetailVo, dto.getDetailState(), waybillCar,waybill);
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -244,31 +239,6 @@ public class TaskServiceImpl implements ITaskService {
             }
         }
         return sb;
-    }
-
-    public WaybillCar getWaybillCar(String detailState, TaskCar taskCar) {
-        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getId, taskCar.getWaybillCarId());
-        if (FieldConstant.WAIT_GET_CAR.equals(detailState)) {
-            // 待提车
-            query = query.in(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD.code,WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-        } else if (FieldConstant.WAIT_TO_CAR.equals(detailState)) {
-            // 待交车
-            query = query.in(WaybillCar::getState, WaybillCarStateEnum.LOADED.code,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
-        } else if (FieldConstant.FINISH_CAR.equals(detailState) || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
-            // 已交付 已入库
-            query = query.eq(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code);
-        } else if (FieldConstant.WAIT_PUT_IN.equals(detailState)) {
-            // 待入库
-            query = query.eq(WaybillCar::getState, WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
-        } else if (FieldConstant.WAIT_PUT_OUT.equals(detailState)) {
-            // 待出库
-            query = query.eq(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-        } else if (FieldConstant.FINISH_PUT_OUT.equals(detailState)) {
-            // 已出库
-            query = query.gt(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-        }
-
-        return waybillCarDao.selectOne(query);
     }
 
     @Override

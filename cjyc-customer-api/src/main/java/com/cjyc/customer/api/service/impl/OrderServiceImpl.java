@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.RegexUtil;
@@ -305,7 +306,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
         List<String> photoImgList = new ArrayList<>(20);
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
+                .eq(WaybillCar::getOrderCarId, orderCar.getId())
+                .le(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code)
+                .select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar waybillCar : waybillCarList) {
                 String loadPhotoImg = waybillCar == null ? "" : waybillCar.getLoadPhotoImg();
