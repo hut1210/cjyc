@@ -32,8 +32,6 @@ import java.util.UUID;
 public class CsAmqpServiceImpl implements ICsAmqpService {
     @Resource
     private RabbitTemplate rabbitTemplate;
-    @Resource
-    private IOrderDao orderDao;
     @Async
     @Override
     public void sendOrderState(Order order) {
