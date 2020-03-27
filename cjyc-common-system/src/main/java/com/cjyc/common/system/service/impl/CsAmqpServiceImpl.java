@@ -3,6 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.constant.AccountConstant;
 import com.cjyc.common.model.constant.AmqpConstant;
+import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.MQMessage;
@@ -31,7 +32,8 @@ import java.util.UUID;
 public class CsAmqpServiceImpl implements ICsAmqpService {
     @Resource
     private RabbitTemplate rabbitTemplate;
-
+    @Resource
+    private IOrderDao orderDao;
     @Async
     @Override
     public void sendOrderState(Order order) {
@@ -81,10 +83,11 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         dataMap.put("orderNo", order.getNo()); // 订单编号
         dataMap.put("state", order.getState()); //状态
         dataMap.put("expectEndDate", order.getExpectEndDate()); // 预计到达日期
-        dataMap.put("pickFee", pickTotalFee); //提车费
-        dataMap.put("trunkFee", trunkTotalFee);//物流费
-        dataMap.put("backFee", backTotalFee);//送车费
-        dataMap.put("addInsuranceFee", addInsuranceTotalFee);//保险费
+        dataMap.put("pickFee", MoneyUtil.fenToYuan(pickTotalFee)); //提车费
+        dataMap.put("trunkFee",  MoneyUtil.fenToYuan(trunkTotalFee));//物流费
+        dataMap.put("backFee",  MoneyUtil.fenToYuan(backTotalFee));//送车费
+        dataMap.put("addInsuranceFee",  MoneyUtil.fenToYuan(addInsuranceTotalFee));//保险费
+        dataMap.put("totalFee",  MoneyUtil.fenToYuan(order.getTotalFee()));//总费用
         dataMap.put("createTime", System.currentTimeMillis());//当前时间
 
         if(AccountConstant.ACCOUNT_99CC.equals(order.getCustomerPhone())){

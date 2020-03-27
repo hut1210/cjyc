@@ -556,7 +556,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_LOAD, waybill.getNo(), Joiner.on(",").join(directLoadCarNoSet), directLoadCarNoSet.size());
                 }
             }
-
+            firstLoadOrderSet.forEach(o -> o.setState(OrderStateEnum.TRANSPORTING.code));
             csAmqpService.sendOrderState(firstLoadOrderSet);
             return BaseResultUtil.success();
         } finally {
@@ -1097,6 +1097,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             } else {
                 csPushMsgService.send(task.getDriverId(), UserTypeEnum.DRIVER, PushMsgEnum.D_LOAD, waybill.getNo(), Joiner.on(",").join(successSet), successSet.size());
             }
+
+            firstLoadOrderSet.forEach(o -> o.setState(OrderStateEnum.TRANSPORTING.code));
             csAmqpService.sendOrderState(firstLoadOrderSet);
             return BaseResultUtil.success(resultReasonVo);
         } finally {

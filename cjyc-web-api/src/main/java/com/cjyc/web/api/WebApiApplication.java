@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableDiscoveryClient
 @EnableFeignClients({"com.cjyc.common.system.feign"})
 @MapperScan("com.cjyc.common.model.dao")
-@ComponentScan({"com.cjyc.web.api","com.cjkj.common.redis","com.cjyc.common.system"})
+@ComponentScan({"com.cjyc.web.api","com.cjkj.common.redis","com.cjyc.common.system","com.yqzl"})
 public class WebApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(WebApiApplication.class, args);

@@ -15,8 +15,10 @@ import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
+import com.cjyc.common.model.util.RegexUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -81,6 +83,12 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         if(order.getState() > OrderStateEnum.WAIT_SUBMIT.code){
             return BaseResultUtil.fail("订单已经提交过");
         }
+        if (!RegexUtil.isMobileSimple(order.getPickContactPhone())) {
+            return BaseResultUtil.fail("发车人手机号格式不正确");
+        }
+        if (!RegexUtil.isMobileSimple(order.getBackContactPhone())) {
+            return BaseResultUtil.fail("收车人手机号格式不正确");
+        }
         if(order.getLineId() == null || order.getLineId() <= 0){
             Line line = csLineService.getLineByCity(order.getStartCityCode(), order.getEndCityCode(), true);
             if(line == null){
@@ -88,6 +96,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             }
             order.setLineId(line.getId());
         }
+        fillOrderStoreInfoForSave(order);
         order.setState(OrderStateEnum.WAIT_CHECK.code);
         orderDao.updateById(order);
 
@@ -96,6 +105,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         //TODO 给所属业务中心业务员发送消息
 
         return BaseResultUtil.success();
+    }
+
+    private Order fillOrderStoreInfoForSave(Order order) {
+        Long inputStoreId = order.getInputStoreId();
+        order.setInputStoreId(inputStoreId == null || inputStoreId == -5 ? null : inputStoreId);
+        Long startStoreId = order.getStartStoreId();
+        order.setStartStoreId(startStoreId == null || startStoreId == -5 ? null : startStoreId);
+        Long endStoreId = order.getEndStoreId();
+        order.setEndStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
+        return order;
     }
 
     @Override
@@ -194,24 +213,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         CouponSend couponSend = couponSendDao.selectById(detailVo.getCouponSendId());
         detailVo.setCouponName(couponSend == null ? "" : couponSend.getCouponName());
 
-        // 查询出发地，目的地业务中心详细地址
-        /*if (order.getStartStoreId() != null) {
-            Store startStore = storeDao.selectById(order.getStartStoreId());
-            detailVo.setStartStoreNameDetail(startStore == null ? "" : startStore.getDetailAddr());
-        }
-        if (order.getEndStoreId() != null) {
-            Store endStore = storeDao.selectById(order.getEndStoreId());
-            detailVo.setEndStoreNameDetail(endStore == null ? "" : endStore.getDetailAddr());
-        }*/
-
-        // 自提自送订单设置业务中心地址
-        /*if (OrderPickTypeEnum.SELF.code == order.getPickType()) {
-            detailVo.setStartAddress(detailVo.getStartStoreNameDetail());
-        }
-        if (OrderPickTypeEnum.SELF.code == order.getBackType()) {
-            detailVo.setEndAddress(detailVo.getEndStoreNameDetail());
-        }*/
-
         return BaseResultUtil.success(detailVo);
     }
 
@@ -305,7 +306,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
         List<String> photoImgList = new ArrayList<>(20);
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
+                .eq(WaybillCar::getOrderCarId, orderCar.getId())
+                .le(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code)
+                .select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar waybillCar : waybillCarList) {
                 String loadPhotoImg = waybillCar == null ? "" : waybillCar.getLoadPhotoImg();

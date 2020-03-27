@@ -6,7 +6,9 @@ import com.cjyc.common.model.entity.ReceiveSettlement;
 import com.cjyc.common.model.vo.web.finance.ReceiveSettlementNeedInvoiceVo;
 import com.cjyc.common.model.vo.web.finance.ReceiveSettlementNeedPayedVo;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,4 +36,20 @@ public interface IReceiveSettlementDao extends BaseMapper<ReceiveSettlement> {
      * @return
      */
     List<ReceiveSettlementDto> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo);
+
+    /**
+     * 计算金额汇总
+     *
+     * @param receiveSettlementNeedInvoiceVo
+     * @return
+     */
+    Map<String, BigDecimal> summaryReceiveSettlementAmt(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
+
+    /**
+     * 待回款列表计算金额汇总
+     *
+     * @param receiveSettlementNeedPayedVo
+     * @return
+     */
+    Map<String, BigDecimal> summaryReceiveSettlementNeedPayedAmt(ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo);
 }

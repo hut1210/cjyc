@@ -149,11 +149,8 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
 
     @Override
     public void exportCityListExcel(HttpServletRequest request, HttpServletResponse response) {
-        CityQueryDto dto = new CityQueryDto();
-        dto.setRegionCode(request.getParameter("regionCode"));
-        dto.setProvinceCode(request.getParameter("provinceCode"));
-        dto.setCityCode(request.getParameter("cityCode"));
-        dto.setAreaCode(request.getParameter("areaCode"));
+        // 获取参数
+        CityQueryDto dto = getCityQueryDto(request);
         List<FullCity> cityList = cityDao.selectCityList(dto);
         List<ExportCityListVo> exportExcelList = Lists.newArrayList();
         for (FullCity vo : cityList) {
@@ -170,6 +167,15 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
             log.error("导出城市管理信息异常:{}",e);
         }
 
+    }
+
+    private CityQueryDto getCityQueryDto(HttpServletRequest request) {
+        CityQueryDto dto = new CityQueryDto();
+        dto.setRegionCode(request.getParameter("regionCode"));
+        dto.setProvinceCode(request.getParameter("provinceCode"));
+        dto.setCityCode(request.getParameter("cityCode"));
+        dto.setAreaCode(request.getParameter("areaCode"));
+        return dto;
     }
 }
 

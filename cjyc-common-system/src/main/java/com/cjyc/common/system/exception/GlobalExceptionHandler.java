@@ -112,7 +112,7 @@ public class GlobalExceptionHandler {
     public ResultVo handleException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
         BindingResult bindingResult = e.getBindingResult();
-        StringBuilder sb = new StringBuilder("参数解析失败:");
+        StringBuilder sb = new StringBuilder();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
             sb.append(fieldError.getDefaultMessage() + ", ");
         }

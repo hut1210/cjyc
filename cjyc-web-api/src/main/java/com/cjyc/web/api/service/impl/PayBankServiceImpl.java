@@ -71,22 +71,24 @@ public class PayBankServiceImpl extends ServiceImpl<IPayBankDao, PayBank> implem
 
     @Override
     public ResultVo<PageVo<PayBankVo>> findPayBankInfo(boolean isSearchCache,PayBankDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<PayBankVo> payBankInfoList = null;
+        PageInfo<PayBankVo> pageInfo = null;
         if(isSearchCache){
             //放入缓存
             String key = RedisKeys.getPayBankInfoKey(dto);
-            String payBankInfoStr = redisUtils.hget(key,key);
-            payBankInfoList = JsonUtils.jsonToList(payBankInfoStr, PayBankVo.class);
-            if(CollectionUtils.isEmpty(payBankInfoList)){
+            pageInfo = JsonUtils.jsonToPojo(redisUtils.get(key), PageInfo.class);
+            if(pageInfo == null){
+                PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
                 payBankInfoList = payBankDao.findPayBankInfo(dto);
-                redisUtils.hset(key, key, JsonUtils.objectToJson(payBankInfoList));
+                pageInfo = new PageInfo<>(payBankInfoList);
+                redisUtils.set(key, JsonUtils.objectToJson(pageInfo));
                 redisUtils.expire(key, 1, TimeUnit.DAYS);
             }
         }else{
+            PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
             payBankInfoList = payBankDao.findPayBankInfo(dto);
+            pageInfo = new PageInfo<>(payBankInfoList);
         }
-        PageInfo<PayBankVo> pageInfo = new PageInfo<>(payBankInfoList);
         return BaseResultUtil.success(pageInfo);
     }
 

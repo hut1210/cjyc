@@ -35,6 +35,7 @@ public class RedisKeys {
     /**验证码*/
     private final static String SMS_COUNT_KEY = "sms:count";
 
+    /**锁**/
     private final static String DISPATCH_LOCK_CAR_KEY = "dispatch:lock:car";
     private final static String UNLOAD_LOCK_KEY = "unload:lock";
     private final static String LOAD_LOCK_KEY = "load:lock";
@@ -45,7 +46,12 @@ public class RedisKeys {
     private final static String OUT_STORE_LOCK_KEY = "out:store:lock";
     private final static String DISPATCH_LOCK_ORDER_UPDATE = "dispatch:lock:order:update";
     private final static String ALLOT_CAR_LOCK_KEY = "allot:car:lock";
+    private final static String WL_PAY_LOCK = "wl:pay:lock";
+    /**循环业务人员*/
     private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
+    /**验证vin重复*/
+    private final static String CHECHK_VIN_SET = "CHECHK_VIN_SET";
+
     private final static String CAR_SERIES = "car:series";
     private final static String THREE_CITY = "three:city";
     private final static String BANK_INFO = "bankInfo:bankName";
@@ -59,7 +65,8 @@ public class RedisKeys {
     private final static String ROLE_BIZ_SCOPE_KEY = "role:biz:scope";
 
     private final static String NEW_TASK_NO_KEY = "new:task:no";
-    private final static String WL_PAY_LOCK = "wl:pay:lock";
+
+
 
     /**---------------driver-------------------------------------------------------------------*/
 
@@ -190,5 +197,9 @@ public class RedisKeys {
     }
     public static String getOrderLockKey(Long id) {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
+    }
+
+    public static String getVinSetKey(Long orderId) {
+        return CJYC + I + CHECHK_VIN_SET + I + orderId;
     }
 }
