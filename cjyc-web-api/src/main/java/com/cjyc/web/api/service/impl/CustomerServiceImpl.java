@@ -28,6 +28,7 @@ import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IPayBankService;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *  @author: zj
@@ -1147,7 +1149,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         }
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
-            //合伙人更新结构组角色
+            //合伙人更新架构组角色
             ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 return BaseResultUtil.fail("更新组织下的所有角色失败");
@@ -1220,11 +1222,34 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private ResultData updatePlatformRole(Long userId,Long roleId){
-        UpdateUserReq uur = new UpdateUserReq();
-        uur.setUserId(userId);
-        uur.setRoleIdList(Arrays.asList(roleId));
-        ResultData updateRd = sysUserService.update(uur);
-        return updateRd;
+        //用户存在，需要判断是否需要将用户、角色关系维护
+        ResultData updateUserRd = null;
+        ResultData<List<SelectRoleResp>> rolesRd = sysRoleService.getListByUserId(userId);
+        if(!ResultDataUtil.isSuccess(rolesRd)){
+            return ResultData.failed("查询用户下角色列表错误，原因：" + rolesRd.getMsg());
+        }
+        UpdateUserReq updateUserReq = null;
+        if(!CollectionUtils.isEmpty(rolesRd.getData())){
+            //存在角色
+            List<Long> roleIdList = rolesRd.getData().stream()
+                    .map(r -> r.getRoleId()).collect(Collectors.toList());
+            if(roleIdList.contains(roleId)){
+                return ResultData.ok("成功");
+            }else{
+                roleIdList.add(roleId);
+                updateUserReq = new UpdateUserReq();
+                updateUserReq.setUserId(userId);
+                updateUserReq.setRoleIdList(roleIdList);
+                updateUserRd = sysUserService.update(updateUserReq);
+            }
+        }else{
+            //不存在角色
+            updateUserReq = new UpdateUserReq();
+            updateUserReq.setUserId(userId);
+            updateUserReq.setRoleIdList(Arrays.asList(roleId));
+            updateUserRd = sysUserService.update(updateUserReq);
+        }
+        return updateUserRd;
     }
 
     private ResultVo updateKey(KeyCustomerDto dto){
