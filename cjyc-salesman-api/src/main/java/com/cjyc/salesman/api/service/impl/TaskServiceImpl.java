@@ -65,6 +65,14 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
         log.info("====>业务员端-分页查询提送车；提送车历史记录列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        convertTime(dto);// 转换时间
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
+        PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    private void convertTime(TaskWaybillQueryDto dto) {
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -73,10 +81,6 @@ public class TaskServiceImpl implements ITaskService {
             dto.setCreatTimeS(creatTime);
             dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
         }
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
-        PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
-        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -84,8 +88,7 @@ public class TaskServiceImpl implements ITaskService {
         log.info("====>业务员端-查询提送车,提送车历史记录任务详情；查询出入库,出入库历史记录任务详情,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
-        Long waybillId = dto.getWaybillId();
-        Waybill waybill = waybillDao.selectById(waybillId);
+        Waybill waybill = waybillDao.selectById(dto.getWaybillId());
         if (waybill == null) {
             log.error("===>查询运单为空...");
             return BaseResultUtil.fail("查询运单为空");
@@ -94,25 +97,25 @@ public class TaskServiceImpl implements ITaskService {
         taskDetailVo.setCarrierType(waybill.getCarrierType());
 
         // 查询任务单信息
-        Long taskId = dto.getTaskId();
-        Task task = taskDao.selectById(taskId);
+        Task task = taskDao.selectById(dto.getTaskId());
         if (task == null) {
             log.error("===>查询任务单为空...");
             return BaseResultUtil.fail("查询任务单为空");
         }
         BeanUtils.copyProperties(task,taskDetailVo);
+
         // 承运商类型不是企业或者不是干线运输时，运单号显示运单号，否则显示任务单号
         if (WaybillCarrierTypeEnum.TRUNK_ENTERPRISE.code != waybill.getCarrierType()) {
             taskDetailVo.setNo(waybill.getNo());
         }
 
         // 任务单车辆
-        LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
+        LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,dto.getTaskId());
         List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
 
         // 查询车辆信息
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
-        BigDecimal freightFee = new BigDecimal(0);
+        BigDecimal freightFee = BigDecimal.ZERO;
         if (!CollectionUtils.isEmpty(taskCarList)) {
             // 根据登录ID查询当前业务员所在业务中心ID
             BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
@@ -131,6 +134,7 @@ public class TaskServiceImpl implements ITaskService {
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
+
                     // 实际装车时间不为空时，显示实际装车时间
                     if (waybillCar.getLoadTime() != null) {
                         carDetailVo.setExpectStartTime(waybillCar.getLoadTime());
@@ -244,17 +248,8 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(OutAndInStorageQueryDto dto) {
         log.info("====>业务员端-分页查询出入库，出入库历史记录列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
-        if (dto.getInStorageTimeE() != null && dto.getInStorageTimeE() != 0) {
-            dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
-        }
-        if (dto.getOutStorageTimeE() != null && dto.getOutStorageTimeE() != 0) {
-            dto.setOutStorageTimeE(TimeStampUtil.convertEndTime(dto.getOutStorageTimeE()));
-        }
-        Long creatTime = dto.getCreatTime();
-        if (creatTime != null && creatTime != 0) {
-            dto.setCreatTimeS(creatTime);
-            dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
-        }
+        // 转换日期
+        convertTime(dto);
 
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
@@ -269,6 +264,20 @@ public class TaskServiceImpl implements ITaskService {
         List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private void convertTime(OutAndInStorageQueryDto dto) {
+        if (dto.getInStorageTimeE() != null && dto.getInStorageTimeE() != 0) {
+            dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
+        }
+        if (dto.getOutStorageTimeE() != null && dto.getOutStorageTimeE() != 0) {
+            dto.setOutStorageTimeE(TimeStampUtil.convertEndTime(dto.getOutStorageTimeE()));
+        }
+        Long creatTime = dto.getCreatTime();
+        if (creatTime != null && creatTime != 0) {
+            dto.setCreatTimeS(creatTime);
+            dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
+        }
     }
 
 }
