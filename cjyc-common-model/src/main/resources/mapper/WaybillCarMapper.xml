@@ -10,7 +10,7 @@
         <result column="order_car_id" property="orderCarId"/>
         <result column="order_car_no" property="orderCarNo"/>
         <result column="freight_fee" property="freightFee"/>
-        <result column="start_province" property="startProvinselectWaybillCarce"/>
+        <result column="start_province" property="startProvince"/>
         <result column="start_province_code" property="startProvinceCode"/>
         <result column="start_city" property="startCity"/>
         <result column="start_city_code" property="startCityCode"/>
