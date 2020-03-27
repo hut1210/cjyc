@@ -1143,12 +1143,23 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer == null || urd == null){
             return BaseResultUtil.fail("该客户不存在，请检查");
         }
+        Role cRole = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
+        if(cRole == null){
+            return BaseResultUtil.fail("C端客户角色不存在,请先添加角色");
+        }
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
             return BaseResultUtil.fail("角色不存在,请先添加角色");
         }
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
+            if(check != null){
+                //去除C端客户角色
+                ResultData resultData = sysRoleService.revokeRole(customer.getUserId(), cRole.getRoleId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                    return BaseResultUtil.fail("解除C端客户角色失败");
+                }
+            }
             //合伙人更新架构组角色
             ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
