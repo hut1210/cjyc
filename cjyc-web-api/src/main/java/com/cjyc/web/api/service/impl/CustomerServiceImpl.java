@@ -1290,6 +1290,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private ResultVo savePartner(PartnerDto dto){
+        Customer existCustomer = customerDao.findByPhone(dto.getContactPhone());
+        if(existCustomer != null){
+            return BaseResultUtil.fail("该账号已存在，不可添加");
+        }
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
             return BaseResultUtil.fail("合伙人角色不存在，请先添加");
