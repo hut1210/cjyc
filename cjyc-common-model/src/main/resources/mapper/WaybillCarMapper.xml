@@ -1885,7 +1885,8 @@
             w_waybill_car car
         left join w_waybill w on car.waybill_id=w.id
         <where>
-            car.order_car_id=#{orderCarId}
+            car.state &lt;= 100
+            and car.order_car_id=#{orderCarId}
             <if test="waybillType != null and waybillType==1">
                 and car.id &lt; #{waybillCarId}
             </if>
