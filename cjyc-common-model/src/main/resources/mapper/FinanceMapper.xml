@@ -15,8 +15,12 @@
         cc.pay_mode as payMode,
         if(wo.customer_type=3,woc.total_fee,null) as feeShare,
         if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
-        if(woc.wl_pay_state=2,woc.total_fee,null) as amountReceived,
-        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee),0) as totalIncome,
+        (CASE
+            when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
+            when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
+        END
+        ) as amountReceived,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0) as totalIncome,
         woc.wl_pay_time as receivedTime
 
         from w_order_car woc
@@ -111,8 +115,12 @@
         cc.pay_mode as payMode,
         if(wo.customer_type=3,woc.total_fee,null) as feeShare,
         if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
-        if(woc.wl_pay_state=2,woc.total_fee,null) as amountReceived,
-        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee),0) as totalIncome,
+        (CASE
+        when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
+        when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
+        END
+        ) as amountReceived,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0) as totalIncome,
         woc.wl_pay_time as receivedTime
 
         from w_order_car woc

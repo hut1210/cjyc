@@ -156,7 +156,7 @@
         <include refid="incomeSummaryCondition"></include>) or ftbd.source_no in  (select DISTINCT(wo.no)
         <include refid="incomeSummaryCondition"></include>)) and ftb.state=2 and ftb.type!=20 and ftb.type!=21 order by ftb.id desc) t-->
 
-        select sum(totalFee) from (select DISTINCT(woc.no),(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee) as totalFee
+        select sum(totalFee) from (select DISTINCT(woc.no),(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee) as totalFee
 
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
@@ -166,7 +166,7 @@
         left join w_task wt on wtc.task_id = wt.id
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
-        where woc.state=100
+        where wo.state=100
         <include refid="financeSummary"></include>
         )t
     </select>
@@ -332,7 +332,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and cc.pay_mode= #{settleType} and wo.customer_type=1 and wo.state=100
+        where cc.pay_mode= #{settleType} and wo.customer_type=1 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  cc.pay_mode =#{payMode}
@@ -349,7 +349,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccp.settle_type=#{settleType} and wo.customer_type=3 and wo.state=100
+        where ccp.settle_type=#{settleType} and wo.customer_type=3 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  ccp.settle_type =#{payMode}
@@ -366,7 +366,7 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and ccc.settle_type=#{settleType} and wo.customer_type=2 and wo.state=100
+        where ccc.settle_type=#{settleType} and wo.customer_type=2 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  ccc.settle_type =#{payMode}
@@ -502,85 +502,56 @@
     </select>
     <select id="ActualReceiptSummary" resultType="java.math.BigDecimal">
 
-        select sum(total_fee) from (select DISTINCT(woc.no),woc.total_fee
+        select sum(total_fee) from
+        (select DISTINCT(woc.no),woc.total_fee
         from w_order_car woc
-        left join w_order wo on woc.order_no = wo.no
-        left join c_customer cc on wo.customer_id = cc.id
-        left join w_waybill_car wwc on woc.id = wwc.order_car_id
-        left join w_task_car wtc on wtc.waybill_car_id = wwc.id
-        left join w_task wt on wtc.task_id = wt.id
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
-        where woc.wl_pay_state=2 and woc.state=100
-
-        <if test="no != null and no.trim() != ''">
-            and woc.no like concat('%',#{no},'%')
-        </if>
-        <if test="vin != null and vin.trim() != ''">
-            and  woc.vin like concat('%',#{vin},'%')
-        </if>
-        <if test="orderNo != null and orderNo.trim() != ''">
-            and  woc.order_no like concat('%',#{orderNo},'%')
-        </if>
-        <if test="completeStartTime!= null">
-            and woc.finish_time &gt;= #{completeStartTime}
-        </if>
-        <if test="completeEndTime!= null">
-            and woc.finish_time &lt;= #{completeEndTime}
-        </if>
-
-        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-            and wo.start_province_code = #{startProvinceCode}
-        </if>
-        <if test="startCityCode != null and startCityCode.trim() != ''">
-            and wo.start_city_code = #{startCityCode}
-        </if>
-        <if test="startAreaCode != null and startAreaCode.trim() != ''">
-            and wo.start_area_code = #{startAreaCode}
-        </if>
-        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-            and wo.end_province_code = #{endProvinceCode}
-        </if>
-        <if test="endCityCode != null and endCityCode.trim() != ''">
-            and wo.end_city_code = #{endCityCode}
-        </if>
-        <if test="endAreaCode != null and endAreaCode.trim() != ''">
-            and wo.end_area_code = #{endAreaCode}
-        </if>
-        <if test="area != null and area.trim() != ''">
-            and zcity.code = #{area}
-        </if>
-        <if test="type != null">
-            and cc.type = #{type}
-        </if>
-        <if test="customerName != null  and customerName.trim() != ''">
-            and  cc.name  like concat('%',#{customerName},'%')
-        </if>
+        where cc.pay_mode= 0 and wo.customer_type=1 and wo.state=100 and woc.wl_pay_state=2
+        <include refid="payMentListCondition"></include>
         <if test="payMode != null">
             and  cc.pay_mode =#{payMode}
         </if>
+        group by woc.no
+        union
+        select DISTINCT(woc.no),(woc.total_fee+woc.coupon_offset_fee) as total_fee
+        from w_order_car woc
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join c_customer_partner ccp on cc.id = ccp.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
 
-        <if test="brand != null and brand.trim() != ''">
-            and woc.brand = #{brand}
+        where ccp.settle_type=0 and wo.customer_type=3 and wo.state=100 and woc.wl_pay_state=2
+        <include refid="payMentListCondition"></include>
+        <if test="payMode != null">
+            and  ccp.settle_type =#{payMode}
         </if>
-        <if test="model != null and model.trim() != ''">
-            and woc.model = #{model}
-        </if>
-        <if test="inputStoreName != null and inputStoreName.trim() != ''">
-            and wo.input_store_name = #{inputStoreName}
-        </if>
+        group by woc.no
+        union
+        select DISTINCT(woc.no),woc.total_fee
+        from w_order_car woc
+        left join w_order wo on woc.order_id = wo.id
+        left join c_customer cc on cc.id = wo.customer_id
+        left join c_customer_contract ccc on cc.id =ccc.customer_id
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
 
-        <if test="state != null and state.trim() !=''">
-            and woc.wl_pay_state = #{state}
+        where ccc.settle_type=0 and wo.customer_type=2 and wo.state=100 and woc.wl_pay_state=2
+        <include refid="payMentListCondition"></include>
+        <if test="payMode != null">
+            and  ccc.settle_type =#{payMode}
         </if>
-        <if test="receiveStartTime!= null">
-            and woc.wl_pay_time >= #{receiveStartTime}
-        </if>
-        <if test="receiveEndTime!= null">
-            and woc.wl_pay_time &lt;= #{receiveEndTime}
-        </if>
-        )t
+        group by woc.no ) t
     </select>
 
 
