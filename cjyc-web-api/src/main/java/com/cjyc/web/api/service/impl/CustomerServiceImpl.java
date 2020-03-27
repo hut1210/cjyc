@@ -28,6 +28,7 @@ import com.cjyc.common.model.vo.web.coupon.CustomerCouponSendVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.ICustomerContractService;
 import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IPayBankService;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *  @author: zj
@@ -54,7 +56,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> implements ICustomerService{
+public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> implements ICustomerService {
 
     @Resource
     private ICustomerDao customerDao;
@@ -1013,7 +1015,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //新增/修改时，验证在大客户或者合伙人中是否存在
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone,dto.getContactPhone())
-                .ne(Customer::getType,1)
+                .ne(Customer::getType,CustomerTypeEnum.INDIVIDUAL.code)
                 .ne((dto.getCustomerId() != null),Customer::getId,dto.getCustomerId()));
         if(customer != null){
             return BaseResultUtil.fail("该用户已存在于大客户或者合伙人中,不可添加");
@@ -1021,7 +1023,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //新增/修改时，验证在C端用户中是否存在
         customer =  customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone,dto.getContactPhone())
-                .eq(Customer::getType,1));
+                .eq(Customer::getType,CustomerTypeEnum.INDIVIDUAL.code));
         //升级合伙人操作待升级的合伙人
         if(customer != null){
             //查询审核表中是否有该用户信息
@@ -1141,13 +1143,24 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         if(customer == null || urd == null){
             return BaseResultUtil.fail("该客户不存在，请检查");
         }
+        Role cRole = csRoleService.getByName(YmlProperty.get("cjkj.customer_client_role_name"), DeptTypeEnum.CUSTOMER.code);
+        if(cRole == null){
+            return BaseResultUtil.fail("C端客户角色不存在,请先添加角色");
+        }
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
             return BaseResultUtil.fail("角色不存在,请先添加角色");
         }
         //审核通过
         if(dto.getFlag() == FlagEnum.AUDIT_PASS.code){
-            //合伙人更新结构组角色
+            if(check != null){
+                //去除C端客户角色
+                ResultData resultData = sysRoleService.revokeRole(customer.getUserId(), cRole.getRoleId());
+                if (!ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+                    return BaseResultUtil.fail("解除C端客户角色失败");
+                }
+            }
+            //合伙人更新架构组角色
             ResultData updateRd = updatePlatformRole(customer.getUserId(),role.getRoleId());
             if (!ReturnMsg.SUCCESS.getCode().equals(updateRd.getCode())) {
                 return BaseResultUtil.fail("更新组织下的所有角色失败");
@@ -1220,11 +1233,34 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private ResultData updatePlatformRole(Long userId,Long roleId){
-        UpdateUserReq uur = new UpdateUserReq();
-        uur.setUserId(userId);
-        uur.setRoleIdList(Arrays.asList(roleId));
-        ResultData updateRd = sysUserService.update(uur);
-        return updateRd;
+        //用户存在，需要判断是否需要将用户、角色关系维护
+        ResultData updateUserRd = null;
+        ResultData<List<SelectRoleResp>> rolesRd = sysRoleService.getListByUserId(userId);
+        if(!ResultDataUtil.isSuccess(rolesRd)){
+            return ResultData.failed("查询用户下角色列表错误，原因：" + rolesRd.getMsg());
+        }
+        UpdateUserReq updateUserReq = null;
+        if(!CollectionUtils.isEmpty(rolesRd.getData())){
+            //存在角色
+            List<Long> roleIdList = rolesRd.getData().stream()
+                    .map(r -> r.getRoleId()).collect(Collectors.toList());
+            if(roleIdList.contains(roleId)){
+                return ResultData.ok("成功");
+            }else{
+                roleIdList.add(roleId);
+                updateUserReq = new UpdateUserReq();
+                updateUserReq.setUserId(userId);
+                updateUserReq.setRoleIdList(roleIdList);
+                updateUserRd = sysUserService.update(updateUserReq);
+            }
+        }else{
+            //不存在角色
+            updateUserReq = new UpdateUserReq();
+            updateUserReq.setUserId(userId);
+            updateUserReq.setRoleIdList(Arrays.asList(roleId));
+            updateUserRd = sysUserService.update(updateUserReq);
+        }
+        return updateUserRd;
     }
 
     private ResultVo updateKey(KeyCustomerDto dto){
@@ -1265,6 +1301,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @return
      */
     private ResultVo savePartner(PartnerDto dto){
+        Customer existCustomer = customerDao.findByPhone(dto.getContactPhone());
+        if(existCustomer != null){
+            return BaseResultUtil.fail("该账号已存在，不可添加");
+        }
         Role role = csRoleService.getByName(YmlProperty.get("cjkj.customer_copartner_role_name"), DeptTypeEnum.CUSTOMER.code);
         if(role == null){
             return BaseResultUtil.fail("合伙人角色不存在，请先添加");

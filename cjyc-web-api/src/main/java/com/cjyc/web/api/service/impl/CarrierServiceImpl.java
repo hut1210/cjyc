@@ -450,15 +450,9 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultVo verifyCarrierNew(OperateDto dto) {
-       /* Role role = csRoleService.getByName(CARRIER_SUPER_ROLE_NAME, 2);
-        if (role == null) {
-            return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
-                    ",未查询到角色信息");
-        }*/
         Carrier carrier = carrierDao.selectById(dto.getId());
         Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda()
                 .eq(Driver::getPhone, carrier.getLinkmanPhone()));
-        //Driver driver = findDriverNew(carrier.getId(), role);
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getDeptId, carrier.getId())
                 .eq(UserRoleDept::getUserId, driver.getId()));

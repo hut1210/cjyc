@@ -289,7 +289,9 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
         log.info("====>web端-删除当前业务中心覆盖区域,请求json数据 :: "+JsonUtils.objectToJson(dto));
         LambdaUpdateWrapper<StoreCityCon> updateWrapper = null;
         for (String areaCode : dto.getAreaCodeList()) {
-            updateWrapper = new UpdateWrapper<StoreCityCon>().lambda().eq(StoreCityCon::getStoreId,dto.getStoreId()).eq(StoreCityCon::getAreaCode,areaCode);
+            updateWrapper = new UpdateWrapper<StoreCityCon>().lambda()
+                    .eq(StoreCityCon::getStoreId,dto.getStoreId())
+                    .eq(StoreCityCon::getAreaCode,areaCode);
             storeCityConDao.delete(updateWrapper);
         }
         return BaseResultUtil.success();
@@ -376,19 +378,8 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             List<StoreImportExcel> storeImportExcelList = ExcelUtil.importExcel(file, 0, 1, StoreImportExcel.class);
             if(!CollectionUtils.isEmpty(storeImportExcelList)){
                 for(StoreImportExcel storeExcel : storeImportExcelList){
-                    Store store = new Store();
-                    store.setName(storeExcel.getName());
-                    store.setProvince(storeExcel.getProvince());
-                    store.setProvinceCode(cityDao.findProvinceCode(storeExcel.getProvince()));
-                    store.setCity(storeExcel.getCity());
-                    store.setCityCode(cityDao.findCodeByName(storeExcel.getCity(),storeExcel.getProvince(),2));
-                    store.setArea(storeExcel.getArea());
-                    store.setAreaCode(cityDao.findCodeByName(storeExcel.getArea(),storeExcel.getCity(),3));
-                    store.setDetailAddr(storeExcel.getDetailAddr());
-                    store.setState(CommonStateEnum.CHECKED.code);
-                    store.setCreateUserId(loginId);
-                    store.setCreateTime(System.currentTimeMillis());
-                    store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+                    // 封装入库数据
+                    Store store = getStore(loginId, storeExcel);
                     storeDao.insert(store);
                 }
                 result = true;
@@ -400,6 +391,23 @@ public class StoreServiceImpl extends ServiceImpl<IStoreDao, Store> implements I
             result = false;
         }
         return result;
+    }
+
+    private Store getStore(Long loginId, StoreImportExcel storeExcel) {
+        Store store = new Store();
+        store.setName(storeExcel.getName());
+        store.setProvince(storeExcel.getProvince());
+        store.setProvinceCode(cityDao.findProvinceCode(storeExcel.getProvince()));
+        store.setCity(storeExcel.getCity());
+        store.setCityCode(cityDao.findCodeByName(storeExcel.getCity(),storeExcel.getProvince(),2));
+        store.setArea(storeExcel.getArea());
+        store.setAreaCode(cityDao.findCodeByName(storeExcel.getArea(),storeExcel.getCity(),3));
+        store.setDetailAddr(storeExcel.getDetailAddr());
+        store.setState(CommonStateEnum.CHECKED.code);
+        store.setCreateUserId(loginId);
+        store.setCreateTime(System.currentTimeMillis());
+        store.setIsDelete(DeleteStateEnum.NO_DELETE.code);
+        return store;
     }
 
     @Override
