@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> implements ICustomerService{
+public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> implements ICustomerService {
 
     @Resource
     private ICustomerDao customerDao;
