@@ -29,14 +29,14 @@ public class ApplyReceiveSettlementVo {
     @ApiModelProperty(value = "客户发票", required = false)
     private CustomerInvoiceVo customerInvoiceVo;
 
-    @ApiModelProperty(value = "订单车辆id集合", required = true)
+    @ApiModelProperty(value = "订单车辆集合", required = true)
     private List<ReceiveSettlementDetailVo> receiveSettlementDetailList;
 
-    @ApiModelProperty(value = "业务员Id", required = true)
-    private Long customerId;
+    @ApiModelProperty(value = "当前登陆人Id", required = true)
+    private Long loginId;
 
-    @ApiModelProperty(value = "业务员名称", required = false)
-    private String customerName;
+    @ApiModelProperty(value = "当前登陆人名称", required = false)
+    private String loginName;
 
     @ApiModelProperty(value = "是否需要开票：0：不需要 1：需要", required = true)
     private Integer needVoice;

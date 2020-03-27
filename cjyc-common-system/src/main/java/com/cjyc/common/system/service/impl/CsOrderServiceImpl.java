@@ -1579,9 +1579,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
         for (OrderCar oc : orderCarlist) {
             BigDecimal avgCar;
             if (isAvg) {
-                avgCar = BigDecimal.ONE.multiply(totalFee).divide(new BigDecimal(orderCarlist.size()), 0, BigDecimal.ROUND_HALF_DOWN);
+                avgCar = BigDecimal.ONE.multiply(totalFee).divide(new BigDecimal(orderCarlist.size()), 0, BigDecimal.ROUND_DOWN);
             } else {
-                avgCar = getCarWlFee(oc).multiply(totalFee).divide(carTotalFee, 0, BigDecimal.ROUND_HALF_DOWN);
+                avgCar = getCarWlFee(oc).multiply(totalFee).divide(carTotalFee, 0, BigDecimal.ROUND_DOWN);
             }
             //赋值
             oc.setTotalFee(avgCar);

@@ -19,11 +19,11 @@ public class VerificationReceiveSettlementVo implements Serializable {
     @ApiModelProperty(value = "结算流水号", required = true)
     private String serialNumber;
 
-    @ApiModelProperty(value = "业务员Id", required = true)
-    private Long customerId;
+    @ApiModelProperty(value = "当前登陆人Id", required = true)
+    private Long loginId;
 
-    @ApiModelProperty(value = "业务员名称", required = false)
-    private String customerName;
+    @ApiModelProperty(value = "当前登陆人名称", required = false)
+    private String loginName;
 
 
 }
