@@ -1015,7 +1015,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //新增/修改时，验证在大客户或者合伙人中是否存在
         Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone,dto.getContactPhone())
-                .ne(Customer::getType,1)
+                .ne(Customer::getType,CustomerTypeEnum.INDIVIDUAL.code)
                 .ne((dto.getCustomerId() != null),Customer::getId,dto.getCustomerId()));
         if(customer != null){
             return BaseResultUtil.fail("该用户已存在于大客户或者合伙人中,不可添加");
@@ -1023,7 +1023,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
         //新增/修改时，验证在C端用户中是否存在
         customer =  customerDao.selectOne(new QueryWrapper<Customer>().lambda()
                 .eq(Customer::getContactPhone,dto.getContactPhone())
-                .eq(Customer::getType,1));
+                .eq(Customer::getType,CustomerTypeEnum.INDIVIDUAL.code));
         //升级合伙人操作待升级的合伙人
         if(customer != null){
             //查询审核表中是否有该用户信息
