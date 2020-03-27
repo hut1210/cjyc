@@ -4,7 +4,6 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -34,20 +33,20 @@ public class ReceiveSettlementDto {
     private BigDecimal differenceFee;
 
     @ApiModelProperty(value = "发票类型 1-普通(个人) ，2-增值普票(企业) ，3-增值专用发票'")
-    private String invoiceType;
+    private Integer invoiceType;
 
     @Excel(name = "发票类型", orderNum = "4")
     private String invoiceTypeStr;
 
     public String getInvoiceTypeStr() {
-        if (StringUtils.isEmpty(invoiceType)) {
+        if (invoiceType == null) {
             return "";
         }
-        if ("1".equals(invoiceType)) {
+        if (invoiceType == 1) {
             return "个人普票";
-        } else if ("2".equals(invoiceType)) {
+        } else if (invoiceType == 2) {
             return "公司普票";
-        } else if ("3".equals(invoiceType)) {
+        } else if (invoiceType == 3) {
             return "公司专票";
         }
         return "未知发票类型";

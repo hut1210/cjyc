@@ -1369,9 +1369,9 @@ public class FinanceServiceImpl implements IFinanceService {
                     }
                     // 新增应收账款
                     String serialNumber = csSendNoService.getNo(SendNoTypeEnum.RECEIPT);
-                    String applicantName = applyReceiveSettlementVo.getCustomerName();
+                    String applicantName = applyReceiveSettlementVo.getLoginName();
                     if (StringUtils.isEmpty(applicantName)) {
-                        Admin admin = csAdminService.validate(applyReceiveSettlementVo.getCustomerId());
+                        Admin admin = csAdminService.validate(applyReceiveSettlementVo.getLoginId());
                         applicantName = admin.getName();
                     }
 
@@ -1390,7 +1390,7 @@ public class FinanceServiceImpl implements IFinanceService {
                             // 结算申请状态
                             setState(finalState);
                             // 申请人id
-                            setApplicantId(applyReceiveSettlementVo.getCustomerId());
+                            setApplicantId(applyReceiveSettlementVo.getLoginId());
                             // 申请人
                             setApplicantName(finalApplicantName);
                             // 申请时间
@@ -1428,7 +1428,7 @@ public class FinanceServiceImpl implements IFinanceService {
             if (StringUtils.isEmpty(cancelInvoiceVo.getSerialNumber())) {
                 return BaseResultUtil.fail("结算流水号不能为空！");
             }
-            if (StringUtils.isEmpty(cancelInvoiceVo.getCustomerId())) {
+            if (StringUtils.isEmpty(cancelInvoiceVo.getLoginId())) {
                 return BaseResultUtil.fail("撤回业务员id不能为空！");
             }
             return transactionTemplate.execute(status -> {
@@ -1444,9 +1444,9 @@ public class FinanceServiceImpl implements IFinanceService {
                             .lambda()
                             .eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber())
                     );
-                    String cancelName = cancelInvoiceVo.getCustomerName();
-                    if (StringUtils.isEmpty(cancelInvoiceVo.getCustomerName())) {
-                        Admin admin = csAdminService.validate(cancelInvoiceVo.getCustomerId());
+                    String cancelName = cancelInvoiceVo.getLoginName();
+                    if (StringUtils.isEmpty(cancelInvoiceVo.getLoginName())) {
+                        Admin admin = csAdminService.validate(cancelInvoiceVo.getLoginId());
                         cancelName = admin.getName();
                     }
                     List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(new QueryWrapper<ReceiveSettlementDetail>().lambda().eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber()));
@@ -1469,19 +1469,19 @@ public class FinanceServiceImpl implements IFinanceService {
             if (StringUtils.isEmpty(confirmInvoiceVo.getSerialNumber())) {
                 return BaseResultUtil.fail("结算流水号不能为空！");
             }
-            if (confirmInvoiceVo.getCustomerId() == null) {
+            if (confirmInvoiceVo.getLoginId() == null) {
                 return BaseResultUtil.fail("确认开票确认人id不能为空！");
             }
-            String confirmName = confirmInvoiceVo.getCustomerName();
-            if (StringUtils.isEmpty(confirmInvoiceVo.getCustomerName())) {
-                Admin admin = csAdminService.validate(confirmInvoiceVo.getCustomerId());
+            String confirmName = confirmInvoiceVo.getLoginName();
+            if (StringUtils.isEmpty(confirmInvoiceVo.getLoginName())) {
+                Admin admin = csAdminService.validate(confirmInvoiceVo.getLoginId());
                 confirmName = admin.getName();
             }
             log.info("业务员：{}确认开票结算流水号为：{}", confirmName, confirmInvoiceVo.getSerialNumber());
             String finalConfirmName = confirmName;
             int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
                 setInvoiceNo(confirmInvoiceVo.getInvoiceNo());
-                setConfirmId(confirmInvoiceVo.getCustomerId());
+                setConfirmId(confirmInvoiceVo.getLoginId());
                 setConfirmName(finalConfirmName);
                 setConfirmTime(System.currentTimeMillis());
                 setState(ReceiveSettlementStateEnum.CONFIRM_INVOICE.code);
@@ -1503,18 +1503,18 @@ public class FinanceServiceImpl implements IFinanceService {
             if (StringUtils.isEmpty(verificationReceiveSettlementVo.getSerialNumber())) {
                 return BaseResultUtil.fail("结算流水号不能为空！");
             }
-            if (verificationReceiveSettlementVo.getCustomerId() == null) {
+            if (verificationReceiveSettlementVo.getLoginId() == null) {
                 return BaseResultUtil.fail("核销人id不能为空！");
             }
-            String verificationName = verificationReceiveSettlementVo.getCustomerName();
-            if (StringUtils.isEmpty(verificationReceiveSettlementVo.getCustomerName())) {
-                Admin admin = csAdminService.validate(verificationReceiveSettlementVo.getCustomerId());
+            String verificationName = verificationReceiveSettlementVo.getLoginName();
+            if (StringUtils.isEmpty(verificationReceiveSettlementVo.getLoginName())) {
+                Admin admin = csAdminService.validate(verificationReceiveSettlementVo.getLoginId());
                 verificationName = admin.getName();
             }
             log.info("业务员：{}核销结算流水号为：{}", verificationName, verificationReceiveSettlementVo.getSerialNumber());
             String finalVerificationName = verificationName;
             int updated = receiveSettlementDao.update(new ReceiveSettlement() {{
-                setVerificationId(verificationReceiveSettlementVo.getCustomerId());
+                setVerificationId(verificationReceiveSettlementVo.getLoginId());
                 setVerificationName(finalVerificationName);
                 setState(ReceiveSettlementStateEnum.VERIFICATION.code);
                 setVerificationTime(System.currentTimeMillis());
@@ -1539,7 +1539,7 @@ public class FinanceServiceImpl implements IFinanceService {
         private ResultVo validateApplyReceiveSettlementParams(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
             BigDecimal totalReceivableFee = applyReceiveSettlementVo.getTotalReceivableFee();
             BigDecimal totalInvoiceFee = applyReceiveSettlementVo.getTotalInvoiceFee();
-            if (applyReceiveSettlementVo.getCustomerId() == null) {
+            if (applyReceiveSettlementVo.getLoginId() == null) {
                 return BaseResultUtil.fail("申请人id不能为空！");
             }
             if (totalReceivableFee == null || totalReceivableFee.compareTo(BigDecimal.ZERO) < 0) {
