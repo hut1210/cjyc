@@ -1198,6 +1198,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
                     new String[]{OrderLogEnum.CANCEL.getOutterLog(),
                             MessageFormat.format(OrderLogEnum.CANCEL.getInnerLog(), paramsDto.getLoginName(), paramsDto.getLoginPhone())},
                     userInfo);
+            order.setState(OrderStateEnum.F_CANCEL.code);
+            csAmqpService.sendOrderState(order);
             //TODO 发送消息
             return BaseResultUtil.success();
         } finally {

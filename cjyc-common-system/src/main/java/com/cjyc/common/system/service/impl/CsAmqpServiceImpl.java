@@ -119,9 +119,12 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
      */
     @Override
     public void confirm(CorrelationData correlationData, boolean isSendSuccess, String s) {
-        log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>回调消息ID为: " + correlationData.getId());
+        if(correlationData != null){
+            log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>回调消息ID为: " + correlationData.getId());
+        }
+        s = s == null ? "" : s;
         if (isSendSuccess) {
-            log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>消息发送成功");
+            log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>消息发送成功" + s);
         } else {
             log.info("【发送MQ消息】confirm回调方法>>>>>>>>>>>>>消息发送失败" + s);
         }
