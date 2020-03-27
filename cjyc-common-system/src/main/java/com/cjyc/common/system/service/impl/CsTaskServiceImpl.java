@@ -530,7 +530,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     pushCustomerList.add(pushInfo);
                 }
                 if(isFirstLoad){
-                    order.setState(orderCarNewState);
                     firstLoadOrderSet.add(order);
                 }
                 count++;
