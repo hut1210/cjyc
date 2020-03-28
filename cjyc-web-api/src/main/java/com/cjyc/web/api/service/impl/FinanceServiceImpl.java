@@ -420,7 +420,7 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<ReceiveOrderCarDto> receiveOrderCarDtoList = financeDao.listPaymentDaysInfo(financeQueryDto);
         // 金额分转元 + 剩余账期计算
-        if(!CollectionUtils.isEmpty(receiveOrderCarDtoList)) {
+        if (!CollectionUtils.isEmpty(receiveOrderCarDtoList)) {
             receiveOrderCarDtoList.forEach(e -> {
                 e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
                 e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
@@ -1229,7 +1229,7 @@ public class FinanceServiceImpl implements IFinanceService {
      *
      * @param listInfo
      */
-    private void fenToYuan(List<ReceiveSettlementDto> listInfo){
+    private void fenToYuan(List<ReceiveSettlementDto> listInfo) {
         if (!CollectionUtils.isEmpty(listInfo)) {
             listInfo.forEach(e -> {
                 e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
@@ -1445,6 +1445,12 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             return transactionTemplate.execute(status -> {
                 try {
+                    // 查询原结算明细
+                    List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(
+                            new QueryWrapper<ReceiveSettlementDetail>()
+                                    .lambda()
+                                    .eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber())
+                    );
                     // 删除结算信息
                     receiveSettlementDao.delete(new QueryWrapper<ReceiveSettlement>()
                             .lambda()
@@ -1461,8 +1467,7 @@ public class FinanceServiceImpl implements IFinanceService {
                         Admin admin = csAdminService.validate(cancelInvoiceVo.getLoginId());
                         cancelName = admin.getName();
                     }
-                    List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(new QueryWrapper<ReceiveSettlementDetail>().lambda().eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber()));
-                    log.info("业务员：{}撤销结算流水号为：{}的结算申请数据：{}", cancelName, cancelInvoiceVo.getSerialNumber(), JsonUtil.toJson(listInfo));
+                    log.info("业务员：{}撤销结算流水号为：{}的结算申请数据：{}", cancelName, cancelInvoiceVo.getSerialNumber(), CollectionUtils.isEmpty(listInfo) ? "" : JsonUtil.toJson(listInfo));
                 } catch (Exception e) {
                     status.setRollbackOnly();
                     log.error("应收账款-待开票-撤回发生异常！", e);
