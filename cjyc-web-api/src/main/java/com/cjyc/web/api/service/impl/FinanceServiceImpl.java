@@ -120,9 +120,9 @@ public class FinanceServiceImpl implements IFinanceService {
             if (financeVo != null) {
 
                 String orderCarNo = financeVo.getNo();
-                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
-                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
-                BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
+                    BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
+                    BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
+                    BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
 
                 financeVo.setPickUpCarFee(pickUpCarFee);
                 financeVo.setTrunkLineFee(trunkLineFee);
