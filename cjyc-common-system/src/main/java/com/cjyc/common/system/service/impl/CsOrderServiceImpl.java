@@ -1563,7 +1563,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @since 2019/10/29 8:30
      */
     private List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
-        if (totalFee == null || CollectionUtils.isEmpty(orderCarlist)) {
+        totalFee = totalFee == null ? BigDecimal.ZERO : totalFee;
+        if (CollectionUtils.isEmpty(orderCarlist)) {
             return orderCarlist;
         }
 
