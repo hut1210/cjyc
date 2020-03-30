@@ -403,7 +403,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
 
-        BigDecimal ActualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
+        BigDecimal actualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
         log.info("pv.size() ={}", pv.size());
         Map<String, Object> countInfo = getReceivableCountInfo();
 
@@ -413,7 +413,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
         countInfo.put("receiptSummary", receiptSummary.divide(new BigDecimal(100)));
 
-        countInfo.put("ActualReceiptSummary", ActualReceiptSummary.divide(new BigDecimal(100)));
+        countInfo.put("ActualReceiptSummary", actualReceiptSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
