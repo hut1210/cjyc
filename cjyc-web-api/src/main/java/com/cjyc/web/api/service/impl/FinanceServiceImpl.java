@@ -120,9 +120,9 @@ public class FinanceServiceImpl implements IFinanceService {
             if (financeVo != null) {
 
                 String orderCarNo = financeVo.getNo();
-                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
-                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
-                BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
+                    BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
+                    BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
+                    BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
 
                 financeVo.setPickUpCarFee(pickUpCarFee);
                 financeVo.setTrunkLineFee(trunkLineFee);
@@ -412,22 +412,31 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<ReceiveOrderCarDto>> listPaymentDaysInfo(FinanceQueryDto financeQueryDto) {
-        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        // 结算类型：1：账期 0：时付
         financeQueryDto.setSettleType(1);
-        // 应收账款列表查询
-        List<ReceiveOrderCarDto> receiveOrderCarDtoList = financeDao.listPaymentDaysInfo(financeQueryDto);
-        receiveOrderCarDtoList.forEach(e -> {
-            e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
-            e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
-            if (e.getSettlePeriod() == null || e.getSettlePeriod() == 0) {
-                e.setRemainderSettlePeriod(0L);
-            } else {
-                e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
-            }
-        });
         // 应收账款总额统计
         BigDecimal receiveSummary = MoneyUtil.nullToZero(financeDao.receiptSummary(financeQueryDto));
-        // 总条数统计
+        // 应收账款列表分页查询
+        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        List<ReceiveOrderCarDto> receiveOrderCarDtoList = financeDao.listPaymentDaysInfo(financeQueryDto);
+        // 金额分转元 + 剩余账期计算
+        if (!CollectionUtils.isEmpty(receiveOrderCarDtoList)) {
+            receiveOrderCarDtoList.forEach(e -> {
+                e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
+                e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
+                if (e.getSettlePeriod() == null || e.getSettlePeriod() == 0) {
+                    e.setRemainderSettlePeriod(0L);
+                } else {
+                    /**
+                     * 剩余账期计算:
+                     * 1.已过天数 = 当前时间 - 订单完结时间
+                     * 2. 剩余账期 = 大客户合同中配置的账期 - 已过天数
+                     */
+                    e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
+                }
+            });
+        }
+        // 总条数+总金额统计封装
         Map<String, Object> countInfo = statisticCount();
         countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(receiveSummary, MoneyUtil.PATTERN_TWO)));
         PageInfo<ReceiveOrderCarDto> pageInfo = new PageInfo<>(receiveOrderCarDtoList);
@@ -1110,17 +1119,18 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
-        // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
-        // 结算申请-已申请发票
+        // 结算状态：1-已申请发票
         receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.APPLY_INVOICE.code);
-        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
         // 计算金额汇总
         Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementAmt(receiveSettlementNeedInvoiceVo);
-        // 金额分转元
+        // 应收账款结算-待开票列表查询, 此时查询结算状态为已经申请的结算信息列表
+        PageHelper.startPage(receiveSettlementNeedInvoiceVo.getCurrentPage(), receiveSettlementNeedInvoiceVo.getPageSize());
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
+        // 列表金额字段分转元
         fenToYuan(listInfo);
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        // 总条数统计
+        // 总条数+总金额统计封装
         Map<String, Object> countInfo = statisticCount();
         if (summaryMap != null) {
             countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
@@ -1152,14 +1162,15 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedPayed(ReceiveSettlementNeedPayedVo receiveSettlementNeedPayedVo) {
-        // 应收账款结算-待回款列表查询, 此时查询结算状态为【已确认和不需要开票】的结算信息列表
-        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedPayedVo);
         // 计算金额汇总
         Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementNeedPayedAmt(receiveSettlementNeedPayedVo);
+        PageHelper.startPage(receiveSettlementNeedPayedVo.getCurrentPage(), receiveSettlementNeedPayedVo.getPageSize());
+        // 应收账款结算-待回款列表查询, 此时查询结算状态为【已确认和不需要开票】的结算信息列表
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlementNeedInvoice(receiveSettlementNeedPayedVo);
         // 金额分转元
         fenToYuan(listInfo);
-        // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
+        // 总条数+总金额统计封装
         Map<String, Object> countInfo = statisticCount();
         if (summaryMap != null) {
             countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
@@ -1190,17 +1201,18 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementPayed(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo) {
-        // 应收账款结算-已收款列表查询, 此时查询结算状态为已收款的结算信息列表
-        // 已核销
+        // 结算状态：3-已核销
         receiveSettlementNeedInvoiceVo.setState(ReceiveSettlementStateEnum.VERIFICATION.code);
-        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
         // 计算金额汇总
         Map<String, BigDecimal> summaryMap = receiveSettlementDao.summaryReceiveSettlementAmt(receiveSettlementNeedInvoiceVo);
+        PageHelper.startPage(receiveSettlementNeedInvoiceVo.getCurrentPage(), receiveSettlementNeedInvoiceVo.getPageSize());
+        // 应收账款结算-已收款列表查询, 此时查询结算状态为已收款的结算信息列表
+        List<ReceiveSettlementDto> listInfo = receiveSettlementDao.listReceiveSettlement(receiveSettlementNeedInvoiceVo);
         // 金额分转元
         fenToYuan(listInfo);
         // 列表分页
         PageInfo<ReceiveSettlementDto> pageInfo = new PageInfo<>(listInfo);
-        // 统计总条数
+        // 总条数+总金额统计封装
         Map<String, Object> countInfo = statisticCount();
         if (summaryMap != null) {
             countInfo.put("receiveSummary", new BigDecimal(MoneyUtil.fenToYuan(summaryMap.get("receiveSummary"), MoneyUtil.PATTERN_TWO)));
@@ -1217,7 +1229,7 @@ public class FinanceServiceImpl implements IFinanceService {
      *
      * @param listInfo
      */
-    private void fenToYuan(List<ReceiveSettlementDto> listInfo){
+    private void fenToYuan(List<ReceiveSettlementDto> listInfo) {
         if (!CollectionUtils.isEmpty(listInfo)) {
             listInfo.forEach(e -> {
                 e.setTotalReceivableFee(new BigDecimal(MoneyUtil.fenToYuan(e.getTotalReceivableFee(), MoneyUtil.PATTERN_TWO)));
@@ -1433,6 +1445,12 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             return transactionTemplate.execute(status -> {
                 try {
+                    // 查询原结算明细
+                    List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(
+                            new QueryWrapper<ReceiveSettlementDetail>()
+                                    .lambda()
+                                    .eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber())
+                    );
                     // 删除结算信息
                     receiveSettlementDao.delete(new QueryWrapper<ReceiveSettlement>()
                             .lambda()
@@ -1449,8 +1467,7 @@ public class FinanceServiceImpl implements IFinanceService {
                         Admin admin = csAdminService.validate(cancelInvoiceVo.getLoginId());
                         cancelName = admin.getName();
                     }
-                    List<ReceiveSettlementDetail> listInfo = receiveSettlementDetailDao.selectList(new QueryWrapper<ReceiveSettlementDetail>().lambda().eq(ReceiveSettlementDetail::getSerialNumber, cancelInvoiceVo.getSerialNumber()));
-                    log.info("业务员：{}撤销结算流水号为：{}的结算申请数据：{}", cancelName, cancelInvoiceVo.getSerialNumber(), JsonUtil.toJson(listInfo));
+                    log.info("业务员：{}撤销结算流水号为：{}的结算申请数据：{}", cancelName, cancelInvoiceVo.getSerialNumber(), CollectionUtils.isEmpty(listInfo) ? "" : JsonUtil.toJson(listInfo));
                 } catch (Exception e) {
                     status.setRollbackOnly();
                     log.error("应收账款-待开票-撤回发生异常！", e);

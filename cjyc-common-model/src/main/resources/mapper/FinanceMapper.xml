@@ -1234,15 +1234,20 @@
         LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
+        <!--已支付-->
         WHERE woc.wl_pay_state=2
+        <!--账期-->
         AND ccc.settle_type=1
+        <!--企业大客户-->
         AND wo.customer_type=2
+        <!--订单已交付-->
         AND wo.state=100
+        <!--未申请结算-->
         AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no ) t ORDER BY t.deliveryDate DESC
     </select>
-    <!--企业客户账期应收账款汇总sql-->
+    <!--账期应收账款汇总sql-->
     <select id="receiptSummary" resultType="java.math.BigDecimal">
         SELECT sum(t.total_fee) FROM (
         SELECT DISTINCT(woc.no),woc.total_fee
@@ -1254,10 +1259,15 @@
         LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
+        <!--已支付-->
         WHERE woc.wl_pay_state=2
+        <!--账期-->
         AND ccc.settle_type=1
+        <!--企业大客户-->
         AND wo.customer_type=2
+        <!--订单已交付-->
         AND wo.state=100
+        <!--未申请结算-->
         AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no ) t
