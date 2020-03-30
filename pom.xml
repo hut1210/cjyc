@@ -20,12 +20,13 @@
         <module>cjyc-customer-api</module>
         <module>cjyc-salesman-api</module>
         <module>cjyc-web-api</module>
+        <module>cjyc-foreign-api</module>
         <module>cjyc-common-model</module>
         <module>cjyc-common-system</module>
         <module>cjyc-server-pay</module>
         <module>cjyc-scheduler-finance</module>
         <module>cjyc-scheduler-report</module>
-        <module>cjyc-foreign-api</module>
+        <module>cjyc-scheduler-biz</module>
     </modules>
 
     <properties>

@@ -1238,23 +1238,21 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public ResultVo unlockPayByOrder(String no) {
+    public ResultVo unlockPay(List<String> nos) {
         try {
-            String pattern = RedisKeys.getWlPayLockKey(no);
-            Set<String> lockSet = redisUtils.keys(pattern);
-            redisUtils.delete(lockSet);
+            Set<String> orderNoSet = Sets.newHashSet();
+            nos.forEach(no -> {
+                if(no.contains("-")){
+                    String key = RedisKeys.getWlPayLockKey(no);
+                    redisUtils.delete(key);
+                }else{
+                    String pattern = RedisKeys.getWlPayLockKey(no);
+                    Set<String> lockSet = redisUtils.keys(pattern);
+                    redisUtils.delete(lockSet);
+                }
+            });
             return BaseResultUtil.success();
-        } catch (Exception e) {
-            return BaseResultUtil.fail("解锁失败");
-        }
-    }
 
-    @Override
-    public ResultVo unlockPayByCar(String no) {
-        try {
-            String key = RedisKeys.getWlPayLockKey(no);
-            redisUtils.delete(key);
-            return BaseResultUtil.success();
         } catch (Exception e) {
             return BaseResultUtil.fail("解锁失败");
         }

@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
+import com.cjyc.common.model.dto.UnlockDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,12 +130,8 @@ public class PingxxController {
     }
 
     @ApiOperation(value = "解除物流费支付锁")
-    @PostMapping(value = "/pay/unlock/{no}")
-    public ResultVo unlockPay(@PathVariable @Pattern(regexp = "^D$") String no) {
-        if(no.contains("-")){
-            return csPingPayService.unlockPayByCar(no);
-        }else{
-            return csPingPayService.unlockPayByOrder(no);
-        }
+    @PostMapping(value = "/pay/unlock")
+    public ResultVo unlockPay(@RequestBody UnlockDto dto) {
+        return csPingPayService.unlockPay(dto.getNos());
     }
 }
