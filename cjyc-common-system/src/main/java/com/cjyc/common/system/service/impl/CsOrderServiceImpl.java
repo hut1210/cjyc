@@ -518,7 +518,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
             }
             if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType() && PayModeEnum.COLLECT.code != order.getPayType()) {
-                throw new ParameterException("合伙人下单支付方式只能选择到付，请确认后重新下单");
+                return BaseResultUtil.fail("合伙人下单支付方式只能选择到付，请确认后重新下单");
             }
             if (!RegexUtil.isMobileSimple(order.getPickContactPhone())) {
                 return BaseResultUtil.fail("发车人手机号格式不正确");
