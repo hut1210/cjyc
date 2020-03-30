@@ -1926,8 +1926,9 @@
         LEFT JOIN w_waybill_car billcar ON bill.id = billcar.waybill_id
         LEFT JOIN w_order_car ordercar ON billcar.order_car_id = ordercar.id
         LEFT JOIN w_order worder ON ordercar.order_id = worder.id
-        <!--运单变成已交付才在应付里展示-->
-        WHERE bill.state = 100 AND bill.no = #{waybillNo}
+        <!--过滤掉已取消的运单车辆-->
+        WHERE billcar.state &lt;= 100
+        AND bill.no = #{waybillNo}
     </select>
 
 </mapper>
