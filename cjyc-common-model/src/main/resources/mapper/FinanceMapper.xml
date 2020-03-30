@@ -440,6 +440,29 @@
         group by woc.no ) t order by t.finish_time desc
     </select>
 
+    <select id="getAdvancePayment" resultType="com.cjyc.common.model.vo.web.finance.AdvancePaymentVo">
+        select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
+        if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
+        woc.order_no as orderNo,
+        wo.start_city as startCity,
+        wo.end_city as endCity,
+        wo.customer_type as type,
+        wo.customer_name as customerName
+        from w_order_car woc
+        left join w_order wo on wo.id= woc.order_id
+        where wo.state &lt;100 and wo.wl_pay_state=2
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and  woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and  woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+    </select>
+
+
     <select id="getCustomerContractById" parameterType="java.lang.Long" resultType="java.lang.Integer">
         select settle_type from c_customer_contract where id =#{customerContractId}
     </select>

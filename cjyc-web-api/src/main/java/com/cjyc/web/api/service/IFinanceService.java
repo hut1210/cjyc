@@ -224,4 +224,18 @@ public interface IFinanceService {
      * @return
      */
     ResultVo exportReceiveSettlementPayed(HttpServletResponse response, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
+
+    /**
+     * 预付未完结列表
+     * @param financeQueryDto
+     * @return
+     */
+    ResultVo<PageVo<AdvancePaymentVo>> getAdvancePayment(FinanceQueryDto financeQueryDto);
+
+    /**
+     * 导出预付未完结 Excel
+     * @param financeQueryDto
+     * @return
+     */
+    List<AdvancePaymentVo> exportAdvancePaymentExcel(FinanceQueryDto financeQueryDto);
 }

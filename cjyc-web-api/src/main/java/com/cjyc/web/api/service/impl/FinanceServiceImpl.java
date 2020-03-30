@@ -175,10 +175,13 @@ public class FinanceServiceImpl implements IFinanceService {
 
         BigDecimal grossProfit = tradeBillService.grossProfit(financeQueryDto);
 
+        BigDecimal actualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
+
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
         countInfo.put("costSummary", costSummary.divide(new BigDecimal(100)));
         countInfo.put("grossProfit", grossProfit.divide(new BigDecimal(100)));
+        countInfo.put("actualReceiptSummary", actualReceiptSummary.divide(new BigDecimal(100)));
 
         return BaseResultUtil.success(pageInfo, countInfo);
     }
@@ -400,14 +403,61 @@ public class FinanceServiceImpl implements IFinanceService {
 
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
 
-        BigDecimal ActualReceiptSummary = tradeBillService.ActualReceiptSummary(financeQueryDto);
+        BigDecimal ActualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
         log.info("pv.size() ={}", pv.size());
-        Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiptCount", pv.size());
+        Map<String, Object> countInfo = getReceivableCountInfo();
+
+        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
+
+        countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
+
         countInfo.put("receiptSummary", receiptSummary.divide(new BigDecimal(100)));
 
         countInfo.put("ActualReceiptSummary", ActualReceiptSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
+    }
+
+    @Override
+    public ResultVo<PageVo<AdvancePaymentVo>> getAdvancePayment(FinanceQueryDto financeQueryDto) {
+        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
+        List<AdvancePaymentVo> advancePaymentVoList = financeDao.getAdvancePayment(financeQueryDto);
+
+        PageInfo<AdvancePaymentVo> pageInfo = new PageInfo<>(advancePaymentVoList);
+        FinanceQueryDto fqd = new FinanceQueryDto();
+        List<AdvancePaymentVo> ap = financeDao.getAdvancePayment(fqd);
+        Map<String, Object> countInfo = getReceivableCountInfo();
+        BigDecimal advancePaymentSummary = tradeBillService.advancePaymentSummary(financeQueryDto);
+        BigDecimal actualAdvancePaymentSummary = tradeBillService.actualAdvancePaymentSummary(financeQueryDto);
+        countInfo.put("advancePaymentSummary",new BigDecimal(MoneyUtil.fenToYuan(advancePaymentSummary, MoneyUtil.PATTERN_TWO)));
+        countInfo.put("actualAdvancePaymentSummary",new BigDecimal(MoneyUtil.fenToYuan(actualAdvancePaymentSummary, MoneyUtil.PATTERN_TWO)));
+        return BaseResultUtil.success(pageInfo, countInfo);
+    }
+
+    @Override
+    public List<AdvancePaymentVo> exportAdvancePaymentExcel(FinanceQueryDto financeQueryDto) {
+        List<AdvancePaymentVo> advancePaymentVoList = financeDao.getAdvancePayment(financeQueryDto);
+        if(!CollectionUtils.isEmpty(advancePaymentVoList)){
+            advancePaymentVoList.forEach(e->{
+                e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
+                e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
+            });
+        }
+        return advancePaymentVoList;
+    }
+
+    /**
+     * 获取应收所有table总数
+     * @return
+     */
+    private Map getReceivableCountInfo(){
+
+        FinanceQueryDto fqd = new FinanceQueryDto();
+        List<PaymentVo> pv = financeDao.getPaymentList(fqd);
+        List<AdvancePaymentVo> ap = financeDao.getAdvancePayment(fqd);
+        Map<String, Object> countInfo = new HashMap<>();
+        countInfo.put("receiptCount", pv.size());
+        countInfo.put("advancePaymentCount", ap.size());
+        return countInfo;
     }
 
     @Override

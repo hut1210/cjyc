@@ -54,5 +54,19 @@ public interface ITradeBillSummaryService {
 
     BigDecimal paidToCooperatorSummary(CooperatorSearchDto cooperatorSearchDto);
 
-    BigDecimal ActualReceiptSummary(FinanceQueryDto financeQueryDto);
+    BigDecimal actualReceiptSummary(FinanceQueryDto financeQueryDto);
+
+    /**
+     * 预付未完结应收汇总
+     * @param financeQueryDto
+     * @return
+     */
+    BigDecimal advancePaymentSummary(FinanceQueryDto financeQueryDto);
+
+    /**
+     * 预付未完结已付汇总
+     * @param financeQueryDto
+     * @return
+     */
+    BigDecimal actualAdvancePaymentSummary(FinanceQueryDto financeQueryDto);
 }

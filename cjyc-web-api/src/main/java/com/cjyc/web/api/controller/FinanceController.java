@@ -198,6 +198,30 @@ public class FinanceController {
             return BaseResultUtil.fail("导出应收账款异常" + e.getMessage());
         }
     }
+    @ApiOperation(value = "预付未完结列表")
+    @PostMapping(value = "/getAdvancePayment")
+    public ResultVo<PageVo<AdvancePaymentVo>> getAdvancePayment(@RequestBody FinanceQueryDto financeQueryDto){
+        return financeService.getAdvancePayment(financeQueryDto);
+    }
+
+    @ApiOperation(value = "导出预付未完结Excel")
+    @GetMapping(value = "/exportAdvancePayment")
+    public ResultVo exportAdvancePayment(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
+        List<AdvancePaymentVo> advancePaymentVoList = financeService.exportAdvancePaymentExcel(financeQueryDto);
+        if (CollectionUtils.isEmpty(advancePaymentVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        String title = "预付未完结";
+        String sheetName = "预付未完结";
+        String fileName = "预付未完结.xls";
+        try {
+            ExcelUtil.exportExcel(advancePaymentVoList, title, sheetName, AdvancePaymentVo.class, fileName, response);
+            return null;
+        } catch (IOException e) {
+            log.error("导出应收账款异常:", e);
+            return BaseResultUtil.fail("导出应收账款异常" + e.getMessage());
+        }
+    }
 
     @ApiOperation(value = "已付款(时付)列表")
     @PostMapping(value = "/getPaidList")
