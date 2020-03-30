@@ -10,7 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cjyc-salesman-api</artifactId>
-    <packaging>pom</packaging>
     <properties>
         <main.class>com.cjyc.salesman.api.SalesmanApiApplication</main.class>
     </properties>
