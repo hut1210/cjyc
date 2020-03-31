@@ -36,8 +36,8 @@ public class SaveOrderDto {
     @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(value = "物流券抵消金额")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
-    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "车辆列表")
     @Valid
@@ -92,8 +92,8 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
     @ApiModelProperty(value = "线路费用")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
-    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal lineWlFreightFee;
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")
     private int pickType;
@@ -126,8 +126,8 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用")
-    @DecimalMax(ArgsConstant.DECIMAL_MAX)
-    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal totalFee;
 
 }

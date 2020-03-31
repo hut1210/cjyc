@@ -54,8 +54,8 @@ public class UpdateTrunkMidwayFinishDto {
     private Long unloadTime;
 
     @ApiModelProperty(value = "运费")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
-    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal freightFee;
 
 
