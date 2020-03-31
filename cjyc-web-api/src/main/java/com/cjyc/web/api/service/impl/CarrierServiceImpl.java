@@ -606,6 +606,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             PayBank payBank = payBankService.findPayBank(bcb.getBankName());
             if(payBank != null){
                 bcb.setBankCode(payBank.getBankCode());
+                bcb.setPayBankNo(payBank.getPayBankNo());
             }
             bcb.setProvinceName(dto.getProvinceName());
             bcb.setAreaName(dto.getAreaName());
