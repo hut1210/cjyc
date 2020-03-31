@@ -245,7 +245,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
                 financeVo.setGrossProfit((financeVo.getTotalIncome().subtract(totalCost)).divide(new BigDecimal(100)));
                 financeVo.setTotalIncome(financeVo.getTotalIncome() != null ? financeVo.getTotalIncome().divide(new BigDecimal(100)) : financeVo.getTotalIncome());
-                financeVo.setActualIncome(new BigDecimal(MoneyUtil.fenToYuan(financeVo.getTotalIncome(),MoneyUtil.PATTERN_TWO)));
+                financeVo.setActualIncome(MoneyUtil.nullToZero(financeVo.getTotalIncome()));
 
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
                 detailVoList.addAll(detailList);
