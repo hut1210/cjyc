@@ -99,7 +99,7 @@ public interface ISysRoleService {
      * @param roleId 角色ID
      * @return  ResultData<SelectRoleResp>
      */
-    @GetMapping("/feign/uc/deleteRole/{roleId}")
+    @PostMapping("/feign/uc/deleteRole/{roleId}")
     ResultData<SelectRoleResp> delete(@PathVariable(value="roleId") Long roleId);
 
     /**
