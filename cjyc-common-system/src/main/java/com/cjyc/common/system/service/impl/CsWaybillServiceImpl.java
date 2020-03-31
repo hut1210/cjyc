@@ -1428,7 +1428,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         if (waybill == null) {
             waybill = waybillDao.selectById(waybillCar.getWaybillId());
+            if(waybill == null){
+                return;
+            }
         }
+
         Integer waybillType = waybill.getType();
         if (WaybillCarrierTypeEnum.SELF.code != waybill.getCarrierType() || WaybillTypeEnum.PICK.code != waybill.getType()) {
             //非提车自送的单子
@@ -1476,9 +1480,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (dsEntity.getTrunkNum() == 0) {
                 noc.setPickState(dsEntity.getPickNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
             }
-            noc.setTrunkState(dsEntity.getTrunkNum() > 0 ? OrderCarTrunkStateEnum.WAIT_DISPATCH.code : OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+            noc.setTrunkState(dsEntity.getTrunkNum() > 0 ? OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code : OrderCarTrunkStateEnum.WAIT_DISPATCH.code);
             noc.setBackState(dsEntity.getBackNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
-
         } else {
             throw new ParameterException("运单类型错误");
         }
