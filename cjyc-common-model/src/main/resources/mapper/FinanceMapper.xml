@@ -1253,18 +1253,14 @@
     </sql>
     <!--账期应收账款列表查询sql-->
     <select id="listPaymentDaysInfo" resultType="com.cjyc.common.model.dto.web.finance.ReceiveOrderCarDto">
-        SELECT * FROM (
         <!--企业客户账期应收账款信息查询sql-->
         <include refid="PAYMENT_DAYS_COMMON_SQL"></include>
         LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id
-        LEFT JOIN w_waybill_car wwc ON wwc.order_car_no = woc.no
-        LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
-        <!--已支付-->
-        WHERE woc.wl_pay_state=2
+        WHERE
         <!--账期-->
-        AND ccc.settle_type=1
+        ccc.settle_type=1
         <!--企业大客户-->
         AND wo.customer_type=2
         <!--订单已交付-->
@@ -1272,7 +1268,8 @@
         <!--未申请结算-->
         AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
-        GROUP BY woc.no ) t ORDER BY t.deliveryDate DESC
+        GROUP BY woc.no
+        ORDER BY woc.finish_time DESC
     </select>
     <!--账期应收账款汇总sql-->
     <select id="receiptSummary" resultType="java.math.BigDecimal">
@@ -1282,14 +1279,11 @@
         LEFT JOIN w_order wo ON woc.order_id = wo.id
         LEFT JOIN c_customer cc ON cc.id = wo.customer_id
         LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id
-        LEFT JOIN w_waybill_car wwc ON wwc.order_car_no = woc.no
-        LEFT JOIN w_task wt ON wt.waybill_no = wwc.waybill_no
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
-        <!--已支付-->
-        WHERE woc.wl_pay_state=2
+        WHERE
         <!--账期-->
-        AND ccc.settle_type=1
+        ccc.settle_type=1
         <!--企业大客户-->
         AND wo.customer_type=2
         <!--订单已交付-->
