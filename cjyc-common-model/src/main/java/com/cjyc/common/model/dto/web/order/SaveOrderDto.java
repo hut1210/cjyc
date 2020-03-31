@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.constant.ArgsConstant;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,9 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -37,6 +36,8 @@ public class SaveOrderDto {
     @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(value = "物流券抵消金额")
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "车辆列表")
     @Valid
@@ -91,6 +92,8 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
     @ApiModelProperty(value = "线路费用")
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal lineWlFreightFee;
     @ApiModelProperty(value = "提车方式:1 自送，2代驾上门，3拖车上门, 4.物流上门")
     private int pickType;
@@ -123,6 +126,8 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用")
+    @DecimalMax(ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal totalFee;
 
 }

@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
+import com.cjyc.common.model.constant.ArgsConstant;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,10 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -132,9 +130,13 @@ public class CommitOrderDto {
     private Integer payType = 0;
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用", required = true)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal totalFee;
 
 

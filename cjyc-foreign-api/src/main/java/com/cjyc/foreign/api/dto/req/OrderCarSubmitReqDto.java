@@ -1,11 +1,10 @@
 package com.cjyc.foreign.api.dto.req;
 
+import com.cjyc.common.model.constant.ArgsConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -47,8 +46,12 @@ public class OrderCarSubmitReqDto implements Serializable {
     private Integer valuation;
 
     @ApiModelProperty(value = "保险费/元",hidden = true)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal addInsuranceFee;
 
-    @ApiModelProperty(value = "车辆应收干线费 单位：分",hidden = true)
+    @ApiModelProperty(value = "车辆应收干线费",hidden = true)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal trunkFee;
 }

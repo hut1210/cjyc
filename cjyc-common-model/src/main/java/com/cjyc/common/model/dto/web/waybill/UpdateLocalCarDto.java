@@ -1,11 +1,10 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.cjyc.common.model.constant.ArgsConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Data
@@ -23,6 +22,8 @@ public class UpdateLocalCarDto{
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
     @ApiModelProperty(value = "运费")
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal freightFee;
     @ApiModelProperty(value = "省")
     private String startProvince;

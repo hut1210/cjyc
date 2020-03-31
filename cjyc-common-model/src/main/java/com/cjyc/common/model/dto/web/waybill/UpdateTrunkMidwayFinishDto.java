@@ -1,8 +1,11 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.cjyc.common.model.constant.ArgsConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -51,6 +54,8 @@ public class UpdateTrunkMidwayFinishDto {
     private Long unloadTime;
 
     @ApiModelProperty(value = "运费")
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX)
+    @DecimalMin(ArgsConstant.DECIMAL_ZERO)
     private BigDecimal freightFee;
 
 
