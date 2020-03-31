@@ -604,7 +604,7 @@
         left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id=ftbd.trade_bill_id
-        where dc.settle_type=0 and ww.state=100
+        where dc.settle_type=0 and ww.state=100 and wt.state &lt;= 100
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
