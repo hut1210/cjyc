@@ -1203,13 +1203,13 @@ public class FinanceServiceImpl implements IFinanceService {
         // 金额分转元
         fenToYuan(listInfo);
         try {
-            List<ReceiveSettlementNeedInvoiceDto> newListInfo = new ArrayList<>();
+            List<ReceiveSettlementNeedInvoiceExcelItemDto> newListInfo = new ArrayList<>();
             listInfo.forEach(e -> {
-                ReceiveSettlementNeedInvoiceDto item = new ReceiveSettlementNeedInvoiceDto();
+                ReceiveSettlementNeedInvoiceExcelItemDto item = new ReceiveSettlementNeedInvoiceExcelItemDto();
                 BeanUtils.copyProperties(e, item);
                 newListInfo.add(item);
             });
-            ExcelUtil.exportExcel(newListInfo, "应收账款-待开票", "应收账款-待开票（账期）", ReceiveSettlementNeedInvoiceDto.class, "应收账款-待开票.xls", response);
+            ExcelUtil.exportExcel(newListInfo, "应收账款-待开票", "应收账款-待开票（账期）", ReceiveSettlementNeedInvoiceExcelItemDto.class, "应收账款-待开票.xls", response);
             return null;
         } catch (IOException e) {
             log.error("导出应收账款-待开票（账期）出现异常：", e);

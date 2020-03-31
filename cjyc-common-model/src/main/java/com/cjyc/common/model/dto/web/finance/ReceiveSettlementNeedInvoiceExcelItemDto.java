@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * @Date:2020/3/20 15:57
  */
 @Data
-public class ReceiveSettlementNeedInvoiceDto {
+public class ReceiveSettlementNeedInvoiceExcelItemDto {
 
     @Excel(name = "结算流水号", orderNum = "0")
     private String serialNumber;
