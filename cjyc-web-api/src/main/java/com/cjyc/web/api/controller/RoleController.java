@@ -229,7 +229,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "删除角色以及该角色下所属人，以及韵车这边相关角色和人")
-    @GetMapping("/deleteRoleAndUser/{roleId}")
+    @PostMapping("/deleteRoleAndUser/{roleId}")
     public ResultVo deleteRoleAndUser(@PathVariable Long roleId) {
         return roleService.deleteRoleAndUser(roleId);
     }
