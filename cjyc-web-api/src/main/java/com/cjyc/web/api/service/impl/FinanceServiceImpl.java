@@ -1203,7 +1203,13 @@ public class FinanceServiceImpl implements IFinanceService {
         // 金额分转元
         fenToYuan(listInfo);
         try {
-            ExcelUtil.exportExcel(listInfo, "应收账款-待开票", "应收账款-待开票（账期）", ReceiveSettlementDto.class, "应收账款-待开票.xls", response);
+            List<ReceiveSettlementNeedInvoiceExcelItemDto> newListInfo = new ArrayList<>();
+            listInfo.forEach(e -> {
+                ReceiveSettlementNeedInvoiceExcelItemDto item = new ReceiveSettlementNeedInvoiceExcelItemDto();
+                BeanUtils.copyProperties(e, item);
+                newListInfo.add(item);
+            });
+            ExcelUtil.exportExcel(newListInfo, "应收账款-待开票", "应收账款-待开票（账期）", ReceiveSettlementNeedInvoiceExcelItemDto.class, "应收账款-待开票.xls", response);
             return null;
         } catch (IOException e) {
             log.error("导出应收账款-待开票（账期）出现异常：", e);
@@ -1242,7 +1248,13 @@ public class FinanceServiceImpl implements IFinanceService {
         // 金额分转元
         fenToYuan(listInfo);
         try {
-            ExcelUtil.exportExcel(listInfo, "应收账款-待回款", "应收账款-待回款（账期）", ReceiveSettlementDto.class, "应收账款-待回款.xls", response);
+            List<ReceiveSettlementExcelItemDto> newListInfo = new ArrayList<>();
+            listInfo.forEach(e -> {
+                ReceiveSettlementExcelItemDto item = new ReceiveSettlementExcelItemDto();
+                BeanUtils.copyProperties(e, item);
+                newListInfo.add(item);
+            });
+            ExcelUtil.exportExcel(newListInfo, "应收账款-待回款", "应收账款-待回款（账期）", ReceiveSettlementExcelItemDto.class, "应收账款-待回款.xls", response);
             return null;
         } catch (IOException e) {
             log.error("导出应收账款-待回款（账期）出现异常：", e);
@@ -1300,7 +1312,13 @@ public class FinanceServiceImpl implements IFinanceService {
         // 金额分转元
         fenToYuan(listInfo);
         try {
-            ExcelUtil.exportExcel(listInfo, "应收账款-已收款", "应收账款-已收款（账期）", ReceiveSettlementDto.class, "应收账款-已收款.xls", response);
+            List<ReceiveSettlementExcelItemDto> newListInfo = new ArrayList<>();
+            listInfo.forEach(e -> {
+                ReceiveSettlementExcelItemDto item = new ReceiveSettlementExcelItemDto();
+                BeanUtils.copyProperties(e, item);
+                newListInfo.add(item);
+            });
+            ExcelUtil.exportExcel(newListInfo, "应收账款-已收款", "应收账款-已收款（账期）", ReceiveSettlementExcelItemDto.class, "应收账款-已收款.xls", response);
             return null;
         } catch (IOException e) {
             log.error("导出应收账款-已收款（账期）出现异常：", e);
