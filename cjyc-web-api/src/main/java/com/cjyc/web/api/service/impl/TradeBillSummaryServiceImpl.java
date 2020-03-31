@@ -89,4 +89,9 @@ public class TradeBillSummaryServiceImpl implements ITradeBillSummaryService {
     public BigDecimal actualAdvancePaymentSummary(FinanceQueryDto financeQueryDto) {
         return MoneyUtil.nullToZero(tradeBillSummaryDao.actualAdvancePaymentSummary(financeQueryDto));
     }
+
+    @Override
+    public BigDecimal receiptIncomeSummary(FinanceQueryDto financeQueryDto) {
+        return MoneyUtil.nullToZero(tradeBillSummaryDao.receiptIncomeSummary(financeQueryDto));
+    }
 }

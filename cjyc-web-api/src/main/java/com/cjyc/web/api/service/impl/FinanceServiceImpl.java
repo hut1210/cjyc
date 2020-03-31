@@ -245,7 +245,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
                 financeVo.setGrossProfit((financeVo.getTotalIncome().subtract(totalCost)).divide(new BigDecimal(100)));
                 financeVo.setTotalIncome(financeVo.getTotalIncome() != null ? financeVo.getTotalIncome().divide(new BigDecimal(100)) : financeVo.getTotalIncome());
-
+                financeVo.setActualIncome(new BigDecimal(MoneyUtil.fenToYuan(financeVo.getTotalIncome(),MoneyUtil.PATTERN_TWO)));
 
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
                 detailVoList.addAll(detailList);
@@ -407,7 +407,7 @@ public class FinanceServiceImpl implements IFinanceService {
         log.info("pv.size() ={}", pv.size());
         Map<String, Object> countInfo = getReceivableCountInfo();
 
-        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
+        BigDecimal incomeSummary = tradeBillService.receiptIncomeSummary(financeQueryDto);
 
         countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
 
@@ -928,15 +928,6 @@ public class FinanceServiceImpl implements IFinanceService {
             paymentVo.setFreightPay(paymentVo.getFreightPay() != null ? paymentVo.getFreightPay().divide(new BigDecimal(100)) : null);
             paymentVo.setFreightReceivable(paymentVo.getFreightReceivable() != null ? paymentVo.getFreightReceivable().divide(new BigDecimal(100)) : null);
             paymentVo.setTotalIncome(new BigDecimal(MoneyUtil.fenToYuan(paymentVo.getTotalIncome(),MoneyUtil.PATTERN_TWO)));
-            /*if (paymentVo != null && paymentVo.getType() != null) {
-                if (paymentVo.getType() == 2) {//企业
-                    Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
-                    paymentVo.setPayModeName(settleType != null && settleType == 0 ? "时付" : "账期");
-                } else if (paymentVo.getType() == 3) {//合伙人
-                    Integer settleType = financeDao.getCustomerPartnerById(paymentVo.getCustomerId());
-                    paymentVo.setPayModeName(settleType != null && settleType == 0 ? "时付" : "账期");
-                }
-            }*/
         }
         return financeVoList;
     }

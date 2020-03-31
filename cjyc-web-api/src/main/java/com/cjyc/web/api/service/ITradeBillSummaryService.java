@@ -69,4 +69,11 @@ public interface ITradeBillSummaryService {
      * @return
      */
     BigDecimal actualAdvancePaymentSummary(FinanceQueryDto financeQueryDto);
+
+    /**
+     * 应收账款收益汇总
+     * @param financeQueryDto
+     * @return
+     */
+    BigDecimal receiptIncomeSummary(FinanceQueryDto financeQueryDto);
 }

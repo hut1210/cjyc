@@ -51,8 +51,8 @@ public class PaidNewVo implements Serializable {
     private BigDecimal freightFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @ApiModelProperty(value = "应付运费")
-    @Excel(name = "应付运费", orderNum = "4",type = 10)
+    @ApiModelProperty(value = "实付运费")
+    @Excel(name = "实付运费", orderNum = "4",type = 10)
     private BigDecimal freightFeePayable;
 
     @ApiModelProperty(value = "付款时间")
