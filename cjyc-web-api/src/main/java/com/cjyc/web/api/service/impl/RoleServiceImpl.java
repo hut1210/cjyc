@@ -720,9 +720,9 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         List<UserRoleDept> urdList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getRoleId, role.getId()));
         if(!CollectionUtils.isEmpty(urdList)){
             //循环删除用户
-            for(UserRoleDept urd : urdList){
+            urdList.forEach(urd -> {
                 adminDao.deleteById(urd.getUserId());
-            }
+            });
         }
         //删除用户关系数据
         userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getRoleId,role.getId()));
