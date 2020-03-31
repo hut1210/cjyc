@@ -1177,8 +1177,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 if (orderCar.getNowStoreId() != null && orderCar.getNowStoreId() > 0) {
                     Store store = csStoreService.getStoreFromMap(storeMap, orderCar.getNowStoreId());
                     csOrderCarLogService.asyncSave(orderCar, OrderCarLogEnum.C_OUT_STORE,
-                            new String[]{MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getOutterLog(), store.getName()),
-                                    MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getInnerLog(), store.getName(), paramsDto.getLoginName(), paramsDto.getLoginPhone()),
+                            new String[]{MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getOutterLog(), store == null ? "" : store.getName()),
+                                    MessageFormat.format(OrderCarLogEnum.C_OUT_STORE.getInnerLog(), store == null ? "" : store.getName(), paramsDto.getLoginName(), paramsDto.getLoginPhone()),
                                     "取消订单出库"},
                             userInfo);
                 }
