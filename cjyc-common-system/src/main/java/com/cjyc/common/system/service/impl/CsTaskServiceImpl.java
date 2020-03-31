@@ -643,7 +643,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 String lockKey = RedisKeys.getUnloadLockKey(waybillCar.getId());
                 if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}正在提车，请5秒后重试", waybillCar.getOrderCarNo());
+                    return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", waybillCar.getOrderCarNo());
                 }
                 lockSet.add(lockKey);
                 if (waybillCar.getState() <= WaybillCarStateEnum.WAIT_LOAD.code) {

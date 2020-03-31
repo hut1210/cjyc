@@ -104,7 +104,7 @@ public class SaveOrderDto {
     @ApiModelProperty(value = "收车联系人")
     private String backContactName;
     @ApiModelProperty(value = "收车联系人电话")
-    @Pattern(regexp = "(^[1]\\d{10}$)", message = "发车人手机号格式不正确")
+    @Pattern(regexp = "(^[1]\\d{10}$)", message = "收车人手机号格式不正确")
     private String backContactPhone;
     @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")
     private int invoiceFlag;

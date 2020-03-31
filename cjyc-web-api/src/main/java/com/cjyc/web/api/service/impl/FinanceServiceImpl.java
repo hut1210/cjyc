@@ -120,9 +120,9 @@ public class FinanceServiceImpl implements IFinanceService {
             if (financeVo != null) {
 
                 String orderCarNo = financeVo.getNo();
-                    BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
-                    BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
-                    BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
+                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
+                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
+                BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
 
                 financeVo.setPickUpCarFee(pickUpCarFee);
                 financeVo.setTrunkLineFee(trunkLineFee);
@@ -927,6 +927,7 @@ public class FinanceServiceImpl implements IFinanceService {
         for (PaymentVo paymentVo : financeVoList) {
             paymentVo.setFreightPay(paymentVo.getFreightPay() != null ? paymentVo.getFreightPay().divide(new BigDecimal(100)) : null);
             paymentVo.setFreightReceivable(paymentVo.getFreightReceivable() != null ? paymentVo.getFreightReceivable().divide(new BigDecimal(100)) : null);
+            paymentVo.setTotalIncome(new BigDecimal(MoneyUtil.fenToYuan(paymentVo.getTotalIncome(),MoneyUtil.PATTERN_TWO)));
             /*if (paymentVo != null && paymentVo.getType() != null) {
                 if (paymentVo.getType() == 2) {//企业
                     Integer settleType = financeDao.getCustomerContractById(paymentVo.getCustomerContractId());
@@ -983,7 +984,7 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PaidNewVo> paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);
         for (PaidNewVo paidNewVo : paidNewVoList) {
             paidNewVo.setFreightFee(paidNewVo.getFreightFee() != null ? paidNewVo.getFreightFee().divide(new BigDecimal(100)) : null);
-
+            paidNewVo.setFreightFeePayable(new BigDecimal(MoneyUtil.fenToYuan(paidNewVo.getFreightFeePayable(),MoneyUtil.PATTERN_TWO)));
             if (paidNewVo.getState().equals("支付失败")) {
                 paidNewVo.setFailReason("请联系管理员");
             }
