@@ -217,7 +217,7 @@
         select ww.no as wayBillNo,
         ww.carrier_name as name,
         wwc.freight_fee as freightFee,
-        wwc.freight_fee as paidFreightFee,
+        if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
         ww.freight_pay_time as payTime,
         dc.settle_type as settleType,
         (CASE
