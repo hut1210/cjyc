@@ -573,7 +573,7 @@
             resultType="com.cjyc.common.model.vo.web.finance.PaidNewVo">
         select DISTINCT(ww.id) as waybillId,ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
-        if(ww.freight_pay_state=2,ftb.amount,0) as freightFeePayable,
+        if(ww.freight_pay_state=1,ftb.amount,0) as freightFeePayable,
         if(dc.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
