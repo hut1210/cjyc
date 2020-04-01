@@ -1,0 +1,56 @@
+
+#
+#local为本机环境(127.0.0.1)配置
+#
+
+spring:
+  ##actuator管理
+  management:
+    endpoints:
+      enabled-by-default: true
+      web:
+        exposure:
+          include: '*'
+    endpoint:
+      health:
+        show-details: always
+
+  ##数据源
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #url: jdbc:mysql://10.253.96.139:3306/cjyc?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://10.253.96.142:3306/ju_test_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: l!vWT#mL93
+    #连接池
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: CustomerHikari
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      #connection-test-query: select 1
+
+##-----------------------------------logging-------------------------------------------
+##日志
+logging:
+  level:
+    #root: debug
+    com.cjyc.customer.api: debug
+    com.cjyc.common.model.dao: debug
+
+
+cjkj:
+  #推送
+  push:
+    jiguang:
+      enabled: true
+      appKey: 8a4abf674ba61fc9c47d6616
+      masterSecret: 6fc93a75e2f813f4798e88ff
+
+
+
+
+

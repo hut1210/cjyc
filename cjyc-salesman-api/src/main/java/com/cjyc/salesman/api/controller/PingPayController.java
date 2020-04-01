@@ -2,6 +2,7 @@ package com.cjyc.salesman.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjkj.common.utils.IPUtil;
+import com.cjyc.common.model.dto.UnlockDto;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
@@ -33,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 public class PingPayController {
 
     @Autowired
-    private ICsPingPayService pingPayService;
+    private ICsPingPayService csPingPayService;
 
     @ApiOperation("业务员出示二维码")
     @PostMapping("/sweepSalesCode")
@@ -41,7 +42,7 @@ public class PingPayController {
         sweepCodeDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Charge charge;
         try {
-            charge = pingPayService.sweepSalesCode(sweepCodeDto);
+            charge = csPingPayService.sweepSalesCode(sweepCodeDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);
             return BaseResultUtil.fail(500,"业务员出示二维码异常");
@@ -53,7 +54,7 @@ public class PingPayController {
     @PostMapping(value = "/validate")
     public ResultVo<ValidateSweepCodePayVo> validateCarPayState(@RequestBody ValidateSweepCodeDto validateSweepCodeDto) {
 
-        return pingPayService.validateCarPayState(validateSweepCodeDto, false);
+        return csPingPayService.validateCarPayState(validateSweepCodeDto, false);
     }
 
     @ApiOperation("业务员预付款出示二维码")
@@ -61,11 +62,17 @@ public class PingPayController {
     public ResultVo prepay(HttpServletRequest request, @RequestBody SalesPrePayDto salesPrePayDto){
         salesPrePayDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         try {
-            return pingPayService.salesPrePay(salesPrePayDto);
+            return csPingPayService.salesPrePay(salesPrePayDto);
         }catch (Exception e){
             log.error(e.getMessage(),e);
             return BaseResultUtil.fail(500,"业务员预付款出示二维码异常");
         }
+    }
+
+    @ApiOperation(value = "解除物流费支付锁")
+    @PostMapping(value = "/pay/unlock")
+    public ResultVo unlockPay(@RequestBody UnlockDto dto) {
+        return csPingPayService.unlockPay(dto.getNos());
     }
 
 }

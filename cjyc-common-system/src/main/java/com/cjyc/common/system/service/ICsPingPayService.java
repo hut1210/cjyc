@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.UnlockDto;
 import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
@@ -12,6 +13,7 @@ import com.pingplusplus.model.Charge;
 
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Author: Hut
@@ -51,7 +53,5 @@ public interface ICsPingPayService {
 
     void cancelOrderRefund(Long orderId);
 
-    ResultVo unlockPayByOrder(String no);
-
-    ResultVo unlockPayByCar(String no);
+    ResultVo unlockPay(List<String> nos);
 }

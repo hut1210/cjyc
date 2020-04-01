@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.utils.IPUtil;
+import com.cjyc.common.model.dto.UnlockDto;
 import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
@@ -50,6 +51,8 @@ public class PingPayController {
 
     @Autowired
     private IPingPayService pingPayService;
+    @Autowired
+    private ICsPingPayService csPingPayService;
 
     @Autowired
     private ITransactionService transactionService;
@@ -276,5 +279,12 @@ public class PingPayController {
         reqDto.setLoginPhone(customer.getContactPhone());
         reqDto.setLoginType(UserTypeEnum.CUSTOMER);
         return pingPayService.receiptBatch(reqDto);
+    }
+
+
+    @ApiOperation(value = "解除物流费支付锁")
+    @PostMapping(value = "/pay/unlock")
+    public ResultVo unlockPay(@RequestBody UnlockDto dto) {
+        return csPingPayService.unlockPay(dto.getNos());
     }
 }

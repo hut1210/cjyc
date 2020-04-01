@@ -96,6 +96,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             }
             order.setLineId(line.getId());
         }
+
         fillOrderStoreInfoForSave(order);
         order.setState(OrderStateEnum.WAIT_CHECK.code);
         orderDao.updateById(order);
@@ -109,11 +110,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     private Order fillOrderStoreInfoForSave(Order order) {
         Long inputStoreId = order.getInputStoreId();
-        order.setInputStoreId(inputStoreId == null || inputStoreId == -5 ? null : inputStoreId);
+        order.setInputStoreId(inputStoreId == -5 ? null : inputStoreId);
         Long startStoreId = order.getStartStoreId();
-        order.setStartStoreId(startStoreId == null || startStoreId == -5 ? null : startStoreId);
+        order.setStartStoreId(startStoreId == -5 ? null : startStoreId);
         Long endStoreId = order.getEndStoreId();
-        order.setEndStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
+        order.setEndStoreId(endStoreId == -5 ? null : endStoreId);
         return order;
     }
 

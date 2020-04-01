@@ -1,11 +1,10 @@
 package com.cjyc.foreign.api.dto.req;
 
+import com.cjyc.common.model.constant.ArgsConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -30,7 +29,7 @@ public class OrderCarSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
 
-    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin码格式不正确，请检查")
+    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{17}$)", message = "vin码格式不正确，请检查")
     @ApiModelProperty(value = "vin码")
     private String vin;
 
@@ -47,8 +46,12 @@ public class OrderCarSubmitReqDto implements Serializable {
     private Integer valuation;
 
     @ApiModelProperty(value = "保险费/元",hidden = true)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal addInsuranceFee;
 
-    @ApiModelProperty(value = "车辆应收干线费 单位：分",hidden = true)
+    @ApiModelProperty(value = "车辆应收干线费",hidden = true)
+    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal trunkFee;
 }

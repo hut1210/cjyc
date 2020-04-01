@@ -837,6 +837,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             PayBank payBank = payBankService.findPayBank(bcb.getBankName());
             if(payBank != null){
                 bcb.setBankCode(payBank.getBankCode());
+                bcb.setPayBankNo(payBank.getPayBankNo());
             }
             bcb.setProvinceName(dto.getProvinceName());
             bcb.setAreaName(dto.getAreaName());
@@ -1083,6 +1084,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                         PayBank payBank = payBankService.findPayBank(dto.getBankName());
                         if(payBank != null){
                             bcb.setBankCode(payBank.getBankCode());
+                            bcb.setPayBankNo(payBank.getPayBankNo());
                         }
                         bcb.setProvinceName(dto.getProvinceName());
                         bcb.setAreaName(dto.getAreaName());
@@ -1405,6 +1407,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 PayBank payBank = payBankService.findPayBank(bcb.getBankName());
                 if(payBank != null){
                     bcb.setBankCode(payBank.getBankCode());
+                    bcb.setPayBankNo(payBank.getPayBankNo());
                 }
                 bcb.setProvinceName(dto.getProvinceName());
                 bcb.setAreaName(dto.getAreaName());

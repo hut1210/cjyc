@@ -45,28 +45,33 @@ public class PaymentVo implements Serializable {
     @ApiModelProperty(value = "实收运费")
     @Excel(name = "实收运费" ,orderNum = "6",type = 10)
     private BigDecimal freightPay;
+
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @ApiModelProperty(value = "实际收益")
+    @Excel(name = "实际收益" ,orderNum = "7",type = 10)
+    private BigDecimal totalIncome;
     @ApiModelProperty(value = "订单编号")
-    @Excel(name = "订单编号" ,orderNum = "7")
+    @Excel(name = "订单编号" ,orderNum = "8")
     private String orderNo;
     @ApiModelProperty(value = "订单所属大区")
-    @Excel(name = "订单所属大区" ,orderNum = "8")
+    @Excel(name = "订单所属大区" ,orderNum = "9")
     private String largeArea;
     @ApiModelProperty(value = "订单所属业务中心")
-    @Excel(name = "订单所属业务中心" ,orderNum = "9")
+    @Excel(name = "订单所属业务中心" ,orderNum = "10")
     private String inputStoreName;
     @ApiModelProperty(value = "始发地")
-    @Excel(name = "始发地" ,orderNum = "10")
+    @Excel(name = "始发地" ,orderNum = "11")
     private String startAddress;
 
     @ApiModelProperty(value = "目的地")
-    @Excel(name = "目的地" ,orderNum = "11")
+    @Excel(name = "目的地" ,orderNum = "12")
     private String endAddress;
 
     @ApiModelProperty(value = "交付时间")
     //@Excel(name = "交付时间" ,orderNum = "12")
     private Long deliveryDate;
 
-    @Excel(name = "交付时间" ,orderNum = "12")
+    @Excel(name = "交付时间" ,orderNum = "13")
     @ApiModelProperty(value = "交付时间")
 
     private String deliveryDateStr;
@@ -84,7 +89,7 @@ public class PaymentVo implements Serializable {
     @ApiModelProperty(value = "客户类型")
     private Integer type;
 
-    @Excel(name = "客户类型" ,orderNum = "13")
+    @Excel(name = "客户类型" ,orderNum = "14")
     private String customTypeName;
 
     public String getCustomTypeName() {
@@ -101,7 +106,7 @@ public class PaymentVo implements Serializable {
     }
 
     @ApiModelProperty(value = "客户名称")
-    @Excel(name = "客户名称" ,orderNum = "14")
+    @Excel(name = "客户名称" ,orderNum = "15")
     private String customerName;
 
     @ApiModelProperty(value = "合同Id")
@@ -110,7 +115,7 @@ public class PaymentVo implements Serializable {
     @ApiModelProperty(value = "付款时间")
     private Long payTime;
 
-    @Excel(name = "付款时间" ,orderNum = "15")
+    @Excel(name = "付款时间" ,orderNum = "16")
     private String payTimeStr;
 
     public String getPayTimeStr() {

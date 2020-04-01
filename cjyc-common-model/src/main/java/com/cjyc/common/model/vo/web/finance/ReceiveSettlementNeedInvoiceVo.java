@@ -1,5 +1,6 @@
 package com.cjyc.common.model.vo.web.finance;
 
+import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,7 +13,7 @@ import java.io.Serializable;
  * @Date:2020/3/20 15:57
  */
 @Data
-public class ReceiveSettlementNeedInvoiceVo implements Serializable {
+public class ReceiveSettlementNeedInvoiceVo extends BasePageDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
