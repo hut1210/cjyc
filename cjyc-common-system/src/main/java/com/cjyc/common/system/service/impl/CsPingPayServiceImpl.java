@@ -505,7 +505,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     redisUtils.delete(lockKey);
                                     log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                     addPaymentErrorLog("auto allinpay 收款人为账期用户 waybillId = "+waybillId);
-                                    tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
+                                    //账期承运商此处不处理支付状态
+                                    //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                     return;
                                 }
                             }else{
@@ -671,7 +672,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                 redisUtils.delete(lockKey);
                                 log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                 addPaymentErrorLog("external allinpay 收款人为账期用户 waybillId = "+waybillId);
-                                tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
+                                //账期承运商此处不处理支付状态
+                                //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                 return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                             }
                         }else{
