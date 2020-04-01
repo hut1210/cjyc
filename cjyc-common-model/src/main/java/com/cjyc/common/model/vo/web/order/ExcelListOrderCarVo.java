@@ -32,67 +32,70 @@ public class ExcelListOrderCarVo implements Serializable {
     private String region;
     @Excel(name = "订单状态", orderNum = "9",width = 15)
     private String outterState;
-    @Excel(name = "下单客户", orderNum = "10",width = 20)
+    private Integer customerType;
+    @Excel(name = "客户类型", orderNum = "10",width = 20)
+    private String customerTypeStr;
+    @Excel(name = "下单客户", orderNum = "11",width = 20)
     private String customerPhone;
-    @Excel(name = "客户名称", orderNum = "11",width = 20)
+    @Excel(name = "客户名称", orderNum = "12",width = 20)
     private String customerName;
-    @Excel(name = "始发城市", orderNum = "12",width = 15)
+    @Excel(name = "始发城市", orderNum = "13",width = 15)
     private String startCity;
-    @Excel(name = "目的城市", orderNum = "13",width = 15)
+    @Excel(name = "目的城市", orderNum = "14",width = 15)
     private String endCity;
-    @Excel(name = "出发地业务中心", orderNum = "14",width = 20)
+    @Excel(name = "出发地业务中心", orderNum = "15",width = 20)
     private String startStoreName;
-    @Excel(name = "目的地业务中心", orderNum = "15",width = 20)
+    @Excel(name = "目的地业务中心", orderNum = "16",width = 20)
     private String endStoreName;
-    @Excel(name = "提车日期", orderNum = "16",width = 20)
+    @Excel(name = "提车日期", orderNum = "17",width = 20)
     private Long expectStartDate;
-    @Excel(name = "提车方式", orderNum = "17",width = 15)
+    @Excel(name = "提车方式", orderNum = "18",width = 15)
     private Integer pickType;
-    @Excel(name = "提车联系人", orderNum = "18",width = 20)
+    @Excel(name = "提车联系人", orderNum = "19",width = 20)
     private String pickContactName;
-    @Excel(name = "提车联系方式", orderNum = "19",width = 20)
+    @Excel(name = "提车联系方式", orderNum = "20",width = 20)
     private String pickContactPhone;
-    @Excel(name = "提车地址", orderNum = "20",width = 20)
+    @Excel(name = "提车地址", orderNum = "21",width = 20)
     private String startFullAddress;
-    @Excel(name = "预计到达时间", orderNum = "21",width = 20)
+    @Excel(name = "预计到达时间", orderNum = "22",width = 20)
     private Long expectEndDate;
-    @Excel(name = "送车方式", orderNum = "22",width = 15)
+    @Excel(name = "送车方式", orderNum = "23",width = 15)
     private Integer backType;
-    @Excel(name = "交车联系人", orderNum = "23",width = 20)
+    @Excel(name = "交车联系人", orderNum = "24",width = 20)
     private String backContactName;
-    @Excel(name = "交车电话", orderNum = "24",width = 20)
+    @Excel(name = "交车电话", orderNum = "25",width = 20)
     private String backContactPhone;
-    @Excel(name = "交车地址", orderNum = "25",width = 20)
+    @Excel(name = "交车地址", orderNum = "26",width = 20)
     private String endFullAddress;
-    @Excel(name = "订单备注", orderNum = "26",width = 15)
+    @Excel(name = "订单备注", orderNum = "27",width = 15)
     private String remark;
-    @Excel(name = "客户付款方式", orderNum = "27",width = 15)
+    @Excel(name = "客户付款方式", orderNum = "28",width = 15)
     private Integer payType;
-    @Excel(name = "是否能动", orderNum = "28",width = 15)
+    @Excel(name = "是否能动", orderNum = "29",width = 15)
     private Integer isMove;
-    @Excel(name = "车牌号", orderNum = "29",width = 15)
+    @Excel(name = "车牌号", orderNum = "30",width = 15)
     private String plateNo;
-    @Excel(name = "车值(万元)", orderNum = "30",width = 15)
+    @Excel(name = "车值(万元)", orderNum = "31",width = 15)
     private Integer valuation;
-    @Excel(name = "追保额(万元)", orderNum = "31",width = 15)
+    @Excel(name = "追保额(万元)", orderNum = "32",width = 15)
     private Integer addInsuranceAmount;
-    @Excel(name = "保费(元)", orderNum = "32",width = 15)
+    @Excel(name = "保费(元)", orderNum = "33",width = 15)
     private BigDecimal addInsuranceFee;
-    @Excel(name = "提车费(元)", orderNum = "33",width = 15)
+    @Excel(name = "提车费(元)", orderNum = "34",width = 15)
     private BigDecimal pickFee;
-    @Excel(name = "物流费(元)", orderNum = "34",width = 15)
+    @Excel(name = "物流费(元)", orderNum = "35",width = 15)
     private BigDecimal trunkFee;
-    @Excel(name = "送车费(元)", orderNum = "35",width = 15)
+    @Excel(name = "送车费(元)", orderNum = "36",width = 15)
     private BigDecimal backFee;
-    @Excel(name = "是否新车", orderNum = "36",width = 15)
+    @Excel(name = "是否新车", orderNum = "37",width = 15)
     private Integer isNew;
-    @Excel(name = "下单时间", orderNum = "37",width = 20)
+    @Excel(name = "下单时间", orderNum = "38",width = 20)
     private Long createTime;
-    @Excel(name = "下单人", orderNum = "38",width = 20)
+    @Excel(name = "下单人", orderNum = "39",width = 20)
     private String createUserName;
-    @Excel(name = "接单时间", orderNum = "39",width = 20)
+    @Excel(name = "接单时间", orderNum = "40",width = 20)
     private Long checkTime;
-    @Excel(name = "接单人", orderNum = "40",width = 20)
+    @Excel(name = "接单人", orderNum = "41",width = 20)
     private String checkUserName;
 
     public String getWlPayState(){
@@ -238,5 +241,26 @@ public class ExcelListOrderCarVo implements Serializable {
             default:str = "";
         }
         return str;
+    }
+
+    /**
+     * 客户类型code到name的转换
+     *
+     * @return
+     */
+    public String getCustomerTypeStr(){
+        if(customerType == null){
+            return "";
+        }
+        switch (customerType){
+            case 1:
+                return "个人";
+            case 2:
+                return "企业";
+            case 3:
+                return "合伙人";
+            default:
+                return "";
+        }
     }
 }
