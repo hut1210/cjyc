@@ -472,33 +472,30 @@
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
         left join f_external_payment fep on fep.order_id=wo.id
-        where wo.state=100 and wo.customer_type=3
+        where wo.state=100 and wo.customer_type=3 and wo.service_fee_pay_time>1582992000000
         <include refid="cooperatorSummary"></include>
     </select>
 
     <select id="cooperatorSummary" resultType="java.math.BigDecimal">
         select sum(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee)
-        from w_order_car woc where woc.order_no in(
-        select wo.no
-        from w_order wo
+        from w_order_car woc
+        left join w_order wo on woc.order_id=wo.id
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
         left join f_external_payment fep on fep.order_id=wo.id
-        where wo.state=100 and wo.customer_type=3
+        where wo.state=100 and wo.customer_type=3 and wo.service_fee_pay_time>1582992000000
         <include refid="cooperatorSummary"></include>
-        )
     </select>
     <select id="paidToCooperatorSummary" resultType="java.math.BigDecimal">
         select sum(amount)
         from f_trade_bill ftb
-        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id where type=21 and state=2 and ftbd.source_no in
-        (select wo.no
-        from w_order wo
+        left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
+        left join w_order wo on wo.no=ftbd.source_no
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
         left join f_external_payment fep on fep.order_id=wo.id
-        where wo.state=100 and wo.customer_type=3
-        <include refid="cooperatorSummary"></include>)
+        where wo.state=100 and wo.customer_type=3 and ftb.type=21 and ftb.state=2
+        <include refid="cooperatorSummary"></include>
     </select>
     <select id="actualReceiptSummary" resultType="java.math.BigDecimal">
 

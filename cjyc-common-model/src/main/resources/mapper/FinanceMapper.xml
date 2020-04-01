@@ -573,7 +573,7 @@
             resultType="com.cjyc.common.model.vo.web.finance.PaidNewVo">
         select DISTINCT(ww.id) as waybillId,ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
-        if(ftb.state=2,ftb.amount,0) as freightFeePayable,
+        if(ww.freight_pay_state=2,ftb.amount,0) as freightFeePayable,
         if(dc.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
@@ -606,6 +606,7 @@
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id=ftbd.trade_bill_id
         where dc.settle_type=0 and ww.state=100 and wt.state &lt;= 100
+        and ww.carrier_type in (1,2,4,5)
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
@@ -911,7 +912,7 @@
                 when wo.flag=-2 then '支付失败'
             end
         ) as state,
-        wo.service_fee_pay_time as payTime,
+        if(wo.service_fee_pay_time>1582992000000,wo.service_fee_pay_time,null) as payTime,
         wo.start_city as startCity,
         wo.end_city as endCity,
         (
@@ -940,7 +941,7 @@
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
         left join f_external_payment fep on fep.order_id=wo.id
-        where wo.state=100 and wo.customer_type=3
+        where wo.state=100 and wo.customer_type=3 and wo.service_fee_pay_time>1582992000000
         <if test="orderNo !=null and orderNo.trim() !=''">
             and wo.no like concat('%',#{orderNo},'%')
         </if>
