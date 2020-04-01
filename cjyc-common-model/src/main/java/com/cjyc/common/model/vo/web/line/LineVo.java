@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.line;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
-import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.SecondLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -61,7 +61,7 @@ public class LineVo implements Serializable {
     private String remark;
 
     @ApiModelProperty("创建时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
+    @JsonSerialize(using = SecondLongSerizlizer.class)
     private Long createTime;
 
     @ApiModelProperty("创建人员")
@@ -71,6 +71,6 @@ public class LineVo implements Serializable {
     private String updateName;
 
     @ApiModelProperty("修改时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
+    @JsonSerialize(using = SecondLongSerizlizer.class)
     private Long updateTime;
 }
