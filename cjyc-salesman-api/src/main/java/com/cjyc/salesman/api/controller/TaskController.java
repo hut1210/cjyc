@@ -7,8 +7,6 @@ import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.VinCheckUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.Map;
 
 /**
  * @Description 任务控制层
@@ -68,12 +65,6 @@ public class TaskController {
     @ApiOperation(value = "提车完善信息")
     @PostMapping(value = "/replenish/info/update")
     public ResultVo replenishInfo(@Validated @RequestBody ReplenishInfoDto reqDto) {
-        // vin码格式校验
-        Map<String, Object> checkVinMap = VinCheckUtil.checkVin(reqDto.getVin());
-        if (!((boolean) checkVinMap.get("status"))) {
-            return BaseResultUtil.fail((String) checkVinMap.get("msg"));
-        }
-
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -148,12 +139,6 @@ public class TaskController {
     @ApiOperation(value = "入库完善信息")
     @PostMapping(value = "/unload/replenish/info")
     public ResultVo unloadReplenishInfo(@Valid @RequestBody ReplenishInfoDto reqDto) {
-        // vin码格式校验
-        Map<String, Object> checkVinMap = VinCheckUtil.checkVin(reqDto.getVin());
-        if (!((boolean) checkVinMap.get("status"))) {
-            return BaseResultUtil.fail((String) checkVinMap.get("msg"));
-        }
-
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());

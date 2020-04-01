@@ -9,7 +9,6 @@ import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.VinCheckUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsDriverService;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.Map;
 
 @RestController
 @Api(tags = "运单")
@@ -44,12 +42,6 @@ public class WaybillController {
     @ApiOperation(value = "提车完善信息")
     @PostMapping(value = "/replenish/info/update")
     public ResultVo replenishInfo(@Valid @RequestBody ReplenishInfoDto reqDto) {
-        // vin码格式校验
-        Map<String, Object> checkVinMap = VinCheckUtil.checkVin(reqDto.getVin());
-        if (!((boolean) checkVinMap.get("status"))) {
-            return BaseResultUtil.fail((String) checkVinMap.get("msg"));
-        }
-
         //验证用户
         Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
         if (driver == null) {

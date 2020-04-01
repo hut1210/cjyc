@@ -217,7 +217,7 @@
         select ww.no as wayBillNo,
         ww.carrier_name as name,
         wwc.freight_fee as freightFee,
-        wwc.freight_fee as paidFreightFee,
+        if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
         ww.freight_pay_time as payTime,
         dc.settle_type as settleType,
         (CASE
@@ -970,7 +970,7 @@
         <if test="operator !=null and operator.trim() !=''">
             and fep.operator like concat('%',#{operator},'%')
         </if>
-        order by wo.service_fee_pay_time desc
+        order by wo.finish_time desc
     </select>
     <select id="getFinanceDetailList" resultType="com.cjyc.common.model.vo.web.finance.ExportFinanceDetailVo">
         select DISTINCT(woc.no),woc.brand,woc.model,woc.vin,wo.input_store_name as inputStoreName,
