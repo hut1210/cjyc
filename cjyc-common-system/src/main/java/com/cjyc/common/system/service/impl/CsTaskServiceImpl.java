@@ -945,7 +945,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             boolean isAdmin = waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code;
             csPushMsgService.send(task.getDriverId(),
                     isAdmin ? UserTypeEnum.ADMIN : UserTypeEnum.DRIVER,
-                    isAdmin ? PushMsgEnum.S_FINISHED : PushMsgEnum.D_FINISHED,
+                    newState == WaybillStateEnum.F_CANCEL.code ? ( isAdmin ? PushMsgEnum.S_CANCEL_WAYBILL : PushMsgEnum.D_CANCEL_WAYBILL) : (isAdmin ? PushMsgEnum.S_FINISHED : PushMsgEnum.D_FINISHED),
                     task.getWaybillNo());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
