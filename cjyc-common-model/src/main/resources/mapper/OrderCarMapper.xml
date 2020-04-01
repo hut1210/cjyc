@@ -689,6 +689,7 @@
 
         <include refid="transport_state"/>
         o.source as source,
+        o.customer_type as customerType,
         o.customer_name as customerName,
         o.customer_phone as customerPhone,
         o.start_city as startCity,
