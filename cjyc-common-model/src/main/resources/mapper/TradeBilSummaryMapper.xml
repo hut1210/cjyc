@@ -472,7 +472,7 @@
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
         left join f_external_payment fep on fep.order_id=wo.id
-        where wo.state=100 and wo.customer_type=3 and wo.service_fee_pay_time>1582992000000
+        where wo.state=100 and wo.customer_type=3
         <include refid="cooperatorSummary"></include>
     </select>
 
@@ -483,7 +483,7 @@
         left join s_bank_card_bind sbcb on wo.customer_id = sbcb.user_id
         left join c_customer_partner ccp on ccp.customer_id = wo.customer_id
         left join f_external_payment fep on fep.order_id=wo.id
-        where wo.state=100 and wo.customer_type=3 and wo.service_fee_pay_time>1582992000000
+        where wo.state=100 and wo.customer_type=3
         <include refid="cooperatorSummary"></include>
     </select>
     <select id="paidToCooperatorSummary" resultType="java.math.BigDecimal">
