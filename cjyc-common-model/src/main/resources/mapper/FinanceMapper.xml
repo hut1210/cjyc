@@ -982,7 +982,7 @@
         END) as wayBillTypeName,
         if(dc.settle_type=0,'时付','账期') as settleType,
         wwc.freight_fee as freightFee,
-        wwc.freight_fee as paidFreightFee,
+        if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
         (CASE
             when ww.freight_pay_state=2 then '付款中'
             when ww.freight_pay_state=1 then '已付款'
