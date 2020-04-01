@@ -970,7 +970,7 @@
         <if test="operator !=null and operator.trim() !=''">
             and fep.operator like concat('%',#{operator},'%')
         </if>
-        order by wo.service_fee_pay_time desc
+        order by wo.finish_time desc
     </select>
     <select id="getFinanceDetailList" resultType="com.cjyc.common.model.vo.web.finance.ExportFinanceDetailVo">
         select DISTINCT(woc.no),woc.brand,woc.model,woc.vin,wo.input_store_name as inputStoreName,
