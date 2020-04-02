@@ -529,7 +529,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     PushInfo pushInfo = csPushMsgService.getPushInfo(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_TRANSPORT, order.getNo(), order.getStartCity(), order.getEndCity());
                     pushCustomerList.add(pushInfo);
                 }
-                if(isFirstLoad){
+                if (isFirstLoad) {
                     firstLoadOrderSet.add(order);
                 }
                 count++;
@@ -945,7 +945,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             boolean isAdmin = waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code;
             csPushMsgService.send(task.getDriverId(),
                     isAdmin ? UserTypeEnum.ADMIN : UserTypeEnum.DRIVER,
-                    isAdmin ? PushMsgEnum.S_FINISHED : PushMsgEnum.D_FINISHED,
+                    newState == WaybillStateEnum.F_CANCEL.code ? ( isAdmin ? PushMsgEnum.S_CANCEL_WAYBILL : PushMsgEnum.D_CANCEL_WAYBILL) : (isAdmin ? PushMsgEnum.S_FINISHED : PushMsgEnum.D_FINISHED),
                     task.getWaybillNo());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -1032,7 +1032,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
-                if(OrderStateEnum.TRANSPORTING.code > order.getState()){
+                if (OrderStateEnum.TRANSPORTING.code > order.getState()) {
                     firstLoadOrderSet.add(order);
                 }
                 //更新运单车辆状态
@@ -1332,7 +1332,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         boolean isFinish = countUnFinish <= 0;
         boolean isPaid = countUnpay <= 0;
 
-        if(isFinish){
+        if (isFinish) {
             orderDao.updateForFinish(orderId);
 
             Order order = orderDao.selectById(orderId);
@@ -1345,7 +1345,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             csAmqpService.sendOrderState(order);
         }
 
-        if(isPaid){
+        if (isPaid) {
             orderDao.updateForPaid(orderId);
         }
     }
