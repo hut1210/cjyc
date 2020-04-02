@@ -2,6 +2,7 @@ package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
+import com.cjyc.common.model.entity.CustomerContract;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -245,5 +246,11 @@ public class CustomerController {
     public ResultVo importBankInfoExcel(@RequestParam("file") MultipartFile file){
         boolean result = customerService.importBankInfoExcel(file);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+    }
+
+    @ApiOperation(value = "根据合同id获取相关信息")
+    @PostMapping(value = "/findContract/{contractId}")
+    public ResultVo<CustomerContract> findContract(@PathVariable @ApiParam(value = "合同id",required = true) Long contractId){
+        return customerService.findContract(contractId);
     }
 }
