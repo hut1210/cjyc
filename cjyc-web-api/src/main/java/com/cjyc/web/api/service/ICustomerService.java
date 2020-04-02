@@ -3,6 +3,7 @@ package com.cjyc.web.api.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
+import com.cjyc.common.model.entity.CustomerContract;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.entity.Customer;
@@ -255,4 +256,11 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     boolean importBankInfoExcel(MultipartFile file);
+
+    /**
+     * 根据合同id获取合同信息
+     * @param contractId
+     * @return
+     */
+    ResultVo<CustomerContract> findContract(Long contractId);
 }
