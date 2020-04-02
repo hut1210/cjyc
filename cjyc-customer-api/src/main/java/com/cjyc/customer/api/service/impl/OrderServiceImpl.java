@@ -119,17 +119,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     @Override
-    public ResultVo<OutterLogVo> ListOrderCarLog(String orderCarNo) {
-        OutterLogVo outterLogVo = new OutterLogVo();
-        String state = orderCarDao.findOutterState(orderCarNo);
-        outterLogVo.setOutterState(state);
-        outterLogVo.setOrderCarNo(orderCarNo);
-        List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
-        outterLogVo.setList(list);
-        return BaseResultUtil.success(outterLogVo);
-    }
-
-    @Override
     public ResultVo<PageVo<OrderCenterVo>> getPage(OrderQueryDto dto) {
         log.info("====>用户端-查询订单列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         if (dto.getEndDate() != null && dto.getEndDate() != 0) {
