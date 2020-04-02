@@ -315,7 +315,14 @@
 
     </profiles>
     <repositories>
-
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
         <repository>
             <id>rdc-releases</id>
             <url>https://repo.rdc.aliyun.com/repository/44149-release-Kl4P3i/</url>
