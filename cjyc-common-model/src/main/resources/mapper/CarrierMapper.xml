@@ -150,6 +150,7 @@
             sbcb.area_name AS areaName,
             sbcb.card_name AS cardName,
             sbcb.bank_name AS bankName,
+            sbcb.pay_bank_no AS payBankNo,
             sbcb.card_no AS cardNo,
             sbcb.bank_code AS bankCode
         FROM

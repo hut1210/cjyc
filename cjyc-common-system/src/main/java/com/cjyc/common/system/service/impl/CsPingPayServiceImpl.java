@@ -505,7 +505,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     redisUtils.delete(lockKey);
                                     log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                     addPaymentErrorLog("auto allinpay 收款人为账期用户 waybillId = "+waybillId);
-                                    tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
+                                    //账期承运商此处不处理支付状态
+                                    //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                     return;
                                 }
                             }else{
@@ -671,7 +672,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                 redisUtils.delete(lockKey);
                                 log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
                                 addPaymentErrorLog("external allinpay 收款人为账期用户 waybillId = "+waybillId);
-                                tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
+                                //账期承运商此处不处理支付状态
+                                //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                 return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                             }
                         }else{
@@ -1020,11 +1022,17 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         extra.put("card_number", showPartnerVo.getCardNo());
         //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
         extra.put("open_bank_code",showPartnerVo.getBankCode());
+
+        //付款账户为公户转账必填
+        // sub_bank开户行详细名
+        // sub_bank_code支付行号
+        // prov省份，不带 “省” 或 “自治区”
+        // city城市，不带 “市”
         if(showPartnerVo.getCardType()==1){
-            extra.put("sub_bank", "交通银行股份有限公司珠海拱北支行");
-            extra.put("sub_bank_code", "301585000042");
-            extra.put("prov", "广东");
-            extra.put("city", "珠海");
+            extra.put("sub_bank", showPartnerVo.getBankName());
+            extra.put("sub_bank_code", showPartnerVo.getPayBankNo());
+            extra.put("prov", showPartnerVo.getProvinceName());
+            extra.put("city", showPartnerVo.getAreaName());
         }
 
         params.put("extra", extra);
@@ -1362,7 +1370,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         params.put("amount", amount);
         // 目前支持 支付宝：alipay，银联：unionpay，微信公众号：wx_pub，通联：allinpay，京东：jdpay 余额：balance
         params.put("channel", "allinpay");
-        params.put("type", "b2c");//付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        //付款类型，转账到个人用户为 b2c，转账到企业用户为 b2b（wx、wx_pub、wx_lite 和 balance 渠道的企业付款，仅支持 b2c）
+        if(baseCarrierVo.getCardType()==1){
+            params.put("type", "b2b");
+        }else{
+            params.put("type", "b2c");
+        }
+
         params.put("currency", "cny");
         params.put("description", "通联代付司机运费");
 
@@ -1374,6 +1388,18 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         extra.put("card_number", baseCarrierVo.getCardNo());
         //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
         extra.put("open_bank_code",baseCarrierVo.getBankCode());
+
+        //付款账户为公户转账必填
+        // sub_bank开户行详细名
+        // sub_bank_code支付行号
+        // prov省份，不带 “省” 或 “自治区”
+        // city城市，不带 “市”
+        if(baseCarrierVo.getCardType()==1){
+            extra.put("sub_bank", baseCarrierVo.getBankName());
+            extra.put("sub_bank_code", baseCarrierVo.getPayBankNo());
+            extra.put("prov", baseCarrierVo.getProvinceName());
+            extra.put("city", baseCarrierVo.getAreaName());
+        }
 
         params.put("extra", extra);
 
