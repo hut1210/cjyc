@@ -55,6 +55,9 @@ public class BaseCarrierVo implements Serializable {
     @ApiModelProperty("地区名称")
     private String areaName;
 
+    @ApiModelProperty("支付行号")
+    private String payBankNo;
+
     @ApiModelProperty("银行卡户主")
     private String cardName;
 

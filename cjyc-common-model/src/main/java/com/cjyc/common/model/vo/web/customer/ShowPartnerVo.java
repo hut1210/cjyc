@@ -48,6 +48,8 @@ public class ShowPartnerVo implements Serializable {
     private String areaName;
     @ApiModelProperty("银行名称")
     private String bankName;
+    @ApiModelProperty("支付行号")
+    private String payBankNo;
     @ApiModelProperty("银行卡卡号")
     private String cardNo;
     @ApiModelProperty("银行卡户主")
