@@ -326,6 +326,7 @@
                 sbcb.province_name AS provinceName,
                 sbcb.area_name AS areaName,
                 sbcb.bank_name AS bankName,
+                sbcb.pay_bank_no AS payBankNo,
                 sbcb.card_no AS cardNo,
                 sbcb.card_name AS cardName,
                 sbcb.description AS description,

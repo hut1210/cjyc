@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -223,11 +224,14 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean saveOrUpdateExcel(MultipartFile file, Long loginId) {
         boolean result;
         try {
             List<SaveOrUpdateLineExcel> excelLineList = ExcelUtil.importExcel(file, 1, 1, SaveOrUpdateLineExcel.class);
             if(!CollectionUtils.isEmpty(excelLineList)){
+                int updateCunt = 0;
+                int saveCount = 0;
                 for(SaveOrUpdateLineExcel lineExcel : excelLineList) {
                     //根据城市名称查询城市code
                     City fromCity = cityDao.getCodeByName(lineExcel.getFromCity());
@@ -236,25 +240,34 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                         Line line = lineDao.getLinePriceByCode(fromCity.getCode(),toCity.getCode());
                         if(line != null){
                             //更新
-                            Line newLine = new Line();
-                            newLine.setDefaultWlFee(lineExcel.getDefaultWlFee() == null ? BigDecimal.ZERO:new BigDecimal(lineExcel.getDefaultWlFee()).multiply(new BigDecimal(100)));
-                            newLine.setDefaultFreightFee(lineExcel.getDefaultFreightFee() == null ? BigDecimal.ZERO:new BigDecimal(lineExcel.getDefaultFreightFee()).multiply(new BigDecimal(100)));
-                            newLine.setDays(BigDecimal.valueOf(lineExcel.getDays()));
-                            String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
-                            String toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
-                            double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-                            BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
-                            line.setKilometer(bd);
+                            if(lineExcel.getDefaultWlFee() != null && lineExcel.getDefaultFreightFee() != null && lineExcel.getDays() != null){
+                                Line newLine = new Line();
+                                newLine.setDefaultWlFee(new BigDecimal(lineExcel.getDefaultWlFee()).multiply(new BigDecimal(100)));
+                                newLine.setDefaultFreightFee(new BigDecimal(lineExcel.getDefaultFreightFee()).multiply(new BigDecimal(100)));
+                                newLine.setDays(BigDecimal.valueOf(lineExcel.getDays()));
+                                if(lineExcel.getFromCity().equals(lineExcel.getToCity())){
+                                    line.setKilometer(BigDecimal.ZERO);
+                                }else{
+                                    String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
+                                    String toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
+                                    double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
+                                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                                    line.setKilometer(bd);
+                                }
 
-                            LambdaUpdateWrapper<Line> updateWrapper = new UpdateWrapper<Line>().lambda().eq(Line::getId, line.getId());
-                            lineDao.update(newLine,updateWrapper);
+                                LambdaUpdateWrapper<Line> updateWrapper = new UpdateWrapper<Line>().lambda().eq(Line::getId, line.getId());
+                                lineDao.update(newLine,updateWrapper);
+                            }
+                            updateCunt++;
                         }else{
                             //保存
                             Line newLine = encapExcelLine(null,lineExcel, fromCity, toCity, loginId);
                             lineDao.insert(newLine);
+                            saveCount++;
                         }
                     }
                 }
+                log.info("数量:{},{}",updateCunt,saveCount);
                 result = true;
             }else{
                 result = false;
@@ -301,12 +314,16 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
             line.setDefaultFreightFee(excel.getDefaultFreightFee() == null ? BigDecimal.ZERO:new BigDecimal(excel.getDefaultFreightFee()).multiply(new BigDecimal(100)));
             fromCityLocation = PositionUtil.getLngAndLat(excel.getFromCity());
             toCityLocation = PositionUtil.getLngAndLat(excel.getToCity());
-            line.setDays(BigDecimal.valueOf(excel.getDays()));
+            line.setDays(excel.getDays() == null ? BigDecimal.ZERO:BigDecimal.valueOf(excel.getDays()));
             line.setName(excel.getFromCity()+NoConstant.SEPARATOR+excel.getToCity());
         }
-        double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-        BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
-        line.setKilometer(bd);
+        if(excel.getFromCity().equals(excel.getToCity())){
+            line.setKilometer(BigDecimal.ZERO);
+        }else{
+            double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
+            BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+            line.setKilometer(bd);
+        }
         line.setCreateTime(System.currentTimeMillis());
         line.setCreateUserId(loginId);
         return line;
