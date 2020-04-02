@@ -2448,7 +2448,7 @@
         when o.state >= 25 and o.state &lt; 100 then (
             case
             when oc.state &lt;= 10 then '待运输'
-            when oc.state > 10 and oc.state &lt; 100 then '待运输'
+            when oc.state > 10 and oc.state &lt; 100 then '运输中'
             when oc.state = 100 then '已签收'
             end
             )
