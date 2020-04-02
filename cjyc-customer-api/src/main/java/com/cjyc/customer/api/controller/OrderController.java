@@ -186,7 +186,7 @@ public class OrderController {
      * 车辆日志
      * @author JPG
      */
-    @ApiOperation(value = "查询车辆和订单详细信息-根据车辆ID")
+    @ApiOperation(value = "查询车辆和订单详细物流信息-根据车辆ID")
     @PostMapping(value = "/car/log/list")
     public ResultVo<OutterLogVo> ListOrderCarLog(@Valid @RequestBody OrderCarNoDto reqDto) {
         return orderService.ListOrderCarLog(reqDto.getOrderCarNo());

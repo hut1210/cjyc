@@ -36,7 +36,7 @@ public class TrunkMidwayUnload extends BaseWebDto {
 
     @NotBlank(message = "收车人电话不能为空")
     @ApiModelProperty(value = "收车人电话")
-    @Pattern(regexp = "^[1]\\d{10}$")
+    @Pattern(regexp = "^[1]\\d{10}$", message = "收车人电话格式不正确")
     private String unloadLinkPhone;
 
     @NotNull(message = "收卸车时间不能为空")
