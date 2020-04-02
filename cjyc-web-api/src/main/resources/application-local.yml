@@ -104,8 +104,8 @@ spring:
 logging:
   level:
     #root: debug
-    com.cjyc.web.api: debug
-    com.cjyc.common.model.dao: debug
+    com.cjyc.web.api: error
+    com.cjyc.common.model.dao: error
 
 ##-----------------------------------cjyc-------------------------------------------
 cjkj:

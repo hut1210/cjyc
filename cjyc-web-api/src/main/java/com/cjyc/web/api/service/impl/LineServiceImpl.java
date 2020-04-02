@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,6 +35,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -230,17 +234,21 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         try {
             List<SaveOrUpdateLineExcel> excelLineList = ExcelUtil.importExcel(file, 1, 1, SaveOrUpdateLineExcel.class);
             if(!CollectionUtils.isEmpty(excelLineList)){
-                int updateCunt = 0;
-                int saveCount = 0;
+                int count = 0;
+                int updateSaveCount = 0;
+                int nullCount = 0;
                 for(SaveOrUpdateLineExcel lineExcel : excelLineList) {
                     //根据城市名称查询城市code
                     City fromCity = cityDao.getCodeByName(lineExcel.getFromCity());
                     City toCity = cityDao.getCodeByName(lineExcel.getToCity());
+                    if(fromCity == null || toCity == null){
+                        nullCount++;
+                    }
                     if(fromCity != null && toCity != null){
                         Line line = lineDao.getLinePriceByCode(fromCity.getCode(),toCity.getCode());
                         if(line != null){
                             //更新
-                            if(lineExcel.getDefaultWlFee() != null && lineExcel.getDefaultFreightFee() != null && lineExcel.getDays() != null){
+                            if(StringUtils.isNotBlank(lineExcel.getDefaultWlFee()) && StringUtils.isNotBlank(lineExcel.getDefaultFreightFee()) && lineExcel.getDays() != null){
                                 Line newLine = new Line();
                                 newLine.setDefaultWlFee(new BigDecimal(lineExcel.getDefaultWlFee()).multiply(new BigDecimal(100)));
                                 newLine.setDefaultFreightFee(new BigDecimal(lineExcel.getDefaultFreightFee()).multiply(new BigDecimal(100)));
@@ -248,26 +256,27 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                                 if(lineExcel.getFromCity().equals(lineExcel.getToCity())){
                                     line.setKilometer(BigDecimal.ZERO);
                                 }else{
-                                    String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
+                                   String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
                                     String toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
                                     double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
                                     BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
                                     line.setKilometer(bd);
                                 }
-
                                 LambdaUpdateWrapper<Line> updateWrapper = new UpdateWrapper<Line>().lambda().eq(Line::getId, line.getId());
                                 lineDao.update(newLine,updateWrapper);
                             }
-                            updateCunt++;
                         }else{
                             //保存
-                            Line newLine = encapExcelLine(null,lineExcel, fromCity, toCity, loginId);
-                            lineDao.insert(newLine);
-                            saveCount++;
+                            if(StringUtils.isNotBlank(lineExcel.getDefaultWlFee()) && StringUtils.isNotBlank(lineExcel.getDefaultFreightFee()) && lineExcel.getDays() != null){
+                                Line newLine = encapExcelLine(null,lineExcel, fromCity, toCity, loginId);
+                                lineDao.insert(newLine);
+                            }
                         }
+                        updateSaveCount++;
                     }
+                    count++;
                 }
-                log.info("数量:{},{}",updateCunt,saveCount);
+                log.info("数量:{}，{},{}",nullCount,updateSaveCount,count);
                 result = true;
             }else{
                 result = false;
@@ -278,6 +287,8 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         }
         return result;
     }
+
+
 
     /**
      * 封装excel导入的line
@@ -305,27 +316,52 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         if(lineExcel != null){
             line.setDefaultWlFee(lineExcel.getDefaultWlFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultWlFee().multiply(new BigDecimal(100)));
             line.setDefaultFreightFee(lineExcel.getDefaultFreightFee() == null ? BigDecimal.ZERO:lineExcel.getDefaultFreightFee().multiply(new BigDecimal(100)));
-            fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
-            toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
             line.setDays(BigDecimal.valueOf(lineExcel.getDays()));
             line.setName(lineExcel.getFromCity()+NoConstant.SEPARATOR+lineExcel.getToCity());
+            if(lineExcel.getFromCity().equals(lineExcel.getToCity())){
+                line.setKilometer(BigDecimal.ZERO);
+            }else{
+                fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
+                toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
+                double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
+                BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                line.setKilometer(bd);
+            }
         }else{
-            line.setDefaultWlFee(excel.getDefaultWlFee() == null ? BigDecimal.ZERO:new BigDecimal(excel.getDefaultWlFee()).multiply(new BigDecimal(100)));
-            line.setDefaultFreightFee(excel.getDefaultFreightFee() == null ? BigDecimal.ZERO:new BigDecimal(excel.getDefaultFreightFee()).multiply(new BigDecimal(100)));
-            fromCityLocation = PositionUtil.getLngAndLat(excel.getFromCity());
-            toCityLocation = PositionUtil.getLngAndLat(excel.getToCity());
-            line.setDays(excel.getDays() == null ? BigDecimal.ZERO:BigDecimal.valueOf(excel.getDays()));
+            line.setDefaultWlFee(new BigDecimal(excel.getDefaultWlFee()).multiply(new BigDecimal(100)));
+            line.setDefaultFreightFee(new BigDecimal(excel.getDefaultFreightFee()).multiply(new BigDecimal(100)));
+            line.setDays(BigDecimal.valueOf(excel.getDays()));
             line.setName(excel.getFromCity()+NoConstant.SEPARATOR+excel.getToCity());
-        }
-        if(excel.getFromCity().equals(excel.getToCity())){
-            line.setKilometer(BigDecimal.ZERO);
-        }else{
-            double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-            BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
-            line.setKilometer(bd);
+            if(excel.getFromCity().equals(excel.getToCity())){
+                line.setKilometer(BigDecimal.ZERO);
+            }else{
+                fromCityLocation = PositionUtil.getLngAndLat(excel.getFromCity());
+                toCityLocation = PositionUtil.getLngAndLat(excel.getToCity());
+                double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
+                BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                line.setKilometer(bd);
+            }
         }
         line.setCreateTime(System.currentTimeMillis());
         line.setCreateUserId(loginId);
         return line;
+    }
+
+    @Override
+    public ResultVo saveDistance() {
+        List<Line> lineList = lineDao.selectList(new QueryWrapper<Line>().lambda().eq(Line::getKilometer, 0));
+        if(!CollectionUtils.isEmpty(lineList)){
+            for(Line line : lineList){
+                if(!line.getFromCode().equals(line.getToCode())){
+                    String fromCityLocation = PositionUtil.getLngAndLat(line.getFromCity());
+                    String toCityLocation = PositionUtil.getLngAndLat(line.getToCity());
+                    double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
+                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                    line.setKilometer(bd);
+                    lineDao.updateById(line);
+                }
+            }
+        }
+        return BaseResultUtil.success();
     }
 }
