@@ -14,10 +14,7 @@ import com.cjyc.common.model.dto.web.OperateDto;
 import com.cjyc.common.model.dto.web.customer.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
-import com.cjyc.common.model.enums.customer.CheckTypeEnum;
-import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
-import com.cjyc.common.model.enums.customer.CustomerStateEnum;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.customer.*;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.*;
@@ -858,6 +855,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             for(CustomerContractDto dto : customerConList){
                 CustomerContract custCont = new CustomerContract();
                 BeanUtils.copyProperties(dto,custCont);
+                if(dto.getSettleType() == CustomerPayEnum.TIME_PAY.code){
+                    custCont.setSettlePeriod(0);
+                }
                 custCont.setCustomerId(customerId);
                 custCont.setCreateTime(System.currentTimeMillis());
                 list.add(custCont);
@@ -1285,11 +1285,15 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setAlias(dto.getName());
             super.updateById(customer);
 
+            //查询该用户现有合同
+            List<CustomerContract> customerContracts = customerContractDao.selectList(new QueryWrapper<CustomerContract>().lambda().eq(CustomerContract::getCustomerId, dto.getCustomerId()));
+            //前端传过来的合同
             List<CustomerContractDto> contractDtos = dto.getCustContraVos();
+
             List<CustomerContract> list = null;
             if(!CollectionUtils.isEmpty(contractDtos)){
                 //批量删除
-                customerContractDao.removeKeyContract(dto.getCustomerId());
+                //customerContractDao.removeKeyContract(dto.getCustomerId());
                 list = encapCustomerContract(customer.getId(),contractDtos);
                 customerContractService.saveBatch(list);
             }
@@ -1693,6 +1697,20 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             result = false;
         }
         return result;
+    }
+
+    @Override
+    public ResultVo<CustomerContract> findContract(Long contractId) {
+        if(null == contractId){
+            return BaseResultUtil.fail("合同编号不能为空");
+        }
+        CustomerContract contract = customerContractDao.selectById(contractId);
+        if(contract != null){
+            if(contract.getSettlePeriod() == null){
+                contract.setSettlePeriod(0);
+            }
+        }
+        return BaseResultUtil.success(contract);
     }
 
 }
