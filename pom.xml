@@ -315,13 +315,20 @@
 
     </profiles>
     <repositories>
+
         <repository>
+            <id>rdc-releases</id>
+            <url>https://repo.rdc.aliyun.com/repository/44149-release-Kl4P3i/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>rdc-snapshots</id>
+            <url>https://repo.rdc.aliyun.com/repository/44149-snapshot-YOpTyW/</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
-            <id>central</id>
-            <name>bintray</name>
-            <url>http://jcenter.bintray.com</url>
         </repository>
     </repositories>
 
