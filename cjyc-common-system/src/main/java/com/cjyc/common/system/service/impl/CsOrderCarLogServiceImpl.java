@@ -2,11 +2,16 @@ package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjkj.log.monitor.LogUtil;
+import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderCarLogDao;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.OrderCarLog;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.customer.order.OutterLogVo;
+import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -19,6 +24,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
+    @Resource
+    private IOrderCarDao orderCarDao;
     @Resource
     private IOrderCarLogDao orderCarLogDao;
 
@@ -75,5 +82,16 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public ResultVo<OutterLogVo> getOrderCarLog(String orderCarNo) {
+        OutterLogVo outterLogVo = new OutterLogVo();
+        String state = orderCarDao.findOutterState(orderCarNo);
+        outterLogVo.setOutterState(state);
+        outterLogVo.setOrderCarNo(orderCarNo);
+        List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
+        outterLogVo.setList(list);
+        return BaseResultUtil.success(outterLogVo);
     }
 }

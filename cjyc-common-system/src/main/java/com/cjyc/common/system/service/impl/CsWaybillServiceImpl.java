@@ -1409,7 +1409,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (waybillCarMap.containsKey(waybillCarId)) {
             wc = waybillCarMap.get(waybillCarId);
         } else {
-            wc = waybillCarDao.findByTaskCarId(waybillCarId);
+            wc = waybillCarDao.selectById(waybillCarId);
             waybillCarMap.put(waybillCarId, wc);
         }
         return wc;
@@ -1541,6 +1541,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (waybillCarId == null) {
                     continue;
                 }
+                //WaybillCar waybillCar = getWaybillCarFromMap(waybillCarMap, waybillCarId);
                 WaybillCar waybillCar = getWaybillCarFromMap(waybillCarMap, waybillCarId);
                 if (waybillCar == null) {
                     return BaseResultUtil.fail("ID为{0}的车辆不存在", waybillCarId);
