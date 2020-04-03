@@ -954,6 +954,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
+    public ResultVo<ResultReasonVo> cancelUnload(BaseTaskDto reqDto) {
+
+        for (Long taskCarId : reqDto.getTaskCarIdList()) {
+            WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+
+        }
+
+        return null;
+    }
+
+    @Override
     public int validateAndFinishTaskWaybill(Task task) {
         int state = validateAndFinishTask(task);
         if (state == -1) {
