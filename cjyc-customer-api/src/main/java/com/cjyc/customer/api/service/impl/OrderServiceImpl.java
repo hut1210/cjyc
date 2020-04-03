@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.*;
-import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
@@ -21,14 +20,12 @@ import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.RegexUtil;
 import com.cjyc.common.model.util.TimeStampUtil;
-import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
 import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
-import com.cjyc.common.model.vo.customer.order.OutterLogVo;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsLineService;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
@@ -114,18 +111,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         //TODO 给所属业务中心业务员发送消息
 
         return BaseResultUtil.success();
-    }
-
-    @Override
-    public ResultVo<LogisticsInformationVo> getLogisticsInformation(LogisticsInformationDto reqDto) {
-        LogisticsInformationVo logisticsInfoVo = new LogisticsInformationVo();
-        // 查询车辆运输日志
-        ResultVo<OutterLogVo> orderCarLog = csOrderCarLogService.getOrderCarLog(reqDto.getOrderCarNo());
-        logisticsInfoVo.setLogisticsLog(orderCarLog == null ? new OutterLogVo() : orderCarLog.getData());
-        // 查询车辆实时位置
-
-        logisticsInfoVo.setLocation("");
-        return BaseResultUtil.success(logisticsInfoVo);
     }
 
     private Order fillOrderStoreInfoForSave(Order order) {
