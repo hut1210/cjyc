@@ -80,7 +80,7 @@ public class OrderSubmitReqDto implements Serializable {
 
     @NotNull(message = "线路费用不能为空")
     @ApiModelProperty(value = "线路费用/元", required = true)
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal lineWlFreightFee;
 

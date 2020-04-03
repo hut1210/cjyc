@@ -21,22 +21,22 @@ public class ChangePriceOrderCarDto {
     private Long id;
 
     @ApiModelProperty(value = "车辆应收提车费")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal pickFee;
 
     @ApiModelProperty(value = "车辆应收干线费")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal trunkFee;
 
     @ApiModelProperty(value = "车辆应收送车费")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal backFee;
 
     @ApiModelProperty(value = "车辆应收保险费")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal addInsuranceFee;
 

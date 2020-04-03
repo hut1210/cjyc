@@ -46,12 +46,12 @@ public class OrderCarSubmitReqDto implements Serializable {
     private Integer valuation;
 
     @ApiModelProperty(value = "保险费/元",hidden = true)
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "车辆应收干线费",hidden = true)
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal trunkFee;
 }

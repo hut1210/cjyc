@@ -32,7 +32,7 @@ public class SaveTrunkWaybillDto {
     private String guideLine;
 
     @NotNull(message = "运费不能为空")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     @ApiModelProperty(value = "运单总运费", required = true)
     private BigDecimal freightFee;

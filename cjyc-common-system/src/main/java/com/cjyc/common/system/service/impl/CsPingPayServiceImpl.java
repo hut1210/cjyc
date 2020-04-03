@@ -3,6 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.Pingxx.model.OrderModel;
 import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingxxMetaData;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
@@ -1245,23 +1246,40 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         return BaseResultUtil.success();
     }
 
+    /**
+     * 支付解锁
+     * @author JPG
+     * @since 2020/4/3 9:25
+     * @param nos
+     */
     @Override
     public ResultVo unlockPay(List<String> nos) {
         try {
-            Set<String> orderNoSet = Sets.newHashSet();
+            Set<String> orderNoKeySet = Sets.newHashSet();
+            Set<String> orderCarKeySet = Sets.newHashSet();
             nos.forEach(no -> {
                 if(no.contains("-")){
                     String key = RedisKeys.getWlPayLockKey(no);
-                    redisUtils.delete(key);
+                    orderCarKeySet.add(key);
                 }else{
                     String pattern = RedisKeys.getWlPayLockKey(no);
-                    Set<String> lockSet = redisUtils.keys(pattern);
-                    redisUtils.delete(lockSet);
+                    orderNoKeySet.add(pattern);
                 }
             });
+            if(!CollectionUtils.isEmpty(orderNoKeySet)){
+                log.debug("【支付解锁】解锁订单" + JSON.toJSONString(orderNoKeySet));
+                orderNoKeySet.forEach(pattern -> {
+                    Set<String> lockSet = redisUtils.keys(pattern);
+                    redisUtils.delete(lockSet);
+                });
+            }
+            if(!CollectionUtils.isEmpty(orderCarKeySet)){
+                log.debug("【支付解锁】解锁车辆" + JSON.toJSONString(orderCarKeySet));
+                redisUtils.delete(orderCarKeySet);
+            }
             return BaseResultUtil.success();
-
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return BaseResultUtil.fail("解锁失败");
         }
     }
