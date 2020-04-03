@@ -8,6 +8,7 @@ import com.cjyc.common.model.vo.customer.order.OutterLogVo;
 import com.cjyc.common.system.service.ICsLogisticsInformationService;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,7 +29,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         LogisticsInformationVo logisticsInfoVo = new LogisticsInformationVo();
         // 查询车辆运输日志
         ResultVo<OutterLogVo> orderCarLog = csOrderCarLogService.getOrderCarLog(reqDto.getOrderCarNo());
-        logisticsInfoVo.setLogisticsLog(orderCarLog == null ? new OutterLogVo() : orderCarLog.getData());
+        BeanUtils.copyProperties(orderCarLog.getData(),logisticsInfoVo);
         // 查询车辆实时位置
 
         logisticsInfoVo.setLocation("");
