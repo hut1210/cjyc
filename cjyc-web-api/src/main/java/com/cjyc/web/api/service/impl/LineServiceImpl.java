@@ -256,7 +256,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                                 if(lineExcel.getFromCity().equals(lineExcel.getToCity())){
                                     line.setKilometer(BigDecimal.ZERO);
                                 }else{
-                                   String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
+                                    String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
                                     String toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
                                     double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
                                     BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
