@@ -61,13 +61,13 @@
         </dependency>
 
         <!--Ping++ -->
-        <dependency>
+        <!--<dependency>
             <groupId>Pingplusplus</groupId>
             <artifactId>pingpp-java</artifactId>
             <version>2.2.4</version>
-            <!--请将 VERSION 换成 SDK 对应的版本号，如：2.2.4-->
+            &lt;!&ndash;请将 VERSION 换成 SDK 对应的版本号，如：2.2.4&ndash;&gt;
             <type>jar</type>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.google.guava</groupId>
