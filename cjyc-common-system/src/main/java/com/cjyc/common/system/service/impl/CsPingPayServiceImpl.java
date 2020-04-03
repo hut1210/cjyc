@@ -108,6 +108,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Resource
     private ITradeBillDao tradeBillDao;
 
+    @Resource
+    private IBankSubankRelationDao bankSubankRelationDao;
+
     private final Lock lock = new ReentrantLock();
 
     private static List<String> phoneList = Arrays.asList("15290809152","18201026858","13367786789","18774973990","13894416363","18297278387");
@@ -483,6 +486,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                         BigDecimal fee = contrastAmount(carrierId);
                                         log.info("【自动打款模式】运单Id {},fee = {},要打款金额{}",waybillId,fee,waybill.getFreightFee());
                                         if(waybill.getFreightFee().compareTo(fee)<=0){
+                                            /**
+                                             * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                                             * 后续如果优化的话，去掉这段代码的转换
+                                             */
+                                            if(CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
+                                                String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
+                                                log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
+                                                baseCarrierVo.setBankCode(bankCode);
+                                            }
                                             Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                                             log.debug("【自动打款模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                                             tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");
@@ -650,6 +662,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     BigDecimal fee = contrastAmount(carrierId);
                                     log.info("【对外支付模式】运单Id {},fee = {},要打款金额{}",waybillId,fee,waybill.getFreightFee());
                                     if(waybill.getFreightFee().compareTo(fee)<=0){
+                                        /**
+                                         * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                                         * 后续如果优化的话，去掉这段代码的转换
+                                         */
+                                        if(CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
+                                            String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
+                                            log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
+                                            baseCarrierVo.setBankCode(bankCode);
+                                        }
                                         Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo,waybill);
                                         log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
                                         tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"2");//打款中
@@ -797,6 +818,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             BigDecimal fee = contrastCooperatorAmount(customId);
                             log.info("支付合伙人服务费 payableFee.compareTo(fee)={},fee={}",payableFee.compareTo(fee),fee);
                             if(payableFee.compareTo(fee)<=0){
+                                /**
+                                 * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                                 * 后续如果优化的话，去掉这段代码的转换
+                                 */
+                                if(CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
+                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
+                                    log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
+                                    showPartnerVo.setBankCode(bankCode);
+                                }
                                 Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
                                 cStransactionService.updateOrderFlag(order.getNo(),"1",System.currentTimeMillis());//付款中
                                 cStransactionService.saveCooperatorTransactions(transfer, "1");
@@ -912,6 +942,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             BigDecimal fee = contrastCooperatorAmount(customId);
                             log.info("支付合伙人服务费 payableFee.compareTo(fee)={},fee={}",payableFee.compareTo(fee),fee);
                             if(payableFee.compareTo(fee)<=0){
+                                /**
+                                 * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                                 * 后续如果优化的话，去掉这段代码的转换
+                                 */
+                                if(CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
+                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
+                                    log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
+                                    showPartnerVo.setBankCode(bankCode);
+                                }
                                 Transfer transfer = allinpayToCooperatorCreate(showPartnerVo,payableFee,order.getNo(),orderId);
                                 cStransactionService.updateOrderFlag(order.getNo(),"1",System.currentTimeMillis());//付款中
                                 cStransactionService.saveCooperatorTransactions(transfer, "1");
