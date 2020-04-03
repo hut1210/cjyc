@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -54,7 +55,7 @@ public class UpdateTrunkMidwayFinishDto {
     private Long unloadTime;
 
     @ApiModelProperty(value = "运费")
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal freightFee;
 
