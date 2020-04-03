@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = RuntimeException.class)
 public class CsTaskServiceImpl implements ICsTaskService {
 
     @Resource
