@@ -321,6 +321,12 @@
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
             and wo.end_area_code = #{endAreaCode}
         </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
     </sql>
     <select id="receiptSummary" resultType="java.math.BigDecimal">
         select sum(total_fee) from
