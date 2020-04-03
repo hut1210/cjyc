@@ -1,6 +1,5 @@
 package com.cjyc.common.model.dto.driver.task;
 
-import com.cjyc.common.model.dto.BaseLoginDto;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,8 +9,15 @@ import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
-public class ReplenishInfoDto extends BaseLoginDto {
-
+public class ReplenishInfoDto {
+    @NotNull(message = "登录人不能为空")
+    private Long loginId;
+    @ApiModelProperty(hidden = true)
+    private String loginName;
+    @ApiModelProperty(hidden = true)
+    private String loginPhone;
+    @ApiModelProperty(hidden = true)
+    private UserTypeEnum loginType;
     @NotNull(message = "运单ID")
     @ApiModelProperty(value = "运单车辆ID")
     private Long taskCarId;

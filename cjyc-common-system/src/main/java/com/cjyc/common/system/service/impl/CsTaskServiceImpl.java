@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = RuntimeException.class)
 public class CsTaskServiceImpl implements ICsTaskService {
 
     @Resource
@@ -951,6 +951,17 @@ public class CsTaskServiceImpl implements ICsTaskService {
             log.error(e.getMessage(), e);
         }
         return newState;
+    }
+
+    @Override
+    public ResultVo<ResultReasonVo> cancelUnload(BaseTaskDto reqDto) {
+
+        for (Long taskCarId : reqDto.getTaskCarIdList()) {
+            WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+
+        }
+
+        return null;
     }
 
     @Override

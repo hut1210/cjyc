@@ -1931,4 +1931,15 @@
         AND bill.no = #{waybillNo}
     </select>
 
+    <!--根据车辆编号查询运输车车牌号-->
+    <select id="selectPlateNoByOrderCarNo" resultType="java.lang.String">
+        select
+            task.vehicle_plate_no
+        from
+            w_waybill_car car
+            left join w_task task on car.waybill_id=task.waybill_id
+        where
+            car.state > 5 and car.state &lt; 100 and task.state
+    </select>
+
 </mapper>

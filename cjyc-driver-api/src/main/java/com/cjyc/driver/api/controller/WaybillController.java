@@ -124,7 +124,7 @@ public class WaybillController {
         reqDto.setLoginName(driver.getName());
         reqDto.setLoginPhone(driver.getPhone());
         reqDto.setLoginType(UserTypeEnum.DRIVER);
-        return csTaskService.unload(reqDto);
+        return csTaskService.cancelUnload(reqDto);
     }
 
     /**

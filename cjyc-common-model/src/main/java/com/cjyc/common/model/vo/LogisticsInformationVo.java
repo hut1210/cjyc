@@ -14,4 +14,8 @@ public class LogisticsInformationVo extends OutterLogVo{
     private static final long serialVersionUID = -3641004003369929956L;
     @ApiModelProperty(value = "车辆实时位置")
     private String location;
+
+    public String getLocation() {
+        return location == null ? "" : location;
+    }
 }

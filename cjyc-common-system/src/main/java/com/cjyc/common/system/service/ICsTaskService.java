@@ -1,9 +1,10 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
-import com.cjyc.common.model.dto.driver.task.PickLoadDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
-import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.task.AllotTaskDto;
+import com.cjyc.common.model.dto.web.task.BaseTaskDto;
+import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.WaybillCar;
@@ -65,4 +66,6 @@ public interface ICsTaskService {
 
     int validateAndFinishTaskWaybill(Task task);
     int validateAndFinishTask(Task task);
+
+    ResultVo<ResultReasonVo> cancelUnload(BaseTaskDto reqDto);
 }
