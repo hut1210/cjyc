@@ -14,7 +14,7 @@
     <groupId>com.cjyc</groupId>
     <artifactId>cjyc</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.4-RELEASE</version>
     <modules>
         <module>cjyc-driver-api</module>
         <module>cjyc-customer-api</module>
