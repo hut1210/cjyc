@@ -33,13 +33,13 @@ public interface ICsTaskService {
 
     ResultVo allot(AllotTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto);
+    ResultVo<ResultReasonVo> load(BaseTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> unload(UnLoadTaskDto paramsDto);
+    ResultVo<ResultReasonVo> unload(BaseTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto);
+    ResultVo<ResultReasonVo> outStore(BaseTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto);
+    ResultVo<ResultReasonVo> inStore(BaseTaskDto paramsDto);
 
     ResultVo receipt(ReceiptTaskDto reqDto);
 

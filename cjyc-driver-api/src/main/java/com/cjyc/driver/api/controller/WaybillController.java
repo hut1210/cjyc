@@ -1,10 +1,7 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
-import com.cjyc.common.model.dto.web.task.AllotTaskDto;
-import com.cjyc.common.model.dto.web.task.LoadTaskDto;
-import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
-import com.cjyc.common.model.dto.web.task.UnLoadTaskDto;
+import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.ClientEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
@@ -91,7 +88,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "装车")
     @PostMapping(value = "/car/load")
-    public ResultVo<ResultReasonVo> load(@Validated @RequestBody LoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> load(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
@@ -106,7 +103,22 @@ public class WaybillController {
      */
     @ApiOperation(value = "卸车")
     @PostMapping(value = "/car/unload")
-    public ResultVo<ResultReasonVo> unload(@Validated @RequestBody UnLoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> unload(@Validated @RequestBody BaseTaskDto reqDto) {
+        //验证用户
+        Driver driver = csDriverService.validate(reqDto.getLoginId());
+        reqDto.setLoginName(driver.getName());
+        reqDto.setLoginPhone(driver.getPhone());
+        reqDto.setLoginType(UserTypeEnum.DRIVER);
+        return csTaskService.unload(reqDto);
+    }
+
+    /**
+     * 取消卸车
+     * @author JPG
+     */
+    @ApiOperation(value = "取消交车")
+    @PostMapping(value = "/car/unload/cancel")
+    public ResultVo<ResultReasonVo> cancelUnload(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
@@ -130,5 +142,8 @@ public class WaybillController {
         reqDto.setClientEnum(ClientEnum.APP_DRIVER);
         return csTaskService.receipt(reqDto);
     }
+
+
+
 
 }

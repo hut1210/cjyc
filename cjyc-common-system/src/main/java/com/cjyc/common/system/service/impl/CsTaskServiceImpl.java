@@ -196,12 +196,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         //提车
         TaskCar taskCar = taskCarDao.selectById(paramsDto.getTaskCarId());
-        LoadTaskDto loadTaskDto = new LoadTaskDto();
-        BeanUtils.copyProperties(paramsDto, loadTaskDto);
-        loadTaskDto.setTaskId(taskCar.getTaskId());
-        loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
+        BaseTaskDto baseTaskDto = new BaseTaskDto();
+        BeanUtils.copyProperties(paramsDto, baseTaskDto);
+        baseTaskDto.setTaskId(taskCar.getTaskId());
+        baseTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
 
-        return load(loadTaskDto);
+        return load(baseTaskDto);
     }
 
     @Override
@@ -369,7 +369,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> load(BaseTaskDto paramsDto) {
         Long taskId = paramsDto.getTaskId();
         Set<String> lockSet = Sets.newHashSet();
         try {
@@ -605,7 +605,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> unload(UnLoadTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> unload(BaseTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
@@ -772,7 +772,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         //提车
         TaskCar taskCar = taskCarDao.selectById(paramsDto.getTaskCarId());
-        InStoreTaskDto inStoreTaskDto = new InStoreTaskDto();
+        BaseTaskDto inStoreTaskDto = new BaseTaskDto();
         BeanUtils.copyProperties(paramsDto, inStoreTaskDto);
         inStoreTaskDto.setTaskId(taskCar.getTaskId());
         inStoreTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
@@ -781,7 +781,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> inStore(BaseTaskDto paramsDto) {
         log.debug("【入库】" + JSON.toJSONString(paramsDto));
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
@@ -964,7 +964,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> outStore(BaseTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();

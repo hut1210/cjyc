@@ -15,27 +15,9 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class ReceiptTaskDto {
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "用户Id",required = true)
-    private Long loginId;
-
-    @ApiModelProperty(hidden = true)
-    private String loginName;
-
-    @ApiModelProperty(hidden = true)
-    private String loginPhone;
-
-    @ApiModelProperty(hidden = true)
-    private UserTypeEnum loginType;
+public class ReceiptTaskDto extends BaseTaskDto {
 
     @ApiModelProperty(value = "客户端类型：1WEB管理后台, 2业务员APP, 3业务员小程序, 4司机APP, 5司机小程序, 6用户端APP, 7用户端小程序", hidden = true)
     private ClientEnum clientEnum;
 
-    @NotNull(message = "taskId不能为空")
-    @ApiModelProperty(value = "任务ID")
-    private Long taskId;
-
-    @ApiModelProperty(value = "任务车辆ID",required = true)
-    private List<Long> taskCarIdList;
 }
