@@ -30,7 +30,7 @@ public class ReplenishInfoDto {
     @Pattern(regexp = "(^$)|(^\\S{1,20}$)", message = "车牌号格式不正确，请检查")
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
-    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{17}$)", message = "vin码格式不正确，请检查")
+    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{17}$)", message = "vin位数不足17位或大于17位")
     @ApiModelProperty(value = "vin码")
     private String vin;
     @ApiModelProperty(value = "提车图片",required = true)
