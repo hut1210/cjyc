@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -14,11 +15,11 @@ import java.io.Serializable;
 @Data
 public class LogisticsInformationDto implements Serializable {
     private static final long serialVersionUID = 256310332755968389L;
-    @NotBlank(message = "订单车辆编号不能为空")
-    @ApiModelProperty(value = "订单车辆编号")
-    private String orderCarNo;
+    @ApiModelProperty(value = "用户登录id")
+    @NotNull(message = "用户登录id不能为空")
+    private Long loginId;
 
-    @NotBlank(message = "运输车车牌号不能为空")
-    @ApiModelProperty(value = "运输车车牌号")
-    private String truckPlateNo;
+    @ApiModelProperty(value = "订单车辆编号")
+    @NotBlank(message = "订单车辆编号不能为空")
+    private String orderCarNo;
 }
