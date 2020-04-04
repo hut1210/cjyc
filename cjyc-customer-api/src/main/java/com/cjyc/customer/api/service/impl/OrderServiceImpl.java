@@ -54,13 +54,7 @@ import java.util.*;
 @Slf4j
 public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IOrderService{
     @Resource
-    private RedisUtils redisUtils;
-    @Resource
-    private RedisDistributedLock redisLock;
-    @Resource
     private IOrderDao orderDao;
-    @Resource
-    private ICsOrderService comOrderService;
     @Resource
     private IOrderCarDao orderCarDao;
     @Resource
@@ -72,11 +66,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Resource
     private ICsLineService csLineService;
     @Resource
-    private IOrderCarLogDao orderCarLogDao;
-    @Resource
     private ICsPushMsgService csPushMsgService;
     @Resource
-    private ICsOrderCarLogService csOrderCarLogService;
+    private ICsOrderService csOrderService;
 
 
     @Override
@@ -103,6 +95,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
 
         fillOrderStoreInfoForSave(order);
+        csOrderService.fillOrderInputStore(order);
         order.setState(OrderStateEnum.WAIT_CHECK.code);
         orderDao.updateById(order);
 
