@@ -1,19 +1,52 @@
 package com.cjyc.common.model.util;
 
+import com.alibaba.fastjson.JSON;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
 * 解析yml文件工具类
  * @author JPG
 */
 public class YmlProperty {
-    private static final String DEFAULT_FILE = "application-local.yml";
+/*    public static void main(String[] args) throws IOException {
+        String path = "D:\\workspace_idea\\git\\branch\\cjyc-web-api\\src\\main\\resources\\";
+        String[] list = new File(path).list();
+        System.out.println(JSON.toJSONString(list));
+        if(list == null || list.length == 0){
+            return;
+        }
+        List<String> newList = new ArrayList<>();
+        for (String fileName : list) {
+            if(fileName.contains("application")){
+                newList.add(fileName);
+            }
+        }
+        if(newList.size() == 0){
+            return;
+        }
+        String fileName = "";
+        if(newList.size() == 1){
+            fileName = newList.get(0);
+        }else{
+            InputStream inputStream = YmlProperty.class.getClassLoader().getResourceAsStream("bootstrap.yml");
+            Properties prop = new Properties();
+            prop.load(inputStream);
+            String active = prop.getProperty("spring.profiles.active");
+            for (String s : newList) {
+                if(s.contains(active)){
+                    fileName
+                }
+            }
+        }
+
+    }*/
+
+    private static final String DEFAULT_FILE = "application.yml";
     private static Map<String, String> propertyMap = new HashMap<String, String>();
 
     /**
