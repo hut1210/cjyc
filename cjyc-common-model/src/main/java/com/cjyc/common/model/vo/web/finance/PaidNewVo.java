@@ -50,10 +50,15 @@ public class PaidNewVo implements Serializable {
     @Excel(name = "应付运费", orderNum = "3",type = 10)
     private BigDecimal freightFee;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @ApiModelProperty(value = "实付运费")
+    @Excel(name = "实付运费", orderNum = "4",type = 10)
+    private BigDecimal freightFeePayable;
+
     @ApiModelProperty(value = "付款时间")
     private Long payTime;
 
-    @Excel(name = "付款时间", orderNum = "4")
+    @Excel(name = "付款时间", orderNum = "5")
     private String payTimeStr;
 
     public String getPayTimeStr() {
@@ -65,17 +70,17 @@ public class PaidNewVo implements Serializable {
     }
 
     @ApiModelProperty(value = "付款状态 0未付款 2已付款")
-    @Excel(name = "付款状态", orderNum = "5")
+    @Excel(name = "付款状态", orderNum = "6")
     private String state;
 
     @ApiModelProperty(value = "付款失败原因")
-    @Excel(name = "付款失败原因", orderNum = "6")
+    @Excel(name = "付款失败原因", orderNum = "7")
     private String failReason;
 
     @ApiModelProperty(value = "运单类型")
     private Integer type;
 
-    @Excel(name = "运单类型", orderNum = "7")
+    @Excel(name = "运单类型", orderNum = "8")
     private String waybillTypeStr;
 
     public String getWaybillTypeStr() {
@@ -92,29 +97,29 @@ public class PaidNewVo implements Serializable {
     }
 
     @ApiModelProperty(value = "指导线路")
-    @Excel(name = "指导线路", orderNum = "8")
+    @Excel(name = "指导线路", orderNum = "9")
     private String guideLine;
 
     @ApiModelProperty(value = "承运商")
-    @Excel(name = "承运商", orderNum = "9")
+    @Excel(name = "承运商", orderNum = "10")
     private String carrierName;
 
     @ApiModelProperty(value = "司机名称")
-    @Excel(name = "司机名称", orderNum = "10")
+    @Excel(name = "司机名称", orderNum = "11")
     private String driverName;
 
     @ApiModelProperty(value = "司机电话")
-    @Excel(name = "司机电话", orderNum = "11")
+    @Excel(name = "司机电话", orderNum = "12")
     private String driverPhone;
 
     @ApiModelProperty(value = "车牌号")
-    @Excel(name = "车牌号", orderNum = "12")
+    @Excel(name = "车牌号", orderNum = "13")
     private String vehiclePlateNo;
 
     @ApiModelProperty(value = "付款账户类型")
     private String cardType;
 
-    @Excel(name = "付款账户类型", orderNum = "13")
+    @Excel(name = "付款账户类型", orderNum = "14")
     private String cardTypeStr;
 
     /**
@@ -137,31 +142,31 @@ public class PaidNewVo implements Serializable {
     }
 
     @ApiModelProperty(value = "身份证号/法人身份证号")
-    @Excel(name = "身份证号/法人身份证号", orderNum = "14")
+    @Excel(name = "身份证号/法人身份证号", orderNum = "15")
     private String idCard;
 
     @ApiModelProperty(value = "持卡人")
-    @Excel(name = "持卡人", orderNum = "15")
+    @Excel(name = "持卡人", orderNum = "16")
     private String cardName;
 
     @ApiModelProperty(value = "开户行")
-    @Excel(name = "开户行", orderNum = "16")
+    @Excel(name = "开户行", orderNum = "17")
     private String bankName;
 
     @ApiModelProperty(value = "银行卡号")
-    @Excel(name = "银行卡号", orderNum = "17")
+    @Excel(name = "银行卡号", orderNum = "18")
     private String cardNo;
 
     @ApiModelProperty(value = "公户账号所在省份")
-    @Excel(name = "公户账号所在省份", orderNum = "18")
+    @Excel(name = "公户账号所在省份", orderNum = "19")
     private String provinceName;
 
     @ApiModelProperty(value = "公户账号所在城市")
-    @Excel(name = "公户账号所在城市", orderNum = "19")
+    @Excel(name = "公户账号所在城市", orderNum = "20")
     private String areaName;
 
     @ApiModelProperty(value = "付款操作人")
-    @Excel(name = "付款操作人", orderNum = "20")
+    @Excel(name = "付款操作人", orderNum = "21")
     private String operator;
 
 }

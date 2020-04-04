@@ -1,9 +1,13 @@
 package com.cjyc.customer.api.controller;
 
+import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
-import com.cjyc.common.model.dto.web.order.*;
+import com.cjyc.common.model.dto.web.order.CancelOrderDto;
+import com.cjyc.common.model.dto.web.order.OrderCarNoDto;
+import com.cjyc.common.model.dto.web.order.SaveOrderCarDto;
+import com.cjyc.common.model.dto.web.order.SaveOrderDto;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -12,12 +16,15 @@ import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RegexUtil;
+import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.common.model.vo.customer.order.OutterLogVo;
 import com.cjyc.common.system.service.ICsCustomerService;
+import com.cjyc.common.system.service.ICsLogisticsInformationService;
+import com.cjyc.common.system.service.ICsOrderCarLogService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.customer.api.service.IOrderService;
 import io.swagger.annotations.Api;
@@ -49,6 +56,11 @@ public class OrderController {
     private ICsCustomerService csCustomerService;
     @Resource
     private ICsOrderService csOrderService;
+    @Resource
+    private ICsOrderCarLogService csOrderCarLogService;
+    @Resource
+    private ICsLogisticsInformationService csLogisticsInformationService;
+
     /**
      * 保存,只保存无验证
      * @author JPG
@@ -183,14 +195,26 @@ public class OrderController {
         return orderService.getDetail(dto);
     }
     /**
-     * 车辆日志
+     * 根据订单车辆编号查询车辆日志
      * @author JPG
      */
-    @ApiOperation(value = "查询车辆和订单详细信息-根据车辆ID")
+    @ApiOperation(value = "查询车辆日志-根据订单车辆编号")
     @PostMapping(value = "/car/log/list")
-    public ResultVo<OutterLogVo> ListOrderCarLog(@Valid @RequestBody OrderCarNoDto reqDto) {
-        return orderService.ListOrderCarLog(reqDto.getOrderCarNo());
+    public ResultVo<OutterLogVo> getOrderCarLog(@RequestBody @Valid OrderCarNoDto reqDto) {
+        return csOrderCarLogService.getOrderCarLog(reqDto.getOrderCarNo());
     }
 
+    /**
+     * 功能描述: 查询物流信息
+     * @author liuxingxiang
+     * @date 2020/4/3
+     * @param reqDto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.LogisticsInformationVo>
+     */
+    @ApiOperation(value = "查询物流信息")
+    @PostMapping(value = "/car/getLogisticsInfo")
+    public ResultVo<LogisticsInformationVo> getLogisticsInformation(@RequestBody @Valid LogisticsInformationDto reqDto) {
+        return csLogisticsInformationService.getLogisticsInformation(reqDto);
+    }
 
 }

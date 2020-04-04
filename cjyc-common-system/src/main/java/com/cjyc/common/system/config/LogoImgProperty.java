@@ -12,4 +12,5 @@ public class LogoImgProperty {
     public void setLogoImg(String logoImg) {
         LogoImgProperty.logoImg = logoImg;
     }
+
 }

@@ -130,10 +130,15 @@ public class ExportFinanceVo implements Serializable {
     @Excel(name = "实收金额" ,orderNum = "18",type = 10)
     private BigDecimal amountReceived;
 
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    @ApiModelProperty(value = "实际收益")
+    @Excel(name = "实际收益" ,orderNum = "19",type = 10)
+    private BigDecimal actualIncome;
+
     @ApiModelProperty(value = "收款时间")
     private Long receivedTime;
 
-    @Excel(name = "收款时间" ,orderNum = "19")
+    @Excel(name = "收款时间" ,orderNum = "20")
     private String receivedTimeStr;
     public String getReceivedTimeStr() {
         Long date = getReceivedTime();
@@ -145,32 +150,32 @@ public class ExportFinanceVo implements Serializable {
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "提车成本")
-    @Excel(name = "提车成本" ,orderNum = "20",type = 10)
+    @Excel(name = "提车成本" ,orderNum = "21",type = 10)
     private BigDecimal pickUpCarFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "干线成本")
-    @Excel(name = "干线成本" ,orderNum = "21",type = 10)
+    @Excel(name = "干线成本" ,orderNum = "22",type = 10)
     private BigDecimal trunkLineFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "送车成本")
-    @Excel(name = "送车成本" ,orderNum = "22",type = 10)
+    @Excel(name = "送车成本" ,orderNum = "23",type = 10)
     private BigDecimal carryCarFee;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @ApiModelProperty(value = "收入合计")
-    @Excel(name = "收入合计" ,orderNum = "23",type = 10)
+    @ApiModelProperty(value = "收益合计")
+    @Excel(name = "收益合计" ,orderNum = "24",type = 10)
     private BigDecimal totalIncome;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "成本合计")
-    @Excel(name = "成本合计" ,orderNum = "24",type = 10)
+    @Excel(name = "成本合计" ,orderNum = "25",type = 10)
     private BigDecimal totalCost;
 
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     @ApiModelProperty(value = "毛利")
-    @Excel(name = "毛利" ,orderNum = "25",type = 10)
+    @Excel(name = "毛利" ,orderNum = "26",type = 10)
     private BigDecimal grossProfit;
 
 

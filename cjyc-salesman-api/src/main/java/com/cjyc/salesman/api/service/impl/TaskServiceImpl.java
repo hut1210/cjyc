@@ -10,7 +10,6 @@ import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.BizScopeEnum;
-import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
@@ -66,6 +65,14 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getCarryPage(TaskWaybillQueryDto dto) {
         log.info("====>业务员端-分页查询提送车；提送车历史记录列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
+        convertTime(dto);// 转换时间
+        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
+        PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
+        return BaseResultUtil.success(pageInfo);
+    }
+
+    private void convertTime(TaskWaybillQueryDto dto) {
         if (dto.getCompleteTimeE() != null && dto.getCompleteTimeE() != 0) {
             dto.setCompleteTimeE(TimeStampUtil.convertEndTime(dto.getCompleteTimeE()));
         }
@@ -74,10 +81,6 @@ public class TaskServiceImpl implements ITaskService {
             dto.setCreatTimeS(creatTime);
             dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
         }
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<TaskWaybillVo> list = taskDao.selectCarryList(dto);
-        PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
-        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -85,8 +88,7 @@ public class TaskServiceImpl implements ITaskService {
         log.info("====>业务员端-查询提送车,提送车历史记录任务详情；查询出入库,出入库历史记录任务详情,请求json数据 :: "+JsonUtils.objectToJson(dto));
         TaskDetailVo taskDetailVo = new TaskDetailVo();
         // 查询运单信息
-        Long waybillId = dto.getWaybillId();
-        Waybill waybill = waybillDao.selectById(waybillId);
+        Waybill waybill = waybillDao.selectById(dto.getWaybillId());
         if (waybill == null) {
             log.error("===>查询运单为空...");
             return BaseResultUtil.fail("查询运单为空");
@@ -95,25 +97,25 @@ public class TaskServiceImpl implements ITaskService {
         taskDetailVo.setCarrierType(waybill.getCarrierType());
 
         // 查询任务单信息
-        Long taskId = dto.getTaskId();
-        Task task = taskDao.selectById(taskId);
+        Task task = taskDao.selectById(dto.getTaskId());
         if (task == null) {
             log.error("===>查询任务单为空...");
             return BaseResultUtil.fail("查询任务单为空");
         }
         BeanUtils.copyProperties(task,taskDetailVo);
+
         // 承运商类型不是企业或者不是干线运输时，运单号显示运单号，否则显示任务单号
         if (WaybillCarrierTypeEnum.TRUNK_ENTERPRISE.code != waybill.getCarrierType()) {
             taskDetailVo.setNo(waybill.getNo());
         }
 
         // 任务单车辆
-        LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,taskId);
+        LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId,dto.getTaskId());
         List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
 
         // 查询车辆信息
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
-        BigDecimal freightFee = new BigDecimal(0);
+        BigDecimal freightFee = BigDecimal.ZERO;
         if (!CollectionUtils.isEmpty(taskCarList)) {
             // 根据登录ID查询当前业务员所在业务中心ID
             BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
@@ -122,20 +124,17 @@ public class TaskServiceImpl implements ITaskService {
             if (BizScopeEnum.NONE.code == bizScope.getCode()) {
                 return BaseResultUtil.fail("您没有访问权限!");
             }
-
             dto.setStoreIds(bizScope.getStoreIds());
 
             CarDetailVo carDetailVo = null;
             for (TaskCar taskCar : taskCarList) {
                 // 查询任务单车辆信息
-                String detailState = dto.getDetailState();
-                //WaybillCar waybillCar = getWaybillCar(detailState, taskCar);
-
                 dto.setWaybillCarId(taskCar.getWaybillCarId());
                 WaybillCar waybillCar = waybillCarDao.selectWaybillCar(dto);
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
+
                     // 实际装车时间不为空时，显示实际装车时间
                     if (waybillCar.getLoadTime() != null) {
                         carDetailVo.setExpectStartTime(waybillCar.getLoadTime());
@@ -151,7 +150,7 @@ public class TaskServiceImpl implements ITaskService {
                     carDetailVo.setGuideLine(waybillCar.getStartCity() + "-" + waybillCar.getEndCity());
 
                     // 获取车辆运输图片
-                    getCarPhotoImg(carDetailVo, detailState, waybillCar,waybill);
+                    getCarPhotoImg(carDetailVo, dto.getDetailState(), waybillCar,waybill);
 
                     // 查询品牌车系信息
                     OrderCar orderCar = orderCarDao.selectById(waybillCar.getOrderCarId());
@@ -246,45 +245,11 @@ public class TaskServiceImpl implements ITaskService {
         return sb;
     }
 
-    public WaybillCar getWaybillCar(String detailState, TaskCar taskCar) {
-        LambdaQueryWrapper<WaybillCar> query = new QueryWrapper<WaybillCar>().lambda().eq(WaybillCar::getId, taskCar.getWaybillCarId());
-        if (FieldConstant.WAIT_GET_CAR.equals(detailState)) {
-            // 待提车
-            query = query.in(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD.code,WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-        } else if (FieldConstant.WAIT_TO_CAR.equals(detailState)) {
-            // 待交车
-            query = query.in(WaybillCar::getState, WaybillCarStateEnum.LOADED.code,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
-        } else if (FieldConstant.FINISH_CAR.equals(detailState) || FieldConstant.FINISH_PUT_IN.equals(detailState)) {
-            // 已交付 已入库
-            query = query.eq(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code);
-        } else if (FieldConstant.WAIT_PUT_IN.equals(detailState)) {
-            // 待入库
-            query = query.eq(WaybillCar::getState, WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
-        } else if (FieldConstant.WAIT_PUT_OUT.equals(detailState)) {
-            // 待出库
-            query = query.eq(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-        } else if (FieldConstant.FINISH_PUT_OUT.equals(detailState)) {
-            // 已出库
-            query = query.gt(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
-        }
-
-        return waybillCarDao.selectOne(query);
-    }
-
     @Override
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(OutAndInStorageQueryDto dto) {
         log.info("====>业务员端-分页查询出入库，出入库历史记录列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
-        if (dto.getInStorageTimeE() != null && dto.getInStorageTimeE() != 0) {
-            dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
-        }
-        if (dto.getOutStorageTimeE() != null && dto.getOutStorageTimeE() != 0) {
-            dto.setOutStorageTimeE(TimeStampUtil.convertEndTime(dto.getOutStorageTimeE()));
-        }
-        Long creatTime = dto.getCreatTime();
-        if (creatTime != null && creatTime != 0) {
-            dto.setCreatTimeS(creatTime);
-            dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
-        }
+        // 转换日期
+        convertTime(dto);
 
         // 根据登录ID查询当前业务员所在业务中心ID
         BizScope bizScope = csSysService.getBizScopeByLoginIdNew(dto.getLoginId(), true);
@@ -299,6 +264,20 @@ public class TaskServiceImpl implements ITaskService {
         List<TaskWaybillVo> list = taskDao.selectOutAndInStorageList(dto);
         PageInfo<TaskWaybillVo> pageInfo = new PageInfo<>(list);
         return BaseResultUtil.success(pageInfo);
+    }
+
+    private void convertTime(OutAndInStorageQueryDto dto) {
+        if (dto.getInStorageTimeE() != null && dto.getInStorageTimeE() != 0) {
+            dto.setInStorageTimeE(TimeStampUtil.convertEndTime(dto.getInStorageTimeE()));
+        }
+        if (dto.getOutStorageTimeE() != null && dto.getOutStorageTimeE() != 0) {
+            dto.setOutStorageTimeE(TimeStampUtil.convertEndTime(dto.getOutStorageTimeE()));
+        }
+        Long creatTime = dto.getCreatTime();
+        if (creatTime != null && creatTime != 0) {
+            dto.setCreatTimeS(creatTime);
+            dto.setCreatTimeE(TimeStampUtil.convertEndTime(creatTime));
+        }
     }
 
 }

@@ -90,4 +90,6 @@ public interface IFinanceDao extends BaseMapper {
      * @return
      */
     BigDecimal receiptSummary(FinanceQueryDto financeQueryDto);
+
+    List<AdvancePaymentVo> getAdvancePayment(FinanceQueryDto financeQueryDto);
 }

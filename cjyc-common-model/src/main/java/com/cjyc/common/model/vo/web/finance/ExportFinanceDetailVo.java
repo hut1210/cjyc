@@ -45,7 +45,7 @@ public class ExportFinanceDetailVo implements Serializable {
     private String wayBillTypeName;
 
     @ApiModelProperty(value = "结算类型")
-    @Excel(name = "运单类型" ,orderNum = "7")
+    @Excel(name = "结算类型" ,orderNum = "7")
     private String  settleType;
 
     @ApiModelProperty(value = "应付运费")

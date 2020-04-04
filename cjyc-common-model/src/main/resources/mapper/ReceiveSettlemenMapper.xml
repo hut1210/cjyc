@@ -58,7 +58,7 @@
         LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
         WHERE rs.state = #{state}
         <include refid="Common_Condition_List"/>
-        ORDER BY rs.apply_time, rs.confirm_time, rs.verification_time DESC
+        ORDER BY rs.apply_time DESC, rs.confirm_time DESC, rs.verification_time DESC
     </select>
     <select id="listReceiveSettlementNeedInvoice"
             resultType="com.cjyc.common.model.dto.web.finance.ReceiveSettlementDto">
@@ -68,7 +68,7 @@
         LEFT JOIN c_customer_invoice cci ON rs.invoice_id = cci.id
         WHERE rs.state in (0,2)
         <include refid="Common_Condition_List"/>
-        ORDER BY rs.apply_time, rs.confirm_time, rs.verification_time DESC
+        ORDER BY rs.apply_time DESC, rs.confirm_time DESC, rs.verification_time DESC
     </select>
     <select id="summaryReceiveSettlementAmt" resultType="java.util.Map">
         SELECT

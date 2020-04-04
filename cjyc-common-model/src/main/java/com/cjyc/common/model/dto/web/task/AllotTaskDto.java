@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.task;
 
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,14 +14,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class AllotTaskDto {
-
-    @NotNull(message = "登录用户不能为空")
-    @ApiModelProperty(value = "用户Id",required = true)
-    private Long loginId;
-
-    @ApiModelProperty(hidden = true)
-    private String loginName;
+public class AllotTaskDto extends BaseLoginDto {
 
     @NotNull(message = "运单不能为空")
     @ApiModelProperty(value = "运单ID",required = true)

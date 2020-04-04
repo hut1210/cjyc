@@ -10,7 +10,7 @@
         <result column="order_car_id" property="orderCarId"/>
         <result column="order_car_no" property="orderCarNo"/>
         <result column="freight_fee" property="freightFee"/>
-        <result column="start_province" property="startProvinselectWaybillCarce"/>
+        <result column="start_province" property="startProvince"/>
         <result column="start_province_code" property="startProvinceCode"/>
         <result column="start_city" property="startCity"/>
         <result column="start_city_code" property="startCityCode"/>
@@ -1885,7 +1885,8 @@
             w_waybill_car car
         left join w_waybill w on car.waybill_id=w.id
         <where>
-            car.order_car_id=#{orderCarId}
+            car.state &lt;= 100
+            and car.order_car_id=#{orderCarId}
             <if test="waybillType != null and waybillType==1">
                 and car.id &lt; #{waybillCarId}
             </if>
@@ -1925,8 +1926,20 @@
         LEFT JOIN w_waybill_car billcar ON bill.id = billcar.waybill_id
         LEFT JOIN w_order_car ordercar ON billcar.order_car_id = ordercar.id
         LEFT JOIN w_order worder ON ordercar.order_id = worder.id
-        <!--运单变成已交付才在应付里展示-->
-        WHERE bill.state = 100 AND bill.no = #{waybillNo}
+        <!--过滤掉已取消的运单车辆-->
+        WHERE billcar.state &lt;= 100
+        AND bill.no = #{waybillNo}
+    </select>
+
+    <!--根据车辆编号查询运输车车牌号-->
+    <select id="selectPlateNoByOrderCarNo" resultType="java.lang.String">
+        select
+            task.vehicle_plate_no
+        from
+            w_waybill_car car
+            left join w_task task on car.waybill_id=task.waybill_id
+        where
+            car.state > 5 and car.state &lt; 100 and task.state
     </select>
 
 </mapper>

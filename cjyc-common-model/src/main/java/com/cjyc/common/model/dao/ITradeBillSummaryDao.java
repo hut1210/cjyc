@@ -30,5 +30,11 @@ public interface ITradeBillSummaryDao {
 
     BigDecimal cooperatorSummary(CooperatorSearchDto cooperatorSearchDto);
 
-    BigDecimal ActualReceiptSummary(FinanceQueryDto financeQueryDto);
+    BigDecimal actualReceiptSummary(FinanceQueryDto financeQueryDto);
+
+    BigDecimal advancePaymentSummary(FinanceQueryDto financeQueryDto);
+
+    BigDecimal actualAdvancePaymentSummary(FinanceQueryDto financeQueryDto);
+
+    BigDecimal receiptIncomeSummary(FinanceQueryDto financeQueryDto);
 }

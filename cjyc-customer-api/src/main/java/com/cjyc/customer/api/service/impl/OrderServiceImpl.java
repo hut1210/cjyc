@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.RegexUtil;
@@ -22,9 +23,12 @@ import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
-import com.cjyc.common.model.vo.customer.order.*;
+import com.cjyc.common.model.vo.customer.order.OrderCarCenterVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
+import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsLineService;
+import com.cjyc.common.system.service.ICsOrderCarLogService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.common.system.service.ICsPushMsgService;
 import com.cjyc.common.system.util.RedisUtils;
@@ -72,7 +76,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Resource
     private ICsPushMsgService csPushMsgService;
     @Resource
-    private ICsOrderService csOrderService;
+    private ICsOrderCarLogService csOrderCarLogService;
 
 
     @Override
@@ -97,8 +101,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             }
             order.setLineId(line.getId());
         }
+
         fillOrderStoreInfoForSave(order);
-        csOrderService.fillOrderInputStore(order);
         order.setState(OrderStateEnum.WAIT_CHECK.code);
         orderDao.updateById(order);
 
@@ -117,17 +121,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         Long endStoreId = order.getEndStoreId();
         order.setEndStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
         return order;
-    }
-
-    @Override
-    public ResultVo<OutterLogVo> ListOrderCarLog(String orderCarNo) {
-        OutterLogVo outterLogVo = new OutterLogVo();
-        String state = orderCarDao.findOutterState(orderCarNo);
-        outterLogVo.setOutterState(state);
-        outterLogVo.setOrderCarNo(orderCarNo);
-        List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
-        outterLogVo.setList(list);
-        return BaseResultUtil.success(outterLogVo);
     }
 
     @Override
@@ -308,7 +301,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private void getCarImg(OrderCar orderCar, OrderCarCenterVo orderCarCenter) {
         List<String> photoImgList = new ArrayList<>(20);
         List<WaybillCar> waybillCarList = waybillCarDao.selectList(new QueryWrapper<WaybillCar>().lambda()
-                .eq(WaybillCar::getOrderCarId, orderCar.getId()).select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
+                .eq(WaybillCar::getOrderCarId, orderCar.getId())
+                .le(WaybillCar::getState, WaybillCarStateEnum.UNLOADED.code)
+                .select(WaybillCar::getLoadPhotoImg,WaybillCar::getUnloadPhotoImg));
         if (!CollectionUtils.isEmpty(waybillCarList)) {
             for (WaybillCar waybillCar : waybillCarList) {
                 String loadPhotoImg = waybillCar == null ? "" : waybillCar.getLoadPhotoImg();

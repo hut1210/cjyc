@@ -227,4 +227,13 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
      * @return
      */
     List<DriverUpstreamPaidInfoVo> listDriverUpstreamPaidInfo(String waybillNo);
+
+    /**
+     * 功能描述: 根据车辆编号查询运输车车牌号
+     * @author liuxingxiang
+     * @date 2020/4/3
+     * @param orderCarNo
+     * @return java.lang.String
+     */
+    String selectPlateNoByOrderCarNo(@Param("orderCarNo") String orderCarNo);
 }

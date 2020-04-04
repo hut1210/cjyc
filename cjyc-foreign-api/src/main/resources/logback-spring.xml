@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<springProperty name="LOG_MAXFILESIZE" scope="context" source="logback.filesize" defaultValue="50MB"/>
-	<springProperty name="LOG_FILEMAXDAY" scope="context" source="logback.filemaxday" defaultValue="7"/>
 	<!-- 定义log文件的目录 -->
 	<property name="LOG_HOME" value="../logs/"/>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -11,12 +9,13 @@
 		</encoder>
 	</appender>
 	<appender name="TRACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}/trace.%i.log</fileNamePattern>
-			<maxHistory>${LOG_FILEMAXDAY}</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
+		<file>${LOG_HOME}/trace.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/logs/trace.%d{yyyy-MM-ddssSSS}.%i.log.zip</fileNamePattern>
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+			<totalSizeCap>20GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger:%line] --%mdc{client} %msg%n</pattern>
@@ -28,12 +27,13 @@
 		</filter>
 	</appender>
 	<appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}/info.%i.log</fileNamePattern>
-			<maxHistory>${LOG_FILEMAXDAY}</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
+		<file>${LOG_HOME}/info.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/logs/info.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+			<totalSizeCap>20GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger:%line] --%mdc{client} %msg%n</pattern>
@@ -45,12 +45,13 @@
 		</filter>
 	</appender>
 	<appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}/debug.%i.log</fileNamePattern>
-			<maxHistory>${LOG_FILEMAXDAY}</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
+		<file>${LOG_HOME}/debug.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/logs/debug.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+			<totalSizeCap>20GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger:%line] --%mdc{client} %msg%n</pattern>
@@ -62,12 +63,13 @@
 		</filter>
 	</appender>
 	<appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}/warn.%i.log</fileNamePattern>
-			<maxHistory>${LOG_FILEMAXDAY}</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
+		<file>${LOG_HOME}/warn.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/logs/warn.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+			<totalSizeCap>20GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger:%line] --%mdc{client} %msg%n</pattern>
@@ -79,12 +81,13 @@
 		</filter>
 	</appender>
 	<appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}/error.%i.log</fileNamePattern>
-			<maxHistory>${LOG_FILEMAXDAY}</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
+		<file>${LOG_HOME}/error.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/logs/error.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+			<totalSizeCap>20GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger:%line] --%mdc{client} %msg%n</pattern>
@@ -96,12 +99,13 @@
 		</filter>
 	</appender>
 	<appender name="ALL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}/all.%i.log</fileNamePattern>
-			<maxHistory>${LOG_FILEMAXDAY}</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
+		<file>${LOG_HOME}/all.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/logs/all.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+			<totalSizeCap>50GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%-5level] [%logger:%line] --%mdc{client} %msg%n</pattern>
@@ -116,4 +120,4 @@
 		<appender-ref ref="ERROR_FILE" />
 		<appender-ref ref="ALL_FILE" />
 	</root>
-</configuration>  
+</configuration>

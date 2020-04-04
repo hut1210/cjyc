@@ -145,44 +145,4 @@ public class AccountController {
         }
     }
 
-    public static void main(String[] args) {
-
-      /*  BigDecimal total = new BigDecimal(999);
-        BigDecimal c1fee = new BigDecimal(333);
-        BigDecimal c2fee = new BigDecimal(333);
-        BigDecimal c3fee = new BigDecimal(333);
-
-        BigDecimal sum = c1fee.add(c2fee).add(c3fee);
-
-        BigDecimal rate1 = c1fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
-        BigDecimal rate2 = c2fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
-        BigDecimal rate3 = c3fee.divide(sum, 10, BigDecimal.ROUND_HALF_DOWN);
-
-
-
-        BigDecimal new1 = rate1.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
-        BigDecimal new2 = rate2.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
-        BigDecimal new3 = rate3.multiply(total).setScale(0, BigDecimal.ROUND_DOWN);
-        BigDecimal new3_1= total.subtract(new1).subtract(new2);
-        System.out.println(new1);
-        System.out.println(new2);
-        System.out.println(new3);
-        System.out.println(new3_1);*/
-
-        double t = 1001;
-        double i1 = 333;
-        double i2 = 333;
-        double i3 = 333;
-        double it = i1 + i2 + i3;
-
-        double n1 = t * i1 / it;
-        double n2 = t * i2 / it;
-        double n3 = t * i3 / it;
-        double n3_1 = t - n1 - n2;
-
-        System.out.println(n1);
-        System.out.println(n2);
-        System.out.println(n3);
-        System.out.println(n3_1);
-    }
 }

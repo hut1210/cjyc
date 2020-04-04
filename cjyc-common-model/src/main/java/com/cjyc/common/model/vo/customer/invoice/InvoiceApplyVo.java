@@ -33,11 +33,9 @@ public class InvoiceApplyVo implements Serializable {
     private String customerName;
 
     @ApiModelProperty(value = "申请时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long applyTime;
 
     @ApiModelProperty(value = "开票时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
     private Long invoiceTime;
 
     @ApiModelProperty(value = "开票金额")

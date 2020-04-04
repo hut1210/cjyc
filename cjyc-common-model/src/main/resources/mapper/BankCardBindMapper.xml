@@ -12,6 +12,7 @@
         <result column="province_name" property="provinceName" />
         <result column="area_name" property="areaName" />
         <result column="card_name" property="cardName" />
+        <result column="pay_bank_no" property="payBankNo" />
         <result column="card_no" property="cardNo" />
         <result column="card_phone" property="cardPhone" />
         <result column="id_card" property="idCard" />
@@ -25,7 +26,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, user_type, card_type, card_colour, province_name, area_name, card_name, card_no, card_phone, id_card, bank_code, bank_name, bank_licence, description, state, create_time
+        id, user_id, user_type, card_type, card_colour, province_name, area_name, card_name, pay_bank_no , card_no, card_phone, id_card, bank_code, bank_name, bank_licence, description, state, create_time
     </sql>
 
     <!-- 根据用户userId和用户类型删除银行卡信息-->

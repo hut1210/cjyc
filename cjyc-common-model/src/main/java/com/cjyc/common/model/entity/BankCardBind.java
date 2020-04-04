@@ -51,6 +51,9 @@ public class BankCardBind implements Serializable {
     @ApiModelProperty(value = "银行卡户主")
     private String cardName;
 
+    @ApiModelProperty(value = "支付行号")
+    private String payBankNo;
+
     @ApiModelProperty(value = "银行卡卡号")
     private String cardNo;
 

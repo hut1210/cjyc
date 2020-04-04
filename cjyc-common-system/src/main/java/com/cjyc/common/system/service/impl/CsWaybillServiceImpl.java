@@ -1064,9 +1064,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
                 //验证出发地与上一次调度目的地是否一致
                 WaybillCar prevWc = dto.getId() == null ? waybillCarDao.findLastByOderCarId(orderCarId) : waybillCarDao.findLastByOderCarIdAndId(waybillCar.getId(), orderCarId);
-                if (prevWc != null && !prevWc.getEndAddress().equals(dto.getStartAddress())) {
+                if (prevWc != null && !(prevWc.getEndAreaCode().equals(dto.getStartAreaCode()) && prevWc.getEndAddress().equals(dto.getStartAddress()))) {
                     return BaseResultUtil.fail("运单中车辆{0}，已经被其他人调度, 请从订单历史界面重新调度", orderCarNo, dto.getStartAddress(), prevWc.getWaybillNo(), prevWc.getEndAddress());
                 }
+                System.out.println(prevWc == null ? "null" : prevWc.getEndAddress());
+                System.out.println(dto.getStartAddress());
             }
 
             /**1、组装运单信息*/
@@ -1116,9 +1118,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 }
 
                 //验证订单车辆状态
-                OrderCar orderCar = orderCarDao.selectById(orderCarId);
+                OrderCar orderCar = getOrderCarFromMap(orderCarMap, orderCarId);
                 //验证订单状态
-                Order order = orderDao.selectById(orderCar.getOrderId());
+                Order order = getOrderFromMap(orderMap, orderCar.getOrderId());
                 boolean isChangeAddress = false;
                 //验证是否变更地址
                 if (!(waybillCar.getEndAreaCode() != null && waybillCar.getEndAreaCode().equals(dto.getEndAreaCode())) || !(waybillCar.getEndAddress() != null && waybillCar.getEndAddress().equals(dto.getEndAddress()))) {
@@ -1166,7 +1168,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             }
 
-            //查询待取消的车辆
+            //查询待取消的运单车辆
             List<WaybillCar> cancelWaybillCars = waybillCarDao.findWaitCancelListByUnCancelIds(unCancelWaybillCarIds, waybill.getId());
             if (!CollectionUtils.isEmpty(cancelWaybillCars)) {
                 //取消运单车辆
@@ -1407,7 +1409,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (waybillCarMap.containsKey(waybillCarId)) {
             wc = waybillCarMap.get(waybillCarId);
         } else {
-            wc = waybillCarDao.findByTaskCarId(waybillCarId);
+            wc = waybillCarDao.selectById(waybillCarId);
             waybillCarMap.put(waybillCarId, wc);
         }
         return wc;
@@ -1426,8 +1428,11 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         }
         if (waybill == null) {
             waybill = waybillDao.selectById(waybillCar.getWaybillId());
-            ;
+            if(waybill == null){
+                return;
+            }
         }
+
         Integer waybillType = waybill.getType();
         if (WaybillCarrierTypeEnum.SELF.code != waybill.getCarrierType() || WaybillTypeEnum.PICK.code != waybill.getType()) {
             //非提车自送的单子
@@ -1475,9 +1480,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             if (dsEntity.getTrunkNum() == 0) {
                 noc.setPickState(dsEntity.getPickNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
             }
-            noc.setTrunkState(dsEntity.getTrunkNum() > 0 ? OrderCarTrunkStateEnum.WAIT_DISPATCH.code : OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code);
+            noc.setTrunkState(dsEntity.getTrunkNum() > 0 ? OrderCarTrunkStateEnum.WAIT_NEXT_DISPATCH.code : OrderCarTrunkStateEnum.WAIT_DISPATCH.code);
             noc.setBackState(dsEntity.getBackNum() > 0 ? OrderCarLocalStateEnum.DISPATCHED.code : OrderCarLocalStateEnum.WAIT_DISPATCH.code);
-
         } else {
             throw new ParameterException("运单类型错误");
         }
@@ -1537,6 +1541,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 if (waybillCarId == null) {
                     continue;
                 }
+                //WaybillCar waybillCar = getWaybillCarFromMap(waybillCarMap, waybillCarId);
                 WaybillCar waybillCar = getWaybillCarFromMap(waybillCarMap, waybillCarId);
                 if (waybillCar == null) {
                     return BaseResultUtil.fail("ID为{0}的车辆不存在", waybillCarId);

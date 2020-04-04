@@ -106,8 +106,8 @@ public interface IFinanceService {
      * <p>应收账款结算申请</p>
      * <ol>
      *     <li>新增发票</li>
-     *     <li>新增应收账款</li>
-     *     <li>新增应收账款明细</li>
+     *     <li>新增结算信息</li>
+     *     <li>新增结算明细信息</li>
      * </ol>
      *
      * @param applyReceiveSettlementVo
@@ -124,7 +124,11 @@ public interface IFinanceService {
     ResultVo<PageVo<ReceiveSettlementDto>> listReceiveSettlementNeedInvoice(ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
 
     /**
-     * 应收账款-待开票-撤回
+     * <p>应收账款-待开票-撤回</p>
+     * <ol>
+     *     <li>删除结算信息</li>
+     *     <li>删除结算明细信息</li>
+     * </ol>
      *
      * @param cancelInvoiceVo
      * @return
@@ -132,7 +136,11 @@ public interface IFinanceService {
     ResultVo cancelReceiveSettlement(CancelInvoiceVo cancelInvoiceVo);
 
     /**
-     * 应收账款-待开票-确认开票
+     *
+     * <p>应收账款-待开票-确认开票</p>
+     * <ol>
+     *     <li>修改结算状态为已确认</li>
+     * </ol>
      *
      * @param confirmInvoiceVo
      * @return
@@ -140,7 +148,10 @@ public interface IFinanceService {
     ResultVo confirmInvoice(ConfirmInvoiceVo confirmInvoiceVo);
 
     /**
-     * 应收账款-待回款-核销
+     * <p>应收账款-待回款-核销</p>
+     * <ol>
+     *     <li>修改结算状态为已核销</li>
+     * </ol>
      *
      * @param verificationReceiveSettlementVo
      * @return
@@ -213,4 +224,18 @@ public interface IFinanceService {
      * @return
      */
     ResultVo exportReceiveSettlementPayed(HttpServletResponse response, ReceiveSettlementNeedInvoiceVo receiveSettlementNeedInvoiceVo);
+
+    /**
+     * 预付未完结列表
+     * @param financeQueryDto
+     * @return
+     */
+    ResultVo<PageVo<AdvancePaymentVo>> getAdvancePayment(FinanceQueryDto financeQueryDto);
+
+    /**
+     * 导出预付未完结 Excel
+     * @param financeQueryDto
+     * @return
+     */
+    List<AdvancePaymentVo> exportAdvancePaymentExcel(FinanceQueryDto financeQueryDto);
 }

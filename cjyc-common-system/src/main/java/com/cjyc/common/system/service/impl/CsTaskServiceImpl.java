@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = RuntimeException.class)
 public class CsTaskServiceImpl implements ICsTaskService {
 
     @Resource
@@ -196,12 +196,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         //提车
         TaskCar taskCar = taskCarDao.selectById(paramsDto.getTaskCarId());
-        LoadTaskDto loadTaskDto = new LoadTaskDto();
-        BeanUtils.copyProperties(paramsDto, loadTaskDto);
-        loadTaskDto.setTaskId(taskCar.getTaskId());
-        loadTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
+        BaseTaskDto baseTaskDto = new BaseTaskDto();
+        BeanUtils.copyProperties(paramsDto, baseTaskDto);
+        baseTaskDto.setTaskId(taskCar.getTaskId());
+        baseTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
 
-        return load(loadTaskDto);
+        return load(baseTaskDto);
     }
 
     @Override
@@ -369,7 +369,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> load(BaseTaskDto paramsDto) {
         Long taskId = paramsDto.getTaskId();
         Set<String> lockSet = Sets.newHashSet();
         try {
@@ -529,8 +529,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     PushInfo pushInfo = csPushMsgService.getPushInfo(order.getCustomerId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_TRANSPORT, order.getNo(), order.getStartCity(), order.getEndCity());
                     pushCustomerList.add(pushInfo);
                 }
-                if(isFirstLoad){
-                    order.setState(orderCarNewState);
+                if (isFirstLoad) {
                     firstLoadOrderSet.add(order);
                 }
                 count++;
@@ -606,7 +605,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> unload(UnLoadTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> unload(BaseTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
@@ -644,7 +643,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 String lockKey = RedisKeys.getUnloadLockKey(waybillCar.getId());
                 if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
                     log.debug("缓存失败：key->{}", lockKey);
-                    return BaseResultUtil.fail("任务车辆{0}正在提车，请5秒后重试", waybillCar.getOrderCarNo());
+                    return BaseResultUtil.fail("任务车辆{0}正在交车，请5秒后重试", waybillCar.getOrderCarNo());
                 }
                 lockSet.add(lockKey);
                 if (waybillCar.getState() <= WaybillCarStateEnum.WAIT_LOAD.code) {
@@ -773,7 +772,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         }
         //提车
         TaskCar taskCar = taskCarDao.selectById(paramsDto.getTaskCarId());
-        InStoreTaskDto inStoreTaskDto = new InStoreTaskDto();
+        BaseTaskDto inStoreTaskDto = new BaseTaskDto();
         BeanUtils.copyProperties(paramsDto, inStoreTaskDto);
         inStoreTaskDto.setTaskId(taskCar.getTaskId());
         inStoreTaskDto.setTaskCarIdList(Lists.newArrayList(taskCar.getId()));
@@ -782,7 +781,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> inStore(BaseTaskDto paramsDto) {
         log.debug("【入库】" + JSON.toJSONString(paramsDto));
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
@@ -946,12 +945,23 @@ public class CsTaskServiceImpl implements ICsTaskService {
             boolean isAdmin = waybill.getCarrierType() != null && waybill.getCarrierType() == WaybillCarrierTypeEnum.LOCAL_ADMIN.code;
             csPushMsgService.send(task.getDriverId(),
                     isAdmin ? UserTypeEnum.ADMIN : UserTypeEnum.DRIVER,
-                    isAdmin ? PushMsgEnum.S_FINISHED : PushMsgEnum.D_FINISHED,
+                    newState == WaybillStateEnum.F_CANCEL.code ? ( isAdmin ? PushMsgEnum.S_CANCEL_WAYBILL : PushMsgEnum.D_CANCEL_WAYBILL) : (isAdmin ? PushMsgEnum.S_FINISHED : PushMsgEnum.D_FINISHED),
                     task.getWaybillNo());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         return newState;
+    }
+
+    @Override
+    public ResultVo<ResultReasonVo> cancelUnload(BaseTaskDto reqDto) {
+
+        for (Long taskCarId : reqDto.getTaskCarIdList()) {
+            WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
+
+        }
+
+        return null;
     }
 
     @Override
@@ -965,7 +975,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }
 
     @Override
-    public ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto) {
+    public ResultVo<ResultReasonVo> outStore(BaseTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
@@ -1033,7 +1043,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
-                if(OrderStateEnum.TRANSPORTING.code > order.getState()){
+                if (OrderStateEnum.TRANSPORTING.code > order.getState()) {
                     firstLoadOrderSet.add(order);
                 }
                 //更新运单车辆状态
@@ -1333,7 +1343,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         boolean isFinish = countUnFinish <= 0;
         boolean isPaid = countUnpay <= 0;
 
-        if(isFinish){
+        if (isFinish) {
             orderDao.updateForFinish(orderId);
 
             Order order = orderDao.selectById(orderId);
@@ -1346,7 +1356,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             csAmqpService.sendOrderState(order);
         }
 
-        if(isPaid){
+        if (isPaid) {
             orderDao.updateForPaid(orderId);
         }
     }

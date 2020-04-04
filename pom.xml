@@ -14,18 +14,19 @@
     <groupId>com.cjyc</groupId>
     <artifactId>cjyc</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-RELEASE</version>
     <modules>
         <module>cjyc-driver-api</module>
         <module>cjyc-customer-api</module>
         <module>cjyc-salesman-api</module>
         <module>cjyc-web-api</module>
+        <module>cjyc-foreign-api</module>
         <module>cjyc-common-model</module>
         <module>cjyc-common-system</module>
         <module>cjyc-server-pay</module>
         <module>cjyc-scheduler-finance</module>
         <module>cjyc-scheduler-report</module>
-        <module>cjyc-foreign-api</module>
+        <module>cjyc-scheduler-biz</module>
     </modules>
 
     <properties>
@@ -313,17 +314,5 @@
         </profile>
 
     </profiles>
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>bintray</name>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
-
-
 
 </project>

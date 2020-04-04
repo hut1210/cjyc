@@ -6,9 +6,7 @@ import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.*;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.text.MessageFormat;
 
 /**
  * @Description 任务控制层
@@ -81,7 +78,7 @@ public class TaskController {
      */
     @ApiOperation(value = "装车")
     @PostMapping(value = "/car/load")
-    public ResultVo<ResultReasonVo> load(@Validated @RequestBody LoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> load(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -96,7 +93,7 @@ public class TaskController {
      */
     @ApiOperation(value = "卸车")
     @PostMapping(value = "/car/unload")
-    public ResultVo<ResultReasonVo> unload(@Validated @RequestBody UnLoadTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> unload(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -111,7 +108,8 @@ public class TaskController {
      */
     @ApiOperation(value = "确认出库")
     @PostMapping(value = "/car/out/store")
-    public ResultVo<ResultReasonVo> outStore(@Validated @RequestBody OutStoreTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> outStore(@Validated @RequestBody BaseTaskDto reqDto) {
+
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -126,7 +124,7 @@ public class TaskController {
      */
     @ApiOperation(value = "确认入库")
     @PostMapping(value = "/car/in/store")
-    public ResultVo inStore(@Validated @RequestBody InStoreTaskDto reqDto) {
+    public ResultVo inStore(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());

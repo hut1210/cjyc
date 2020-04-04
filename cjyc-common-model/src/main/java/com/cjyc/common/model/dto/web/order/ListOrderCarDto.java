@@ -44,10 +44,9 @@ public class ListOrderCarDto extends BasePageDto {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    //客户表
     @ApiModelProperty(value = "客户类型")
-    private String customerType;
-    //客户表
+    private Integer customerType;
+
     @ApiModelProperty(value = "客户电话")
     private String customerPhone;
 

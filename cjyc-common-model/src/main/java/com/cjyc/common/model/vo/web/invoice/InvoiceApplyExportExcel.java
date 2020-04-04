@@ -44,7 +44,7 @@ public class InvoiceApplyExportExcel implements Serializable {
     public String getApplyTimeStr() {
         if (applyTime != null) {
             LocalDateTime localDateTime = LocalDateTimeUtil.convertLongToLDT(applyTime);
-            return LocalDateTimeUtil.formatLDT(localDateTime,"yyyy/MM/dd");
+            return LocalDateTimeUtil.formatLDT(localDateTime,"yyyy/MM/dd HH:mm:ss");
         }
         return "";
     }
@@ -52,7 +52,7 @@ public class InvoiceApplyExportExcel implements Serializable {
     public String getInvoiceTimeStr() {
         if (invoiceTime != null) {
             LocalDateTime localDateTime = LocalDateTimeUtil.convertLongToLDT(invoiceTime);
-            return LocalDateTimeUtil.formatLDT(localDateTime,"yyyy/MM/dd");
+            return LocalDateTimeUtil.formatLDT(localDateTime,"yyyy/MM/dd HH:mm:ss");
         }
         return "";
     }

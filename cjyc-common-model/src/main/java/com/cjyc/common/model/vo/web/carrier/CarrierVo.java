@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.carrier;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
-import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.SecondLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -90,7 +90,7 @@ public class CarrierVo implements Serializable {
     private Integer state;
 
     @ApiModelProperty("最后操作时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
+    @JsonSerialize(using = SecondLongSerizlizer.class)
     private Long operateTime;
 
     @ApiModelProperty("最后操作人")

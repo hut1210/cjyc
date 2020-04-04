@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.inquiry;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
-import com.cjyc.common.model.serizlizer.DateLongSerizlizer;
+import com.cjyc.common.model.serizlizer.SecondLongSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class InquiryVo implements Serializable {
     private Integer isRed;
 
     @ApiModelProperty("询价时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
+    @JsonSerialize(using = SecondLongSerizlizer.class)
     private Long inquiryTime;
 
     @ApiModelProperty("运费/元")
@@ -43,7 +43,7 @@ public class InquiryVo implements Serializable {
     private String phone;
 
     @ApiModelProperty("处理时间")
-    @JsonSerialize(using = DateLongSerizlizer.class)
+    @JsonSerialize(using = SecondLongSerizlizer.class)
     private Long handleTime;
 
     @ApiModelProperty("处理人")
