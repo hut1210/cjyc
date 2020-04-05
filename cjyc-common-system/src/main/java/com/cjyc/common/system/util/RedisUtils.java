@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -1254,7 +1255,8 @@ public class RedisUtils {
     }
 
     @Async
-    public void delayDelete(Set<String> keys) {
+    @Transactional
+    public void delayDelete(Set<String> keys){
         if(CollectionUtils.isEmpty(keys)){
             return;
         }
@@ -1262,8 +1264,8 @@ public class RedisUtils {
         try {
             Thread.sleep(3000);
             delete(keys);
-        } catch (InterruptedException e) {
-            LogUtil.error("【延时解锁】失败");
+        } catch (Exception e) {
+            LogUtil.error("【延时解锁】失败", e);
         }
         LogUtil.debug("【延时解锁】----------->结束" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
     }

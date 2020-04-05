@@ -343,8 +343,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
             task.setCreateUserId(paramsDto.getLoginId());
             if (!CollectionUtils.isEmpty(list)) {
                 Set<String> startAreaCodeSet = list.stream().map(WaybillCar::getStartAreaCode).collect(Collectors.toSet());
-                Set<String> EndAreaCodeSet = list.stream().map(WaybillCar::getEndAreaCode).collect(Collectors.toSet());
-                task.setGuideLine(csWaybillService.computeGuideLine(startAreaCodeSet, EndAreaCodeSet, paramsDto.getGuideLine(), list.size()));
+                Set<String> endAreaCodeSet = list.stream().map(WaybillCar::getEndAreaCode).collect(Collectors.toSet());
+                task.setGuideLine(csWaybillService.computeGuideLine(startAreaCodeSet, endAreaCodeSet, paramsDto.getGuideLine(), list.size()));
             }
 
             taskDao.insert(task);
@@ -785,7 +785,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
         log.debug("【入库】" + JSON.toJSONString(paramsDto));
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
-        Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
         Set<String> successSet = Sets.newHashSet();
 
         Long taskId = paramsDto.getTaskId();
@@ -823,8 +822,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
                 WaybillCar waybillCar = csWaybillService.getWaybillCarByTaskCarIdFromMap(waybillCarMap, taskCarId);
                 if (waybillCar == null) {
-                    failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}对应的运单车辆不存在", taskCarId));
-                    continue;
+                    return BaseResultUtil.fail("任务ID为{0}对应的运单车辆不存在", taskCarId);
                 }
                 //锁定
                 String lockKey = RedisKeys.getInStoreLockKey(taskCarId);
@@ -834,23 +832,20 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
                 lockSet.add(lockKey);
                 if (waybillCar.getState() > WaybillCarStateEnum.UNLOADED.code) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "车辆已经卸过车"));
-                    continue;
+                    return BaseResultUtil.fail( "车辆{0}已经卸过车", waybillCar.getOrderCarNo());
                 }
                 //验证卸车目的地
                 if (waybillCar.getEndStoreId() == null || waybillCar.getEndStoreId() <= 0) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "车辆目的地不在业务中心, 不能入库"));
-                    continue;
+                    return BaseResultUtil.fail("车辆{0}目的地不在业务中心, 不能入库", waybillCar.getOrderCarNo());
                 }
                 //计算车辆状态
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 if (orderCar == null) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "车辆不存在"));
-                    continue;
+                    return BaseResultUtil.fail( "车辆{0}不存在", waybillCar.getOrderCarNo());
                 }
                 Order order = csWaybillService.getOrderFromMap(orderMap, orderCar.getOrderId());
                 if (order == null) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "订单不存在"));
+                    return BaseResultUtil.fail( "车辆{0}相关订单不存在", waybillCar.getOrderCarNo());
                 }
 
                 csOrderService.validateOrderCarVinInfo(vinSet, orderCar.getVin());
@@ -923,7 +918,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
 
             resultReasonVo.setSuccessList(successSet);
-            resultReasonVo.setFailList(failCarNoSet);
             return BaseResultUtil.success(resultReasonVo);
         } finally {
             redisUtils.delayDelete(lockSet);

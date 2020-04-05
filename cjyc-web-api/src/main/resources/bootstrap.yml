@@ -1,7 +1,4 @@
 spring:
-  #激活配置文件
-  profiles:
-    active: local
   #应用名称
   application:
     name: cjyc-web-api
