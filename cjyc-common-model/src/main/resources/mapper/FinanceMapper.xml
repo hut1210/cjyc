@@ -1292,7 +1292,7 @@
     <select id="listPaymentDaysInfo" resultType="com.cjyc.common.model.dto.web.finance.ReceiveOrderCarDto">
         <!--企业客户账期应收账款信息查询sql-->
         <include refid="PAYMENT_DAYS_COMMON_SQL"></include>
-        LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id
+        LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id AND ccc.id = wo.customer_contract_id
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
         WHERE
