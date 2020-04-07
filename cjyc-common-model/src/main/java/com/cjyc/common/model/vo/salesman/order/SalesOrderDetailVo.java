@@ -73,8 +73,6 @@ public class SalesOrderDetailVo implements Serializable {
     private String contactPhone;
     @ApiModelProperty(value = "大客户合同编号")
     private String contractNo;
-    @ApiModelProperty(value = "结算类型 0:时付 1：账期")
-    private Integer settleType;
     @ApiModelProperty(value = "账期/天")
     private Integer settlePeriod;
 
@@ -169,7 +167,6 @@ public class SalesOrderDetailVo implements Serializable {
     public String getContactMan(){return StringUtils.isBlank(contactMan) ? "":contactMan;}
     public String getContactPhone(){return StringUtils.isBlank(contactPhone) ? "":contactPhone;}
     public String getContractNo(){return StringUtils.isBlank(contractNo) ? "":contractNo;}
-    public Integer getSettleType(){return settleType == null ? -1:settleType;}
     public Integer getSettlePeriod(){return settlePeriod == null ? -1:settlePeriod;}
 
     public String getPickContactName(){return StringUtils.isBlank(pickContactName) ? "":pickContactName;}
