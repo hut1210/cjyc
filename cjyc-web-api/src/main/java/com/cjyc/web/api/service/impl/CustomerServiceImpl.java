@@ -1486,7 +1486,9 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             for(CustomerVo vo : vos){
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
                 if(count != null){
-                    BeanUtils.copyProperties(count,vo);
+                    vo.setTotalOrder(count.getTotalOrder());
+                    vo.setTotalCar(count.getTotalCar());
+                    vo.setTotalAmount(count.getTotalAmount());
                 }
                 //用户自己注册的获取该用户名称
                 if(vo.getSource() == CustomerSourceEnum.APP.code){
