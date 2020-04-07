@@ -31,7 +31,7 @@ public class ConfigController {
         return dictionaryService.queryConfig();
     }
 
-   @ApiOperation(value = "更新系统配置")
+    @ApiOperation(value = "更新系统配置")
     @PostMapping(value = "/modifyConfig")
     public ResultVo modifyConfig(@RequestBody OperateDto dto){
         boolean result = dictionaryService.modifyConfig(dto);
