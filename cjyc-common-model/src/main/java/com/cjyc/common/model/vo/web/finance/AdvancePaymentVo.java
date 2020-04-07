@@ -98,12 +98,12 @@ public class AdvancePaymentVo implements Serializable {
 
     public String getCustomTypeName() {
         Integer type = getType();
-        if(type!=null && type==1){
+        if(type!=null && type==CustomerTypeEnum.INDIVIDUAL.code){
             return "C端客户";
-        }else if(type!=null && type==2){
-            return "企业";
-        }else if(type!=null && type==3){
-            return "合伙人";
+        }else if(type!=null && type==CustomerTypeEnum.ENTERPRISE.code){
+            return CustomerTypeEnum.ENTERPRISE.name;
+        }else if(type!=null && type==CustomerTypeEnum.COOPERATOR.code){
+            return CustomerTypeEnum.COOPERATOR.name;
         }else{
             return "";
         }
