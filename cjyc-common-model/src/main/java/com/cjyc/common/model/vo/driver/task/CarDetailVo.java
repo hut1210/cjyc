@@ -52,9 +52,13 @@ public class CarDetailVo implements Serializable {
     @ApiModelProperty(value = "卸车地址")
     private String endAddress;
 
-    @ApiModelProperty(value = "提车日期")
+    @ApiModelProperty(value = "约定提车日期")
     @JsonSerialize(using = DateLongSerizlizer.class)
     private Long expectStartTime;
+
+    @ApiModelProperty(value = "实际提车日期")
+    @JsonSerialize(using = DateLongSerizlizer.class)
+    private Long loadTime;
 
     @ApiModelProperty(value = "交车日期")
     @JsonSerialize(using = DateLongSerizlizer.class)
@@ -167,5 +171,9 @@ public class CarDetailVo implements Serializable {
             return -1;
         }
         return receiptFlag == false ? 0 : 1;
+    }
+
+    public Long getLoadTime() {
+        return loadTime == null ? 0 : loadTime;
     }
 }

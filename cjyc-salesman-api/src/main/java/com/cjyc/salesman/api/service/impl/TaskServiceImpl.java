@@ -134,11 +134,6 @@ public class TaskServiceImpl implements ITaskService {
                 if (waybillCar != null) {
                     carDetailVo = new CarDetailVo();
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
-
-                    // 实际装车时间不为空时，显示实际装车时间
-                    if (waybillCar.getLoadTime() != null) {
-                        carDetailVo.setExpectStartTime(waybillCar.getLoadTime());
-                    }
                     freightFee = freightFee.add(waybillCar.getFreightFee());
 
                     // 给详细地址拼接市区
