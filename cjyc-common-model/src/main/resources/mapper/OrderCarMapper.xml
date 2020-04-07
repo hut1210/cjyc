@@ -2468,8 +2468,8 @@
         s1.detail_addr as startStoreAddress,
         s2.area_code as endStoreAreaCode,
         s2.detail_addr as endStoreAddress,
-        ct1.parent_name as nowCityName,
-        ct2.parent_code as regionCode,
+        IFNULL(ct1.parent_name, '总部') as nowCityName,
+        IFNULL(ct2.parent_code, '000000') as regionCode,
         ct2.parent_name as region,
         m.phone as checkUserPhone
         from (
