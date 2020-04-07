@@ -493,8 +493,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                              * 后续如果优化的话，去掉这段代码的转换
                                              */
                                             if (CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
-                                                String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
-                                                log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
+                                                String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getBankCode());
+                                                log.info("对公支付参数转换后【支行编号:{} 银行编码：{}】", baseCarrierVo.getBankCode(), bankCode);
                                                 if (StringUtils.isNotEmpty(bankCode)) {
                                                     baseCarrierVo.setBankCode(bankCode);
                                                 }
@@ -672,8 +672,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                          * 后续如果优化的话，去掉这段代码的转换
                                          */
                                         if (CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
-                                            String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
-                                            log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
+                                            String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getBankCode());
+                                            log.info("对公支付参数转换后【支行编号:{} 银行编码：{}】", baseCarrierVo.getBankCode(), bankCode);
                                             if (StringUtils.isNotEmpty(bankCode)) {
                                                 baseCarrierVo.setBankCode(bankCode);
                                             }
@@ -830,8 +830,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                  * 后续如果优化的话，去掉这段代码的转换
                                  */
                                 if (CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
-                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
-                                    log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
+                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getBankCode());
+                                    log.info("对公支付参数转换后【支行编号:{} 银行编码：{}】", showPartnerVo.getBankCode(), bankCode);
                                     if (StringUtils.isNotEmpty(bankCode)) {
                                         showPartnerVo.setBankCode(bankCode);
                                     }
@@ -956,8 +956,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                  * 后续如果优化的话，去掉这段代码的转换
                                  */
                                 if (CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
-                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
-                                    log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
+                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getBankCode());
+                                    log.info("对公支付参数转换后【支行编号:{} 银行编码：{}】", showPartnerVo.getBankCode(), bankCode);
                                     if (StringUtils.isNotEmpty(bankCode)) {
                                         showPartnerVo.setBankCode(bankCode);
                                     }
