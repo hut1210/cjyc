@@ -216,7 +216,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     BillCarNum countUnFinishForState(Long waybillId);
 
-    int updateLoadImgsNull(Long id);
 
     int countActiveWaybill(@Param("orderCarId") Long orderCarId, @Param("type") int type);
 
@@ -236,4 +235,8 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
      * @return java.lang.String
      */
     String selectPlateNoByOrderCarNo(@Param("orderCarNo") String orderCarNo);
+
+    List<WaybillCar> findListByTaskCarIds(@Param("list") List<Long> list);
+
+    int updateForCancelUnloadByIds(List<Long> collect);
 }

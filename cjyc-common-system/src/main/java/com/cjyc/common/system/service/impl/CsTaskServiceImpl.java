@@ -5,9 +5,12 @@ import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.BaseLoginDto;
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
-import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.task.AllotTaskDto;
+import com.cjyc.common.model.dto.web.task.BaseTaskDto;
+import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.*;
 import com.cjyc.common.model.enums.*;
@@ -950,12 +953,44 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Override
     public ResultVo<ResultReasonVo> cancelUnload(BaseTaskDto reqDto) {
 
-        for (Long taskCarId : reqDto.getTaskCarIdList()) {
-            WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
-
+        UserInfo userInfo = getUserInfo(reqDto);
+        List<Long> taskCarIdList = reqDto.getTaskCarIdList();
+        List<WaybillCar> list = waybillCarDao.findListByTaskCarIds(taskCarIdList);
+        if(CollectionUtils.isEmpty(list) || taskCarIdList.size() != list.size()){
+            return BaseResultUtil.fail("运单车辆数据错误");
         }
+        List<Long> waybillCarIds = Lists.newArrayList();
+        for (WaybillCar waybillCar : list) {
+            if(waybillCar.getState() < WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code){
+                return BaseResultUtil.fail("未交车车辆不允许取消交车");
+            }
+            if(waybillCar.getState() > WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code){
+                return BaseResultUtil.fail("已完结车辆不允许取消交车");
+            }
 
+            waybillCarIds.add(waybillCar.getId());
+        }
+        int i = waybillCarDao.updateForCancelUnloadByIds(waybillCarIds);
+        if(i != list.size()){
+            throw new ServerException("操作失败，请重试");
+        }
+        //添加取消日志
+        csOrderCarLogService.asyncSaveBatch(list, OrderCarLogEnum.C_UNLOAD,
+                new String[]{OrderCarLogEnum.C_UNLOAD.getOutterLog(),
+                        MessageFormat.format(OrderCarLogEnum.C_UNLOAD.getInnerLog(), userInfo.getName(), userInfo.getPhone())},
+                userInfo);
         return null;
+    }
+
+    private UserInfo getUserInfo(BaseLoginDto loginDto) {
+        UserInfo uInfo = new UserInfo();
+        if(loginDto != null){
+            uInfo.setId(loginDto.getLoginId());
+            uInfo.setName(loginDto.getLoginName());
+            uInfo.setPhone(loginDto.getLoginPhone());
+            uInfo.setUserType(loginDto.getLoginType());
+        }
+        return uInfo;
     }
 
     @Override
