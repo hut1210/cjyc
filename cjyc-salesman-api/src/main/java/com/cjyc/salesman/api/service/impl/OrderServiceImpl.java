@@ -98,7 +98,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
             CustomerContract contract = contractDao.selectById(order.getCustomerContractId());
             if(contract != null){
                 detailVo.setContractNo(contract.getContractNo());
-                detailVo.setSettleType(contract.getSettleType());
                 detailVo.setSettlePeriod(contract.getSettlePeriod());
             }
         }
