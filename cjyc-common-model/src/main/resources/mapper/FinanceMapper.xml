@@ -16,11 +16,12 @@
         if(wo.customer_type=3,woc.total_fee,null) as feeShare,
         if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
         (CASE
-            when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
-            when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
+        when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
+        when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
         END
         ) as amountReceived,
-        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0) as totalIncome,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
+        as totalIncome,
         woc.wl_pay_time as receivedTime
 
         from w_order_car woc
@@ -32,72 +33,72 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100
-            <if test="no != null and no.trim() != ''">
-                and woc.no like concat('%',#{no},'%')
-            </if>
-            <if test="vin != null and vin.trim() != ''">
-                and  woc.vin like concat('%',#{vin},'%')
-            </if>
-            <if test="orderNo != null and orderNo.trim() != ''">
-                and  woc.order_no like concat('%',#{orderNo},'%')
-            </if>
-            <if test="completeStartTime!= null">
-                and woc.finish_time &gt;= #{completeStartTime}
-            </if>
-            <if test="completeEndTime!= null">
-                and woc.finish_time &lt;= #{completeEndTime}
-            </if>
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and woc.vin like concat('%',#{vin},'%')
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+        <if test="completeStartTime!= null">
+            and woc.finish_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and woc.finish_time &lt;= #{completeEndTime}
+        </if>
 
-            <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-                and wo.start_province_code = #{startProvinceCode}
-            </if>
-            <if test="startCityCode != null and startCityCode.trim() != ''">
-                and wo.start_city_code = #{startCityCode}
-            </if>
-            <if test="startAreaCode != null and startAreaCode.trim() != ''">
-                and wo.start_area_code = #{startAreaCode}
-            </if>
-            <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-                and wo.end_province_code = #{endProvinceCode}
-            </if>
-            <if test="endCityCode != null and endCityCode.trim() != ''">
-                and wo.end_city_code = #{endCityCode}
-            </if>
-            <if test="endAreaCode != null and endAreaCode.trim() != ''">
-                and wo.end_area_code = #{endAreaCode}
-            </if>
-            <if test="area != null and area.trim() != ''">
-                and zcity.code = #{area}
-            </if>
-            <if test="type != null">
-                and cc.type = #{type}
-            </if>
-            <if test="customerName != null  and customerName.trim() != ''">
-                and  cc.name  like concat('%',#{customerName},'%')
-            </if>
-            <if test="payMode != null">
-                and  cc.pay_mode =#{payMode}
-            </if>
+        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+            and wo.start_province_code = #{startProvinceCode}
+        </if>
+        <if test="startCityCode != null and startCityCode.trim() != ''">
+            and wo.start_city_code = #{startCityCode}
+        </if>
+        <if test="startAreaCode != null and startAreaCode.trim() != ''">
+            and wo.start_area_code = #{startAreaCode}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+            and wo.end_province_code = #{endProvinceCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            and wo.end_city_code = #{endCityCode}
+        </if>
+        <if test="endAreaCode != null and endAreaCode.trim() != ''">
+            and wo.end_area_code = #{endAreaCode}
+        </if>
+        <if test="area != null and area.trim() != ''">
+            and zcity.code = #{area}
+        </if>
+        <if test="type != null">
+            and cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            and cc.name like concat('%',#{customerName},'%')
+        </if>
+        <if test="payMode != null">
+            and cc.pay_mode =#{payMode}
+        </if>
 
-            <if test="brand != null and brand.trim() != ''">
-                and woc.brand = #{brand}
-            </if>
-            <if test="model != null and model.trim() != ''">
-                and woc.model = #{model}
-            </if>
-            <if test="inputStoreName != null and inputStoreName.trim() != ''">
-                and wo.input_store_name = #{inputStoreName}
-            </if>
+        <if test="brand != null and brand.trim() != ''">
+            and woc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and woc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            and wo.input_store_name = #{inputStoreName}
+        </if>
 
-            <if test="state != null and state.trim() !=''">
-                and woc.wl_pay_state = #{state}
-            </if>
-            <if test="receiveStartTime!= null">
-                and woc.wl_pay_time >= #{receiveStartTime}
-            </if>
-            <if test="receiveEndTime!= null">
-                and woc.wl_pay_time &lt;= #{receiveEndTime}
-            </if>
+        <if test="state != null and state.trim() !=''">
+            and woc.wl_pay_state = #{state}
+        </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
         group by woc.no
         order by woc.finish_time desc
     </select>
@@ -120,7 +121,8 @@
         when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
         END
         ) as amountReceived,
-        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0) as totalIncome,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
+        as totalIncome,
         woc.wl_pay_time as receivedTime
 
         from w_order_car woc
@@ -132,72 +134,72 @@
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100
-            <if test="no != null and no.trim() != ''">
-                and woc.no like concat('%',#{no},'%')
-            </if>
-            <if test="vin != null and vin.trim() != ''">
-                and  woc.vin like concat('%',#{vin},'%')
-            </if>
-            <if test="orderNo != null and orderNo.trim() != ''">
-                and  woc.order_no like concat('%',#{orderNo},'%')
-            </if>
-            <if test="completeStartTime!= null">
-                and woc.finish_time &gt;= #{completeStartTime}
-            </if>
-            <if test="completeEndTime!= null">
-                and woc.finish_time &lt;= #{completeEndTime}
-            </if>
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and woc.vin like concat('%',#{vin},'%')
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+        <if test="completeStartTime!= null">
+            and woc.finish_time &gt;= #{completeStartTime}
+        </if>
+        <if test="completeEndTime!= null">
+            and woc.finish_time &lt;= #{completeEndTime}
+        </if>
 
-            <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-                and wo.start_province_code = #{startProvinceCode}
-            </if>
-            <if test="startCityCode != null and startCityCode.trim() != ''">
-                and wo.start_city_code = #{startCityCode}
-            </if>
-            <if test="startAreaCode != null and startAreaCode.trim() != ''">
-                and wo.start_area_code = #{startAreaCode}
-            </if>
-            <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-                and wo.end_province_code = #{endProvinceCode}
-            </if>
-            <if test="endCityCode != null and endCityCode.trim() != ''">
-                and wo.end_city_code = #{endCityCode}
-            </if>
-            <if test="endAreaCode != null and endAreaCode.trim() != ''">
-                and wo.end_area_code = #{endAreaCode}
-            </if>
-            <if test="area != null and area.trim() != ''">
-                and zcity.code = #{area}
-            </if>
-            <if test="type != null">
-                and cc.type = #{type}
-            </if>
-            <if test="customerName != null  and customerName.trim() != ''">
-                and  cc.name  like concat('%',#{customerName},'%')
-            </if>
-            <if test="payMode != null">
-                and  cc.pay_mode =#{payMode}
-            </if>
+        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
+            and wo.start_province_code = #{startProvinceCode}
+        </if>
+        <if test="startCityCode != null and startCityCode.trim() != ''">
+            and wo.start_city_code = #{startCityCode}
+        </if>
+        <if test="startAreaCode != null and startAreaCode.trim() != ''">
+            and wo.start_area_code = #{startAreaCode}
+        </if>
+        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
+            and wo.end_province_code = #{endProvinceCode}
+        </if>
+        <if test="endCityCode != null and endCityCode.trim() != ''">
+            and wo.end_city_code = #{endCityCode}
+        </if>
+        <if test="endAreaCode != null and endAreaCode.trim() != ''">
+            and wo.end_area_code = #{endAreaCode}
+        </if>
+        <if test="area != null and area.trim() != ''">
+            and zcity.code = #{area}
+        </if>
+        <if test="type != null">
+            and cc.type = #{type}
+        </if>
+        <if test="customerName != null  and customerName.trim() != ''">
+            and cc.name like concat('%',#{customerName},'%')
+        </if>
+        <if test="payMode != null">
+            and cc.pay_mode =#{payMode}
+        </if>
 
-            <if test="brand != null and brand.trim() != ''">
-                and woc.brand = #{brand}
-            </if>
-            <if test="model != null and model.trim() != ''">
-                and woc.model = #{model}
-            </if>
-            <if test="inputStoreName != null and inputStoreName.trim() != ''">
-                and wo.input_store_name = #{inputStoreName}
-            </if>
+        <if test="brand != null and brand.trim() != ''">
+            and woc.brand = #{brand}
+        </if>
+        <if test="model != null and model.trim() != ''">
+            and woc.model = #{model}
+        </if>
+        <if test="inputStoreName != null and inputStoreName.trim() != ''">
+            and wo.input_store_name = #{inputStoreName}
+        </if>
 
-            <if test="state != null and state.trim() !=''">
-                and woc.wl_pay_state = #{state}
-            </if>
-            <if test="receiveStartTime!= null">
-                and woc.wl_pay_time >= #{receiveStartTime}
-            </if>
-            <if test="receiveEndTime!= null">
-                and woc.wl_pay_time &lt;= #{receiveEndTime}
-            </if>
+        <if test="state != null and state.trim() !=''">
+            and woc.wl_pay_state = #{state}
+        </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
         group by woc.no
         order by woc.finish_time desc
     </select>
@@ -265,10 +267,10 @@
             and woc.no like concat('%',#{no},'%')
         </if>
         <if test="vin != null and vin.trim() != ''">
-            and  woc.vin = #{vin}
+            and woc.vin = #{vin}
         </if>
         <if test="orderNo != null and orderNo.trim() != ''">
-            and  woc.order_no like concat('%',#{orderNo},'%')
+            and woc.order_no like concat('%',#{orderNo},'%')
         </if>
         <if test="completeStartTime!= null">
             and wt.complete_time &gt;= #{completeStartTime}
@@ -300,10 +302,10 @@
             and cc.type = #{type}
         </if>
         <if test="customerName != null  and customerName.trim() != ''">
-            and  cc.name  like concat('%',#{customerName},'%')
+            and cc.name like concat('%',#{customerName},'%')
         </if>
         <if test="payMode != null">
-            and  cc.pay_mode =#{payMode}
+            and cc.pay_mode =#{payMode}
         </if>
 
         <if test="brand != null and brand.trim() != ''">
@@ -324,10 +326,10 @@
             and woc.no like concat('%',#{no},'%')
         </if>
         <if test="vin != null and vin.trim() != ''">
-            and  woc.vin = #{vin}
+            and woc.vin = #{vin}
         </if>
         <if test="orderNo != null and orderNo.trim() != ''">
-            and  woc.order_no like concat('%',#{orderNo},'%')
+            and woc.order_no like concat('%',#{orderNo},'%')
         </if>
         <if test="area != null and area.trim() != ''">
             and zcity.code = #{area}
@@ -337,7 +339,7 @@
             and cc.type = #{type}
         </if>
         <if test="customerName != null  and customerName.trim() != ''">
-            and  cc.name  like concat('%',#{customerName},'%')
+            and cc.name like concat('%',#{customerName},'%')
         </if>
         <if test="brand != null and brand.trim() != ''">
             and woc.brand = #{brand}
@@ -397,7 +399,8 @@
     <select id="getPaymentList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.PaymentVo">
         select * from
-        (<include refid="payMentListHeader"></include>
+        (
+        <include refid="payMentListHeader"></include>
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
         left join s_city zc on zc.code = wo.start_province_code
@@ -406,7 +409,7 @@
         where cc.pay_mode=0 and wo.customer_type=1 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
-            and  cc.pay_mode =#{payMode}
+            and cc.pay_mode =#{payMode}
         </if>
 
         group by woc.no
@@ -422,7 +425,7 @@
         where ccp.settle_type=0 and wo.customer_type=3 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
-            and  ccp.settle_type =#{payMode}
+            and ccp.settle_type =#{payMode}
         </if>
         group by woc.no
         union
@@ -436,7 +439,7 @@
         where ccc.settle_type=0 and wo.customer_type=2 and wo.state=100
         <include refid="payMentListCondition"></include>
         <if test="payMode != null">
-            and  ccc.settle_type =#{payMode}
+            and ccc.settle_type =#{payMode}
         </if>
         group by woc.no ) t order by t.finish_time desc
     </select>
@@ -445,23 +448,54 @@
         select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
         if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
         woc.order_no as orderNo,
+        if(woc.wl_pay_state=2,woc.wl_pay_time,0) as payTime,
         wo.start_city as startCity,
         wo.end_city as endCity,
         wo.customer_type as type,
-        wo.customer_name as customerName
+        wo.customer_name as customerName,
+        wo.pay_type as payType
         from w_order_car woc
         left join w_order wo on wo.id= woc.order_id
-        where (wo.state&lt;100 or wo.state=113) and woc.wl_pay_state=2
+        where (wo.state&lt;100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=1
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
         </if>
         <if test="vin != null and vin.trim() != ''">
-            and  woc.vin = #{vin}
+            and woc.vin = #{vin}
         </if>
         <if test="orderNo != null and orderNo.trim() != ''">
-            and  woc.order_no like concat('%',#{orderNo},'%')
+            and woc.order_no like concat('%',#{orderNo},'%')
         </if>
-        order by wo.wl_pay_time desc
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
+        union
+
+        select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
+        if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
+        woc.order_no as orderNo,
+        if(woc.wl_pay_state=2,woc.wl_pay_time,0) as payTime,
+        wo.start_city as startCity,
+        wo.end_city as endCity,
+        wo.customer_type as type,
+        wo.customer_name as customerName,
+        wo.pay_type as payType
+        from w_order_car woc
+        left join w_order wo on wo.id= woc.order_id
+        where (wo.state&lt;100 or wo.state=113) and wo.pay_type=0
+        <if test="no != null and no.trim() != ''">
+            and woc.no like concat('%',#{no},'%')
+        </if>
+        <if test="vin != null and vin.trim() != ''">
+            and woc.vin = #{vin}
+        </if>
+        <if test="orderNo != null and orderNo.trim() != ''">
+            and woc.order_no like concat('%',#{orderNo},'%')
+        </if>
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
+        order by payTime desc
     </select>
 
 
@@ -720,7 +754,7 @@
     </select>
 
     <select id="getSettlementInfo" parameterType="java.util.List"
-        resultType="com.cjyc.common.model.vo.web.finance.PayableTaskVo">
+            resultType="com.cjyc.common.model.vo.web.finance.PayableTaskVo">
         select wt.no,wt.car_num as carNum,ww.type,wwc.freight_fee as freightFee
         from w_task wt
         left join w_task_car wtc on wt.id=wtc.task_id
@@ -745,12 +779,12 @@
     <select id="getCollectTicketList" parameterType="com.cjyc.common.model.dto.web.finance.WaitTicketCollectDto"
             resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
         select
-            fp.invoice_no as invoiceNo,
-            fp.serial_number as serialNumber,
-            fp.freight_fee as freightFee,
-            fp.apply_time as applyTime,
-            fp.applicant_id as applicantId,
-            ba.name as applicant
+        fp.invoice_no as invoiceNo,
+        fp.serial_number as serialNumber,
+        fp.freight_fee as freightFee,
+        fp.apply_time as applyTime,
+        fp.applicant_id as applicantId,
+        ba.name as applicant
         from f_payable fp
         left join b_admin ba on ba.id = fp.applicant_id
         where fp.state='0'
@@ -905,22 +939,22 @@
         wo.customer_name as customerName,
         wo.customer_phone as customerPhone,
         (
-            case
-                when wo.flag=0 then '未付款'
-                when wo.flag=1 then '付款中'
-                when wo.flag=2 then '已付款'
-                when wo.flag=-2 then '支付失败'
-            end
+        case
+        when wo.flag=0 then '未付款'
+        when wo.flag=1 then '付款中'
+        when wo.flag=2 then '已付款'
+        when wo.flag=-2 then '支付失败'
+        end
         ) as state,
         if(wo.service_fee_pay_time>1582992000000,wo.service_fee_pay_time,null) as payTime,
         wo.start_city as startCity,
         wo.end_city as endCity,
         (
-            case
-                when wo.pay_type=0 then '到付'
-                when wo.pay_type=1 then '预付'
-                when wo.pay_type=2 then '账期'
-            end
+        case
+        when wo.pay_type=0 then '到付'
+        when wo.pay_type=1 then '预付'
+        when wo.pay_type=2 then '账期'
+        end
         ) as customerPayType,
         wo.wl_pay_time as wlPayTime,
         wo.total_fee as totalFee,
@@ -1016,40 +1050,40 @@
         left join w_waybill_car wwc on wwc.id = wtc.waybill_car_id
         left join w_waybill ww on ww.no = wt.waybill_no
         where wt.no in(
-                select wt.no
-                from w_task wt
-                left join w_waybill ww on ww.no = wt.waybill_no
-                left join d_carrier dc on dc.id = ww.carrier_id
-                where dc.settle_type = 1
-                and wt.complete_time > 0
-                and carrier_type in (1,2,4,5)
-                and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
-                and ww.state=100
-                <if test="waybillNo !=null and waybillNo.trim() !=''">
-                    and wt.no like concat('%',#{waybillNo},'%')
-                </if>
-                <if test="carrierName !=null and carrierName.trim() !=''">
-                    and ww.carrier_name like concat('%',#{carrierName},'%')
-                </if>
-                <if test="driverName !=null and driverName.trim() !=''">
-                    and wt.driver_name like concat('%',#{driverName},'%')
-                </if>
-                <if test="completeStartTime !=null ">
-                    and wt.complete_time &gt;=#{completeStartTime}
-                </if>
-                <if test="completeEndTime !=null ">
-                    and wt.complete_time &lt;=#{completeEndTime}
-                </if>
-                <if test="driverPhone !=null and driverPhone.trim() !=''">
-                    and wt.driver_phone like concat('%',#{driverPhone},'%')
-                </if>
-                <if test="vehiclePlateNo !=null and vehiclePlateNo.trim() !=''">
-                    and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
-                </if>
-                <if test="waybillType !=null">
-                    and ww.type = #{waybillType}
-                </if>
-                )
+        select wt.no
+        from w_task wt
+        left join w_waybill ww on ww.no = wt.waybill_no
+        left join d_carrier dc on dc.id = ww.carrier_id
+        where dc.settle_type = 1
+        and wt.complete_time > 0
+        and carrier_type in (1,2,4,5)
+        and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
+        and ww.state=100
+        <if test="waybillNo !=null and waybillNo.trim() !=''">
+            and wt.no like concat('%',#{waybillNo},'%')
+        </if>
+        <if test="carrierName !=null and carrierName.trim() !=''">
+            and ww.carrier_name like concat('%',#{carrierName},'%')
+        </if>
+        <if test="driverName !=null and driverName.trim() !=''">
+            and wt.driver_name like concat('%',#{driverName},'%')
+        </if>
+        <if test="completeStartTime !=null ">
+            and wt.complete_time &gt;=#{completeStartTime}
+        </if>
+        <if test="completeEndTime !=null ">
+            and wt.complete_time &lt;=#{completeEndTime}
+        </if>
+        <if test="driverPhone !=null and driverPhone.trim() !=''">
+            and wt.driver_phone like concat('%',#{driverPhone},'%')
+        </if>
+        <if test="vehiclePlateNo !=null and vehiclePlateNo.trim() !=''">
+            and wt.vehicle_plate_no like concat('%',#{vehiclePlateNo},'%')
+        </if>
+        <if test="waybillType !=null">
+            and ww.type = #{waybillType}
+        </if>
+        )
     </select>
     <select id="waitCollectSummary" resultType="java.math.BigDecimal">
         select sum(freightFee) from (select
@@ -1117,7 +1151,8 @@
         </if>) t
     </select>
     <select id="payablePaidSummary" resultType="java.util.Map">
-        SELECT sum(freightFee) as freightFee,sum(totalFreightPay) as totalFreightPay from (select fp.serial_number as serialNumber,
+        SELECT sum(freightFee) as freightFee,sum(totalFreightPay) as totalFreightPay from (select fp.serial_number as
+        serialNumber,
         fp.freight_fee as freightFee,
         fp.invoice_no as invoiceNo,
         fp.apply_time as applyTime,
@@ -1202,10 +1237,10 @@
             AND woc.no LIKE concat('%',#{no},'%')
         </if>
         <if test="vin != null and vin.trim() != ''">
-            AND  woc.vin = #{vin}
+            AND woc.vin = #{vin}
         </if>
         <if test="orderNo != null and orderNo.trim() != ''">
-            AND  woc.order_no LIKE concat('%',#{orderNo},'%')
+            AND woc.order_no LIKE concat('%',#{orderNo},'%')
         </if>
         <if test="area != null and area.trim() != ''">
             AND zcity.code = #{area}
@@ -1214,7 +1249,7 @@
             AND cc.type = #{type}
         </if>
         <if test="customerName != null  and customerName.trim() != ''">
-            AND  cc.name  LIKE concat('%',#{customerName},'%')
+            AND cc.name LIKE concat('%',#{customerName},'%')
         </if>
         <if test="contactPhone != null and contactPhone.trim() != ''">
             AND cc.contact_phone = #{contactPhone}
@@ -1268,7 +1303,7 @@
         <!--订单已交付-->
         AND wo.state=100
         <!--未申请结算-->
-        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'') FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no
         ORDER BY woc.finish_time DESC
@@ -1291,7 +1326,7 @@
         <!--订单已交付-->
         AND wo.state=100
         <!--未申请结算-->
-        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'')  FROM s_settlement_detail rsd)
+        AND woc.id NOT IN (SELECT IFNULL(rsd.order_car_id,'') FROM s_settlement_detail rsd)
         <include refid="PAYMENT_DAYS_CONDITION"></include>
         GROUP BY woc.no ) t
     </select>

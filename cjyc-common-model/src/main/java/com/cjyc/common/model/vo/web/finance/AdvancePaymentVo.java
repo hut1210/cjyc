@@ -1,7 +1,11 @@
 package com.cjyc.common.model.vo.web.finance;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.customer.CustomerPayTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,9 +42,45 @@ public class AdvancePaymentVo implements Serializable {
     @ApiModelProperty(value = "实收运费")
     @Excel(name = "实收运费" ,orderNum = "6",type = 10)
     private BigDecimal freightPay;
+
+    @ApiModelProperty(value = "支付时间")
+    private Long payTime;
+
+    @ApiModelProperty(value = "支付时间")
+    @Excel(name = "支付时间" ,orderNum = "7")
+    private String payTimeStr;
+
+    public String getPayTimeStr() {
+        Long date = getPayTime();
+        if (null == date || date <= 0L) {
+            return "";
+        }
+        return LocalDateTimeUtil.formatLong(date, "yyyy-MM-dd HH:mm:ss");
+    }
+
     @ApiModelProperty(value = "订单编号")
-    @Excel(name = "订单编号" ,orderNum = "7")
+    @Excel(name = "订单编号" ,orderNum = "8")
     private String orderNo;
+
+    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    private Integer payType;
+
+    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    @Excel(name = "支付方式" ,orderNum = "9")
+    private String payTypeStr;
+
+    public String getPayTypeStr() {
+        Integer type = getPayType();
+        if(type!=null && type== CustomerPayTypeEnum.TO_PAY.code){
+            return CustomerPayTypeEnum.TO_PAY.name;
+        }else if(type!=null && type==CustomerPayTypeEnum.PRE_PAY.code){
+            return CustomerPayTypeEnum.PRE_PAY.name;
+        }else if(type!=null && type==CustomerPayTypeEnum.PERIOD_PAY.code){
+            return CustomerPayTypeEnum.PERIOD_PAY.name;
+        }else{
+            return "";
+        }
+    }
 
     @ApiModelProperty(value = "始发地")
     @Excel(name = "始发地" ,orderNum = "10")

@@ -84,6 +84,8 @@ public class FinanceQueryDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "结算类型：0：时付 1：账期")
     private Integer settleType;
 
+    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    private Integer payType;
 
 
 }

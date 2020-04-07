@@ -398,14 +398,13 @@ public class FinanceServiceImpl implements IFinanceService {
 
         log.info("financeVoList.size ={}", financeVoList.size());
         PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
-        FinanceQueryDto fqd = new FinanceQueryDto();
-        List<PaymentVo> pv = financeDao.getPaymentList(fqd);
-
+        //应收汇总数据
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
-
+        //实收汇总数据
         BigDecimal actualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
-        log.info("pv.size() ={}", pv.size());
-        Map<String, Object> countInfo = getReceivableCountInfo();
+
+        //获取所有应收tab页总数
+        Map<String, Object> countInfo = statisticCount();
 
         BigDecimal incomeSummary = tradeBillService.receiptIncomeSummary(financeQueryDto);
 
@@ -423,21 +422,23 @@ public class FinanceServiceImpl implements IFinanceService {
         List<AdvancePaymentVo> advancePaymentVoList = financeDao.getAdvancePayment(financeQueryDto);
 
         PageInfo<AdvancePaymentVo> pageInfo = new PageInfo<>(advancePaymentVoList);
-        FinanceQueryDto fqd = new FinanceQueryDto();
-        List<AdvancePaymentVo> ap = financeDao.getAdvancePayment(fqd);
-        Map<String, Object> countInfo = getReceivableCountInfo();
+
+        //获取所有应收tab页总数
+        Map<String, Object> countInfo = statisticCount();
+        //未完结订单应收汇总
         BigDecimal advancePaymentSummary = tradeBillService.advancePaymentSummary(financeQueryDto);
+        //未完结订单实收汇总
         BigDecimal actualAdvancePaymentSummary = tradeBillService.actualAdvancePaymentSummary(financeQueryDto);
-        countInfo.put("advancePaymentSummary",new BigDecimal(MoneyUtil.fenToYuan(advancePaymentSummary, MoneyUtil.PATTERN_TWO)));
-        countInfo.put("actualAdvancePaymentSummary",new BigDecimal(MoneyUtil.fenToYuan(actualAdvancePaymentSummary, MoneyUtil.PATTERN_TWO)));
+        countInfo.put("advancePaymentSummary", new BigDecimal(MoneyUtil.fenToYuan(advancePaymentSummary, MoneyUtil.PATTERN_TWO)));
+        countInfo.put("actualAdvancePaymentSummary", new BigDecimal(MoneyUtil.fenToYuan(actualAdvancePaymentSummary, MoneyUtil.PATTERN_TWO)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
     @Override
     public List<AdvancePaymentVo> exportAdvancePaymentExcel(FinanceQueryDto financeQueryDto) {
         List<AdvancePaymentVo> advancePaymentVoList = financeDao.getAdvancePayment(financeQueryDto);
-        if(!CollectionUtils.isEmpty(advancePaymentVoList)){
-            advancePaymentVoList.forEach(e->{
+        if (!CollectionUtils.isEmpty(advancePaymentVoList)) {
+            advancePaymentVoList.forEach(e -> {
                 e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
                 e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
             });
@@ -447,9 +448,10 @@ public class FinanceServiceImpl implements IFinanceService {
 
     /**
      * 获取应收所有table总数
+     *
      * @return
      */
-    private Map getReceivableCountInfo(){
+    private Map getReceivableCountInfo() {
 
         FinanceQueryDto fqd = new FinanceQueryDto();
         List<PaymentVo> pv = financeDao.getPaymentList(fqd);
@@ -543,6 +545,12 @@ public class FinanceServiceImpl implements IFinanceService {
         countInfo.put("needInvoiceCount", CollectionUtils.isEmpty(needInvoiceCount) ? 0 : needInvoiceCount.size());
         countInfo.put("needPayedCount", CollectionUtils.isEmpty(needPayedCount) ? 0 : needPayedCount.size());
         countInfo.put("payedCount", CollectionUtils.isEmpty(payedCount) ? 0 : payedCount.size());
+
+
+        List<PaymentVo> pv = financeDao.getPaymentList(new FinanceQueryDto());
+        List<AdvancePaymentVo> ap = financeDao.getAdvancePayment(new FinanceQueryDto());
+        countInfo.put("receiptCount", CollectionUtils.isEmpty(pv) ? 0 : pv.size());
+        countInfo.put("advancePaymentCount", CollectionUtils.isEmpty(ap) ? 0 : ap.size());
         return countInfo;
     }
 
@@ -927,7 +935,7 @@ public class FinanceServiceImpl implements IFinanceService {
         for (PaymentVo paymentVo : financeVoList) {
             paymentVo.setFreightPay(paymentVo.getFreightPay() != null ? paymentVo.getFreightPay().divide(new BigDecimal(100)) : null);
             paymentVo.setFreightReceivable(paymentVo.getFreightReceivable() != null ? paymentVo.getFreightReceivable().divide(new BigDecimal(100)) : null);
-            paymentVo.setTotalIncome(new BigDecimal(MoneyUtil.fenToYuan(paymentVo.getTotalIncome(),MoneyUtil.PATTERN_TWO)));
+            paymentVo.setTotalIncome(new BigDecimal(MoneyUtil.fenToYuan(paymentVo.getTotalIncome(), MoneyUtil.PATTERN_TWO)));
         }
         return financeVoList;
     }
@@ -975,7 +983,7 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PaidNewVo> paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);
         for (PaidNewVo paidNewVo : paidNewVoList) {
             paidNewVo.setFreightFee(paidNewVo.getFreightFee() != null ? paidNewVo.getFreightFee().divide(new BigDecimal(100)) : null);
-            paidNewVo.setFreightFeePayable(new BigDecimal(MoneyUtil.fenToYuan(paidNewVo.getFreightFeePayable(),MoneyUtil.PATTERN_TWO)));
+            paidNewVo.setFreightFeePayable(new BigDecimal(MoneyUtil.fenToYuan(paidNewVo.getFreightFeePayable(), MoneyUtil.PATTERN_TWO)));
             if (paidNewVo.getState().equals("支付失败")) {
                 paidNewVo.setFailReason("请联系管理员");
             }
