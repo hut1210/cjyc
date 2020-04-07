@@ -557,11 +557,8 @@
         </if>
         group by woc.no ) t
     </select>
-    <select id="advancePaymentSummary" resultType="java.math.BigDecimal">
-        select sum(woc.total_fee)
-        from w_order_car woc
-        left join w_order wo on wo.id= woc.order_id
-        where (wo.state&lt;100 or wo.state=113) and woc.wl_pay_state=2
+
+    <sql id="advancePaymentSummaryCondition">
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
         </if>
@@ -571,21 +568,72 @@
         <if test="orderNo != null and orderNo.trim() != ''">
             and  woc.order_no like concat('%',#{orderNo},'%')
         </if>
-    </select>
-    <select id="actualAdvancePaymentSummary" resultType="java.math.BigDecimal">
-        select sum(woc.total_fee)
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
+    </sql>
+    <select id="advancePaymentSummary" resultType="java.math.BigDecimal">
+        SELECT sum(freightReceivable) from (select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
+        if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
+        woc.order_no as orderNo,
+        if(woc.wl_pay_state=2,woc.wl_pay_time,0) as payTime,
+        wo.start_city as startCity,
+        wo.end_city as endCity,
+        wo.customer_type as type,
+        wo.customer_name as customerName,
+        wo.pay_type as payType
         from w_order_car woc
         left join w_order wo on wo.id= woc.order_id
-        where (wo.state&lt;100 or wo.state=113) and woc.wl_pay_state=2
-        <if test="no != null and no.trim() != ''">
-            and woc.no like concat('%',#no},'%')
-        </if>
-        <if test="vin != null and vin.trim() != ''">
-            and  woc.vin = #{vin}
-        </if>
-        <if test="orderNo != null and orderNo.trim() != ''">
-            and  woc.order_no like concat('%',#{orderNo},'%')
-        </if>
+        where (wo.state &lt; 100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=1
+        <include refid="advancePaymentSummaryCondition"></include>
+        union
+
+        select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
+        if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
+        woc.order_no as orderNo,
+        if(woc.wl_pay_state=2,woc.wl_pay_time,0) as payTime,
+        wo.start_city as startCity,
+        wo.end_city as endCity,
+        wo.customer_type as type,
+        wo.customer_name as customerName,
+        wo.pay_type as payType
+        from w_order_car woc
+        left join w_order wo on wo.id= woc.order_id
+        where (wo.state &lt; 100 or wo.state=113) and wo.pay_type=0
+        <include refid="advancePaymentSummaryCondition"></include>
+        )t
+
+    </select>
+    <select id="actualAdvancePaymentSummary" resultType="java.math.BigDecimal">
+        SELECT sum(freightReceivable) from (select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
+        if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
+        woc.order_no as orderNo,
+        if(woc.wl_pay_state=2,woc.wl_pay_time,0) as payTime,
+        wo.start_city as startCity,
+        wo.end_city as endCity,
+        wo.customer_type as type,
+        wo.customer_name as customerName,
+        wo.pay_type as payType
+        from w_order_car woc
+        left join w_order wo on wo.id= woc.order_id
+        where (wo.state &lt; 100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=1
+        <include refid="advancePaymentSummaryCondition"></include>
+        union
+
+        select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
+        if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
+        woc.order_no as orderNo,
+        if(woc.wl_pay_state=2,woc.wl_pay_time,0) as payTime,
+        wo.start_city as startCity,
+        wo.end_city as endCity,
+        wo.customer_type as type,
+        wo.customer_name as customerName,
+        wo.pay_type as payType
+        from w_order_car woc
+        left join w_order wo on wo.id= woc.order_id
+        where (wo.state &lt; 100 or wo.state=113) and wo.pay_type=0 and woc.wl_pay_state=2
+        <include refid="advancePaymentSummaryCondition"></include>
+        )t
     </select>
     <select id="receiptIncomeSummary" resultType="java.math.BigDecimal">
         select sum(total_fee) from

@@ -44,6 +44,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1487,6 +1488,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
                 if(count != null){
                     BeanUtils.copyProperties(count,vo);
+                }else{
+                    vo.setTotalAmount(BigDecimal.ZERO);
+                    vo.setTotalCar(0);
+                    vo.setTotalOrder(0);
                 }
                 //用户自己注册的获取该用户名称
                 if(vo.getSource() == CustomerSourceEnum.APP.code){
@@ -1509,6 +1514,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
                 if(count != null){
                     BeanUtils.copyProperties(count,vo);
+                }else{
+                    vo.setTotalAmount(BigDecimal.ZERO);
+                    vo.setTotalCar(0);
+                    vo.setTotalOrder(0);
                 }
             }
         }
@@ -1532,6 +1541,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
                 if(count != null){
                     BeanUtils.copyProperties(count,vo);
+                }else{
+                    vo.setTotalAmount(BigDecimal.ZERO);
+                    vo.setTotalCar(0);
+                    vo.setTotalOrder(0);
                 }
             }
         }

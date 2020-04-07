@@ -235,7 +235,6 @@
         LEFT JOIN d_driver_vehicle_con ddvc ON ddvc.vehicle_id = dv.id
         LEFT JOIN d_driver dd ON dd.id = ddvc.driver_id
         LEFT JOIN ( SELECT * FROM s_user_role_dept WHERE dept_type = 2 AND user_type = 2 ) surd ON surd.user_id = dd.id
-        LEFT JOIN d_carrier dc ON dc.id = surd.dept_id
         <where>
             <if test="realName != null and realName.trim() != ''">
                 dd.real_name like CONCAT('%',#{realName},'%')
@@ -246,7 +245,9 @@
             <if test="plateNo != null and plateNo.trim() != ''">
                 and  dv.plate_no like CONCAT('%',#{plateNo},'%')
             </if>
-            and dc.id = #{carrierId} and dc.type = 2 and dc.state &lt; 9
+            and dv.carrier_id = #{carrierId}
+            group by dv.id
+            order by dv.create_time desc
         </where>
     </select>
 </mapper>
