@@ -1,9 +1,9 @@
 spring:
-  profiles:
-    active: local
+  #profiles:
+    #active: local
   #应用名称
   application:
-    name: cjyc-scheduler
+    name: cjyc-scheduler-finance
   #nacos Data ID：yunche-api-${spring.profiles.active}.${file-extension}
   cloud:
     nacos:
