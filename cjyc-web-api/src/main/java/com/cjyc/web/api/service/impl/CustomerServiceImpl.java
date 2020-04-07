@@ -1514,6 +1514,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
                 if(count != null){
                     BeanUtils.copyProperties(count,vo);
+                }else{
+                    vo.setTotalAmount(BigDecimal.ZERO);
+                    vo.setTotalCar(0);
+                    vo.setTotalOrder(0);
                 }
             }
         }
@@ -1537,6 +1541,10 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
                 CustomerCountVo count = customerCountDao.count(vo.getCustomerId());
                 if(count != null){
                     BeanUtils.copyProperties(count,vo);
+                }else{
+                    vo.setTotalAmount(BigDecimal.ZERO);
+                    vo.setTotalCar(0);
+                    vo.setTotalOrder(0);
                 }
             }
         }
