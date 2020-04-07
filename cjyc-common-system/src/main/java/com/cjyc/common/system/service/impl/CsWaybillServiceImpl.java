@@ -1370,7 +1370,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Override
     public void cancelWaybill(Waybill waybill) {
         //状态不大于待承接
-        if ((waybill.getState() >= WaybillStateEnum.TRANSPORTING.code && waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code)
+        if ((waybill.getState() >= WaybillStateEnum.TRANSPORTING.code && waybill.getCarrierType() != WaybillCarrierTypeEnum.SELF.code)
                 || (waybill.getState() >= WaybillStateEnum.FINISHED.code && waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code)) {
             throw new ServerException("运单{0},[{1}]状态不能取消", waybill.getNo(), WaybillStateEnum.valueOf(waybill.getState()).name);
         }
