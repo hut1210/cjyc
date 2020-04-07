@@ -105,9 +105,4 @@ public class LineController {
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
-    @ApiOperation(value = "保存两个城市之间距离")
-    @PostMapping(value = "/saveDistance")
-    public ResultVo saveDistance(){
-        return lineService.saveDistance();
-    }
 }

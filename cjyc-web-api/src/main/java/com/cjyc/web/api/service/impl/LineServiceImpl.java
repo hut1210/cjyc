@@ -347,21 +347,4 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         return line;
     }
 
-    @Override
-    public ResultVo saveDistance() {
-        List<Line> lineList = lineDao.selectList(new QueryWrapper<Line>().lambda().eq(Line::getKilometer, 0));
-        if(!CollectionUtils.isEmpty(lineList)){
-            for(Line line : lineList){
-                if(!line.getFromCode().equals(line.getToCode())){
-                    String fromCityLocation = PositionUtil.getLngAndLat(line.getFromCity());
-                    String toCityLocation = PositionUtil.getLngAndLat(line.getToCity());
-                    double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
-                    line.setKilometer(bd);
-                    lineDao.updateById(line);
-                }
-            }
-        }
-        return BaseResultUtil.success();
-    }
 }

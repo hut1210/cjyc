@@ -36,7 +36,7 @@ public class YcStatistics implements Serializable {
     private Integer dayCount;
 
     @ApiModelProperty(value = "日期")
-    private LocalDate dayTime;
+    private String dayTime;
 
 
 }
