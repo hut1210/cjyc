@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: local
   #应用名称
   application:
     name: cjyc-salesman-api

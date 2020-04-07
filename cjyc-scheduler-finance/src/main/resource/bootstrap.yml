@@ -1,6 +1,6 @@
 spring:
-  #profiles:
-    #active: local
+  profiles:
+    active: local
   #应用名称
   application:
     name: cjyc-scheduler-finance

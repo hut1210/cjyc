@@ -1,12 +1,12 @@
 package com.cjyc.common.model.util;
 
-import com.alibaba.fastjson.JSON;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
 * 解析yml文件工具类
@@ -46,7 +46,7 @@ public class YmlProperty {
 
     }*/
 
-    private static final String DEFAULT_FILE = "application.yml";
+    private static final String DEFAULT_FILE = "application-local.yml";
     private static Map<String, String> propertyMap = new HashMap<String, String>();
 
     /**
