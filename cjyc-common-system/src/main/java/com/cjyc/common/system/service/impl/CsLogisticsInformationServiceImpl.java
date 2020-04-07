@@ -59,8 +59,8 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
                 .eq(OrderCar::getNo, reqDto.getOrderCarNo()));
         if (orderCar != null) {
             // 车辆状态为 “运输中” 时，查询位置信息
-            boolean b = orderCar.getState() > OrderCarStateEnum.WAIT_PICK.code && orderCar.getState() < OrderCarStateEnum.SIGNED.code;
-            if (b) {
+            boolean isTransport = orderCar.getState() > OrderCarStateEnum.WAIT_PICK.code && orderCar.getState() < OrderCarStateEnum.SIGNED.code;
+            if (isTransport) {
                 // 查询运输车车牌号
                 String plateNo = waybillCarDao.selectPlateNoByOrderCarNo(reqDto.getOrderCarNo());
 

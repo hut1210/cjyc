@@ -31,6 +31,7 @@ import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IPayBankService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -217,7 +218,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             //合同集合
             List<CustomerContractDto> customerConList = dto.getCustContraVos();
             if(!CollectionUtils.isEmpty(customerConList)){
-                List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
+                List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList,null);
                 customerContractService.saveBatch(list);
             }
         }else{
@@ -253,7 +254,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             if(!CollectionUtils.isEmpty(contractDtos)){
                 //批量删除
                 customerContractDao.removeKeyContract(dto.getCustomerId());
-                list = encapCustomerContract(customer.getId(),contractDtos);
+                list = encapCustomerContract(customer.getId(),contractDtos,null);
                 customerContractService.saveBatch(list);
             }
         }
@@ -848,22 +849,35 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
      * @param customerConList
      * @return
      */
-    private List<CustomerContract> encapCustomerContract(Long customerId,List<CustomerContractDto> customerConList){
+    private List<CustomerContract> encapCustomerContract(Long customerId,List<CustomerContractDto> customerConList,List<String> newContractNoList){
         List<CustomerContract> list = null;
         if(!CollectionUtils.isEmpty(customerConList)){
             list = new ArrayList<>(10);
             for(CustomerContractDto dto : customerConList){
-                CustomerContract custCont = new CustomerContract();
-                BeanUtils.copyProperties(dto,custCont);
-                if(dto.getSettleType() == CustomerPayEnum.TIME_PAY.code){
-                    custCont.setSettlePeriod(0);
+                if(!CollectionUtils.isEmpty(newContractNoList)){
+                    for(String contractNo : newContractNoList){
+                        if(contractNo.equals(dto.getContractNo())){
+                            list.add(encapContract(customerId,dto));
+                        }
+                    }
+                }else{
+                    list.add(encapContract(customerId,dto));
                 }
-                custCont.setCustomerId(customerId);
-                custCont.setCreateTime(System.currentTimeMillis());
-                list.add(custCont);
             }
         }
         return list;
+    }
+
+    private CustomerContract encapContract(Long customerId,CustomerContractDto dto){
+        CustomerContract custCont = new CustomerContract();
+        BeanUtils.copyProperties(dto,custCont);
+        if(dto.getSettleType() == CustomerPayEnum.TIME_PAY.code){
+            custCont.setSettlePeriod(CustomerPayEnum.TIME_PAY.code);
+        }
+        custCont.setIsActive(UseStateEnum.USABLE.code);
+        custCont.setCustomerId(customerId);
+        custCont.setCreateTime(System.currentTimeMillis());
+        return custCont;
     }
 
     /**
@@ -996,7 +1010,7 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             //合同集合
             List<CustomerContractDto> customerConList = dto.getCustContraVos();
             if(!CollectionUtils.isEmpty(customerConList)){
-                List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList);
+                List<CustomerContract> list = encapCustomerContract(customer.getId(),customerConList,null);
                 customerContractService.saveBatch(list);
             }
             //保存用户角色机构关系
@@ -1285,17 +1299,35 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             customer.setAlias(dto.getName());
             super.updateById(customer);
 
-            //查询该用户现有合同
-            List<CustomerContract> customerContracts = customerContractDao.selectList(new QueryWrapper<CustomerContract>().lambda().eq(CustomerContract::getCustomerId, dto.getCustomerId()));
+            //库中查询出来的未删除合同
+            List<CustomerContract> contractList = customerContractDao.selectList(new QueryWrapper<CustomerContract>().lambda()
+                                                                .eq(CustomerContract::getCustomerId, dto.getCustomerId())
+                                                                .eq(CustomerContract::getIsActive, UseStateEnum.USABLE.code));
             //前端传过来的合同
             List<CustomerContractDto> contractDtos = dto.getCustContraVos();
 
+            List<String> oldContractNoList = Lists.newArrayList();
+            List<String> newContractNoList = Lists.newArrayList();
+
             List<CustomerContract> list = null;
             if(!CollectionUtils.isEmpty(contractDtos)){
-                //批量删除
-                //customerContractDao.removeKeyContract(dto.getCustomerId());
-                list = encapCustomerContract(customer.getId(),contractDtos);
-                customerContractService.saveBatch(list);
+                //前端传过来放入集合中
+                for(CustomerContractDto contractDto : contractDtos){
+                    newContractNoList.add(contractDto.getContractNo());
+                }
+                //把库中已有的放进集合中
+                if(!CollectionUtils.isEmpty(contractList)){
+                    for(CustomerContract contract : contractList){
+                        oldContractNoList.add(contract.getContractNo());
+                    }
+                }
+                newContractNoList.removeAll(oldContractNoList);
+                if(newContractNoList.size() == 0){
+                    return BaseResultUtil.success();
+                }else{
+                    list = encapCustomerContract(customer.getId(),contractDtos,newContractNoList);
+                    customerContractService.saveBatch(list);
+                }
             }
         }
         return BaseResultUtil.success();
@@ -1711,6 +1743,20 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerDao,Customer> impl
             }
         }
         return BaseResultUtil.success(contract);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo deleteContract(Long contractId) {
+        if(null == contractId){
+            return BaseResultUtil.fail("合同编号不能为空");
+        }
+        CustomerContract contract = customerContractDao.selectById(contractId);
+        if(contract != null){
+            contract.setIsActive(UseStateEnum.DISABLED.code);
+            customerContractDao.updateById(contract);
+        }
+        return BaseResultUtil.success();
     }
 
 }
