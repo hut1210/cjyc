@@ -731,26 +731,12 @@
         ) t
     </select>
     <select id="financeActualReceiptSummary" resultType="java.math.BigDecimal">
-        select sum(amountReceived) from (select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
-        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
-        wo.end_city as endAddress,
-        woc.finish_time as deliveryDate,
-
-        wo.customer_id as customerId,
-        wo.customer_type as type,cc.name as customerName,
-        cc.pay_mode as payMode,
-        if(wo.customer_type=3,woc.total_fee,null) as feeShare,
-        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
+        select sum(amountReceived) from (select DISTINCT(woc.no),
         (CASE
         when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
         when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
         END
-        ) as amountReceived,
-        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
-        as totalIncome,
-        woc.wl_pay_time as receivedTime,
-        woc.finish_time
+        ) as amountReceived
 
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
@@ -765,26 +751,12 @@
         group by woc.no
 
         UNION
-        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
-        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
-        wo.end_city as endAddress,
-        woc.finish_time as deliveryDate,
-
-        wo.customer_id as customerId,
-        wo.customer_type as type,cc.name as customerName,
-        ccc.settle_type as payMode,
-        if(wo.customer_type=3,woc.total_fee,null) as feeShare,
-        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
+        select DISTINCT(woc.no),
         (CASE
         when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
         when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
         END
-        ) as amountReceived,
-        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
-        as totalIncome,
-        woc.wl_pay_time as receivedTime,
-        woc.finish_time
+        ) as amountReceived
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
         left join c_customer cc on wo.customer_id = cc.id
@@ -799,26 +771,12 @@
         group by woc.no
 
         UNION
-        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
-        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
-        wo.end_city as endAddress,
-        woc.finish_time as deliveryDate,
-
-        wo.customer_id as customerId,
-        wo.customer_type as type,cc.name as customerName,
-        ccp.settle_type as payMode,
-        if(wo.customer_type=3,woc.total_fee,null) as feeShare,
-        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
+        select DISTINCT(woc.no),
         (CASE
         when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
         when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
         END
-        ) as amountReceived,
-        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
-        as totalIncome,
-        woc.wl_pay_time as receivedTime,
-        woc.finish_time
+        ) as amountReceived
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
         left join c_customer cc on wo.customer_id = cc.id
