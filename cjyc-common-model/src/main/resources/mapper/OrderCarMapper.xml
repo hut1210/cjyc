@@ -2520,7 +2520,14 @@
         left join b_admin m on m.id = shell.checkUserId
         <where>
             <if test="regionCode != null and regionCode != ''">
-                ct2.parent_code = #{regionCode}
+                <choose>
+                    <when test="paramsDto.regionCode == '000000'">
+                        and ct2.parent_code is null
+                    </when>
+                    <otherwise>
+                        and ct2.parent_code = #{regionCode}
+                    </otherwise>
+                </choose>
             </if>
         </where>
         order by shell.order_id desc, shell.id
