@@ -189,7 +189,7 @@ public class FinanceServiceImpl implements IFinanceService {
         //毛利汇总
         BigDecimal grossProfit = tradeBillService.grossProfit(financeQueryDto);
         //实收汇总
-        BigDecimal actualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
+        BigDecimal actualReceiptSummary = tradeBillService.financeActualReceiptSummary(financeQueryDto);
 
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
