@@ -3,7 +3,6 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
@@ -28,10 +27,8 @@ import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterVo;
 import com.cjyc.common.system.config.LogoImgProperty;
 import com.cjyc.common.system.service.ICsLineService;
-import com.cjyc.common.system.service.ICsOrderCarLogService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.common.system.service.ICsPushMsgService;
-import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.service.IOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -256,8 +253,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         end.append(order.getEndArea() == null ? "" : order.getEndArea());
         detailVo.setEndProvinceCityAreaName(end.toString().trim());
 
-        detailVo.setStartAddress(order.getStartCity()+order.getStartArea()+order.getStartAddress());
-        detailVo.setEndAddress(order.getEndCity()+order.getEndArea()+order.getEndAddress());
+        String startAddress = order.getStartAddress() == null ? "" : order.getStartAddress();
+        String endAddress = order.getEndAddress() == null ? "" : order.getEndAddress();
+        detailVo.setStartAddress(order.getStartCity()+order.getStartArea()+startAddress);
+        detailVo.setEndAddress(order.getEndCity()+order.getEndArea()+endAddress);
     }
 
     private void getOrderCar(OrderDetailDto dto, OrderCenterDetailVo detailVo) {
