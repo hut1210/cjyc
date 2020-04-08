@@ -793,7 +793,7 @@ public class FinanceServiceImpl implements IFinanceService {
         if(settlementVoTemp == null){
             return BaseResultUtil.fail("结算信息不存在！");
         }
-        if(writeOffTicketDto.getTotalFreightPay().compareTo(settlementVoTemp.getFreightFee()) > 0){
+        if(MoneyUtil.yuanToFen(writeOffTicketDto.getTotalFreightPay()).compareTo(settlementVoTemp.getFreightFee()) > 0){
            return BaseResultUtil.fail("实付总费用不能大于应收总运费！");
         }
         SettlementVo settlementVo = new SettlementVo();
