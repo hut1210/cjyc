@@ -68,8 +68,8 @@ public class CityServiceImpl extends ServiceImpl<ICityDao, City> implements ICit
     }
 
     @Override
-    public List<City> selectList(Map<String, Object> columnMap) {
-        return cityDao.selectByMap(columnMap);
+    public List<City> selectList(int level) {
+        return cityDao.selectList(new QueryWrapper<City>().lambda().eq(City::getLevel,level).ne(City::getCode,"000008"));
     }
 
     @Override
