@@ -812,7 +812,6 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(payablePaidQueryDto.getCurrentPage(), payablePaidQueryDto.getPageSize());
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
         payablePaidList.forEach(e -> {
-            e.setDifference(MoneyUtil.fenToYuan(MoneyUtil.nullToZero(e.getFreightFee()).subtract(MoneyUtil.nullToZero(e.getTotalFreightPay()))));
             e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
             e.setTotalFreightPay(MoneyUtil.fenToYuan(e.getTotalFreightPay()));
             e.setDifference(MoneyUtil.fenToYuan(e.getDifference()));
