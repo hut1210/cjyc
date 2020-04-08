@@ -34,4 +34,10 @@ public class HandleDataController {
     public ResultVo saveDistance(){
         return ycStatisticsService.saveDistance();
     }
+
+    @ApiOperation(value = "账号登录app次数")
+    @PostMapping(value = "/loginCountApp/{phone}")
+    public ResultVo loginCountApp(@PathVariable String phone){
+        return ycStatisticsService.loginCountApp(phone);
+    }
 }

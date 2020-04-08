@@ -38,9 +38,9 @@ public interface ICityService extends IService<City> {
      * 根据列查询城市列表
      * @author JPG
      * @since 2019/10/12 11:40
-     * @param columnMap
+     * @param level
      */
-    List<City> selectList(Map<String, Object> columnMap);
+    List<City> selectList(int level);
 
     IPage<City> selectPage(CityPageDto cityPageDto);
 

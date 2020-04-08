@@ -723,7 +723,15 @@
                 and  surd.state = #{state}
             </if>
             <if test="mode != null">
-                and  surd.mode = #{mode}
+                <if test="mode == 2">
+                  and surd.mode in (2,5,6,9)
+                </if>
+                <if test="mode == 3">
+                  and surd.mode in (3,5,7,9)
+                </if>
+                <if test="mode == 4">
+                  and surd.mode in (4,6,7,9)
+                </if>
             </if>
             and  dc.type = 1 and dd.identity = 0 and IFNULL(1, sbcb.state)
             group by dd.phone

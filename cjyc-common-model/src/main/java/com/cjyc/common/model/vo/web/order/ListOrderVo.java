@@ -1,6 +1,7 @@
 package com.cjyc.common.model.vo.web.order;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
@@ -97,7 +98,7 @@ public class ListOrderVo extends Order {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
 
@@ -106,7 +107,7 @@ public class ListOrderVo extends Order {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
 
@@ -134,7 +135,7 @@ public class ListOrderVo extends Order {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getPickTypeStr() {
@@ -161,7 +162,7 @@ public class ListOrderVo extends Order {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy/MM/dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getCustomerTypeStr() {

@@ -47,7 +47,7 @@ public class ExcelListOrderCarVo implements Serializable {
     private String startStoreName;
     @Excel(name = "目的地业务中心", orderNum = "16",width = 20)
     private String endStoreName;
-    @Excel(name = "提车日期", orderNum = "17",width = 20)
+    @Excel(name = "提车日期", orderNum = "17",width = 25)
     private Long expectStartDate;
     @Excel(name = "提车方式", orderNum = "18",width = 15)
     private Integer pickType;
@@ -89,11 +89,11 @@ public class ExcelListOrderCarVo implements Serializable {
     private BigDecimal backFee;
     @Excel(name = "是否新车", orderNum = "37",width = 15)
     private Integer isNew;
-    @Excel(name = "下单时间", orderNum = "38",width = 20)
+    @Excel(name = "下单时间", orderNum = "38",width = 25)
     private Long createTime;
     @Excel(name = "下单人", orderNum = "39",width = 20)
     private String createUserName;
-    @Excel(name = "接单时间", orderNum = "40",width = 20)
+    @Excel(name = "接单时间", orderNum = "40",width = 25)
     private Long checkTime;
     @Excel(name = "接单人", orderNum = "41",width = 20)
     private String checkUserName;
@@ -139,25 +139,25 @@ public class ExcelListOrderCarVo implements Serializable {
     }
     public String getExpectStartDate(){
         if(expectStartDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectStartDate), TimePatternConstant.SIMPLE_DATE_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectStartDate), TimePatternConstant.DATETIME);
         }
         return "";
     }
     public String getExpectEndDate(){
         if(expectEndDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectEndDate), TimePatternConstant.SIMPLE_DATE_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(expectEndDate), TimePatternConstant.DATETIME);
         }
         return "";
     }
     public String getCreateTime(){
         if(createTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATETIME);
         }
         return "";
     }
     public String getCheckTime(){
         if(checkTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(checkTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(checkTime), TimePatternConstant.DATETIME);
         }
         return "";
     }

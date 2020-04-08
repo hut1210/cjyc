@@ -55,9 +55,7 @@ public class CityController {
     @PostMapping(value = "/list/{level}")
     public ResultVo<Collection<City>> List(@ApiParam(value = "行政区级别：0大区，1省，2市，3区县", required = true)
                                            @PathVariable int level) {
-        HashMap<String, Object> columnMap = new HashMap<>();
-        columnMap.put("level", level);
-        List<City> list = cityService.selectList(columnMap);
+        List<City> list = cityService.selectList(level);
         return BaseResultUtil.success(list);
     }
 

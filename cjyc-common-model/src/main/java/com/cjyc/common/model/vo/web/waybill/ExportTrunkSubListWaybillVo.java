@@ -36,14 +36,14 @@ public class ExportTrunkSubListWaybillVo implements Serializable {
     private String remark;
     @Excel(name = "创建时间", orderNum = "11",width = 20)
     private Long createTime;
-    @Excel(name = "创建人", orderNum = "12",width = 20)
+    @Excel(name = "创建人", orderNum = "12",width = 25)
     private String createUser;
     private Integer carryCarNum;
     private Integer occupiedCarNum;
 
     public String getCreateTime(){
         if(createTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATE);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATETIME);
         }
         return "";
     }

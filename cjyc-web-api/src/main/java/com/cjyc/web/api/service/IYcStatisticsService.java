@@ -33,4 +33,11 @@ public interface IYcStatisticsService extends IService<YcStatistics> {
      */
     ResultVo saveDistance();
 
+    /**
+     * 查询手机号登录app次数
+     * @param phone
+     * @return
+     */
+    ResultVo loginCountApp(String phone);
+
 }

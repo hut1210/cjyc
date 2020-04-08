@@ -4,7 +4,7 @@
 
     <select id="getFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
-        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        select * from (select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
         zcity.name as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
@@ -22,7 +22,8 @@
         ) as amountReceived,
         if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
         as totalIncome,
-        woc.wl_pay_time as receivedTime
+        woc.wl_pay_time as receivedTime,
+        woc.finish_time
 
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
@@ -32,7 +33,82 @@
         left join w_task wt on wtc.task_id = wt.id
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
-        where wo.state=100
+        where wo.state=100 and wo.customer_type=1
+        <include refid="financeListCondition"></include>
+        group by woc.no
+
+        UNION
+        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        zcity.name as largeArea,
+        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
+        wo.end_city as endAddress,
+        woc.finish_time as deliveryDate,
+
+        wo.customer_id as customerId,
+        wo.customer_type as type,cc.name as customerName,
+        ccc.settle_type as payMode,
+        if(wo.customer_type=3,woc.total_fee,null) as feeShare,
+        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
+        (CASE
+        when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
+        when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
+        END
+        ) as amountReceived,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
+        as totalIncome,
+        woc.wl_pay_time as receivedTime,
+        woc.finish_time
+        from w_order_car woc
+        left join w_order wo on woc.order_no = wo.no
+        left join c_customer cc on wo.customer_id = cc.id
+        LEFT JOIN c_customer_contract ccc on cc.id = ccc.customer_id AND ccc.id = wo.customer_contract_id
+        left join w_waybill_car wwc on woc.id = wwc.order_car_id
+        left join w_task_car wtc on wtc.waybill_car_id = wwc.id
+        left join w_task wt on wtc.task_id = wt.id
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+        where wo.state=100 and wo.customer_type=2
+        <include refid="financeListCondition"></include>
+        group by woc.no
+
+        UNION
+        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        zcity.name as largeArea,
+        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
+        wo.end_city as endAddress,
+        woc.finish_time as deliveryDate,
+
+        wo.customer_id as customerId,
+        wo.customer_type as type,cc.name as customerName,
+        ccp.settle_type as payMode,
+        if(wo.customer_type=3,woc.total_fee,null) as feeShare,
+        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
+        (CASE
+        when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
+        when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
+        END
+        ) as amountReceived,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
+        as totalIncome,
+        woc.wl_pay_time as receivedTime,
+        woc.finish_time
+        from w_order_car woc
+        left join w_order wo on woc.order_no = wo.no
+        left join c_customer cc on wo.customer_id = cc.id
+        LEFT JOIN c_customer_partner ccp on cc.id = ccp.customer_id
+        left join w_waybill_car wwc on woc.id = wwc.order_car_id
+        left join w_task_car wtc on wtc.waybill_car_id = wwc.id
+        left join w_task wt on wtc.task_id = wt.id
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+        where wo.state=100 and wo.customer_type=3
+        <include refid="financeListCondition"></include>
+        group by woc.no
+        ) t order by t.finish_time desc
+
+    </select>
+
+    <sql id="financeListCondition">
         <if test="no != null and no.trim() != ''">
             and woc.no like concat('%',#{no},'%')
         </if>
@@ -99,13 +175,11 @@
         <if test="receiveEndTime!= null">
             and woc.wl_pay_time &lt;= #{receiveEndTime}
         </if>
-        group by woc.no
-        order by woc.finish_time desc
-    </select>
+    </sql>
 
     <select id="getAllFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.ExportFinanceVo">
-        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        select * from (select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
         zcity.name as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
@@ -123,7 +197,8 @@
         ) as amountReceived,
         if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
         as totalIncome,
-        woc.wl_pay_time as receivedTime
+        woc.wl_pay_time as receivedTime,
+        woc.finish_time
 
         from w_order_car woc
         left join w_order wo on woc.order_no = wo.no
@@ -133,75 +208,78 @@
         left join w_task wt on wtc.task_id = wt.id
         left join s_city zc on zc.code = wo.start_province_code
         left join s_city zcity on zcity.code = zc.parent_code
-        where wo.state=100
-        <if test="no != null and no.trim() != ''">
-            and woc.no like concat('%',#{no},'%')
-        </if>
-        <if test="vin != null and vin.trim() != ''">
-            and woc.vin like concat('%',#{vin},'%')
-        </if>
-        <if test="orderNo != null and orderNo.trim() != ''">
-            and woc.order_no like concat('%',#{orderNo},'%')
-        </if>
-        <if test="completeStartTime!= null">
-            and woc.finish_time &gt;= #{completeStartTime}
-        </if>
-        <if test="completeEndTime!= null">
-            and woc.finish_time &lt;= #{completeEndTime}
-        </if>
-
-        <if test="startProvinceCode != null and startProvinceCode.trim() != ''">
-            and wo.start_province_code = #{startProvinceCode}
-        </if>
-        <if test="startCityCode != null and startCityCode.trim() != ''">
-            and wo.start_city_code = #{startCityCode}
-        </if>
-        <if test="startAreaCode != null and startAreaCode.trim() != ''">
-            and wo.start_area_code = #{startAreaCode}
-        </if>
-        <if test="endProvinceCode != null and endProvinceCode.trim() != ''">
-            and wo.end_province_code = #{endProvinceCode}
-        </if>
-        <if test="endCityCode != null and endCityCode.trim() != ''">
-            and wo.end_city_code = #{endCityCode}
-        </if>
-        <if test="endAreaCode != null and endAreaCode.trim() != ''">
-            and wo.end_area_code = #{endAreaCode}
-        </if>
-        <if test="area != null and area.trim() != ''">
-            and zcity.code = #{area}
-        </if>
-        <if test="type != null">
-            and cc.type = #{type}
-        </if>
-        <if test="customerName != null  and customerName.trim() != ''">
-            and cc.name like concat('%',#{customerName},'%')
-        </if>
-        <if test="payMode != null">
-            and cc.pay_mode =#{payMode}
-        </if>
-
-        <if test="brand != null and brand.trim() != ''">
-            and woc.brand = #{brand}
-        </if>
-        <if test="model != null and model.trim() != ''">
-            and woc.model = #{model}
-        </if>
-        <if test="inputStoreName != null and inputStoreName.trim() != ''">
-            and wo.input_store_name = #{inputStoreName}
-        </if>
-
-        <if test="state != null and state.trim() !=''">
-            and woc.wl_pay_state = #{state}
-        </if>
-        <if test="receiveStartTime!= null">
-            and woc.wl_pay_time >= #{receiveStartTime}
-        </if>
-        <if test="receiveEndTime!= null">
-            and woc.wl_pay_time &lt;= #{receiveEndTime}
-        </if>
+        where wo.state=100 and wo.customer_type=1
+        <include refid="financeListCondition"></include>
         group by woc.no
-        order by woc.finish_time desc
+
+        UNION
+        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        zcity.name as largeArea,
+        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
+        wo.end_city as endAddress,
+        woc.finish_time as deliveryDate,
+
+        wo.customer_id as customerId,
+        wo.customer_type as type,cc.name as customerName,
+        ccc.settle_type as payMode,
+        if(wo.customer_type=3,woc.total_fee,null) as feeShare,
+        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
+        (CASE
+        when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
+        when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
+        END
+        ) as amountReceived,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
+        as totalIncome,
+        woc.wl_pay_time as receivedTime,
+        woc.finish_time
+        from w_order_car woc
+        left join w_order wo on woc.order_no = wo.no
+        left join c_customer cc on wo.customer_id = cc.id
+        LEFT JOIN c_customer_contract ccc on cc.id = ccc.customer_id AND ccc.id = wo.customer_contract_id
+        left join w_waybill_car wwc on woc.id = wwc.order_car_id
+        left join w_task_car wtc on wtc.waybill_car_id = wwc.id
+        left join w_task wt on wtc.task_id = wt.id
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+        where wo.state=100 and wo.customer_type=2
+        <include refid="financeListCondition"></include>
+        group by woc.no
+
+        UNION
+        select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
+        zcity.name as largeArea,
+        wo.input_store_name as inputStoreName,wo.start_city as startAddress,
+        wo.end_city as endAddress,
+        woc.finish_time as deliveryDate,
+
+        wo.customer_id as customerId,
+        wo.customer_type as type,cc.name as customerName,
+        ccp.settle_type as payMode,
+        if(wo.customer_type=3,woc.total_fee,null) as feeShare,
+        if(wo.customer_type=3,woc.total_fee,(woc.total_fee-woc.coupon_offset_fee)) as freightReceivable,
+        (CASE
+        when wo.customer_type=3 and woc.wl_pay_state=2 THEN woc.total_fee
+        when wo.customer_type!=3 and woc.wl_pay_state=2 THEN woc.total_fee-woc.coupon_offset_fee
+        END
+        ) as amountReceived,
+        if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0)
+        as totalIncome,
+        woc.wl_pay_time as receivedTime,
+        woc.finish_time
+        from w_order_car woc
+        left join w_order wo on woc.order_no = wo.no
+        left join c_customer cc on wo.customer_id = cc.id
+        LEFT JOIN c_customer_partner ccp on cc.id = ccp.customer_id
+        left join w_waybill_car wwc on woc.id = wwc.order_car_id
+        left join w_task_car wtc on wtc.waybill_car_id = wwc.id
+        left join w_task wt on wtc.task_id = wt.id
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+        where wo.state=100 and wo.customer_type=3
+        <include refid="financeListCondition"></include>
+        group by woc.no
+        ) t order by t.finish_time desc
     </select>
 
     <select id="getFee" parameterType="map" resultType="java.math.BigDecimal">
@@ -430,7 +508,7 @@
         group by woc.no
         union
         <include refid="payMentListHeader"></include>
-        left join c_customer_contract ccc on cc.id =ccc.customer_id
+        left join c_customer_contract ccc on cc.id =ccc.customer_id and ccc.id = wo.customer_contract_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
         left join s_city zc on zc.code = wo.start_province_code
@@ -441,7 +519,18 @@
         <if test="payMode != null">
             and ccc.settle_type =#{payMode}
         </if>
-        group by woc.no ) t order by t.finish_time desc
+        group by woc.no
+        union
+        <include refid="payMentListHeader"></include>
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+
+        where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and wo.customer_contract_id is null
+        <include refid="payMentListCondition"></include>
+        group by woc.no
+        ) t order by t.finish_time desc
     </select>
 
     <select id="getAdvancePayment" resultType="com.cjyc.common.model.vo.web.finance.AdvancePaymentVo">
@@ -866,7 +955,7 @@
 
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
         select invoice_no as invoiceNo,total_freight_paid as totalFreightPay,
-        writeoff_time as writeoffTime
+        writeoff_time as writeoffTime, freight_fee as freightFee
         from f_payable where serial_number=#{serialNumber}
     </select>
 
@@ -1315,7 +1404,7 @@
         FROM w_order_car woc
         LEFT JOIN w_order wo ON woc.order_id = wo.id
         LEFT JOIN c_customer cc ON cc.id = wo.customer_id
-        LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id
+        LEFT JOIN c_customer_contract ccc ON cc.id =ccc.customer_id AND ccc.id = wo.customer_contract_id
         LEFT JOIN s_city zc ON zc.code = wo.start_province_code
         LEFT JOIN s_city zcity ON zcity.code = zc.parent_code
         WHERE
@@ -1331,4 +1420,14 @@
         GROUP BY woc.no ) t
     </select>
     <!--账期应收账款列表查询结束-->
+
+    <!-- 账期开票金额 -->
+    <select id="getSettlementDetail"
+            resultType="com.cjyc.common.model.vo.web.finance.FinanceSettlementDetailVo">
+        SELECT ssd.no,ssd.freight_receivable as freightFee,
+        ssd.invoice_fee as invoiceFee,ss.verification_time as verificationTime
+        FROM s_settlement_detail ssd
+        LEFT JOIN s_settlement ss on ss.serial_number = ssd.serial_number
+        WHERE no=#{no} and ss.state=3
+    </select>
 </mapper>

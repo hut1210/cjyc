@@ -249,10 +249,6 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 if (waybillCar != null) {
                     carDetailVo.setWaybillCarState(waybillCar.getState());
                     BeanUtils.copyProperties(waybillCar,carDetailVo);
-                    // 实际装车时间不为空时，提车日期设置为装车时间
-                    if (waybillCar.getLoadTime() != null) {
-                        carDetailVo.setExpectStartTime(waybillCar.getLoadTime());
-                    }
 
                     // 给详细地址拼接市区
                     carDetailVo.setStartAddress(waybillCar.getStartCity()+waybillCar.getStartArea()+waybillCar.getStartAddress());
