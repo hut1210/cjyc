@@ -789,6 +789,10 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo writeOffPayable(WriteOffTicketDto writeOffTicketDto) {
+        SettlementVo settlementVoTemp = financeDao.getPayableSettlement(writeOffTicketDto.getSerialNumber());
+        if(writeOffTicketDto.getTotalFreightPay().compareTo(settlementVoTemp.getFreightFee()) > 0){
+           return BaseResultUtil.fail("实付总费用不能大于应收总运费！");
+        }
         SettlementVo settlementVo = new SettlementVo();
         settlementVo.setState("2");
         settlementVo.setSerialNumber(writeOffTicketDto.getSerialNumber());
