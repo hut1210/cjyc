@@ -1000,18 +1000,28 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public List<SettlementVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto) {
         List<SettlementVo> settlementVoList = financeDao.getCollectTicketList(waitTicketCollectDto);
+        settlementVoList.forEach(e -> {
+            e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
+        });
         return settlementVoList;
     }
 
     @Override
     public List<SettlementVo> exportPayment(WaitPaymentDto waitPaymentDto) {
         List<SettlementVo> settlementVoList = financeDao.getPayablePaymentList(waitPaymentDto);
+        settlementVoList.forEach(e -> {
+            e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
+        });
         return settlementVoList;
     }
 
     @Override
     public List<PayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto) {
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
+        payablePaidList.forEach(e -> {
+            e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
+            e.setTotalFreightPay((MoneyUtil.fenToYuan(e.getTotalFreightPay())));
+        });
         return payablePaidList;
     }
 
