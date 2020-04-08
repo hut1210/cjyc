@@ -790,6 +790,9 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo writeOffPayable(WriteOffTicketDto writeOffTicketDto) {
         SettlementVo settlementVoTemp = financeDao.getPayableSettlement(writeOffTicketDto.getSerialNumber());
+        if(settlementVoTemp == null){
+            return BaseResultUtil.fail("结算信息不存在！");
+        }
         if(writeOffTicketDto.getTotalFreightPay().compareTo(settlementVoTemp.getFreightFee()) > 0){
            return BaseResultUtil.fail("实付总费用不能大于应收总运费！");
         }
@@ -809,6 +812,7 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
         payablePaidList.forEach(e -> {
             e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
+            e.setTotalFreightPay(MoneyUtil.fenToYuan(e.getTotalFreightPay()));
         });
         PageInfo<PayablePaidVo> pageInfo = new PageInfo<>(payablePaidList);
         Map countInfo = getCountInfo();
