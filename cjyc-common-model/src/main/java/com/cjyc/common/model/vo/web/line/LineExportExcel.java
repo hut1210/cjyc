@@ -55,7 +55,7 @@ public class LineExportExcel implements Serializable {
 
     public String getCreateTime(){
         if(createTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATETIME);
         }
         return "";
     }

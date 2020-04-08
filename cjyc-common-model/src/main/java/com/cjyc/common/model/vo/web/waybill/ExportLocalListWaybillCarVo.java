@@ -67,13 +67,13 @@ public class ExportLocalListWaybillCarVo implements Serializable {
     public String getFreightFee() { return MoneyUtil.fenToYuan(freightFee, MoneyUtil.PATTERN_TWO); }
     public String getUnloadTime(){
         if(unloadTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(unloadTime), TimePatternConstant.DATE);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(unloadTime), TimePatternConstant.DATETIME);
         }
         return "";
     }
     public String getCreateTime(){
         if(createTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATETIME);
         }
         return "";
     }
