@@ -2521,7 +2521,7 @@
         <where>
             <if test="regionCode != null and regionCode != ''">
                 <choose>
-                    <when test="paramsDto.regionCode == '000000'">
+                    <when test="regionCode == '000000'">
                         and ct2.parent_code is null
                     </when>
                     <otherwise>
