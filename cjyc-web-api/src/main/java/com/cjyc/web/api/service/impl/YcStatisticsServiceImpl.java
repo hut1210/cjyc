@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.SelectRoleResp;
 import com.cjkj.usercenter.dto.common.UpdateUserReq;
+import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.handleData.YcStatisticsDto;
 import com.cjyc.common.model.entity.*;
@@ -47,6 +48,10 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
     private IRoleDao roleDao;
     @Resource
     private ILineDao lineDao;
+    @Resource
+    private ICarrierDao carrierDao;
+    @Resource
+    private ICustomerDao customerDao;
     @Resource
     private ISysRoleService sysRoleService;
     @Resource
@@ -134,6 +139,24 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
                     continue;
                 }
             }
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo loginCountApp(String phone) {
+        //查询承运商下账号登录app次数
+        Carrier carrier = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda().eq(Carrier::getLinkmanPhone, phone));
+        //查询业务员账号登录app次数
+        Admin admin = adminDao.selectOne(new QueryWrapper<Admin>().lambda().eq(Admin::getPhone, phone));
+        //查询用户账号登录app次数
+        Customer customer = customerDao.selectOne(new QueryWrapper<Customer>().lambda().eq(Customer::getContactPhone, phone));
+        if(null == carrier || admin == null || customer == null){
+            return BaseResultUtil.fail("账号不存在，请检查");
+        }
+        ResultData<UserResp> userRd = sysUserService.getByAccount(phone);
+        if(!ResultDataUtil.isSuccess(userRd)){
+            return BaseResultUtil.fail("查询用户信息错误，原因：" + userRd.getMsg());
         }
         return BaseResultUtil.success();
     }
