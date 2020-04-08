@@ -92,4 +92,6 @@ public interface IFinanceDao extends BaseMapper {
     BigDecimal receiptSummary(FinanceQueryDto financeQueryDto);
 
     List<AdvancePaymentVo> getAdvancePayment(FinanceQueryDto financeQueryDto);
+
+    FinanceSettlementDetailVo getSettlementDetail(String no);
 }
