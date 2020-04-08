@@ -367,7 +367,7 @@
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
-        left join c_customer_contract ccc on cc.id =ccc.customer_id
+        left join c_customer_contract ccc on cc.id =ccc.customer_id and ccc.id = wo.customer_contract_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
         left join s_city zc on zc.code = wo.start_province_code
