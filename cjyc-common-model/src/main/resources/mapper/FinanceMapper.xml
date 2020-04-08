@@ -944,7 +944,7 @@
 
     <select id="getPayableSettlement" resultType="com.cjyc.common.model.vo.web.finance.SettlementVo">
         select invoice_no as invoiceNo,total_freight_paid as totalFreightPay,
-        writeoff_time as writeoffTime
+        writeoff_time as writeoffTime, freight_fee as freightFee
         from f_payable where serial_number=#{serialNumber}
     </select>
 
