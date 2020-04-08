@@ -73,13 +73,13 @@ public class CouponExportExcel implements Serializable {
     }
     public String getStartPeriodDate(){
         if(startPeriodDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(startPeriodDate), TimePatternConstant.SIMPLE_DATE_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(startPeriodDate), TimePatternConstant.DATE);
         }
         return "";
     }
     public String getEndPeriodDate(){
         if(endPeriodDate != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(endPeriodDate), TimePatternConstant.SIMPLE_DATE_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(endPeriodDate), TimePatternConstant.DATE);
         }
         return "";
     }

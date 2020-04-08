@@ -54,13 +54,7 @@ import java.util.*;
 @Slf4j
 public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IOrderService{
     @Resource
-    private RedisUtils redisUtils;
-    @Resource
-    private RedisDistributedLock redisLock;
-    @Resource
     private IOrderDao orderDao;
-    @Resource
-    private ICsOrderService comOrderService;
     @Resource
     private IOrderCarDao orderCarDao;
     @Resource
@@ -72,11 +66,9 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     @Resource
     private ICsLineService csLineService;
     @Resource
-    private IOrderCarLogDao orderCarLogDao;
-    @Resource
     private ICsPushMsgService csPushMsgService;
     @Resource
-    private ICsOrderCarLogService csOrderCarLogService;
+    private ICsOrderService csOrderService;
 
 
     @Override
@@ -103,6 +95,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         }
 
         fillOrderStoreInfoForSave(order);
+        csOrderService.fillOrderInputStore(order);
         order.setState(OrderStateEnum.WAIT_CHECK.code);
         orderDao.updateById(order);
 
@@ -115,11 +108,11 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     private Order fillOrderStoreInfoForSave(Order order) {
         Long inputStoreId = order.getInputStoreId();
-        order.setInputStoreId(inputStoreId == -5 ? null : inputStoreId);
+        order.setInputStoreId(inputStoreId == null || inputStoreId == -5 ? null : inputStoreId);
         Long startStoreId = order.getStartStoreId();
-        order.setStartStoreId(startStoreId == -5 ? null : startStoreId);
+        order.setStartStoreId(startStoreId == null || startStoreId == -5 ? null : startStoreId);
         Long endStoreId = order.getEndStoreId();
-        order.setEndStoreId(endStoreId == -5 ? null : endStoreId);
+        order.setEndStoreId(endStoreId == null || endStoreId == -5 ? null : endStoreId);
         return order;
     }
 

@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import com.cjyc.common.model.constant.ArgsConstant;
+import com.cjyc.common.model.dto.BaseLogin2Dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,20 +20,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class CommitOrderDto {
-
-    @NotNull(message = "clientId不能为空")
-    @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
-    private int clientId;
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "操作人id", required = true)
-    private Long loginId;
-    @ApiModelProperty(hidden = true)
-    private String loginName;
-    @ApiModelProperty(hidden = true)
-    private String loginPhone;
-    @ApiModelProperty(value = "操作人类型", hidden = true)
-    private Integer loginType;
+public class CommitOrderDto extends BaseLogin2Dto {
     @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(hidden = true)

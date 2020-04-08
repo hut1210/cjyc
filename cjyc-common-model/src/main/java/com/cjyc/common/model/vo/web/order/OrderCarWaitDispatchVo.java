@@ -220,9 +220,9 @@ public class OrderCarWaitDispatchVo extends OrderCar {
     private String isMoveStr;
     @Excel(name = "订单来源", orderNum = "21",width = 15)
     private String sourceStr;
-    @Excel(name = "下单时间", orderNum = "27",width = 20)
+    @Excel(name = "下单时间", orderNum = "27",width = 25)
     private String createTimeStr;
-    @Excel(name = "接单时间", orderNum = "29",width = 20)
+    @Excel(name = "接单时间", orderNum = "29",width = 25)
     private String checkTimeStr;
 
 

@@ -18,4 +18,6 @@ import java.util.List;
 public interface IOrderCarLogDao extends BaseMapper<OrderCarLog> {
 
     List<OutterOrderCarLogVo> findCarLogByOrderNoAndCarNo(@Param("orderNo") String orderNo, @Param("orderCarNo") String orderCarNo);
+
+    int insertBatch(List<OrderCarLog> ocls);
 }

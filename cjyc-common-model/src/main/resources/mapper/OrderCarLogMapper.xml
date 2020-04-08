@@ -22,6 +22,40 @@
     <sql id="Base_Column_List">
         id, order_car_id, order_car_no, type, inner_log, outer_log, remark, create_time, create_user, create_user_type, create_user_id, create_user_phone
     </sql>
+    <insert id="insertBatch">
+        insert into w_order_car_log
+          (
+          order_car_id,
+          order_car_no,
+          `type`,
+          inner_log,
+          outer_log,
+          remark,
+          create_time,
+          create_user,
+          create_user_type,
+          create_user_id,
+          create_user_phone
+          )
+        values
+          <foreach collection="list" index="index" item="item" separator=",">
+              (
+                #{item.orderCarId},
+                #{item.orderCarNo},
+                #{item.type},
+                #{item.innerLog},
+                #{item.outerLog},
+                #{item.remark},
+                #{item.createTime},
+                #{item.createUser},
+                #{item.createUserType},
+                #{item.createUserId},
+                #{item.createUserPhone}
+              )
+          </foreach>
+
+
+    </insert>
     <select id="findCarLogByOrderNoAndCarNo"
             resultType="com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo">
         select *

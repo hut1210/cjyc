@@ -23,7 +23,7 @@ public class BaseExportExcel implements Serializable {
     @Excel(name = "账号来源" ,orderNum = "3",width = 15)
     private Integer source;
 
-    @Excel(name = "注册时间" ,orderNum = "4",width = 15)
+    @Excel(name = "注册时间" ,orderNum = "4",width = 25)
     private Long createTime;
 
     @Excel(name = "注册操作人" ,orderNum = "5",width = 15)
@@ -54,7 +54,7 @@ public class BaseExportExcel implements Serializable {
     }
     public String getCreateTime(){
         if(createTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(createTime), TimePatternConstant.DATETIME);
         }
         return "";
     }

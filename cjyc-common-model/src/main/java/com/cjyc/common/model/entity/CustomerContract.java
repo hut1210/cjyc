@@ -86,6 +86,9 @@ public class CustomerContract implements Serializable {
     @ApiModelProperty(value = "项目状态 0：停止   1：正常")
     private Integer projectStatus;
 
+    @ApiModelProperty(value = "合同是否可用  0：不可用  1：可用")
+    private Integer isActive;
+
     @ApiModelProperty(value = "项目团队成员")
     private String projectTeamPer;
 

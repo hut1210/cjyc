@@ -272,11 +272,13 @@
                             <archive>
                                 <manifest>
                                     <addClasspath>true</addClasspath>
-                                    <classpathPrefix>lib/</classpathPrefix> <!--MANIFEST.MF中主jar-->
+                                    <!--MANIFEST.MF中主jar-->
+                                    <classpathPrefix>lib/</classpathPrefix>
                                     <mainClass>${main.class}</mainClass>
                                 </manifest>
                                 <manifestEntries>
-                                    <Class-Path>../conf/</Class-Path> <!--MANIFEST.MF中Conf-->
+                                    <!--MANIFEST.MF中Conf-->
+                                    <Class-Path>../conf/</Class-Path>
                                 </manifestEntries>
                             </archive>
                             <excludes>
@@ -303,8 +305,10 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/lib
-                                    </outputDirectory> <!--MANIFEST.MF中lib-->
+                                    <!--MANIFEST.MF中lib-->
+                                    <outputDirectory>
+                                        ${project.build.directory}/lib
+                                    </outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>

@@ -98,123 +98,6 @@
       create_time = #{createTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
-    <update id="updateByIdSelectiveForNull" parameterType="com.cjyc.common.model.entity.WaybillCar" >
-        update w_waybill_car
-        <set >
-            <if test="waybillId != null" >
-                waybill_id = #{waybillId,jdbcType=BIGINT},
-            </if>
-            <if test="waybillNo != null" >
-                waybill_no = #{waybillNo,jdbcType=VARCHAR},
-            </if>
-            <if test="orderCarId != null" >
-                order_car_id = #{orderCarId,jdbcType=BIGINT},
-            </if>
-            <if test="orderCarNo != null" >
-                order_car_no = #{orderCarNo,jdbcType=VARCHAR},
-            </if>
-            <if test="freightFee != null" >
-                freight_fee = #{freightFee,jdbcType=DECIMAL},
-            </if>
-            <if test="startProvince != null" >
-                start_province = #{startProvince,jdbcType=VARCHAR},
-            </if>
-            <if test="startProvinceCode != null" >
-                start_province_code = #{startProvinceCode,jdbcType=VARCHAR},
-            </if>
-            <if test="startCity != null" >
-                start_city = #{startCity,jdbcType=VARCHAR},
-            </if>
-            <if test="startCityCode != null" >
-                start_city_code = #{startCityCode,jdbcType=VARCHAR},
-            </if>
-            <if test="startArea != null" >
-                start_area = #{startArea,jdbcType=VARCHAR},
-            </if>
-            <if test="startAreaCode != null" >
-                start_area_code = #{startAreaCode,jdbcType=VARCHAR},
-            </if>
-            <if test="startAddress != null" >
-                start_address = #{startAddress,jdbcType=VARCHAR},
-            </if>
-            <if test="startStoreName != null" >
-                start_store_name = #{startStoreName,jdbcType=VARCHAR},
-            </if>
-            <if test="startStoreId != null" >
-                start_store_id = #{startStoreId,jdbcType=BIGINT},
-            </if>
-            <if test="startBelongStoreId != null" >
-                start_belong_store_id = #{startBelongStoreId,jdbcType=BIGINT},
-            </if>
-            <if test="endProvince != null" >
-                end_province = #{endProvince,jdbcType=VARCHAR},
-            </if>
-            <if test="endProvinceCode != null" >
-                end_province_code = #{endProvinceCode,jdbcType=VARCHAR},
-            </if>
-            <if test="endCity != null" >
-                end_city = #{endCity,jdbcType=VARCHAR},
-            </if>
-            <if test="endCityCode != null" >
-                end_city_code = #{endCityCode,jdbcType=VARCHAR},
-            </if>
-            <if test="endArea != null" >
-                end_area = #{endArea,jdbcType=VARCHAR},
-            </if>
-            <if test="endAreaCode != null" >
-                end_area_code = #{endAreaCode,jdbcType=VARCHAR},
-            </if>
-            <if test="endAddress != null" >
-                end_address = #{endAddress,jdbcType=VARCHAR},
-            </if>
-            <if test="endStoreName != null" >
-                end_store_name = #{endStoreName,jdbcType=VARCHAR},
-            </if>
-            <if test="endStoreId != null" >
-                end_store_id = #{endStoreId,jdbcType=BIGINT},
-            </if>
-            <if test="endBelongStoreId != null" >
-                end_belong_store_id = #{endBelongStoreId,jdbcType=BIGINT},
-            </if>
-            <if test="lineId != null" >
-                line_id = #{lineId,jdbcType=BIGINT},
-            </if>
-            <if test="state != null" >
-                state = #{state,jdbcType=TINYINT},
-            </if>
-            <if test="expectStartTime != null" >
-                expect_start_time = #{expectStartTime,jdbcType=BIGINT},
-            </if>
-            <if test="expectEndTime != null" >
-                expect_end_time = #{expectEndTime,jdbcType=BIGINT},
-            </if>
-            load_link_name = #{loadLinkName,jdbcType=VARCHAR},
-            load_link_user_id = #{loadLinkUserId,jdbcType=BIGINT},
-            load_link_phone = #{loadLinkPhone,jdbcType=VARCHAR},
-            <if test="loadPhotoImg != null" >
-                load_photo_img = #{loadPhotoImg,jdbcType=VARCHAR},
-            </if>
-            <if test="loadTime != null" >
-                load_time = #{loadTime,jdbcType=BIGINT},
-            </if>
-            unload_link_name = #{unloadLinkName,jdbcType=VARCHAR},
-            unload_link_user_id = #{unloadLinkUserId,jdbcType=BIGINT},
-            unload_link_phone = #{unloadLinkPhone,jdbcType=VARCHAR},
-            <if test="unloadPhotoImg != null" >
-                unload_photo_img = #{unloadPhotoImg,jdbcType=VARCHAR},
-            </if>
-            <if test="unloadTime != null" >
-                unload_time = #{unloadTime,jdbcType=BIGINT},
-            </if>
-            <if test="receiptFlag != null" >
-                receipt_flag = #{receiptFlag,jdbcType=BIT},
-            </if>
-            <if test="createTime != null" >
-                create_time = #{createTime,jdbcType=BIGINT},
-            </if>
-        </set>
-        where id = #{id,jdbcType=BIGINT}
-    </update>
 
     <insert id="saveBatch">
         insert into w_waybill_car
@@ -471,8 +354,14 @@
         and state &lt; 100
         limit 1
     </update>
-    <update id="updateLoadImgsNull">
-        update set load_photo_img = '' where id = #{id}
+    <update id="updateForCancelUnloadByIds">
+        update w_waybill_car
+        set state = 45
+        where state = 90
+        and id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
 
 
@@ -1929,6 +1818,26 @@
         <!--过滤掉已取消的运单车辆-->
         WHERE billcar.state &lt;= 100
         AND bill.no = #{waybillNo}
+    </select>
+
+    <!--根据车辆编号查询运输车车牌号-->
+    <select id="selectPlateNoByOrderCarNo" resultType="java.lang.String">
+        select
+            task.vehicle_plate_no
+        from
+            w_waybill_car car
+            left join w_task task on car.waybill_id=task.waybill_id
+        where
+            car.state > 5 and car.state &lt; 100 and task.state
+    </select>
+    <select id="findListByTaskCarIds" resultType="com.cjyc.common.model.entity.WaybillCar">
+        select wc.*
+        from w_task_car tc 
+        join w_waybill_car wc on wc.id = tc.waybill_car_id
+        and tc.id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 
 </mapper>

@@ -6,6 +6,7 @@ import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderCarLogDao;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.OrderCarLog;
+import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -13,6 +14,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OutterLogVo;
 import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -76,12 +78,42 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
             return;
         }
         try {
-            orderCarList.forEach(orderCar -> {
-                asyncSave(orderCar, logTypeEnum, log, userInfo);
-            });
+            orderCarList.forEach(orderCar -> asyncSave(orderCar, logTypeEnum, log, userInfo));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Async
+    @Override
+    public void asyncSaveBatch(List<WaybillCar> wcs, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
+        if(CollectionUtils.isEmpty(wcs)){
+            return;
+        }
+        List<OrderCarLog> ocls = Lists.newArrayList();
+        for (WaybillCar wc : wcs) {
+            OrderCarLog orderCarLog = new OrderCarLog();
+            orderCarLog.setOrderCarId(wc.getOrderCarId());
+            orderCarLog.setOrderCarNo(wc.getOrderCarNo());
+            orderCarLog.setType(logTypeEnum.getCode());
+            orderCarLog.setOuterLog(String.valueOf(log[0]));
+            orderCarLog.setInnerLog(String.valueOf(log[1]));
+            orderCarLog.setRemark(log.length > 2 ? String.valueOf(log[2]) : null);
+            orderCarLog.setCreateTime(System.currentTimeMillis());
+            if(userInfo != null){
+                orderCarLog.setCreateUser(userInfo.getName());
+                orderCarLog.setCreateUserId(userInfo.getId());
+                orderCarLog.setCreateUserPhone(userInfo.getPhone());
+                orderCarLog.setCreateUserType(userInfo.getUserType() == null ? null : userInfo.getUserType().code);
+            }
+            ocls.add(orderCarLog);
+        }
+
+        saveBatch(ocls);
+    }
+
+    private void saveBatch(List<OrderCarLog> ocls) {
+         orderCarLogDao.insertBatch(ocls);
     }
 
     @Override

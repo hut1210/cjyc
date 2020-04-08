@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import com.cjyc.common.model.constant.ArgsConstant;
+import com.cjyc.common.model.dto.BaseLogin2Dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,20 +20,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class SaveOrderDto {
+public class SaveOrderDto extends BaseLogin2Dto {
 
-    @NotNull(message = "客户端类型不能为空")
-    @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
-    private int clientId;
-    @NotNull(message = "操作人id不能为空")
-    @ApiModelProperty(value = "操作人id", required = true)
-    private Long loginId;
-    @ApiModelProperty(value = "操作人类型")
-    private Integer loginType;
-    @ApiModelProperty(hidden = true)
-    private String loginName;
-    @ApiModelProperty(hidden = true)
-    private String loginPhone;
     @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(value = "物流券抵消金额")

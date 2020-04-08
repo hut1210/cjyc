@@ -517,9 +517,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             if (order.getEndStoreId() == null || order.getEndStoreId() < 0) {
                 return BaseResultUtil.fail("目的地业务中心未处理，请点击订单进入[下单详情]中修改并确认下单");
             }
-            if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType() && PayModeEnum.COLLECT.code != order.getPayType()) {
-                return BaseResultUtil.fail("合伙人下单支付方式只能选择到付，请确认后重新下单");
-            }
+
             if (!RegexUtil.isMobileSimple(order.getPickContactPhone())) {
                 return BaseResultUtil.fail("发车人手机号格式不正确");
             }
@@ -534,6 +532,9 @@ public class CsOrderServiceImpl implements ICsOrderService {
             order.setCustomerId(customer.getId());
             order.setCustomerType(customer.getType());
 
+            if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType() && PayModeEnum.COLLECT.code != order.getPayType()) {
+                return BaseResultUtil.fail("合伙人下单支付方式只能选择到付，请确认后重新下单");
+            }
             List<OrderCar> orderCarList = orderCarDao.findListByOrderId(order.getId());
             if (orderCarList == null || orderCarList.size() <= 0) {
                 return BaseResultUtil.fail("实际车辆数不能小于1, 请点击订单进入[下单详情]中修改");

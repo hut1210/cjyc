@@ -43,13 +43,13 @@ public class InquiryExportExcel implements Serializable {
     }
     public String getInquiryTime(){
         if(inquiryTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(inquiryTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(inquiryTime), TimePatternConstant.DATETIME);
         }
         return "";
     }
     public String getHandleTime(){
         if(handleTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(handleTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(handleTime), TimePatternConstant.DATETIME);
         }
         return "";
     }

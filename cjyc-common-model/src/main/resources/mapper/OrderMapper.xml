@@ -177,8 +177,8 @@
         CONCAT(start_province,start_city,start_area,start_address) as startFullAddress,
         CONCAT(end_province,end_city,end_area,end_address) as endFullAddress,
         <include refid="order_calculate_fee_field"/>,
-        ct1.parent_name as region,
-        ct1.parent_code as regionCode,
+        IFNULL(ct1.parent_name, '总部')as region,
+        IFNULL(ct1.parent_code, '000000') as regionCode,
         s1.detail_addr as inputStoreAddress,
         s2.detail_addr as startStoreAddress,
         s3.detail_addr as endStoreAddress,
@@ -347,7 +347,14 @@
                 and o.pay_type = #{paramsDto.payType}
             </if>
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
-                and ct1.parent_code = #{paramsDto.regionCode}
+                <choose>
+                    <when test="paramsDto.regionCode == '000000'">
+                        and ct1.parent_code is null
+                    </when>
+                    <otherwise>
+                        and ct1.parent_code = #{paramsDto.regionCode}
+                    </otherwise>
+                </choose>
             </if>
             <if test="paramsDto.countByCustomer != null and paramsDto.countByCustomer == true">
                 and o.customer_id = #{paramsDto.loginId}

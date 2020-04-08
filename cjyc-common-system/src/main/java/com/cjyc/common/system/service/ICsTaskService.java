@@ -1,9 +1,10 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
-import com.cjyc.common.model.dto.driver.task.PickLoadDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
-import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.task.AllotTaskDto;
+import com.cjyc.common.model.dto.web.task.BaseTaskDto;
+import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.WaybillCar;
@@ -33,13 +34,13 @@ public interface ICsTaskService {
 
     ResultVo allot(AllotTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> load(LoadTaskDto paramsDto);
+    ResultVo<ResultReasonVo> load(BaseTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> unload(UnLoadTaskDto paramsDto);
+    ResultVo<ResultReasonVo> unload(BaseTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> outStore(OutStoreTaskDto paramsDto);
+    ResultVo<ResultReasonVo> outStore(BaseTaskDto paramsDto);
 
-    ResultVo<ResultReasonVo> inStore(InStoreTaskDto paramsDto);
+    ResultVo<ResultReasonVo> inStore(BaseTaskDto paramsDto);
 
     ResultVo receipt(ReceiptTaskDto reqDto);
 
@@ -65,4 +66,6 @@ public interface ICsTaskService {
 
     int validateAndFinishTaskWaybill(Task task);
     int validateAndFinishTask(Task task);
+
+    ResultVo<ResultReasonVo> cancelUnload(BaseTaskDto reqDto);
 }

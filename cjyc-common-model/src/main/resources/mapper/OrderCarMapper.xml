@@ -2468,8 +2468,8 @@
         s1.detail_addr as startStoreAddress,
         s2.area_code as endStoreAreaCode,
         s2.detail_addr as endStoreAddress,
-        ct1.parent_name as nowCityName,
-        ct2.parent_code as regionCode,
+        IFNULL(ct1.parent_name, '总部') as nowCityName,
+        IFNULL(ct2.parent_code, '000000') as regionCode,
         ct2.parent_name as region,
         m.phone as checkUserPhone
         from (
@@ -2518,6 +2518,18 @@
         LEFT JOIN s_city ct1 on ct1.code = shell.now_area_code
         LEFT JOIN s_city ct2 on s.province_code = ct2.code
         left join b_admin m on m.id = shell.checkUserId
+        <where>
+            <if test="regionCode != null and regionCode != ''">
+                <choose>
+                    <when test="regionCode == '000000'">
+                        and ct2.parent_code is null
+                    </when>
+                    <otherwise>
+                        and ct2.parent_code = #{regionCode}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
         order by shell.order_id desc, shell.id
 
     </select>
