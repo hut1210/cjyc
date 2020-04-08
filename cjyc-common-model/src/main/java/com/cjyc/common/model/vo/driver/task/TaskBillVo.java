@@ -50,9 +50,9 @@ public class TaskBillVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;
 
-    @ApiModelProperty(value = "提车时间")
+    @ApiModelProperty(value = "约定/实际提车时间")
     @JsonSerialize(using = DateLongSerizlizer.class)
-    private Long expectStartTime;
+    private Long startTime;
 
     @ApiModelProperty(value = "接单时间 或 分配时间")
     @JsonSerialize(using = DateLongSerizlizer.class)
@@ -107,8 +107,8 @@ public class TaskBillVo implements Serializable {
     public Long getTaskId() {
         return taskId == null ? 0 : taskId;
     }
-    public Long getExpectStartTime() {
-        return expectStartTime == null ? 0 : expectStartTime;
+    public Long getStartTime() {
+        return startTime == null ? 0 : startTime;
     }
     public Long getCompleteTime() {
         return completeTime == null ? 0 : completeTime;
