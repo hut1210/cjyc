@@ -221,7 +221,7 @@ public class CsCarrierServiceImpl implements ICsCarrierService {
                         .lt(Task::getState, TaskStateEnum.FINISHED.code));
                 if(taskCount > 0){
                     vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
-                }else {
+                }else{
                     vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
                 }
             }
