@@ -144,13 +144,14 @@
             t.taskCarId,
             t.waybill_id AS waybillId,
             t.create_time AS createTime,
+            t.state AS taskState,
             (case w.carrier_type when 2 then t.no else w.no end) AS waybillNo,
             w.type AS type,
             (case w.type when 1 then concat(car.start_city,'-',car.end_city)
                          when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
             car.start_city as startCity,
             car.end_city as endCity,
-            car.expect_start_time AS expectStartTime,
+            (case t.state when 5 then car.expect_start_time else car.load_time end) AS startTime,
             count(car.id) AS carNum,
             sum(car.freight_fee) AS freightFee
         FROM
