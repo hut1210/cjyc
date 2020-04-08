@@ -519,7 +519,18 @@
         <if test="payMode != null">
             and ccc.settle_type =#{payMode}
         </if>
-        group by woc.no ) t order by t.finish_time desc
+        group by woc.no
+        union
+        <include refid="payMentListHeader"></include>
+        left join w_waybill_car wwc on wwc.order_car_no = woc.no
+        left join w_task wt on wt.waybill_no = wwc.waybill_no
+        left join s_city zc on zc.code = wo.start_province_code
+        left join s_city zcity on zcity.code = zc.parent_code
+
+        where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and wo.customer_contract_id is null
+        <include refid="payMentListCondition"></include>
+        group by woc.no
+        ) t order by t.finish_time desc
     </select>
 
     <select id="getAdvancePayment" resultType="com.cjyc.common.model.vo.web.finance.AdvancePaymentVo">
