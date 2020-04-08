@@ -296,5 +296,4 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateLocationForCancel(Long orderId);
 
-    Set<String> findByOrderNo(String no);
 }

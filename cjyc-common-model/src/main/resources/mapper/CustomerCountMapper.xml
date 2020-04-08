@@ -18,9 +18,9 @@
     <!-- 根据用户id统计用户下单量，运车量，总金额-->
     <select id="count" resultType="com.cjyc.common.model.vo.web.customer.CustomerCountVo" parameterType="java.lang.Long">
         SELECT
-            IFNULL(count( wo.NO ),0) AS totalOrder,
-            IFNULL(sum( wo.car_num ),0) AS totalCar,
-            IFNULL( SUM( wo.total_fee ), 0 ) AS totalAmount
+            IFNULL(count(wo.NO),0) AS totalOrder,
+            IFNULL(sum(wo.car_num),0) AS totalCar,
+            IFNULL(SUM(wo.total_fee), 0) AS totalAmount
         FROM
             w_order wo
             JOIN c_customer_count ccc ON ccc.order_no = wo.NO

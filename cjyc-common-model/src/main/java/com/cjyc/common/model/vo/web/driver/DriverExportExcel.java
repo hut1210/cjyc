@@ -46,7 +46,7 @@ public class DriverExportExcel implements Serializable {
     @Excel(name = "账号来源" ,orderNum = "16",width = 25)
     private Integer source;
     @Excel(name = "运行状态" ,orderNum = "17",width = 25)
-    private Integer runningState;
+    private Integer businessState;
     @Excel(name = "总运量(台)" ,orderNum = "18",width = 25)
     private Integer carNum;
     @Excel(name = "总收入" ,orderNum = "19",width = 25)
@@ -65,6 +65,14 @@ public class DriverExportExcel implements Serializable {
                 return "干线";
             }else if(mode == 4){
                 return "拖车";
+            }else if(mode == 5){
+                return "代驾+干线";
+            }else if(mode == 6){
+                return "代驾+拖车";
+            }else if(mode == 7){
+                return "干线+拖车";
+            }else if(mode == 9){
+                return "代驾+干线+拖车";
             }
         }
         return "";
@@ -79,13 +87,11 @@ public class DriverExportExcel implements Serializable {
         }
         return "";
     }
-    public String getRunningState(){
-        if(runningState != null){
-            if(runningState == 0){
+    public String getBusinessState(){
+        if(businessState != null){
+            if(businessState == 0){
                 return "空闲";
-            }else if(runningState == 1){
-                return "在途";
-            }else if(runningState == 2){
+            }else if(businessState == 1){
                 return "繁忙";
             }
         }
@@ -129,7 +135,7 @@ public class DriverExportExcel implements Serializable {
     }
     public String getOperatTime(){
         if(operatTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(operatTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(operatTime), TimePatternConstant.DATETIME);
         }
         return "";
     }

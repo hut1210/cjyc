@@ -263,4 +263,11 @@ public interface ICustomerService  extends IService<Customer> {
      * @return
      */
     ResultVo<CustomerContract> findContract(Long contractId);
+
+    /**
+     * 根据合同id更新合同状态
+     * @param contractId
+     * @return
+     */
+    ResultVo deleteContract(Long contractId);
 }

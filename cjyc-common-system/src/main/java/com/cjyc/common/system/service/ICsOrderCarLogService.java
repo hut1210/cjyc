@@ -1,6 +1,7 @@
 package com.cjyc.common.system.service;
 
 import com.cjyc.common.model.entity.OrderCar;
+import com.cjyc.common.model.entity.WaybillCar;
 import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.vo.ResultVo;
@@ -31,6 +32,7 @@ public interface ICsOrderCarLogService {
      * @param userInfo 用户信息
      */
     void asyncSaveBatch(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo);
+    void asyncSaveBatch(List<WaybillCar> wcs, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo);
 
     /**
      * 功能描述: 根据订单车辆编号查询车辆运输日志

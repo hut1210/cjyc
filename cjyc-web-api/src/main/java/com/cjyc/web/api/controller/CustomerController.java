@@ -253,4 +253,10 @@ public class CustomerController {
     public ResultVo<CustomerContract> findContract(@PathVariable @ApiParam(value = "合同id",required = true) Long contractId){
         return customerService.findContract(contractId);
     }
+
+    @ApiOperation(value = "根据合同id删除合同相关信息")
+    @PostMapping(value = "/deleteContract/{contractId}")
+    public ResultVo deleteContract(@PathVariable @ApiParam(value = "合同id",required = true) Long contractId){
+        return customerService.deleteContract(contractId);
+    }
 }

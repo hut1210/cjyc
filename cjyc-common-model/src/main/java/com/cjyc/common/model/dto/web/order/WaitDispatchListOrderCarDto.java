@@ -115,6 +115,9 @@ public class WaitDispatchListOrderCarDto extends BasePageDto implements Serializ
     private String plateNo;
     @ApiModelProperty(value = "车牌号")
     private Integer source;
+    @ApiModelProperty(value = "大区编码")
+    private String regionCode;
+
 
     @ApiModelProperty(value = "起始目的城市列表")
     private List<FromToCityDto> fromToCityList;

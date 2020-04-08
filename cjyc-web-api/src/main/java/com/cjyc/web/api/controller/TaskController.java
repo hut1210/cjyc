@@ -81,7 +81,7 @@ public class TaskController {
      */
     @ApiOperation(value = "确认出库")
     @PostMapping(value = "/car/out/store")
-    public ResultVo<ResultReasonVo> outStore(@RequestBody OutStoreTaskDto reqDto) {
+    public ResultVo<ResultReasonVo> outStore(@RequestBody BaseTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
@@ -97,7 +97,7 @@ public class TaskController {
      */
     @ApiOperation(value = "确认入库")
     @PostMapping(value = "/car/in/store")
-    public ResultVo inStore(@Validated @RequestBody InStoreTaskDto reqDto) {
+    public ResultVo inStore(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());

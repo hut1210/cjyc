@@ -29,7 +29,7 @@ public class VehicleExportExcel implements Serializable {
 
     public String getCheckTime(){
         if(checkTime != null){
-            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(checkTime), TimePatternConstant.COMPLEX_TIME_FORMAT);
+            return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(checkTime), TimePatternConstant.DATETIME);
         }
         return "";
     }

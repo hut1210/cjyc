@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.order;
 
 import com.cjyc.common.model.constant.ArgsConstant;
+import com.cjyc.common.model.dto.BaseLogin2Dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,20 +20,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class CommitOrderDto {
-
-    @NotNull(message = "clientId不能为空")
-    @ApiModelProperty(value = "1WEB管理后台, 2业务员APP, 4司机APP, 6用户端APP, 7用户端小程序", required = true)
-    private int clientId;
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "操作人id", required = true)
-    private Long loginId;
-    @ApiModelProperty(hidden = true)
-    private String loginName;
-    @ApiModelProperty(hidden = true)
-    private String loginPhone;
-    @ApiModelProperty(value = "操作人类型", hidden = true)
-    private Integer loginType;
+public class CommitOrderDto extends BaseLogin2Dto {
     @ApiModelProperty(hidden = true)
     private Integer state;
     @ApiModelProperty(hidden = true)
@@ -130,12 +118,12 @@ public class CommitOrderDto {
     private Integer payType = 0;
     @ApiModelProperty(value = "优惠券id")
     private Long couponSendId;
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     @ApiModelProperty(value = "物流券抵消金额")
     private BigDecimal couponOffsetFee;
     @ApiModelProperty(value = "应收总价：收车后客户应支付平台的费用", required = true)
-    @DecimalMax(value = ArgsConstant.DECIMAL_MAX, message = "金额不能超过99999999.99")
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
     @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
     private BigDecimal totalFee;
 

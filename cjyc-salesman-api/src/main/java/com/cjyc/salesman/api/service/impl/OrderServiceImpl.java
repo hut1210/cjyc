@@ -48,6 +48,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Resource
     private ILineDao lineDao;
     @Resource
+    private ICustomerContractDao contractDao;
+    @Resource
     private ICsSysService csSysService;
     @Resource
     private ICsAdminService csAdminService;
@@ -90,6 +92,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         }else{
             //业务员下单
             detailVo.setFlag(2);
+        }
+        //查看大客户合同
+        if(order.getCustomerContractId() != null){
+            CustomerContract contract = contractDao.selectById(order.getCustomerContractId());
+            if(contract != null){
+                detailVo.setContractNo(contract.getContractNo());
+                detailVo.setSettlePeriod(contract.getSettlePeriod());
+            }
         }
         detailVo.setOrderId(order.getId());
         detailVo.setOrderNo(order.getNo());

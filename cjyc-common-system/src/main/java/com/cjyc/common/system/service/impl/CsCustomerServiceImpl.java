@@ -200,7 +200,7 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
 
     @Override
     public ResultVo<AppContractVo> findCustomerContract(AppCustomerIdDto dto) {
-        Long now = LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now());
+        Long now = System.currentTimeMillis();
         List<Map<String,Object>> contractList = customerDao.getContractByCustomerId(dto.getCustomerId(),now);
         AppContractVo vo = new AppContractVo();
         vo.setList(contractList);

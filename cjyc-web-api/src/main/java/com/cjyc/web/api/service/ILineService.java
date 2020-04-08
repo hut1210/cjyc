@@ -72,10 +72,4 @@ public interface ILineService extends IService<Line> {
      * @return
      */
     boolean saveOrUpdateExcel(MultipartFile file, Long loginId);
-
-    /**
-     * 保存两个城市之间距离
-     * @return
-     */
-    ResultVo saveDistance();
 }

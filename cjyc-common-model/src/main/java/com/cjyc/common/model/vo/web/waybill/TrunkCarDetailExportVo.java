@@ -261,7 +261,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getExpectEndTimeStr() {
@@ -269,7 +269,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getLoadTimeStr() {
@@ -277,7 +277,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getExpectStartTimeStr() {
@@ -285,7 +285,7 @@ public class TrunkCarDetailExportVo implements Serializable {
         if(null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATE);
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), TimePatternConstant.DATETIME);
     }
 
     public String getFreightFee() { return MoneyUtil.fenToYuan(freightFee, MoneyUtil.PATTERN_TWO); }

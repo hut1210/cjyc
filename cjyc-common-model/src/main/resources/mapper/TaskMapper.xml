@@ -390,6 +390,7 @@
             (case w.type when 1 then concat(car.start_city,'-',car.end_city)
                          when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
             w.type AS type,
+            (case t.state when 5 then car.expect_start_time else car.load_time end) AS startTime,
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.no, task.guide_line,

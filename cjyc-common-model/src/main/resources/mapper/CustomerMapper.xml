@@ -403,7 +403,7 @@
                 c_customer_contract contract
                 LEFT JOIN c_customer customer ON customer.id = contract.customer_id
             WHERE
-                customer.id = #{customerId}  and contract.contract_life > #{now} and contract.project_status = 1
+                customer.id = #{customerId} and contract.contract_life > #{now} and contract.project_status = 1 and contract.is_active = 1
     </select>
 
     <select id="findByUserId" resultType="com.cjyc.common.model.entity.Customer">

@@ -53,7 +53,6 @@ public class OrderController {
     @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
     public ResultVo save(@RequestBody SaveOrderDto reqDto) {
-
         //验证用户存不存在
         Admin admin = csAdminService.validate(reqDto.getLoginId());
         reqDto.setLoginName(admin.getName());
