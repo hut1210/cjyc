@@ -712,8 +712,8 @@
         o.end_store_name as endStoreName,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
-        ct1.parent_name as region,
-        ct1.parent_code as regionCode,
+        IFNULL(ct1.parent_name '总部')as region,
+        IFNULL(ct1.parent_code, '000000') as regionCode,
         s1.detail_addr as inputStoreAddress,
         ht.contract_no as contractNo,
         ht.settle_period as settlePeriod
@@ -870,7 +870,14 @@
                 and o.pay_type = #{paramsDto.payType}
             </if>
             <if test="paramsDto.regionCode != null and paramsDto.regionCode != ''">
-                and ct1.parent = #{paramsDto.regionCode}
+                <choose>
+                    <when test="paramsDto.regionCode == '000000'">
+                        and ct1.parent_code is null
+                    </when>
+                    <otherwise>
+                        and ct1.parent_code = #{paramsDto.regionCode}
+                    </otherwise>
+                </choose>
             </if>
             <if test="paramsDto.isMove != null">
                 and oc.is_move = #{paramsDto.isMove}
@@ -2468,9 +2475,9 @@
         s1.detail_addr as startStoreAddress,
         s2.area_code as endStoreAreaCode,
         s2.detail_addr as endStoreAddress,
-        IFNULL(ct1.parent_name, '总部') as nowCityName,
+        ct1.parent_name as nowCityName,
         IFNULL(ct2.parent_code, '000000') as regionCode,
-        ct2.parent_name as region,
+        IFNULL(ct2.parent_name, '总部') as region,
         m.phone as checkUserPhone
         from (
             select
