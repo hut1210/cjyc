@@ -7,6 +7,9 @@ import com.cjyc.common.model.dto.web.finance.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerPayEnum;
+import com.cjyc.common.model.enums.customer.CustomerPayTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
 import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -162,19 +165,32 @@ public class FinanceServiceImpl implements IFinanceService {
                     }
                 }
 
-
+                //成本合计
                 financeVo.setTotalCost(totalCost);
-
+                //毛利
                 financeVo.setGrossProfit(financeVo.getTotalIncome().subtract(totalCost));
+                //账期数据查询开票金额
+                if (financeVo.getPayMode() != null && CustomerPayEnum.PERIOD_PAY.code == financeVo.getPayMode()) {
+                    FinanceSettlementDetailVo financeSettlementDetailVo = financeDao.getSettlementDetail(financeVo.getNo());
+                    if (financeSettlementDetailVo != null) {
+                        financeVo.setInvoiceFee(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
+                        BigDecimal difference = MoneyUtil.nullToZero(financeSettlementDetailVo.getFreightFee()).subtract(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
+                        financeVo.setDifference(difference);
+                        financeVo.setReceivedTime(financeSettlementDetailVo.getVerificationTime());
+                    }
+
+                }
+
             }
         }
         PageInfo<FinanceVo> pageInfo = new PageInfo<>(financeVoList);
+        //收益合计
         BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
-
+        //成本合计
         BigDecimal costSummary = tradeBillService.costSummary(financeQueryDto);
-
+        //毛利汇总
         BigDecimal grossProfit = tradeBillService.grossProfit(financeQueryDto);
-
+        //实收汇总
         BigDecimal actualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
 
         Map<String, Object> countInfo = new HashMap<>();
@@ -246,6 +262,17 @@ public class FinanceServiceImpl implements IFinanceService {
                 financeVo.setGrossProfit((financeVo.getTotalIncome().subtract(totalCost)).divide(new BigDecimal(100)));
                 financeVo.setTotalIncome(financeVo.getTotalIncome() != null ? financeVo.getTotalIncome().divide(new BigDecimal(100)) : financeVo.getTotalIncome());
                 financeVo.setActualIncome(MoneyUtil.nullToZero(financeVo.getTotalIncome()));
+
+                //账期数据查询开票金额
+                if (financeVo.getPayMode() != null && CustomerPayEnum.PERIOD_PAY.code == financeVo.getPayMode()) {
+                    FinanceSettlementDetailVo financeSettlementDetailVo = financeDao.getSettlementDetail(financeVo.getNo());
+                    if (financeSettlementDetailVo != null) {
+                        BigDecimal difference = MoneyUtil.nullToZero(financeSettlementDetailVo.getFreightFee()).subtract(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
+                        financeVo.setDifference(new BigDecimal(MoneyUtil.fenToYuan(difference, MoneyUtil.PATTERN_TWO)));
+                        financeVo.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(financeSettlementDetailVo.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+                        financeVo.setReceivedTime(financeSettlementDetailVo.getVerificationTime());
+                    }
+                }
 
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
                 detailVoList.addAll(detailList);
