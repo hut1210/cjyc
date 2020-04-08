@@ -1023,6 +1023,8 @@ public class FinanceServiceImpl implements IFinanceService {
         payablePaidList.forEach(e -> {
             e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
             e.setTotalFreightPay((MoneyUtil.fenToYuan(e.getTotalFreightPay())));
+            e.setDifference(MoneyUtil.fenToYuan(e.getDifference()));
+
         });
         return payablePaidList;
     }
