@@ -117,18 +117,18 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             // 车辆状态为 “运输中” 时，查询位置信息
             boolean isTransport = orderCar.getState() > OrderCarStateEnum.WAIT_PICK.code && orderCar.getState() < OrderCarStateEnum.SIGNED.code;
             if (isTransport) {
-                // 查询运输车车牌号
+                // 查询运输车车牌号与司机ID
                 Map<String, Object> map = waybillCarDao.selectPlateNoByOrderCarNo(reqDto.getOrderCarNo());
+                String plateNo = map == null ? "" : String.valueOf(map.get("plateNo"));
 
                 // 查询运输车信息
                 Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
-                        .eq(Vehicle::getPlateNo, map.get("plateNo")).select(Vehicle::getOwnershipType));
+                        .eq(Vehicle::getPlateNo, plateNo).select(Vehicle::getOwnershipType));
 
                 // 判断运输车车牌号是否为自营车辆，是自营车则根据车牌号车讯位置，否则根据司机信息查询
                 boolean isOwnerCar = vehicle != null && VehicleOwnerEnum.SELFBUSINESS.code == vehicle.getOwnershipType();
                 if (isOwnerCar) {
                     // 是自营车，根据车牌号查询位置信息
-                    String plateNo = map == null ? "" : String.valueOf(map.get("plateNo"));
                     log.info("===>调用位置服务平台接口-根据车牌号查询位置信息开始,请求参数：{}", JSON.toJSONString(plateNo));
                     ResultData resultData = sysLocationService.getLocationByPlateNo(plateNo);
                     log.info("<===调用位置服务平台接口-根据车牌号查询位置信息结束,响应参数：{}", JSON.toJSONString(resultData));
@@ -137,7 +137,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
                         log.info("===根据车牌号查询位置信息成功===");
                         Map resMap = JSON.parseObject(JSON.toJSONString(resultData.getData()), Map.class);
                         String location = resMap == null ? "" : String.valueOf(resMap.get("location"));
-                        String sendTime = resMap == null ? "" : String.valueOf(resMap.get("sendTime"));
+                        String sendTime = resMap == null ? null : String.valueOf(resMap.get("sendTime"));
                         if (!StringUtils.isEmpty(sendTime)) {
                             logisticsInfoVo.setGpsTime(LocalDateTimeUtil.convertDateStrToLong(sendTime,"yyyy-MM-dd HH:mm:ss"));
                         }
@@ -158,7 +158,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
                         log.info("===查询用户实时位置成功===");
                         Map resMap = JSON.parseObject(JSON.toJSONString(resultData.getData()), Map.class);
                         String location = resMap == null ? "" : String.valueOf(resMap.get("location"));
-                        String gpsTime = resMap == null ? "" : String.valueOf(resMap.get("gpsTime"));
+                        String gpsTime = resMap == null ? null : String.valueOf(resMap.get("gpsTime"));
                         if (!StringUtils.isEmpty(gpsTime)) {
                             logisticsInfoVo.setGpsTime(LocalDateTimeUtil.convertDateStrToLong(gpsTime,"yyyy-MM-dd HH:mm:ss"));
                         }
