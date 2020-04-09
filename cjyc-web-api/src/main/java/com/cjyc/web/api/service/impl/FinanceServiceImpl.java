@@ -172,9 +172,9 @@ public class FinanceServiceImpl implements IFinanceService {
                 if (financeVo.getPayMode() != null && CustomerPayEnum.PERIOD_PAY.code == financeVo.getPayMode()) {
                     FinanceSettlementDetailVo financeSettlementDetailVo = financeDao.getSettlementDetail(financeVo.getNo());
                     if (financeSettlementDetailVo != null) {
-                        financeVo.setInvoiceFee(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
+                        financeVo.setInvoiceFee(MoneyUtil.fenToYuan(financeSettlementDetailVo.getInvoiceFee()));
                         BigDecimal difference = MoneyUtil.nullToZero(financeSettlementDetailVo.getFreightFee()).subtract(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
-                        financeVo.setDifference(difference);
+                        financeVo.setDifference(MoneyUtil.fenToYuan(difference));
                         financeVo.setReceivedTime(financeSettlementDetailVo.getVerificationTime());
                     }
 
