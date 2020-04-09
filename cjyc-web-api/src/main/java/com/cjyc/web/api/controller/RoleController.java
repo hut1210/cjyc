@@ -232,9 +232,4 @@ public class RoleController {
         roleService.exportRoleListExcel(request, response);
     }
 
-    @ApiOperation(value = "删除角色以及该角色下所属人，以及韵车这边相关角色和人")
-    @PostMapping("/deleteRoleAndUser/{roleId}")
-    public ResultVo deleteRoleAndUser(@PathVariable Long roleId) {
-        return roleService.deleteRoleAndUser(roleId);
-    }
 }
