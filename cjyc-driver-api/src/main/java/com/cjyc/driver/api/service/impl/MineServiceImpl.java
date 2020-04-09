@@ -454,14 +454,14 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
         if(role == null){
             return BaseResultUtil.fail("该司机角色不存在,请检查");
         }
-        Role roleName = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
-        if(roleName == null){
+        Role driverRole = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
+        if(driverRole == null){
             return BaseResultUtil.fail("个人司机角色不存在，请先添加");
         }
         //根据车牌号查询库中有没有添加x
         Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
                 .eq(StringUtils.isNotBlank(dto.getPlateNo()),Vehicle::getPlateNo,dto.getPlateNo()));
-        if(role.getRoleName().equals(roleName.getRoleName())){
+        if(role.getRoleName().equals(driverRole.getRoleName())){
             //社会司机时只添加车辆
             if(vehicle != null){
                 return BaseResultUtil.fail("该车辆已存在,请检查");
