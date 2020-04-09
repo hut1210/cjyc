@@ -90,6 +90,7 @@ public class ExportLocalListWaybillCarVo implements Serializable {
                 str = "干线运单";break;
             case 3:
                 str = "送车运单";break;
+            default:break;
         }
         return str;
     }
@@ -111,6 +112,7 @@ public class ExportLocalListWaybillCarVo implements Serializable {
                 str = "同城-拖车";break;
             case 6:
                 str = "客户自己";break;
+            default:break;
         }
         return str;
     }

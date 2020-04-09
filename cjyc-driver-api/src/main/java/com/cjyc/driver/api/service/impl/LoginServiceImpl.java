@@ -30,6 +30,7 @@ import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.driver.api.config.LoginProperty;
 import com.cjyc.driver.api.service.ILoginService;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -221,7 +222,7 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
             if(loginVos.size() > 1){
                 //把角色存入到set集合中
                 //一个司机在多个承运商下，取角色最大的一个
-                Set<Integer> set = new HashSet<>(10);
+                Set<Integer> set = Sets.newHashSet();
                 for(BaseLoginVo vo : loginVos){
                     set.add(vo.getRole());
                 }
