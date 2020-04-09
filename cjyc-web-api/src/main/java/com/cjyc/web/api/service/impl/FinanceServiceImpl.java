@@ -173,13 +173,11 @@ public class FinanceServiceImpl implements IFinanceService {
                     FinanceSettlementDetailVo financeSettlementDetailVo = financeDao.getSettlementDetail(financeVo.getNo());
                     if (financeSettlementDetailVo != null) {
                         BigDecimal difference = MoneyUtil.nullToZero(financeSettlementDetailVo.getFreightFee()).subtract(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
-                        financeVo.setDifference(MoneyUtil.fenToYuan(difference));
-                        financeVo.setInvoiceFee(MoneyUtil.fenToYuan(financeSettlementDetailVo.getInvoiceFee()));
+                        financeVo.setDifference(new BigDecimal(MoneyUtil.fenToYuan(difference, MoneyUtil.PATTERN_TWO)));
+                        financeVo.setInvoiceFee(financeSettlementDetailVo.getInvoiceFee());
                         financeVo.setReceivedTime(financeSettlementDetailVo.getVerificationTime());
                     }
-
                 }
-
             }
         }
         PageInfo<FinanceVo> pageInfo = new PageInfo<>(financeVoList);
