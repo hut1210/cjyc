@@ -13,7 +13,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -44,10 +47,11 @@ public class MineStoreController {
 
     /**
      * 功能描述: 分页查询在库车辆列表
-     * @author liuxingxiang
-     * @date 2019/12/25
+     *
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/25
      */
     @ApiOperation(value = "分页查询在库车辆列表")
     @PostMapping("/getStorageCarPage")

@@ -15,7 +15,14 @@ public class LogisticsInformationVo extends OutterLogVo{
     @ApiModelProperty(value = "车辆实时位置")
     private String location;
 
+    @ApiModelProperty(value = "终端定位时间 格式 时间戳 1586402488000")
+    private Long gpsTime;
+
     public String getLocation() {
         return location == null ? "" : location;
+    }
+
+    public Long getGpsTime() {
+        return gpsTime == null ? 0 : gpsTime;
     }
 }

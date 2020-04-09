@@ -47,7 +47,7 @@ public class InquiryServiceImpl extends SuperServiceImpl<IInquiryDao, Inquiry> i
             inquiry.setPhone(customer.getContactPhone());
             inquiry.setLogisticsFee(defaultWlFee);
             inquiry.setState(InquiryStateEnum.NO_HANDLE.code);
-            inquiry.setInquiryTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+            inquiry.setInquiryTime(System.currentTimeMillis());
             super.save(inquiry);
         }
     }

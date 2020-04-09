@@ -31,13 +31,19 @@ public class HandleDataController {
 
     @ApiOperation(value = "保存两个城市之间距离")
     @PostMapping(value = "/saveDistance")
-    public ResultVo saveDistance(){
+    public ResultVo saveDistance() {
         return ycStatisticsService.saveDistance();
     }
 
     @ApiOperation(value = "账号登录app次数")
     @PostMapping(value = "/loginCountApp/{phone}")
-    public ResultVo loginCountApp(@PathVariable String phone){
+    public ResultVo loginCountApp(@PathVariable String phone) {
         return ycStatisticsService.loginCountApp(phone);
+    }
+
+    @ApiOperation(value = "删除角色以及该角色下所属人，以及韵车这边相关角色和人")
+    @PostMapping("/deleteRoleAndUser/{roleId}")
+    public ResultVo deleteRoleAndUser(@PathVariable Long roleId) {
+        return ycStatisticsService.deleteRoleAndUser(roleId);
     }
 }

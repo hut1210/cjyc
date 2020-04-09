@@ -695,40 +695,4 @@ public class RoleServiceImpl extends ServiceImpl<IRoleDao, Role> implements IRol
         }
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResultVo deleteRoleAndUser(Long roleId) {
-        //因为只是删除app_调度经理角色，慎重起见先查询
-        //处理架构组那边角色
-        ResultData<SelectRoleResp> roleRd = sysRoleService.getById(roleId);
-        if(!ResultDataUtil.isSuccess(roleRd)){
-            return BaseResultUtil.fail("获取角色失败");
-        }
-        if(!"APP_调度经理".equals(roleRd.getData().getRoleName())){
-            return BaseResultUtil.fail("APP_调度经理角色不存在");
-        }
-        ResultData<SelectRoleResp> deleRd = sysRoleService.delete(roleId);
-        if(!ResultDataUtil.isSuccess(deleRd)){
-            return BaseResultUtil.fail("删除角色失败");
-        }
-        //处理韵车这边角色，查询角色信息
-        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda().eq(Role::getRoleId, roleId));
-        if(role == null){
-            return BaseResultUtil.fail("APP_调度经理不存在");
-        }
-        //根据角色查询该角色下所挂用户
-        List<UserRoleDept> urdList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getRoleId, role.getId()));
-        if(!CollectionUtils.isEmpty(urdList)){
-            //循环删除用户
-            urdList.forEach(urd -> {
-                adminDao.deleteById(urd.getUserId());
-            });
-        }
-        //删除用户关系数据
-        userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getRoleId,role.getId()));
-        //删除角色
-        roleDao.delete(new QueryWrapper<Role>().lambda().eq(Role::getRoleId,roleId));
-        return BaseResultUtil.success();
-    }
-
 }

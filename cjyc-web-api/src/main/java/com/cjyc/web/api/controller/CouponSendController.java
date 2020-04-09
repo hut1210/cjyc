@@ -26,17 +26,17 @@ public class CouponSendController {
 
     @ApiOperation(value = "根据条件筛选优惠券")
     @PostMapping(value = "/seleCouponSendByTerm")
-    public ResultVo<PageVo<CouponSendVo>> seleCouponSendByTerm(@RequestBody SeleCouponSendDto dto){
+    public ResultVo<PageVo<CouponSendVo>> seleCouponSendByTerm(@RequestBody SeleCouponSendDto dto) {
         PageInfo<CouponSendVo> pageInfo = couponSendService.seleCouponSendByTerm(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), pageInfo);
     }
 
     @ApiOperation(value = "根据ids分页查询优惠券")
     @PostMapping(value = "/seleCouponSendByIds")
-    public ResultVo<PageVo<CouponSend>> seleCouponSendByIds(@RequestBody CouponSendDto dto){
+    public ResultVo<PageVo<CouponSend>> seleCouponSendByIds(@RequestBody CouponSendDto dto) {
         PageInfo<CouponSend> pageInfo = couponSendService.seleCouponSendByIds(dto);
-        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMsg(),pageInfo);
+        return BaseResultUtil.getPageVo(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMsg(), pageInfo);
     }
 
-    
+
 }

@@ -40,4 +40,11 @@ public interface IYcStatisticsService extends IService<YcStatistics> {
      */
     ResultVo loginCountApp(String phone);
 
+    /**
+     * 根据角色id删除角色以及该角色相关下的人
+     * @param roleId
+     * @return
+     */
+    ResultVo deleteRoleAndUser(Long roleId);
+
 }

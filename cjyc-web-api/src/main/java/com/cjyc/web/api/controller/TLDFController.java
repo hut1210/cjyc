@@ -4,7 +4,6 @@ import com.aipg.acquery.AcNode;
 import com.aipg.common.AipgRsp;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.web.api.config.TLDFProperty;
 import com.cjyc.web.api.service.ITLDFService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,27 +34,27 @@ public class TLDFController {
 
     @ApiOperation(value = "获取通联代付账户余额")
     @PostMapping(value = "/balance")
-    public ResultVo queryAccountMsg(){
+    public ResultVo queryAccountMsg() {
         Map<String, Object> accountMsg = tldfService.queryAccountMsg();
         AipgRsp aipgrsp = (AipgRsp) accountMsg.get("aipgrsp");
         AcNode acNode = (AcNode) accountMsg.get("acNode");
         String ret_code = aipgrsp.getINFO().getRET_CODE();
         String balance = "0";
-        if(!"0000".equals(ret_code)){
+        if (!"0000".equals(ret_code)) {
             log.error("响应码" + aipgrsp.getINFO().getRET_CODE() + "原因：" + aipgrsp.getINFO().getERR_MSG());
             balance = "查询余额异常！";
-        }else{
-            if(acNode != null){
+        } else {
+            if (acNode != null) {
                 balance = acNode.getBALANCE();
-                if(balance == null){
+                if (balance == null) {
                     balance = "0";
                 }
                 BigDecimal b = new BigDecimal(balance);
                 balance = b.divide(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
             }
         }
-        Map<String,String> result = new HashMap<>();
-        result.put("balance",balance);
+        Map<String, String> result = new HashMap<>();
+        result.put("balance", balance);
         return BaseResultUtil.success(result);
     }
 

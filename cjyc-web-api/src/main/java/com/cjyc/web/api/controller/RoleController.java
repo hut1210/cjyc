@@ -38,7 +38,7 @@ public class RoleController {
     @Autowired
     private ISysRoleService sysRoleService;
 
-//    @PostMapping("/add")
+    //    @PostMapping("/add")
     @ApiOperation(value = "添加角色信息")
     public ResultVo add(@Valid @RequestBody AddRoleDto dto) {
         return roleService.addRole(dto);
@@ -51,14 +51,13 @@ public class RoleController {
         return roleService.deleteRole(id);
     }
 
-//    @GetMapping("/getUsersByRoleId/{roleId}")
+    //    @GetMapping("/getUsersByRoleId/{roleId}")
     @ApiOperation(value = "根据角色id获取关联用户列表信息")
     public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleId(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
             @PathVariable Long roleId) {
         return roleService.getUsersByRoleId(roleId);
     }
-
 
 
     @GetMapping("/getMenuList")
@@ -74,9 +73,10 @@ public class RoleController {
 
     /**
      * 查询角色对应机构下的角色列表
+     *
+     * @param roleId
      * @author JPG
      * @since 2019/11/18 13:17
-     * @param roleId
      */
     @GetMapping("/dept/role/list/{roleId}")
     @ApiOperation(value = "查询角色对应机构下的角色列表")
@@ -88,6 +88,7 @@ public class RoleController {
 
     /**
      * 查询所有角色信息列表
+     *
      * @return
      */
 //    @GetMapping(value = {"/getAllList", "/getAllList/{roleName}"})
@@ -102,7 +103,7 @@ public class RoleController {
     @GetMapping("/getUserTypeByRole/{roleId}")
     public ResultVo<Integer> getUserTypeByRole(
             @ApiParam(name = "roleId", value = "角色标识", required = true)
-            @PathVariable("roleId")Long roleId) {
+            @PathVariable("roleId") Long roleId) {
         return roleService.getUserTypeByRole(roleId);
     }
 
@@ -116,7 +117,7 @@ public class RoleController {
 //    @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
     public ResultVo<List<String>> getBtmMenuIdsByRoleId(
             @ApiParam(value = "roleId", name = "角色标识", required = true)
-            @PathVariable("roleId")Long roleId) {
+            @PathVariable("roleId") Long roleId) {
         return roleService.getBtmMenuIdsByRoleId(roleId);
     }
 
@@ -129,7 +130,7 @@ public class RoleController {
         return roleService.addRoleNew(dto);
     }
 
-//    @GetMapping("/getUsersByRoleIdNew/{roleId}")
+    //    @GetMapping("/getUsersByRoleIdNew/{roleId}")
     @GetMapping("/getUsersByRoleId/{roleId}")
     @ApiOperation(value = "根据角色id获取关联用户列表信息")
     public ResultVo<List<SelectUserByRoleVo>> getUsersByRoleIdNew(
@@ -140,6 +141,7 @@ public class RoleController {
 
     /**
      * 查询所有角色信息列表
+     *
      * @return
      */
 //    @GetMapping(value = {"/getAllListNew", "/getAllListNew/{roleName}"})
@@ -155,7 +157,7 @@ public class RoleController {
     @GetMapping("/getBtmMenuIdsByRoleId/{roleId}")
     public ResultVo<List<String>> getBtmMenuIdsByRoleIdNew(
             @ApiParam(value = "roleId", name = "角色标识", required = true)
-            @PathVariable("roleId")Long roleId) {
+            @PathVariable("roleId") Long roleId) {
         return roleService.getBtmMenuIdsByRoleIdNew(roleId);
     }
 
@@ -174,6 +176,7 @@ public class RoleController {
 
     /**
      * 资源列表转换为菜单树
+     *
      * @param list
      * @return
      */
@@ -190,7 +193,7 @@ public class RoleController {
             }
             if (treeMap.containsKey(m.getParentId())) {
                 treeMap.get(m.getParentId()).add(m);
-            }else {
+            } else {
                 treeMap.put(m.getParentId(), Lists.newArrayList(m));
             }
         });
@@ -203,6 +206,7 @@ public class RoleController {
 
     /**
      * 根据父级id解析子集
+     *
      * @param parentId
      * @param treeMap
      * @return
@@ -224,13 +228,8 @@ public class RoleController {
 
     @ApiOperation(value = "角色管理导出Excel", notes = "\t 请求接口为/role/exportRoleListExcel?roleName=角色名称")
     @GetMapping("/exportRoleListExcel")
-    public void exportRoleListExcel(HttpServletRequest request, HttpServletResponse response){
-        roleService.exportRoleListExcel(request,response);
+    public void exportRoleListExcel(HttpServletRequest request, HttpServletResponse response) {
+        roleService.exportRoleListExcel(request, response);
     }
 
-    @ApiOperation(value = "删除角色以及该角色下所属人，以及韵车这边相关角色和人")
-    @PostMapping("/deleteRoleAndUser/{roleId}")
-    public ResultVo deleteRoleAndUser(@PathVariable Long roleId) {
-        return roleService.deleteRoleAndUser(roleId);
-    }
 }

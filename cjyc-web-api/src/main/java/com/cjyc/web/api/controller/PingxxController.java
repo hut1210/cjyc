@@ -28,6 +28,7 @@ import java.util.Map;
 
 /**
  * Ping++
+ *
  * @author JPG
  */
 @RestController
@@ -37,23 +38,22 @@ import java.util.Map;
 @Slf4j
 public class PingxxController {
 
-    @Resource
-    private IPingxxService pingxxService;
-
     @Autowired
     private ICsPingPayService csPingPayService;
+
     /**
      * 获取支付二维码
+     *
+     * @param
      * @author JPG
      * @since 2019/11/6 19:51
-     * @param
      */
     @ApiOperation(value = "获取二维码")
     @PostMapping("/qrcode/get")
-    public ResultVo getPayQrCode(HttpServletRequest request, @RequestBody WebPrePayDto prePayDto){
+    public ResultVo getPayQrCode(HttpServletRequest request, @RequestBody WebPrePayDto prePayDto) {
         prePayDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Charge charge = new Charge();
-        Map<String,String> map=new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         try {
             charge = csPingPayService.prePay(prePayDto);
 
@@ -63,15 +63,15 @@ public class PingxxController {
 
             JSONObject credentialJson = JSONObject.parseObject(credential.toString());
             String qrcode = "";
-            if(prePayDto.getChannel().equals("wx_pub_qr")){
+            if (prePayDto.getChannel().equals("wx_pub_qr")) {
                 qrcode = credentialJson.getString("wx_pub_qr");
-            }else if(prePayDto.getChannel().equals("alipay_qr")){
+            } else if (prePayDto.getChannel().equals("alipay_qr")) {
                 qrcode = credentialJson.getString("alipay_qr");
             }
 
-            map.put("imageUrl",QRcodeUtil.creatRrCode(qrcode,200,200));
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
+            map.put("imageUrl", QRcodeUtil.creatRrCode(qrcode, 200, 200));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
 
         return BaseResultUtil.success(map);
@@ -79,10 +79,10 @@ public class PingxxController {
 
     @ApiOperation(value = "获取出库二维码")
     @PostMapping("/qrcode/getOutOfStock")
-    public ResultVo getOutOfStockQrCode(HttpServletRequest request, @RequestBody WebOutOfStockDto webOutOfStockDto){
+    public ResultVo getOutOfStockQrCode(HttpServletRequest request, @RequestBody WebOutOfStockDto webOutOfStockDto) {
         webOutOfStockDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Charge charge = new Charge();
-        Map<String,String> map=new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         try {
             charge = csPingPayService.getOutOfStockQrCode(webOutOfStockDto);
 
@@ -92,15 +92,15 @@ public class PingxxController {
 
             JSONObject credentialJson = JSONObject.parseObject(credential.toString());
             String qrcode = "";
-            if(webOutOfStockDto.getChannel().equals("wx_pub_qr")){
+            if (webOutOfStockDto.getChannel().equals("wx_pub_qr")) {
                 qrcode = credentialJson.getString("wx_pub_qr");
-            }else if(webOutOfStockDto.getChannel().equals("alipay_qr")){
+            } else if (webOutOfStockDto.getChannel().equals("alipay_qr")) {
                 qrcode = credentialJson.getString("alipay_qr");
             }
 
-            map.put("imageUrl",QRcodeUtil.creatRrCode(qrcode,200,200));
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
+            map.put("imageUrl", QRcodeUtil.creatRrCode(qrcode, 200, 200));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
 
         return BaseResultUtil.success(map);
