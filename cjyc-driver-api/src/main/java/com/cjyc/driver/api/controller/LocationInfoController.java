@@ -25,6 +25,13 @@ public class LocationInfoController {
     @Resource
     private ICsLogisticsInformationService csLogisticsInformationService;
 
+    /**
+     * 功能描述: 定位信息上传
+     * @author liuxingxiang
+     * @date 2020/4/9
+     * @param reqDto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
     @ApiOperation(value = "定位信息上传")
     @PostMapping(value = "/uploadUserLocation")
     public ResultVo uploadUserLocation(@RequestBody @Valid LocationInfoDto reqDto) {
