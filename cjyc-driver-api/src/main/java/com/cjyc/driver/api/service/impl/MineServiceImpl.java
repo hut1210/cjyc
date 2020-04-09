@@ -473,31 +473,29 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
                 if(vehicleCon != null){
                     return BaseResultUtil.fail("该司机已绑定车辆,请检查");
                 }
-                if(vehicleCon == null){
-                    //保存车辆
-                    vehicle = new Vehicle();
-                    BeanUtils.copyProperties(dto,vehicle);
-                    vehicle.setCarrierId(Long.valueOf(urd.getDeptId()));
-                    vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
-                    vehicle.setCreateUserId(urd.getUserId());
-                    vehicle.setCreateTime(System.currentTimeMillis());
-                    vehicleDao.insert(vehicle);
-                    //保存运力
-                    VehicleRunning vr = new VehicleRunning();
-                    BeanUtils.copyProperties(dto,vr);
-                    vr.setDriverId(dto.getLoginId());
-                    vr.setCarryCarNum(dto.getDefaultCarryNum());
-                    vr.setVehicleId(vehicle.getId());
-                    vr.setState(RunningStateEnum.EFFECTIVE.code);
-                    vr.setRunningState(VehicleRunStateEnum.FREE.code);
-                    vr.setCreateTime(System.currentTimeMillis());
-                    vehicleRunningDao.insert(vr);
-                    //保存运力与司机关系
-                    DriverVehicleCon dvc = new DriverVehicleCon();
-                    dvc.setDriverId(dto.getLoginId());
-                    dvc.setVehicleId(vehicle.getId());
-                    driverVehicleConDao.insert(dvc);
-                }
+                //保存车辆
+                vehicle = new Vehicle();
+                BeanUtils.copyProperties(dto,vehicle);
+                vehicle.setCarrierId(Long.valueOf(urd.getDeptId()));
+                vehicle.setOwnershipType(VehicleOwnerEnum.PERSONAL.code);
+                vehicle.setCreateUserId(urd.getUserId());
+                vehicle.setCreateTime(System.currentTimeMillis());
+                vehicleDao.insert(vehicle);
+                //保存运力
+                VehicleRunning vr = new VehicleRunning();
+                BeanUtils.copyProperties(dto,vr);
+                vr.setDriverId(dto.getLoginId());
+                vr.setCarryCarNum(dto.getDefaultCarryNum());
+                vr.setVehicleId(vehicle.getId());
+                vr.setState(RunningStateEnum.EFFECTIVE.code);
+                vr.setRunningState(VehicleRunStateEnum.FREE.code);
+                vr.setCreateTime(System.currentTimeMillis());
+                vehicleRunningDao.insert(vr);
+                //保存运力与司机关系
+                DriverVehicleCon dvc = new DriverVehicleCon();
+                dvc.setDriverId(dto.getLoginId());
+                dvc.setVehicleId(vehicle.getId());
+                driverVehicleConDao.insert(dvc);
             }else{
                 //修改
                 //车辆信息没有修改与之前相同直接成功
