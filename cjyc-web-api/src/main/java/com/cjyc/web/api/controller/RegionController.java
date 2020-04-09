@@ -29,53 +29,57 @@ public class RegionController {
 
     /**
      * 功能描述: 分页查询大区列表
+     *
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo < com.cjyc.common.model.vo.web.city.RegionVo>>
      * @author liuxingxiang
      * @date 2019/12/17
-     * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.PageVo<com.cjyc.common.model.vo.web.city.RegionVo>>
      */
     @ApiOperation(value = "分页查询大区列表")
     @PostMapping("/getRegionPage")
-    public ResultVo<PageVo<RegionVo>> getRegionPage(@RequestBody RegionQueryDto dto){
+    public ResultVo<PageVo<RegionVo>> getRegionPage(@RequestBody RegionQueryDto dto) {
         return regionService.getRegionPage(dto);
     }
 
     /**
      * 功能描述: 新增大区
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "新增大区")
     @PostMapping("/addRegion")
-    public ResultVo addRegion(@RequestBody @Validated RegionAddDto dto){
+    public ResultVo addRegion(@RequestBody @Validated RegionAddDto dto) {
         return regionService.addRegion(dto);
     }
 
     /**
      * 功能描述: 修改大区
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "修改大区")
     @PostMapping("/modifyRegion")
-    public ResultVo modifyRegion(@RequestBody @Validated RegionUpdateDto dto){
+    public ResultVo modifyRegion(@RequestBody @Validated RegionUpdateDto dto) {
         return regionService.modifyRegion(dto);
     }
 
     /**
      * 功能描述: 删除大区
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param regionCode
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "删除大区")
     @PostMapping("/removeRegion/{regionCode}")
-    public ResultVo removeRegion(@PathVariable String regionCode){
+    public ResultVo removeRegion(@PathVariable String regionCode) {
         return regionService.removeRegion(regionCode);
     }
 }

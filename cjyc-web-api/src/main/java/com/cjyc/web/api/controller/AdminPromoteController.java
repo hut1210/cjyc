@@ -32,7 +32,7 @@ public class AdminPromoteController {
 
     @ApiOperation(value = "查询分享分页列表", notes = "\t 请求接口为json格式")
     @PostMapping("/getPage")
-    public ResultVo<PageVo<List<AdminPromoteVo>>> getPage(@RequestBody AdminPromoteQueryDto dto){
+    public ResultVo<PageVo<List<AdminPromoteVo>>> getPage(@RequestBody AdminPromoteQueryDto dto) {
         return adminPromoteService.getPage(dto);
     }
 

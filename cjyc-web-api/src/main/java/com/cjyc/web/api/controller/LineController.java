@@ -37,8 +37,10 @@ public class LineController {
 
     @Resource
     private ILineService lineService;
+
     /**
      * 查询推荐节点顺序
+     *
      * @author JPG
      * @since 2019/10/15 11:53
      */
@@ -50,6 +52,7 @@ public class LineController {
 
     /**
      * 起始城市目的城市查询线路
+     *
      * @author JPG
      * @since 2019/10/15 11:53
      */
@@ -61,46 +64,46 @@ public class LineController {
 
     @ApiOperation(value = "根据条件查询班线")
     @PostMapping(value = "/findPageLine")
-    public ResultVo<PageVo<LineVo>> findPageLine(@RequestBody SelectLineDto dto){
+    public ResultVo<PageVo<LineVo>> findPageLine(@RequestBody SelectLineDto dto) {
         return lineService.findPageLine(dto);
     }
 
     @ApiOperation(value = "新增/更新班线")
     @PostMapping(value = "/saveOrModifyLine")
-    public ResultVo saveOrModifyLine(@Validated @RequestBody AddOrUpdateLineDto dto){
+    public ResultVo saveOrModifyLine(@Validated @RequestBody AddOrUpdateLineDto dto) {
         return lineService.saveOrModifyLine(dto);
     }
 
     @ApiOperation(value = "删除班线")
     @PostMapping(value = "/removeLineById/{id}")
-    public ResultVo removeLineById(@PathVariable Long id){
+    public ResultVo removeLineById(@PathVariable Long id) {
         boolean result = lineService.removeById(id);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据班线查询物流费")
     @PostMapping(value = "/getDefaultWlFeeByCode/{fromCode}/{toCode}")
-    public ResultVo getDefaultWlFeeByCode(@PathVariable @ApiParam(value = "起始地code",required = true) String fromCode,
-                                    @PathVariable @ApiParam(value = "目的地code",required = true) String toCode){
-        return lineService.getDefaultWlFeeByCode(fromCode,toCode);
+    public ResultVo getDefaultWlFeeByCode(@PathVariable @ApiParam(value = "起始地code", required = true) String fromCode,
+                                          @PathVariable @ApiParam(value = "目的地code", required = true) String toCode) {
+        return lineService.getDefaultWlFeeByCode(fromCode, toCode);
     }
 
     @ApiOperation(value = "导出Excel", notes = "\t 请求接口为/line/exportExcel?fromCode=&toCode=&code=")
     @GetMapping("/exportExcel")
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response){
-        lineService.exportExcel(request,response);
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response) {
+        lineService.exportExcel(request, response);
     }
 
     @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importExcel/loginId(导入用户ID)格式")
     @PostMapping("/importExcel/{loginId}")
-    public ResultVo importExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+    public ResultVo importExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId) {
         boolean result = lineService.importExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/saveOrUpdateExcel/loginId(导入用户ID)格式")
     @PostMapping("/saveOrUpdateExcel/{loginId}")
-    public ResultVo saveOrUpdateExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+    public ResultVo saveOrUpdateExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId) {
         boolean result = lineService.saveOrUpdateExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }

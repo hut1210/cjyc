@@ -198,9 +198,10 @@ public class FinanceController {
             return BaseResultUtil.fail("导出应收账款异常" + e.getMessage());
         }
     }
+
     @ApiOperation(value = "预付未完结列表")
     @PostMapping(value = "/getAdvancePayment")
-    public ResultVo<PageVo<AdvancePaymentVo>> getAdvancePayment(@RequestBody FinanceQueryDto financeQueryDto){
+    public ResultVo<PageVo<AdvancePaymentVo>> getAdvancePayment(@RequestBody FinanceQueryDto financeQueryDto) {
         return financeService.getAdvancePayment(financeQueryDto);
     }
 

@@ -2,21 +2,17 @@ package com.cjyc.web.api.controller;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.usercenter.dto.common.AddUserResp;
 import com.cjkj.usercenter.dto.common.UpdatePwdReq;
 import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
 import com.cjyc.common.model.dto.salesman.login.LoginByUserNameDto;
 import com.cjyc.common.model.dto.web.login.UpdatePwdDto;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysLoginService;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.common.system.service.ICsAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -25,9 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Api(tags = "功能-登录")
 @RestController
@@ -60,7 +54,7 @@ public class LoginController {
             return BaseResultUtil.fail("登录失败，原因：" + rd.getMsg());
         }
 
-       return BaseResultUtil.success(rd.getData());
+        return BaseResultUtil.success(rd.getData());
     }
 
     @ApiOperation(value = "用户名密码登录: 针对密码固定且在配置文件配置情况")
@@ -83,7 +77,7 @@ public class LoginController {
 
     @ApiOperation(value = "修改密码")
     @PostMapping("/updatePwd")
-    public ResultVo updatePwd(@Valid @RequestBody UpdatePwdDto dto){
+    public ResultVo updatePwd(@Valid @RequestBody UpdatePwdDto dto) {
         ResultData<UserResp> accountRd = sysUserService.getByAccount(dto.getAccount());
         if (!ReturnMsg.SUCCESS.getCode().equals(accountRd.getCode())) {
             return BaseResultUtil.fail("用户密码更新失败，原因：" + accountRd.getMsg());
