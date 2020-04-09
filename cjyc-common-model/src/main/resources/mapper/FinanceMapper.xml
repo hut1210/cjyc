@@ -697,7 +697,7 @@
         select DISTINCT(ww.id) as waybillId,ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
         if(ww.freight_pay_state=1,ftb.amount,0) as freightFeePayable,
-        if(dc.settle_type=0,'时付','账期') as settleType,
+        if(wst.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
@@ -722,13 +722,14 @@
         sbcb.province_name as provinceName,
         sbcb.area_name as areaName
         from w_waybill ww
+        left join w_waybill_settle_type wst on wst.waybill_no=ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
         left join f_external_payment fep on fep.waybill_id=ww.id
         left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id=ftbd.trade_bill_id
-        where dc.settle_type=0 and ww.state=100 and wt.state &lt;= 100
+        where wst.settle_type=0 and ww.state=100 and wt.state &lt;= 100
         and ww.carrier_type in (1,2,4,5)
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
@@ -804,13 +805,14 @@
         wt.driver_name as driverName,
         wt.driver_phone as driverPhone,
         wt.vehicle_plate_no as vehiclePlateNo,
-        if(dc.settle_type=0,'时付','账期') as settleTypeName,
+        if(wst.settle_type=0,'时付','账期') as settleTypeName,
         wt.car_num as carNum,
-        dc.settle_period as settlePeriod
+        wst.settle_period as settlePeriod
         from w_task wt
         left join w_waybill ww on ww.no = wt.waybill_no
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id = ww.carrier_id
-        where dc.settle_type = 1
+        where wst.settle_type = 1
         and wt.complete_time &gt; 0
         and carrier_type in (1,2,4,5)
         and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
