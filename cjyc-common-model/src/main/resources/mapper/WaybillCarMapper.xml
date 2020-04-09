@@ -1820,15 +1820,16 @@
         AND bill.no = #{waybillNo}
     </select>
 
-    <!--根据车辆编号查询运输车车牌号-->
-    <select id="selectPlateNoByOrderCarNo" resultType="java.lang.String">
+    <!--根据车辆编号查询运输车车牌号和司机ID-->
+    <select id="selectPlateNoByOrderCarNo" resultType="java.util.Map">
         select
-            task.vehicle_plate_no
+            task.vehicle_plate_no as plateNo,
+            task.driver_id as driverId
         from
             w_waybill_car car
             left join w_task task on car.waybill_id=task.waybill_id
         where
-            car.state > 5 and car.state &lt; 100 and task.state
+            car.state > 5 and car.state &lt; 100 and task.state = 55
     </select>
     <select id="findListByTaskCarIds" resultType="com.cjyc.common.model.entity.WaybillCar">
         select wc.*

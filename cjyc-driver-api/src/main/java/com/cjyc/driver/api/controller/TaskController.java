@@ -1,18 +1,15 @@
 package com.cjyc.driver.api.controller;
 
-import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.dto.driver.BaseDriverDto;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
 import com.cjyc.common.model.dto.driver.task.NoFinishTaskQueryDto;
 import com.cjyc.common.model.dto.driver.task.TaskQueryDto;
-import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskBillVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.driver.task.TaskDriverVo;
-import com.cjyc.common.system.service.ICsLogisticsInformationService;
 import com.cjyc.driver.api.service.ITaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,9 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
 
 /**
  * @Description 任务接口控制层
@@ -37,8 +31,6 @@ import javax.validation.Valid;
 public class TaskController {
     @Autowired
     private ITaskService taskService;
-    @Resource
-    private ICsLogisticsInformationService csLogisticsInformationService;
 
     /**
      * 功能描述: 分页查询待分配任务列表
@@ -130,19 +122,4 @@ public class TaskController {
     public ResultVo<PageVo<TaskBillVo>> getHistoryTaskPage(@RequestBody @Validated TaskQueryDto dto) {
         return taskService.getHistoryTaskPage(dto);
     }
-
-    /**
-     * 功能描述:查询物流信息
-     * @author liuxingxiang
-     * @date 2020/4/7
-     * @param reqDto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.LogisticsInformationVo>
-     */
-    @ApiOperation(value = "查询物流信息")
-    @PostMapping(value = "/car/getLogisticsInfo")
-    public ResultVo<LogisticsInformationVo> getLogisticsInformation(@RequestBody @Valid LogisticsInformationDto reqDto) {
-        return csLogisticsInformationService.getLogisticsInformation(reqDto);
-    }
-
-
 }

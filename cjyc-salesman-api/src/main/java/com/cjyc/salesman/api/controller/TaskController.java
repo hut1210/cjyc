@@ -1,18 +1,22 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
-import com.cjyc.common.model.dto.web.task.*;
+import com.cjyc.common.model.dto.web.task.BaseTaskDto;
+import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.task.TaskDetailVo;
 import com.cjyc.common.model.vo.salesman.task.TaskWaybillVo;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsLogisticsInformationService;
 import com.cjyc.common.system.service.ICsTaskService;
 import com.cjyc.salesman.api.service.ITaskService;
 import io.swagger.annotations.Api;
@@ -43,6 +47,8 @@ public class TaskController {
     private ICsTaskService csTaskService;
     @Resource
     private ICsAdminService csAdminService;
+    @Resource
+    private ICsLogisticsInformationService csLogisticsInformationService;
 
     /**
      * 提车装车并完善信息
@@ -215,5 +221,17 @@ public class TaskController {
         return taskService.getOutAndInStoragePage(dto);
     }
 
+    /**
+     * 功能描述: 查询物流信息
+     * @author liuxingxiang
+     * @date 2020/4/3
+     * @param reqDto
+     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.LogisticsInformationVo>
+     */
+    @ApiOperation(value = "查询物流信息")
+    @PostMapping(value = "/getLogisticsInfo")
+    public ResultVo<LogisticsInformationVo> getLogisticsInformation(@RequestBody @Valid LogisticsInformationDto reqDto) {
+        return csLogisticsInformationService.getLogisticsInformation(reqDto);
+    }
 
 }

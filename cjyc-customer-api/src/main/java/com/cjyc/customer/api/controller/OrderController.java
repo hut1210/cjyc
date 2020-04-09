@@ -212,7 +212,7 @@ public class OrderController {
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.LogisticsInformationVo>
      */
     @ApiOperation(value = "查询物流信息")
-    @PostMapping(value = "/car/getLogisticsInfo")
+    @PostMapping(value = "/getLogisticsInfo")
     public ResultVo<LogisticsInformationVo> getLogisticsInformation(@RequestBody @Valid LogisticsInformationDto reqDto) {
         return csLogisticsInformationService.getLogisticsInformation(reqDto);
     }
