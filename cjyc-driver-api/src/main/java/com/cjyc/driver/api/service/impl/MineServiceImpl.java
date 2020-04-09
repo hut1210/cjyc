@@ -455,7 +455,7 @@ public class MineServiceImpl extends ServiceImpl<IDriverDao, Driver> implements 
             return BaseResultUtil.fail("该司机角色不存在,请检查");
         }
         Role roleName = csRoleService.getByName(YmlProperty.get("cjkj.carrier_personal_driver_role_name"), DeptTypeEnum.CARRIER.code);
-        if(role == null){
+        if(roleName == null){
             return BaseResultUtil.fail("个人司机角色不存在，请先添加");
         }
         //根据车牌号查询库中有没有添加x

@@ -213,25 +213,23 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
             return BaseResultUtil.fail("数据错误，请联系管理员");
         }
         BaseLoginVo baseLoginVo = null;
-        if(!CollectionUtils.isEmpty(loginVos)){
-            //处理韵车业务
-            if(loginVos.size() == 1){
-                baseLoginVo = loginVos.get(0);
+        //处理韵车业务
+        if(loginVos.size() == 1){
+            baseLoginVo = loginVos.get(0);
+        }
+        //企业承运商
+        if(loginVos.size() > 1){
+            //把角色存入到set集合中
+            //一个司机在多个承运商下，取角色最大的一个
+            Set<Integer> set = Sets.newHashSet();
+            for(BaseLoginVo vo : loginVos){
+                set.add(vo.getRole());
             }
-            //企业承运商
-            if(loginVos.size() > 1){
-                //把角色存入到set集合中
-                //一个司机在多个承运商下，取角色最大的一个
-                Set<Integer> set = Sets.newHashSet();
-                for(BaseLoginVo vo : loginVos){
-                    set.add(vo.getRole());
-                }
-                //取出可用的集合中role值最大的一个
-                for(BaseLoginVo vo : loginVos){
-                    if(vo.getRole().equals(Collections.max(set))){
-                        baseLoginVo = vo;
-                        break;
-                    }
+            //取出可用的集合中role值最大的一个
+            for(BaseLoginVo vo : loginVos){
+                if(vo.getRole().equals(Collections.max(set))){
+                    baseLoginVo = vo;
+                    break;
                 }
             }
         }
