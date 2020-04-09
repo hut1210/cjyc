@@ -16,8 +16,8 @@ public class DispatchDriverVo implements Serializable {
     private Long carrierId;
     @ApiModelProperty(value = "公司名称")
     private String name;
-    @ApiModelProperty(value = "承运方式")
-    private String mode;
+    @ApiModelProperty(value = "承运方式 2 : 代驾  3 : 干线   4：拖车   5：代驾+干线  6：代驾+拖车  7：干线+拖车  9：代驾+干线+拖车")
+    private Integer mode;
 
     @ApiModelProperty("司机id(driverId)")
     @JsonSerialize(using= ToStringSerializer.class)
@@ -41,7 +41,7 @@ public class DispatchDriverVo implements Serializable {
     @ApiModelProperty("非空车位")
     private Integer occupiedCarNum;
 
-    @ApiModelProperty("营运状态：0营运中(空闲)，1停运中(繁忙)")
+    @ApiModelProperty("营运状态：0空闲，1繁忙")
     private Integer businessState;
 
     public String getDriverName(){return StringUtils.isBlank(driverName) ? "":driverName;}
