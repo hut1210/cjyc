@@ -133,8 +133,12 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
                     String fromCityLocation = PositionUtil.getLngAndLat(line.getFromCity());
                     String toCityLocation = PositionUtil.getLngAndLat(line.getToCity());
                     double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
-                    line.setKilometer(bd);
+                    if(Double.valueOf(distance) != null){
+                        BigDecimal bd = BigDecimal.valueOf(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                        line.setKilometer(bd);
+                    }else{
+                        line.setKilometer(BigDecimal.ZERO);
+                    }
                     lineDao.updateById(line);
                 }else{
                     continue;
