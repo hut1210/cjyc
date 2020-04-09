@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
- *  @author: zj
- *  @Date: 2019/10/29 13:10
- *  @Description:系统开关设置
+ * @author: zj
+ * @Date: 2019/10/29 13:10
+ * @Description:系统开关设置
  */
 @Api(tags = "功能-系统设置")
 @CrossOrigin
@@ -27,14 +27,14 @@ public class ConfigController {
 
     @ApiOperation(value = "查询系统配置")
     @PostMapping(value = "/queryConfig")
-    public ResultVo queryConfig(){
+    public ResultVo queryConfig() {
         return dictionaryService.queryConfig();
     }
 
     @ApiOperation(value = "更新系统配置")
     @PostMapping(value = "/modifyConfig")
-    public ResultVo modifyConfig(@RequestBody OperateDto dto){
+    public ResultVo modifyConfig(@RequestBody OperateDto dto) {
         boolean result = dictionaryService.modifyConfig(dto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 }

@@ -31,13 +31,13 @@ public class HandleDataController {
 
     @ApiOperation(value = "保存两个城市之间距离")
     @PostMapping(value = "/saveDistance")
-    public ResultVo saveDistance(){
+    public ResultVo saveDistance() {
         return ycStatisticsService.saveDistance();
     }
 
     @ApiOperation(value = "账号登录app次数")
     @PostMapping(value = "/loginCountApp/{phone}")
-    public ResultVo loginCountApp(@PathVariable String phone){
+    public ResultVo loginCountApp(@PathVariable String phone) {
         return ycStatisticsService.loginCountApp(phone);
     }
 }

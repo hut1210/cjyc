@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 
 /**
  * 我的合伙人
+ *
  * @author JPG
  */
 @RestController
@@ -30,6 +31,7 @@ public class MineCooperatorController {
 
     /**
      * 查询订单列表
+     *
      * @author JPG
      */
     @ApiOperation(value = "查询订单列表")

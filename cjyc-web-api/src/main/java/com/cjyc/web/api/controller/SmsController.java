@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * 短信
+ *
  * @author JPG
  */
 @Api(tags = "短信")
@@ -37,7 +38,7 @@ public class SmsController {
 
     @ApiOperation(value = "发送短信验证码", notes = " ")
     @PostMapping("/captcha/send")
-    public ResultVo send(@RequestBody CaptchaSendDto reqDto){
+    public ResultVo send(@RequestBody CaptchaSendDto reqDto) {
         @NotNull String phone = reqDto.getPhone();
         @NotNull Integer type = reqDto.getType();
         ResultVo resultVo = csSmsService.send(phone, CaptchaTypeEnum.valueOf(type), ClientEnum.APP_DRIVER);
@@ -46,7 +47,7 @@ public class SmsController {
 
     @ApiOperation(value = "校验短信验证码", notes = " ")
     @PostMapping("/captcha/validate")
-    public ResultVo validate(@RequestBody CaptchaValidatedDto reqDto){
+    public ResultVo validate(@RequestBody CaptchaValidatedDto reqDto) {
         String phone = reqDto.getPhone();
         String captcha = reqDto.getCaptcha();
         Integer type = reqDto.getType();
