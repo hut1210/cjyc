@@ -723,7 +723,7 @@ public class FinanceServiceImpl implements IFinanceService {
     private int formatDuring(long startMilTime, long endMilTime) {
         LocalDateTime startTime = DateUtil.getDateTimeOfTimestamp(startMilTime);
         LocalDateTime endTime = DateUtil.getDateTimeOfTimestamp(endMilTime);
-        int days = DateUtil.dateDiff(startTime, endTime);
+        int days = DateUtil.dateDiff(endTime, startTime);
         return days;
     }
 
