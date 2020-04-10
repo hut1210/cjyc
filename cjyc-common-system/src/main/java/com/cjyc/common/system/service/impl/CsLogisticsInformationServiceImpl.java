@@ -14,12 +14,12 @@ import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Vehicle;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
-import com.cjyc.common.model.enums.transport.VehicleOwnerEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OutterLogVo;
+import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 import com.cjyc.common.system.entity.UploadUserLocationReq;
 import com.cjyc.common.system.feign.ISysLocationService;
 import com.cjyc.common.system.service.ICsLogisticsInformationService;
@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,7 +127,9 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
                         .eq(Vehicle::getPlateNo, plateNo).select(Vehicle::getOwnershipType));
 
                 // 判断运输车车牌号是否为自营车辆，是自营车则根据车牌号车讯位置，否则根据司机信息查询
-                boolean isOwnerCar = vehicle != null && VehicleOwnerEnum.SELFBUSINESS.code == vehicle.getOwnershipType();
+                OutterOrderCarLogVo locationVo = null;
+                //boolean isOwnerCar = vehicle != null && VehicleOwnerEnum.SELFBUSINESS.code == vehicle.getOwnershipType();
+                boolean isOwnerCar = false;
                 if (isOwnerCar) {
                     // 是自营车，根据车牌号查询位置信息
                     log.info("===>调用位置服务平台接口-根据车牌号查询位置信息开始,请求参数：{}", JSON.toJSONString(plateNo));
@@ -135,40 +138,56 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
                     if (ResultDataUtil.isSuccess(resultData)) {
                         log.info("===根据车牌号查询位置信息成功===");
-                        Map resMap = JSON.parseObject(JSON.toJSONString(resultData.getData()), Map.class);
-                        String location = resMap == null ? "" : String.valueOf(resMap.get("location"));
-                        String sendTime = resMap == null ? null : String.valueOf(resMap.get("sendTime"));
-                        if (!StringUtils.isEmpty(sendTime)) {
-                            logisticsInfoVo.setGpsTime(LocalDateTimeUtil.convertDateStrToLong(sendTime,"yyyy-MM-dd HH:mm:ss"));
-                        }
-                        logisticsInfoVo.setLocation(location);
+                        locationVo = getOutterOrderCarLogVo(locationVo, resultData, "sendTime");
+
                     } else {
                         log.info("===根据车牌号查询位置信息失败===");
                     }
                 }
 
-                if (!isOwnerCar || StringUtils.isEmpty(logisticsInfoVo.getLocation())) {
+                if (!isOwnerCar || locationVo == null) {
                     // 非自营车，根据司机信息查询APP定位信息
                     String userId = map == null ? "" : String.valueOf(map.get("driverId"));
                     log.info("===>调用位置服务平台接口-查询用户实时位置开始,请求参数：{}", JSON.toJSONString(userId));
-                    ResultData resultData = sysLocationService.getUserLocation(userId);
+                    //ResultData resultData = sysLocationService.getUserLocation(userId);
+
+                    Map map1 = new HashMap(10);
+                    map1.put("location","北京市 朝阳区 石各庄110号 长久大厦");
+                    map1.put("gpsTime","2020-04-09 17:25:24");
+                    ResultData resultData = new ResultData("00000","",map1);
                     log.info("<===调用位置服务平台接口-查询用户实时位置结束,响应参数：{}", JSON.toJSONString(resultData));
 
                     if (ResultDataUtil.isSuccess(resultData)) {
                         log.info("===查询用户实时位置成功===");
-                        Map resMap = JSON.parseObject(JSON.toJSONString(resultData.getData()), Map.class);
-                        String location = resMap == null ? "" : String.valueOf(resMap.get("location"));
-                        String gpsTime = resMap == null ? null : String.valueOf(resMap.get("gpsTime"));
-                        if (!StringUtils.isEmpty(gpsTime)) {
-                            logisticsInfoVo.setGpsTime(LocalDateTimeUtil.convertDateStrToLong(gpsTime,"yyyy-MM-dd HH:mm:ss"));
-                        }
-                        logisticsInfoVo.setLocation(location);
+                        locationVo = getOutterOrderCarLogVo(locationVo, resultData, "gpsTime");
                     } else {
                         log.info("===查询用户实时位置失败===");
                     }
+
                 }
+
+                if (locationVo != null) {
+                    List<OutterOrderCarLogVo> list = logisticsInfoVo.getList();
+                    list.add(0,locationVo);
+                }
+
             }
         }
+    }
+
+    private OutterOrderCarLogVo getOutterOrderCarLogVo(OutterOrderCarLogVo locationVo, ResultData resultData, String gpsTime) {
+        Map resMap = JSON.parseObject(JSON.toJSONString(resultData.getData()), Map.class);
+        String location = resMap == null ? "" : String.valueOf(resMap.get("location"));
+        String sendTime = resMap == null ? null : String.valueOf(resMap.get(gpsTime));
+
+        if (!StringUtils.isEmpty(sendTime) && !StringUtils.isEmpty(location)) {
+            locationVo = new OutterOrderCarLogVo();
+            locationVo.setTypeStr("实时位置");
+            locationVo.setCreateTime(LocalDateTimeUtil.convertDateStrToLong(sendTime, "yyyy-MM-dd HH:mm:ss"));
+            locationVo.setOuterLog(location);
+            locationVo.setTag(1);
+        }
+        return locationVo;
     }
 
 }

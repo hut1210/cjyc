@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Author Liu Xing Xiang
  * @Date 2020/4/9 10:09
  **/
-@FeignClient(value = "cps-api", fallbackFactory = LocationServiceFallbackFactory.class, decode404 = true)
+@FeignClient(value = "cps-api-yunche", fallbackFactory = LocationServiceFallbackFactory.class, decode404 = true)
 public interface ISysLocationService {
 
     /**
