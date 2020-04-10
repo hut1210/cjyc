@@ -42,7 +42,7 @@ public class ReceiveOrderCarDto implements Serializable {
 
     @ApiModelProperty(value = "剩余账期(天)")
     @Excel(name = "剩余账期(天)", orderNum = "5")
-    private Long remainderSettlePeriod;
+    private int remainderSettlePeriod;
 
     @ApiModelProperty(value = "应收运费")
     @Excel(name = "应收运费", orderNum = "6", type = 10)

@@ -16,6 +16,8 @@ public class SalesOrderCarVo implements Serializable {
     @ApiModelProperty(value = "车辆id")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long orderCarId;
+    @ApiModelProperty(value = "订单车辆编号")
+    private String orderCarNo;
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "型号")
@@ -51,6 +53,7 @@ public class SalesOrderCarVo implements Serializable {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal totalFee;
 
+    public String getOrderCarNo(){return StringUtils.isBlank(orderCarNo) ? "":orderCarNo;}
     public String getBrand(){return StringUtils.isBlank(brand) ? "":brand;}
     public String getModel(){return StringUtils.isBlank(model) ? "":model;}
     public String getLogoImg(){return StringUtils.isBlank(logoImg) ? "":logoImg;}

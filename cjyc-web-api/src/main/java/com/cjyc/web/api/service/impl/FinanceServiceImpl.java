@@ -25,6 +25,7 @@ import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.service.ITradeBillSummaryService;
+import com.cjyc.web.api.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.MarshalledObject;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,13 +107,13 @@ public class FinanceServiceImpl implements IFinanceService {
     @Resource
     private ITradeBillSummaryService tradeBillService;
 
-    @Autowired
+    @Resource
     private TransactionTemplate transactionTemplate;
 
-    @Autowired
+    @Resource
     private IReceiveSettlementDao receiveSettlementDao;
 
-    @Autowired
+    @Resource
     private IReceiveSettlementDetailDao receiveSettlementDetailDao;
 
     @Override
@@ -119,26 +121,17 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<FinanceVo> financeVoList = financeDao.getFinanceList(financeQueryDto);
         for (FinanceVo financeVo : financeVoList) {
-
             if (financeVo != null) {
-
                 String orderCarNo = financeVo.getNo();
                 BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
                 BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
                 BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
-
                 financeVo.setPickUpCarFee(pickUpCarFee);
                 financeVo.setTrunkLineFee(trunkLineFee);
                 financeVo.setCarryCarFee(carryCarFee);
-
                 List<TrunkLineVo> pickUpCarList = financeDao.getTrunkCostList(orderCarNo, 1);
                 List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo, 2);
                 List<TrunkLineVo> carryCarList = financeDao.getTrunkCostList(orderCarNo, 3);
-
-                financeVo.setPickUpCarList(pickUpCarList);
-                financeVo.setTrunkLineVoList(trunkLineVoList);
-                financeVo.setCarryCarList(carryCarList);
-
                 BigDecimal totalCost = new BigDecimal(0);
                 //成本合计
                 if (pickUpCarList != null) {
@@ -161,7 +154,6 @@ public class FinanceServiceImpl implements IFinanceService {
                         }
                     }
                 }
-
                 if (trunkLineVoList != null) {
                     for (TrunkLineVo trunkLineVo : trunkLineVoList) {
                         if("1".equals(trunkLineVo.getSettleType())){
@@ -183,7 +175,6 @@ public class FinanceServiceImpl implements IFinanceService {
                         }
                     }
                 }
-
                 if (carryCarList != null) {
                     for (TrunkLineVo trunkLineVo : carryCarList) {
                         if("1".equals(trunkLineVo.getSettleType())){
@@ -204,7 +195,12 @@ public class FinanceServiceImpl implements IFinanceService {
                         }
                     }
                 }
-
+                //提车成本列表
+                financeVo.setPickUpCarList(pickUpCarList);
+                //干线成本列表
+                financeVo.setTrunkLineVoList(trunkLineVoList);
+                //送车成本列表
+                financeVo.setCarryCarList(carryCarList);
                 //成本合计
                 financeVo.setTotalCost(totalCost);
                 //毛利
@@ -230,13 +226,11 @@ public class FinanceServiceImpl implements IFinanceService {
         BigDecimal grossProfit = tradeBillService.grossProfit(financeQueryDto);
         //实收汇总
         BigDecimal actualReceiptSummary = tradeBillService.financeActualReceiptSummary(financeQueryDto);
-
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
         countInfo.put("costSummary", costSummary.divide(new BigDecimal(100)));
         countInfo.put("grossProfit", grossProfit.divide(new BigDecimal(100)));
         countInfo.put("actualReceiptSummary", actualReceiptSummary.divide(new BigDecimal(100)));
-
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -561,15 +555,15 @@ public class FinanceServiceImpl implements IFinanceService {
             receiveOrderCarDtoList.forEach(e -> {
                 e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
                 e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
-                if (e.getSettlePeriod() == null || e.getSettlePeriod() == 0) {
-                    e.setRemainderSettlePeriod(0L);
+                if (e.getSettlePeriod() == null) {
+                    e.setRemainderSettlePeriod(0);
                 } else {
                     /**
                      * 剩余账期计算:
                      * 1.已过天数 = 当前时间 - 订单完结时间
                      * 2. 剩余账期 = 大客户合同中配置的账期 - 已过天数
                      */
-                    e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
+                    e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis(), e.getOrderDeliveryDate()));
                 }
             });
         }
@@ -592,10 +586,10 @@ public class FinanceServiceImpl implements IFinanceService {
         receiveOrderCarDtoList.forEach(e -> {
             e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
             e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
-            if (e.getSettlePeriod() == null || e.getSettlePeriod() == 0) {
-                e.setRemainderSettlePeriod(0L);
+            if (e.getSettlePeriod() == null) {
+                e.setRemainderSettlePeriod(0);
             } else {
-                e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
+                e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis(), e.getOrderDeliveryDate()));
             }
         });
         try {
@@ -683,7 +677,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
                 settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
             }
-            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis() - financePayableVo.getCompleteTime()));
+            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis(), financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
         Map countInfo = getCountInfo();
@@ -719,8 +713,17 @@ public class FinanceServiceImpl implements IFinanceService {
         return countInfo;
     }
 
-    private Long formatDuring(long time) {
-        long days = time / (1000 * 60 * 60 * 24);
+    /**
+     * 计算两个日期相差几天
+     *
+     * @param startMilTime
+     * @param endMilTime
+     * @return
+     */
+    private int formatDuring(long startMilTime, long endMilTime) {
+        LocalDateTime startTime = DateUtil.getDateTimeOfTimestamp(startMilTime);
+        LocalDateTime endTime = DateUtil.getDateTimeOfTimestamp(endMilTime);
+        int days = DateUtil.dateDiff(endTime, startTime);
         return days;
     }
 
@@ -1052,7 +1055,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
                 settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
             }
-            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis() - financePayableVo.getCompleteTime()));
+            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis(), financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
         return financeVoList;

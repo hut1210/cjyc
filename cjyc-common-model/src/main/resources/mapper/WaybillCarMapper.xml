@@ -1821,15 +1821,18 @@
     </select>
 
     <!--根据车辆编号查询运输车车牌号和司机ID-->
-    <select id="selectPlateNoByOrderCarNo" resultType="java.util.Map">
+    <select id="selectTaskInfoByOrderCarNo" resultType="com.cjyc.common.model.vo.salesman.task.TaskInfo">
         select
             task.vehicle_plate_no as plateNo,
-            task.driver_id as driverId
+            task.driver_id as driverId,
+            car.order_car_no as orderCarNo
         from
             w_waybill_car car
             left join w_task task on car.waybill_id=task.waybill_id
         where
             car.state > 5 and car.state &lt; 100 and task.state = 55
+            and car.order_car_no = #{orderCarNo}
+        limit 1
     </select>
     <select id="findListByTaskCarIds" resultType="com.cjyc.common.model.entity.WaybillCar">
         select wc.*

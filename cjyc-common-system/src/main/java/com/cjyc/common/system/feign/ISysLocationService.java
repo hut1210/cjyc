@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Author Liu Xing Xiang
  * @Date 2020/4/9 10:09
  **/
-@FeignClient(value = "cps-api", fallbackFactory = LocationServiceFallbackFactory.class, decode404 = true)
+@FeignClient(value = "cps-api", fallbackFactory = LocationServiceFallbackFactory.class)
 public interface ISysLocationService {
 
     /**
@@ -22,7 +22,7 @@ public interface ISysLocationService {
      * @param
      * @return com.cjkj.common.model.ResultData
      */
-    @PostMapping(value = "/yunche/uploadUserLocation")
+    @PostMapping(value = "/cps-api/yunche/uploadUserLocation")
     ResultData uploadUserLocation(@RequestBody UploadUserLocationReq uploadUserLocationReq);
 
     /**
@@ -32,7 +32,7 @@ public interface ISysLocationService {
      * @param userId
      * @return com.cjkj.common.model.ResultData
      */
-    @PostMapping(value = "/yunche/getUserLocation")
+    @PostMapping(value = "/cps-api/yunche/getUserLocation")
     ResultData getUserLocation(String userId);
 
     /**
@@ -42,6 +42,6 @@ public interface ISysLocationService {
      * @param plateNo
      * @return com.cjkj.common.model.ResultData
      */
-    @PostMapping(value = "/vehicle/track")
+    @PostMapping(value = "/cps-api/vehicle/track")
     ResultData getLocationByPlateNo(String plateNo);
 }
