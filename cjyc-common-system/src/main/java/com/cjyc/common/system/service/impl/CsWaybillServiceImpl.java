@@ -38,6 +38,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -98,6 +99,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     private ICsPushMsgService csPushMsgService;
     @Resource
     private ICsOrderService csOrderService;
+    @Resource
+    private IWaybillSettleTypeDao waybillSettleTypeDao;
 
     /**
      * 同城调度
@@ -220,7 +223,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
                 /**1、添加运单信息*/
                 Waybill waybill = new Waybill();
-                waybill.setNo(sendNoService.getNo(SendNoTypeEnum.WAYBILL));
+                String wayBillNo = sendNoService.getNo(SendNoTypeEnum.WAYBILL);
+                waybill.setNo(wayBillNo);
                 waybill.setType(paramsDto.getType());
                 //承运商类型
                 waybill.setSource(WaybillSourceEnum.MANUAL.code);
@@ -239,6 +243,21 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setInputStoreId(getLocalWaybillInputStoreId(waybill.getType(), order));
                 waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode(), null, 1));
                 waybillDao.insert(waybill);
+
+                /**
+                 * <ol>问题处理：为了解决时付类型的承运商突然修改成账期类型的承运商运单流水结算类型展示问题
+                 *   <li>如果承运商类型是个人司机或者和是企业则需要运单结算类型设置</li>
+                 *   <li>结算类型如果是账期，需要设置账期时间</li>
+                 * </ol>
+                 */
+                Carrier carrier = carrierDao.selectById(carrierInfo.getCarrierId());
+                if(!ObjectUtils.isEmpty(carrier)){
+                    waybillSettleTypeDao.insert(new WaybillSettleType(){{
+                        setWaybillNo(wayBillNo);
+                        setSettleType(carrier.getSettleType());
+                        setSettlePeriod(carrier.getSettlePeriod());
+                    }});
+                }
 
                 /**2、添加运单车辆信息*/
                 WaybillCar waybillCar = new WaybillCar();
@@ -869,7 +888,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
             /**1、组装运单信息*/
             Waybill waybill = new Waybill();
-            waybill.setNo(sendNoService.getNo(SendNoTypeEnum.WAYBILL));
+            String wayBillNo = sendNoService.getNo(SendNoTypeEnum.WAYBILL);
+            waybill.setNo(wayBillNo);
             waybill.setType(WaybillTypeEnum.TRUNK.code);
             waybill.setSource(WaybillSourceEnum.MANUAL.code);
             waybill.setCarrierId(carrierInfo.getCarrierId());
@@ -891,6 +911,21 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             //TODO 干线运单所属业务中心
             //waybill.setInputStoreId(paramsDto.);
             waybillDao.insert(waybill);
+
+            /**
+             * <ol>问题处理：为了解决时付类型的承运商突然修改成账期类型的承运商运单流水结算类型展示问题
+             *   <li>如果承运商类型是个人司机或者和是企业则需要运单结算类型设置</li>
+             *   <li>结算类型如果是账期，需要设置账期时间</li>
+             * </ol>
+             */
+            Carrier carrier = carrierDao.selectById(carrierInfo.getCarrierId());
+            if(!ObjectUtils.isEmpty(carrier)){
+                waybillSettleTypeDao.insert(new WaybillSettleType(){{
+                    setWaybillNo(wayBillNo);
+                    setSettleType(carrier.getSettleType());
+                    setSettlePeriod(carrier.getSettlePeriod());
+                }});
+            }
 
             for (SaveTrunkWaybillCarDto dto : dtoList) {
                 if (dto == null) {
