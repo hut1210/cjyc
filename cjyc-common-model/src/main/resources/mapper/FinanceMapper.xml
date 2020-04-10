@@ -808,6 +808,8 @@
         if(wst.settle_type=0,'时付','账期') as settleTypeName,
         wt.car_num as carNum,
         wst.settle_period as settlePeriod
+        ww.guide_line as transportLine,
+        dc.settle_period as settlePeriod
         from w_task wt
         left join w_waybill ww on ww.no = wt.waybill_no
         left join w_waybill_settle_type wst on wst.waybill_no = ww.no
@@ -846,7 +848,7 @@
 
     <select id="getSettlementInfo" parameterType="java.util.List"
             resultType="com.cjyc.common.model.vo.web.finance.PayableTaskVo">
-        select wt.no,wt.car_num as carNum,ww.type,wwc.freight_fee as freightFee
+        select wt.no,wt.car_num as carNum,ww.type,sum(wwc.freight_fee) as freightFee
         from w_task wt
         left join w_task_car wtc on wt.id=wtc.task_id
         left join w_waybill_car wwc on wwc.id = wtc.waybill_car_id
@@ -855,6 +857,7 @@
         <foreach collection="taskNoList" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+        GROUP BY wt.no
     </select>
 
     <insert id="apply" parameterType="com.cjyc.common.model.vo.web.finance.SettlementVo">
@@ -1105,7 +1108,7 @@
                 when ww.type=2 then '干线运单'
                 when ww.type=3 then '送车运单'
         END) as wayBillTypeName,
-        if(dc.settle_type=0,'时付','账期') as settleType,
+        dc.settle_type as settleType,
         wwc.freight_fee as freightFee,
         if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
         (CASE
@@ -1431,5 +1434,11 @@
         FROM s_settlement_detail ssd
         LEFT JOIN s_settlement ss on ss.serial_number = ssd.serial_number
         WHERE no=#{no} and ss.state=3
+    </select>
+    <!-- 账期运单开票信息-->
+    <select id="getAccountPeriodInfo" resultType="com.cjyc.common.model.vo.web.finance.AccountPeriodVo">
+        SELECT fpd.no as taskNo,fp.writeoff_time as writeOffTime FROM f_payable_detail fpd
+        LEFT JOIN f_payable fp on fpd.serial_number = fp.serial_number
+        WHERE fpd.no like concat('%',#{wayBillNo},'%') and fp.state=2
     </select>
 </mapper>

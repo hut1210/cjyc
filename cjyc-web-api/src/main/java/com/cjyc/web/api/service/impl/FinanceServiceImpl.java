@@ -10,6 +10,7 @@ import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerPayEnum;
 import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
 import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.util.MoneyUtil;
@@ -142,6 +143,19 @@ public class FinanceServiceImpl implements IFinanceService {
                 //成本合计
                 if (pickUpCarList != null) {
                     for (TrunkLineVo trunkLineVo : pickUpCarList) {
+                        if("1".equals(trunkLineVo.getSettleType())){
+                            //获取账期运单开票信息
+                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
+                            if(accountPeriodVo!=null){
+                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
+                                trunkLineVo.setPayState("已付款");
+                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
+                            }else{
+                                trunkLineVo.setPayTime(null);
+                                trunkLineVo.setPayState("");
+                                trunkLineVo.setPaidFreightFee(null);
+                            }
+                        }
                         if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
                             totalCost = totalCost.add(trunkLineVo.getFreightFee());
                         }
@@ -150,6 +164,20 @@ public class FinanceServiceImpl implements IFinanceService {
 
                 if (trunkLineVoList != null) {
                     for (TrunkLineVo trunkLineVo : trunkLineVoList) {
+                        if("1".equals(trunkLineVo.getSettleType())){
+                            //获取账期运单开票信息
+                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
+                            if(accountPeriodVo!=null){
+                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
+                                trunkLineVo.setPayState("已付款");
+                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
+                            }else{
+                                trunkLineVo.setPayTime(null);
+                                trunkLineVo.setPayState("");
+                                trunkLineVo.setPaidFreightFee(null);
+                            }
+                        }
+
                         if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
                             totalCost = totalCost.add(trunkLineVo.getFreightFee());
                         }
@@ -158,6 +186,19 @@ public class FinanceServiceImpl implements IFinanceService {
 
                 if (carryCarList != null) {
                     for (TrunkLineVo trunkLineVo : carryCarList) {
+                        if("1".equals(trunkLineVo.getSettleType())){
+                            //获取账期运单开票信息
+                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
+                            if(accountPeriodVo!=null){
+                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
+                                trunkLineVo.setPayState("已付款");
+                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
+                            }else{
+                                trunkLineVo.setPayTime(null);
+                                trunkLineVo.setPayState("");
+                                trunkLineVo.setPaidFreightFee(null);
+                            }
+                        }
                         if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
                             totalCost = totalCost.add(trunkLineVo.getFreightFee());
                         }
@@ -272,6 +313,26 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
 
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
+                if(!CollectionUtils.isEmpty(detailList)){
+                    detailList.forEach(e->{
+                        if("1".equals(e.getSettleType())){
+                            //获取账期运单开票信息
+                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
+                            if(accountPeriodVo!=null){
+                                e.setPayTime(accountPeriodVo.getWriteOffTime());
+                                e.setPayState("已付款");
+                                e.setPaidFreightFee(e.getFreightFee());
+                            }else{
+                                e.setPayTime(null);
+                                e.setPayState("");
+                                e.setPaidFreightFee(null);
+                            }
+                            e.setSettleType("账期");
+                        }else{
+                            e.setSettleType("时付");
+                        }
+                    });
+                }
                 detailVoList.addAll(detailList);
             }
         }

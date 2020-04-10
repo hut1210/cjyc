@@ -712,7 +712,7 @@
         o.end_store_name as endStoreName,
         o.start_store_id as startStoreId,
         o.start_store_name as startStoreName,
-        IFNULL(ct1.parent_name '总部')as region,
+        IFNULL(ct1.parent_name, '总部')as region,
         IFNULL(ct1.parent_code, '000000') as regionCode,
         s1.detail_addr as inputStoreAddress,
         ht.contract_no as contractNo,

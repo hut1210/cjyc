@@ -151,6 +151,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
         if (waybill == null) {
             return BaseResultUtil.fail("运单不存在");
         }
+        String plateNo = reqDto.getPlateNo();
+        String vin = reqDto.getVin();
         List<String> loadPhotoImgs = reqDto.getLoadPhotoImgs();
         List<String> unloadPhotoImgs = reqDto.getUnloadPhotoImgs();
         //查询车辆照片是否上传过
@@ -171,14 +173,20 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 return BaseResultUtil.fail("照片数量不能超过20张");
             }
         }
+        /*String key = RedisKeys.getCheckOrderPlateNo(waybillCar.getOrderCarNo().split("-")[0]);
+        Map<Object, Object> plateNoMap = redisUtils.hGetAll(key);
+        if(!CollectionUtils.isEmpty(plateNoMap) && plateNoMap.containsKey(plateNo) && !waybillCar.getOrderCarId().equals(plateNoMap.get(plateNo))){
+            return BaseResultUtil.fail("车牌号已经存在");
+        }
+        redisUtils.hset(key, plateNo, waybillCar.getOrderCarId());*/
 
         //更新车辆信息
         OrderCar orderCar = new OrderCar();
         orderCar.setId(waybillCar.getOrderCarId());
-        orderCar.setVin(reqDto.getVin());
+        orderCar.setVin(vin);
         orderCar.setBrand(reqDto.getBrand());
         orderCar.setModel(reqDto.getModel());
-        orderCar.setPlateNo(reqDto.getPlateNo());
+        orderCar.setPlateNo(plateNo);
         orderCarDao.updateById(orderCar);
         //更新运单车辆信息
         if (!CollectionUtils.isEmpty(loadPhotoImgs)) {

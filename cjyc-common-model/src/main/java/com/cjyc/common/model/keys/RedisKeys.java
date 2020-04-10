@@ -50,7 +50,9 @@ public class RedisKeys {
     /**循环业务人员*/
     private final static String LOOP_ALLOT_ADMIN_KEY = "loop:allot:admin";
     /**验证vin重复*/
-    private final static String CHECHK_VIN_SET = "CHECHK_VIN_SET";
+    private final static String CHECK_VIN_SET = "check:vin:set";
+    /**验证车牌号重复*/
+    private final static String CHECK_PLATENO_SET = "check:plateno:set";
 
     private final static String CAR_SERIES = "car:series";
     private final static String THREE_CITY = "three:city";
@@ -199,7 +201,11 @@ public class RedisKeys {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
     }
 
-    public static String getVinSetKey(Long orderId) {
-        return CJYC + I + CHECHK_VIN_SET + I + orderId;
+    public static String getVinSetKey(String orderNo) {
+        return CJYC + I + CHECK_VIN_SET + I + orderNo;
+    }
+
+    public static String getCheckOrderPlateNo(String orderNo) {
+        return CJYC + I + CHECK_PLATENO_SET + I + orderNo;
     }
 }
