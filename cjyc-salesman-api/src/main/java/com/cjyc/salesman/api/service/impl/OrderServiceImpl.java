@@ -116,6 +116,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 String carLogoImg = carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
                 SalesOrderCarVo carVo = new SalesOrderCarVo();
                 carVo.setOrderCarId(orderCar.getId());
+                carVo.setOrderCarNo(orderCar.getNo());
                 carVo.setLogoImg(logoImg+carLogoImg);
                 BeanUtils.copyProperties(orderCar,carVo);
                 carVoList.add(carVo);
