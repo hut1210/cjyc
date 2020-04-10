@@ -1239,10 +1239,18 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         } else {
             log.info("salesPrePay orderNo =" + orderNo);
+
             String lockKey = RedisKeys.getWlPayLockKey(orderNo);
-            if (!redisLock.lock(lockKey, 300000, 10, 200)) {
-                return BaseResultUtil.fail("订单正在支付中");
+            String loginId = redisUtils.get(lockKey);
+            //判断移动端刷新二维码是否为同一Id
+            if(StringUtils.isNotEmpty(loginId) && loginId.equals(String.valueOf(salesPrePayDto.getLoginId()))){
+                //不做处理
+            }else{
+                if (!redisLock.lock(lockKey, salesPrePayDto.getLoginId(), 300000, 10, 200)) {
+                    return BaseResultUtil.fail("订单正在支付中");
+                }
             }
+
         }
         //try {
         om.setClientIp(salesPrePayDto.getIp());
