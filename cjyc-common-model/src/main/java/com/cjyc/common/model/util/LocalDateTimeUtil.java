@@ -219,8 +219,8 @@ public class LocalDateTimeUtil {
      */
     public static Long convertDateStrToLong (String dateStr, String format) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format);
-        LocalDate localDate = LocalDate.parse(dateStr, fmt);
-        return localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond();
+        LocalDateTime dateTime = LocalDateTime.parse(dateStr, fmt);
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
 }
