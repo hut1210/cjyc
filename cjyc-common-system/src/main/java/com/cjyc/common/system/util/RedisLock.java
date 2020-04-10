@@ -30,8 +30,15 @@ public class RedisLock {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     private ThreadLocal<String> lockFlagThreadLocal = new ThreadLocal<>();
-    private static final String UNLOCK_LUA = "for i, v in pairs(KEYS) do   if redis.call(\"get\", v) == ARGV[1] then   return redis.call(\"del\", v)   else   return 0  end  end ";
-
+    private static final String UNLOCK_LUA = "for i, v in pairs(KEYS) do    " +
+                                            "   if redis.call(\"get\", v) ~= ARGV[1] then " +
+                                            "      return 0 " +
+                                            "   end   " +
+                                            "end " +
+                                            "for i, v in pairs(KEYS) do " +
+                                            "   redis.call(\"del\", v) " +
+                                            "end " +
+                                            "return #KEYS";
 
     public RedisLock(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
