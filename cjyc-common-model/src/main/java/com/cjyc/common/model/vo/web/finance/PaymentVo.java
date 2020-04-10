@@ -1,6 +1,8 @@
 package com.cjyc.common.model.vo.web.finance;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.enums.customer.ClientTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -81,7 +83,7 @@ public class PaymentVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "客户Id")
@@ -94,12 +96,12 @@ public class PaymentVo implements Serializable {
 
     public String getCustomTypeName() {
         Integer type = getType();
-        if(type!=null && type==1){
-            return "C端客户";
-        }else if(type!=null && type==2){
-            return "企业";
-        }else if(type!=null && type==3){
-            return "合伙人";
+        if(type!=null && type== ClientTypeEnum.INDIVIDUAL.code){
+            return ClientTypeEnum.INDIVIDUAL.name;
+        }else if(type!=null && type==CustomerTypeEnum.ENTERPRISE.code){
+            return ClientTypeEnum.ENTERPRISE.name;
+        }else if(type!=null && type==CustomerTypeEnum.COOPERATOR.code){
+            return ClientTypeEnum.COOPERATOR.name;
         }else{
             return "";
         }
@@ -124,6 +126,6 @@ public class PaymentVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 }

@@ -107,13 +107,13 @@ public class FinanceServiceImpl implements IFinanceService {
     @Resource
     private ITradeBillSummaryService tradeBillService;
 
-    @Autowired
+    @Resource
     private TransactionTemplate transactionTemplate;
 
-    @Autowired
+    @Resource
     private IReceiveSettlementDao receiveSettlementDao;
 
-    @Autowired
+    @Resource
     private IReceiveSettlementDetailDao receiveSettlementDetailDao;
 
     @Override
@@ -121,26 +121,17 @@ public class FinanceServiceImpl implements IFinanceService {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<FinanceVo> financeVoList = financeDao.getFinanceList(financeQueryDto);
         for (FinanceVo financeVo : financeVoList) {
-
             if (financeVo != null) {
-
                 String orderCarNo = financeVo.getNo();
                 BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
                 BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
                 BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
-
                 financeVo.setPickUpCarFee(pickUpCarFee);
                 financeVo.setTrunkLineFee(trunkLineFee);
                 financeVo.setCarryCarFee(carryCarFee);
-
                 List<TrunkLineVo> pickUpCarList = financeDao.getTrunkCostList(orderCarNo, 1);
                 List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo, 2);
                 List<TrunkLineVo> carryCarList = financeDao.getTrunkCostList(orderCarNo, 3);
-
-                financeVo.setPickUpCarList(pickUpCarList);
-                financeVo.setTrunkLineVoList(trunkLineVoList);
-                financeVo.setCarryCarList(carryCarList);
-
                 BigDecimal totalCost = new BigDecimal(0);
                 //成本合计
                 if (pickUpCarList != null) {
@@ -163,7 +154,6 @@ public class FinanceServiceImpl implements IFinanceService {
                         }
                     }
                 }
-
                 if (trunkLineVoList != null) {
                     for (TrunkLineVo trunkLineVo : trunkLineVoList) {
                         if("1".equals(trunkLineVo.getSettleType())){
@@ -185,7 +175,6 @@ public class FinanceServiceImpl implements IFinanceService {
                         }
                     }
                 }
-
                 if (carryCarList != null) {
                     for (TrunkLineVo trunkLineVo : carryCarList) {
                         if("1".equals(trunkLineVo.getSettleType())){
@@ -206,7 +195,12 @@ public class FinanceServiceImpl implements IFinanceService {
                         }
                     }
                 }
-
+                //提车成本列表
+                financeVo.setPickUpCarList(pickUpCarList);
+                //干线成本列表
+                financeVo.setTrunkLineVoList(trunkLineVoList);
+                //送车成本列表
+                financeVo.setCarryCarList(carryCarList);
                 //成本合计
                 financeVo.setTotalCost(totalCost);
                 //毛利
@@ -232,13 +226,11 @@ public class FinanceServiceImpl implements IFinanceService {
         BigDecimal grossProfit = tradeBillService.grossProfit(financeQueryDto);
         //实收汇总
         BigDecimal actualReceiptSummary = tradeBillService.financeActualReceiptSummary(financeQueryDto);
-
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
         countInfo.put("costSummary", costSummary.divide(new BigDecimal(100)));
         countInfo.put("grossProfit", grossProfit.divide(new BigDecimal(100)));
         countInfo.put("actualReceiptSummary", actualReceiptSummary.divide(new BigDecimal(100)));
-
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
