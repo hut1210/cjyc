@@ -1821,7 +1821,7 @@
     </select>
 
     <!--根据车辆编号查询运输车车牌号和司机ID-->
-    <select id="selectPlateNoByOrderCarNo" resultType="java.util.Map">
+    <select id="selectTaskInfoByOrderCarNo" resultType="com.cjyc.common.model.vo.salesman.task.TaskInfo">
         select
             task.vehicle_plate_no as plateNo,
             task.driver_id as driverId,
