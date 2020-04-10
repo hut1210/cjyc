@@ -679,7 +679,7 @@
         wo.pay_type as payType
         from w_order_car woc
         left join w_order wo on wo.id= woc.order_id
-        where (wo.state &lt; 100 or wo.state=113) and wo.pay_type=0
+        where (wo.state &lt; 100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=0
         <include refid="advancePaymentSummaryCondition"></include>
         )t
 
