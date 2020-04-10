@@ -140,4 +140,9 @@ public class FieldConstant {
      * 7已出库
      */
     public static final String FINISH_PUT_OUT = "7";
+
+    /**
+     * 运输状态描述 - 运输中
+     */
+    public static final String IN_TRANSIT = "运输中";
 }
