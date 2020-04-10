@@ -25,6 +25,7 @@ import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
 import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.service.ITradeBillSummaryService;
+import com.cjyc.web.api.util.DateUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.MarshalledObject;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -561,15 +563,15 @@ public class FinanceServiceImpl implements IFinanceService {
             receiveOrderCarDtoList.forEach(e -> {
                 e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
                 e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
-                if (e.getSettlePeriod() == null || e.getSettlePeriod() == 0) {
-                    e.setRemainderSettlePeriod(0L);
+                if (e.getSettlePeriod() == null) {
+                    e.setRemainderSettlePeriod(0);
                 } else {
                     /**
                      * 剩余账期计算:
                      * 1.已过天数 = 当前时间 - 订单完结时间
                      * 2. 剩余账期 = 大客户合同中配置的账期 - 已过天数
                      */
-                    e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
+                    e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis(), e.getOrderDeliveryDate()));
                 }
             });
         }
@@ -592,10 +594,10 @@ public class FinanceServiceImpl implements IFinanceService {
         receiveOrderCarDtoList.forEach(e -> {
             e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
             e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
-            if (e.getSettlePeriod() == null || e.getSettlePeriod() == 0) {
-                e.setRemainderSettlePeriod(0L);
+            if (e.getSettlePeriod() == null) {
+                e.setRemainderSettlePeriod(0);
             } else {
-                e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis() - e.getOrderDeliveryDate()));
+                e.setRemainderSettlePeriod(e.getSettlePeriod() - formatDuring(System.currentTimeMillis(), e.getOrderDeliveryDate()));
             }
         });
         try {
@@ -683,7 +685,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
                 settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
             }
-            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis() - financePayableVo.getCompleteTime()));
+            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis(), financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
         Map countInfo = getCountInfo();
@@ -719,8 +721,17 @@ public class FinanceServiceImpl implements IFinanceService {
         return countInfo;
     }
 
-    private Long formatDuring(long time) {
-        long days = time / (1000 * 60 * 60 * 24);
+    /**
+     * 计算两个日期相差几天
+     *
+     * @param startMilTime
+     * @param endMilTime
+     * @return
+     */
+    private int formatDuring(long startMilTime, long endMilTime) {
+        LocalDateTime startTime = DateUtil.getDateTimeOfTimestamp(startMilTime);
+        LocalDateTime endTime = DateUtil.getDateTimeOfTimestamp(endMilTime);
+        int days = DateUtil.dateDiff(startTime, endTime);
         return days;
     }
 
@@ -1052,7 +1063,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
                 settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
             }
-            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis() - financePayableVo.getCompleteTime()));
+            financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis(), financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
         return financeVoList;
