@@ -1,6 +1,5 @@
 package com.cjyc.common.system.service.impl;
 
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.IDriverDao;
@@ -9,6 +8,7 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CsSendNoServiceImpl implements ICsSendNoService {
     @Resource
-    private RedisDistributedLock redisLock;
+    private RedisLock redisLock;
     @Resource
     private IDriverDao driverDao;
     @Resource

@@ -1,8 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.cjkj.common.redis.lock.RedisDistributedLock;
-import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
@@ -27,6 +25,7 @@ import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -61,11 +60,9 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     @Resource
     private IOrderDao orderDao;
     @Resource
-    private StringRedisUtil redisUtil;
-    @Resource
     private RedisUtils redisUtils;
     @Resource
-    private RedisDistributedLock redisLock;
+    private RedisLock redisLock;
     @Resource
     private ICsSendNoService sendNoService;
     @Resource
