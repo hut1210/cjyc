@@ -807,9 +807,8 @@
         wt.vehicle_plate_no as vehiclePlateNo,
         if(wst.settle_type=0,'时付','账期') as settleTypeName,
         wt.car_num as carNum,
-        wst.settle_period as settlePeriod
         ww.guide_line as transportLine,
-        dc.settle_period as settlePeriod
+        wst.settle_period as settlePeriod
         from w_task wt
         left join w_waybill ww on ww.no = wt.waybill_no
         left join w_waybill_settle_type wst on wst.waybill_no = ww.no
