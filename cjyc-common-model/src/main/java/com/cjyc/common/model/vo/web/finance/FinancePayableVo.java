@@ -31,7 +31,7 @@ public class FinancePayableVo implements Serializable {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "结算类型")
