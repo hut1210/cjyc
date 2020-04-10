@@ -1,6 +1,7 @@
 package com.cjyc.common.model.vo.web.finance;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -61,11 +62,11 @@ public class FinancePayableVo implements Serializable {
 
     public String getWaybillTypeStr() {
         Integer type = getWaybillType();
-        if(type!=null && type==1){
+        if(type!=null && type== WaybillTypeEnum.PICK.code){
             return "提车运单";
-        }else if(type!=null && type==2){
+        }else if(type!=null && type==WaybillTypeEnum.TRUNK.code){
             return "干线运单";
-        }else if(type!=null && type==3){
+        }else if(type!=null && type==WaybillTypeEnum.BACK.code){
             return "送车运单";
         }else{
             return "";

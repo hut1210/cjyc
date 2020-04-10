@@ -64,7 +64,7 @@ public class SettlementVo {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "确认人Id")
@@ -85,7 +85,7 @@ public class SettlementVo {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "核销人Id")

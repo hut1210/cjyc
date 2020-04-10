@@ -1,7 +1,7 @@
 package com.cjyc.common.model.vo.web.finance;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.customer.ClientTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerPayTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
@@ -98,12 +98,12 @@ public class AdvancePaymentVo implements Serializable {
 
     public String getCustomTypeName() {
         Integer type = getType();
-        if(type!=null && type==CustomerTypeEnum.INDIVIDUAL.code){
-            return "C端客户";
+        if(type!=null && type== ClientTypeEnum.INDIVIDUAL.code){
+            return ClientTypeEnum.INDIVIDUAL.name;
         }else if(type!=null && type==CustomerTypeEnum.ENTERPRISE.code){
-            return CustomerTypeEnum.ENTERPRISE.name;
+            return ClientTypeEnum.ENTERPRISE.name;
         }else if(type!=null && type==CustomerTypeEnum.COOPERATOR.code){
-            return CustomerTypeEnum.COOPERATOR.name;
+            return ClientTypeEnum.COOPERATOR.name;
         }else{
             return "";
         }
