@@ -1244,7 +1244,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             String loginId = redisUtils.get(lockKey);
             //判断移动端刷新二维码是否为同一Id
             if(StringUtils.isNotEmpty(loginId) && loginId.equals(String.valueOf(salesPrePayDto.getLoginId()))){
-                //不做处理
+                log.info("用户正在刷新二维码");
             }else{
                 if (!redisLock.lock(lockKey, salesPrePayDto.getLoginId(), 300000, 10, 200)) {
                     return BaseResultUtil.fail("订单正在支付中");
