@@ -9,7 +9,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         <where>
             <if test="no != null and no.trim() != ''">
@@ -46,8 +47,18 @@
             <if test="endAreaCode != null and endAreaCode.trim() != ''">
                 and wo.end_area_code = #{endAreaCode}
             </if>
-            <if test="area != null and area.trim() != ''">
+            <!--<if test="area != null and area.trim() != ''">
                 and zcity.code = #{area}
+            </if>-->
+            <if test="area != null and area != ''">
+                <choose>
+                    <when test="area == '000000'">
+                        and zcity.code is null
+                    </when>
+                    <otherwise>
+                        and zcity.code = #{area}
+                    </otherwise>
+                </choose>
             </if>
             <if test="type != null">
                 and cc.type = #{type}
@@ -115,8 +126,18 @@
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
             and wo.end_area_code = #{endAreaCode}
         </if>
-        <if test="area != null and area.trim() != ''">
+        <!--<if test="area != null and area.trim() != ''">
             and zcity.code = #{area}
+        </if>-->
+        <if test="area != null and area != ''">
+            <choose>
+                <when test="area == '000000'">
+                    and zcity.code is null
+                </when>
+                <otherwise>
+                    and zcity.code = #{area}
+                </otherwise>
+            </choose>
         </if>
         <if test="type != null">
             and cc.type = #{type}
@@ -164,7 +185,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and woc.wl_pay_state=2
         <include refid="financeSummary"></include>
@@ -180,7 +202,8 @@
         left join w_waybill ww on ww.id = wwc.waybill_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wwc.state=100 and wo.state=100 and ww.carrier_type in (1,2,4,5)
         <include refid="financeSummary"></include>) t
@@ -195,7 +218,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         <where>
             <if test="no != null and no.trim() != ''">
@@ -232,8 +256,18 @@
             <if test="endAreaCode != null and endAreaCode.trim() != ''">
                 and wo.end_area_code = #{endAreaCode}
             </if>
-            <if test="area != null and area.trim() != ''">
+            <!--<if test="area != null and area.trim() != ''">
                 and zcity.code = #{area}
+            </if>-->
+            <if test="area != null and area != ''">
+                <choose>
+                    <when test="area == '000000'">
+                        and zcity.code is null
+                    </when>
+                    <otherwise>
+                        and zcity.code = #{area}
+                    </otherwise>
+                </choose>
             </if>
             <if test="type != null">
                 and cc.type = #{type}
@@ -278,10 +312,19 @@
         <if test="orderNo != null and orderNo.trim() != ''">
             and  woc.order_no like concat('%',#{orderNo},'%')
         </if>
-        <if test="area != null and area.trim() != ''">
+        <!--<if test="area != null and area.trim() != ''">
             and zcity.code = #{area}
+        </if>-->
+        <if test="area != null and area != ''">
+            <choose>
+                <when test="area == '000000'">
+                    and zcity.code is null
+                </when>
+                <otherwise>
+                    and zcity.code = #{area}
+                </otherwise>
+            </choose>
         </if>
-
         <if test="type != null">
             and cc.type = #{type}
         </if>
@@ -336,7 +379,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where cc.pay_mode= #{settleType} and wo.customer_type=1 and wo.state=100
@@ -353,7 +397,8 @@
         left join c_customer_partner ccp on cc.id = ccp.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccp.settle_type=#{settleType} and wo.customer_type=3 and wo.state=100
@@ -370,7 +415,8 @@
         left join c_customer_contract ccc on cc.id =ccc.customer_id and ccc.id = wo.customer_contract_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccc.settle_type=#{settleType} and wo.customer_type=2 and wo.state=100
@@ -386,7 +432,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and wo.customer_contract_id is null
@@ -527,7 +574,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where cc.pay_mode= 0 and wo.customer_type=1 and wo.state=100 and woc.wl_pay_state=2
@@ -544,7 +592,8 @@
         left join c_customer_partner ccp on cc.id = ccp.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccp.settle_type=0 and wo.customer_type=3 and wo.state=100 and woc.wl_pay_state=2
@@ -561,7 +610,8 @@
         left join c_customer_contract ccc on cc.id =ccc.customer_id and ccc.id = wo.customer_contract_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccc.settle_type=0 and wo.customer_type=2 and wo.state=100 and woc.wl_pay_state=2
@@ -578,7 +628,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and woc.wl_pay_state=2 and wo.customer_contract_id is null
@@ -672,7 +723,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where cc.pay_mode= #{settleType} and wo.customer_type=1 and wo.state=100 and woc.wl_pay_state=2
@@ -689,7 +741,8 @@
         left join c_customer_partner ccp on cc.id = ccp.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccp.settle_type=#{settleType} and wo.customer_type=3 and wo.state=100 and woc.wl_pay_state=2
@@ -706,7 +759,8 @@
         left join c_customer_contract ccc on cc.id =ccc.customer_id and ccc.id = wo.customer_contract_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccc.settle_type=#{settleType} and wo.customer_type=2 and wo.state=100 and woc.wl_pay_state=2
@@ -722,7 +776,8 @@
         left join c_customer cc on cc.id = wo.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and woc.wl_pay_state=2 and wo.customer_contract_id is null
@@ -744,7 +799,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=1
         <include refid="financeListCondition"></include>
@@ -764,7 +820,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=2
         <include refid="financeListCondition"></include>
@@ -784,7 +841,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=3
         <include refid="financeListCondition"></include>
@@ -827,8 +885,18 @@
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
             and wo.end_area_code = #{endAreaCode}
         </if>
-        <if test="area != null and area.trim() != ''">
+        <!--<if test="area != null and area.trim() != ''">
             and zcity.code = #{area}
+        </if>-->
+        <if test="area != null and area != ''">
+            <choose>
+                <when test="area == '000000'">
+                    and zcity.code is null
+                </when>
+                <otherwise>
+                    and zcity.code = #{area}
+                </otherwise>
+            </choose>
         </if>
         <if test="type != null">
             and cc.type = #{type}

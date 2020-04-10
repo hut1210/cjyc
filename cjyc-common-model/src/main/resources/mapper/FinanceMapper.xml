@@ -5,7 +5,7 @@
     <select id="getFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.FinanceVo">
         select * from (select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
+        IFNULL(zcity.name, '总部') as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
@@ -31,7 +31,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=1
         <include refid="financeListCondition"></include>
@@ -39,7 +40,7 @@
 
         UNION
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
+        IFNULL(zcity.name, '总部') as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
@@ -65,7 +66,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=2
         <include refid="financeListCondition"></include>
@@ -73,7 +75,7 @@
 
         UNION
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
+        IFNULL(zcity.name, '总部') as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
@@ -99,7 +101,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=3
         <include refid="financeListCondition"></include>
@@ -143,8 +146,19 @@
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
             and wo.end_area_code = #{endAreaCode}
         </if>
-        <if test="area != null and area.trim() != ''">
+        <!--<if test="area != null and area.trim() != ''">
             and zcity.code = #{area}
+        </if>-->
+
+        <if test="area != null and area != ''">
+            <choose>
+                <when test="area == '000000'">
+                    and zcity.code is null
+                </when>
+                <otherwise>
+                    and zcity.code = #{area}
+                </otherwise>
+            </choose>
         </if>
         <if test="type != null">
             and cc.type = #{type}
@@ -180,7 +194,7 @@
     <select id="getAllFinanceList" parameterType="com.cjyc.common.model.dto.web.finance.FinanceQueryDto"
             resultType="com.cjyc.common.model.vo.web.finance.ExportFinanceVo">
         select * from (select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
+        IFNULL(zcity.name, '总部') as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
@@ -206,7 +220,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=1
         <include refid="financeListCondition"></include>
@@ -214,7 +229,7 @@
 
         UNION
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
+        IFNULL(zcity.name, '总部') as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
@@ -240,7 +255,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=2
         <include refid="financeListCondition"></include>
@@ -248,7 +264,7 @@
 
         UNION
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,woc.order_no as orderNo,
-        zcity.name as largeArea,
+        IFNULL(zcity.name, '总部') as largeArea,
         wo.input_store_name as inputStoreName,wo.start_city as startAddress,
         wo.end_city as endAddress,
         woc.finish_time as deliveryDate,
@@ -274,7 +290,8 @@
         left join w_waybill_car wwc on woc.id = wwc.order_car_id
         left join w_task_car wtc on wtc.waybill_car_id = wwc.id
         left join w_task wt on wtc.task_id = wt.id
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
         where wo.state=100 and wo.customer_type=3
         <include refid="financeListCondition"></include>
@@ -409,8 +426,18 @@
         <if test="orderNo != null and orderNo.trim() != ''">
             and woc.order_no like concat('%',#{orderNo},'%')
         </if>
-        <if test="area != null and area.trim() != ''">
+        <!--<if test="area != null and area.trim() != ''">
             and zcity.code = #{area}
+        </if>-->
+        <if test="area != null and area != ''">
+            <choose>
+                <when test="area == '000000'">
+                    and zcity.code is null
+                </when>
+                <otherwise>
+                    and zcity.code = #{area}
+                </otherwise>
+            </choose>
         </if>
 
         <if test="type != null">
@@ -455,7 +482,7 @@
     </sql>
     <sql id="payMentListHeader">
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,
-        wo.customer_id as customerId,wo.customer_type as type,zcity.name as largeArea,
+        wo.customer_id as customerId,wo.customer_type as type,IFNULL(zcity.name, '总部') as largeArea,
         '时付' as payModeName,woc.total_fee as freightReceivable,
         if(woc.wl_pay_state=2,woc.total_fee,0) as freightPay,
         if(woc.wl_pay_state=2,(woc.pick_fee+woc.trunk_fee+woc.back_fee+woc.add_insurance_fee-woc.coupon_offset_fee),0) as totalIncome,
@@ -481,7 +508,8 @@
         <include refid="payMentListHeader"></include>
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where cc.pay_mode=0 and wo.customer_type=1 and wo.state=100
@@ -497,7 +525,8 @@
         left join c_customer_partner ccp on cc.id = ccp.customer_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccp.settle_type=0 and wo.customer_type=3 and wo.state=100
@@ -511,7 +540,8 @@
         left join c_customer_contract ccc on cc.id =ccc.customer_id and ccc.id = wo.customer_contract_id
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where ccc.settle_type=0 and wo.customer_type=2 and wo.state=100
@@ -524,7 +554,8 @@
         <include refid="payMentListHeader"></include>
         left join w_waybill_car wwc on wwc.order_car_no = woc.no
         left join w_task wt on wt.waybill_no = wwc.waybill_no
-        left join s_city zc on zc.code = wo.start_province_code
+        left join s_store ss on ss.id = wo.input_store_id
+        left join s_city zc on zc.code = ss.province_code
         left join s_city zcity on zcity.code = zc.parent_code
 
         where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and wo.customer_contract_id is null
@@ -1333,8 +1364,18 @@
         <if test="orderNo != null and orderNo.trim() != ''">
             AND woc.order_no LIKE concat('%',#{orderNo},'%')
         </if>
-        <if test="area != null and area.trim() != ''">
+        <!--<if test="area != null and area.trim() != ''">
             AND zcity.code = #{area}
+        </if>-->
+        <if test="area != null and area != ''">
+            <choose>
+                <when test="area == '000000'">
+                    and zcity.code is null
+                </when>
+                <otherwise>
+                    and zcity.code = #{area}
+                </otherwise>
+            </choose>
         </if>
         <if test="type != null">
             AND cc.type = #{type}
