@@ -599,16 +599,17 @@
             resultType="com.cjyc.common.model.vo.web.finance.PaidVo">
         select ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
-        if(dc.settle_type=0,'时付','账期') as settleType,
+        if(wst.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
         wt.driver_phone as driverPhone,
         wt.vehicle_plate_no as vehiclePlateNo
         from w_waybill ww
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
-        where dc.settle_type=0 and ww.freight_pay_state=1
+        where wst.settle_type=0 and ww.freight_pay_state=1
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
@@ -643,7 +644,7 @@
             resultType="com.cjyc.common.model.vo.web.finance.PaidNewVo">
         select ww.id as waybillId,ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
-        if(dc.settle_type=0,'时付','账期') as settleType,
+        if(wst.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
@@ -653,9 +654,10 @@
         fep.operator
         from f_external_payment fep
         left join w_waybill ww on fep.waybill_id = ww.id
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
-        where dc.settle_type=0
+        where wst.settle_type=0
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
@@ -1146,8 +1148,9 @@
         select wt.no
         from w_task wt
         left join w_waybill ww on ww.no = wt.waybill_no
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id = ww.carrier_id
-        where dc.settle_type = 1
+        where wst.settle_type = 1
         and wt.complete_time > 0
         and carrier_type in (1,2,4,5)
         and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
