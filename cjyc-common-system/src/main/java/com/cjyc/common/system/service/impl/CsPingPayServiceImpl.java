@@ -5,6 +5,7 @@ import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingxxMetaData;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
@@ -112,6 +113,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Resource
     private IBankSubankRelationDao bankSubankRelationDao;
+
+    @Resource
+    private IWaybillSettleTypeDao waybillSettleTypeDao;
 
     private final Lock lock = new ReentrantLock();
 
@@ -447,13 +451,27 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                             return;
                         }
-
+                    }
+                    /**
+                     * 根据运单编号查询承运商结算类型
+                     */
+                    WaybillSettleType waybillSettleType = waybillSettleTypeDao.selectOne(
+                            new QueryWrapper<WaybillSettleType>()
+                                    .lambda()
+                                    .eq(WaybillSettleType::getWaybillNo, waybill.getNo())
+                    );
+                    if(waybillSettleType == null){
+                        redisUtils.delete(lockKey);
+                        log.error("【自动打款模式，通联代付支付运费】结算类型信息不存在 waybillNo = {}", waybill.getNo());
+                        addPaymentErrorLog("auto allinpay 结算类型信息不存在 waybillNo = " + waybill.getNo());
+                        // 付款失败流水记录
+                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
+                        return;
                     }
 
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
-
                     //新增打款记录日志
                     savePaymentRecord(carrierId, waybillId);
 
@@ -481,7 +499,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         log.info("【自动打款模式】运单Id {}", waybillId);
                         if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
                             if (baseCarrierVo != null) {
-                                if (baseCarrierVo.getSettleType() == 0) {
+                                if (waybillSettleType.getSettleType() == 0) {
                                     if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
                                             && baseCarrierVo.getBankCode() != null) {
                                         //验证总收益>总打款+本次打款金额
@@ -654,13 +672,29 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         }
 
                     }
+                    /**
+                     * 根据运单编号查询承运商结算类型
+                     */
+                    WaybillSettleType waybillSettleType = waybillSettleTypeDao.selectOne(
+                            new QueryWrapper<WaybillSettleType>()
+                                    .lambda()
+                                    .eq(WaybillSettleType::getWaybillNo, waybill.getNo())
+                    );
+                    if(waybillSettleType == null){
+                        redisUtils.delete(lockKey);
+                        log.error("【对外支付模式，通联代付支付运费】结算类型信息不存在 waybillNo = {}", waybill.getNo());
+                        addPaymentErrorLog("external allinpay 结算类型信息不存在 waybillNo = " + waybill.getNo());
+                        // 付款失败流水记录
+                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
+                        return BaseResultUtil.fail("通联代付失败,收款人不存在");
+                    }
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                     log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
                     if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
 
                         if (baseCarrierVo != null) {
-                            if (baseCarrierVo.getSettleType() == 0) {
+                            if (waybillSettleType.getSettleType() == 0) {
                                 if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
                                         && baseCarrierVo.getBankCode() != null) {
                                     //验证总收益>总打款+本次打款金额
