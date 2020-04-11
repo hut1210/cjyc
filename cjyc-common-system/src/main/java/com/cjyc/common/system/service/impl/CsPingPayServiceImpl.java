@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
@@ -460,7 +461,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     .lambda()
                                     .eq(WaybillSettleType::getWaybillNo, waybill.getNo())
                     );
-                    if(waybillSettleType == null){
+                    if (ObjectUtils.isEmpty(waybillSettleType)) {
                         redisUtils.delete(lockKey);
                         log.error("【自动打款模式，通联代付支付运费】结算类型信息不存在 waybillNo = {}", waybill.getNo());
                         addPaymentErrorLog("auto allinpay 结算类型信息不存在 waybillNo = " + waybill.getNo());
@@ -680,13 +681,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                     .lambda()
                                     .eq(WaybillSettleType::getWaybillNo, waybill.getNo())
                     );
-                    if(waybillSettleType == null){
+                    if (ObjectUtils.isEmpty(waybillSettleType)) {
                         redisUtils.delete(lockKey);
                         log.error("【对外支付模式，通联代付支付运费】结算类型信息不存在 waybillNo = {}", waybill.getNo());
                         addPaymentErrorLog("external allinpay 结算类型信息不存在 waybillNo = " + waybill.getNo());
                         // 付款失败流水记录
                         tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
-                        return BaseResultUtil.fail("通联代付失败,收款人不存在");
+                        return BaseResultUtil.fail("通联代付失败,结算类型信息不存在");
                     }
                     Long carrierId = waybill.getCarrierId();
                     BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
