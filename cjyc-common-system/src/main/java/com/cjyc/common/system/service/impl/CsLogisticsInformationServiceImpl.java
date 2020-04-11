@@ -68,6 +68,8 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         // 查询车辆实时位置
         if (data != null && FieldConstant.IN_TRANSIT.equals(data.getOutterState())) {
             getLocation(reqDto, logisticsInfoVo);
+        } else {
+            log.info("===当前车辆不在运输中---未查询实时位置信息===,车辆编号：{}",reqDto.getOrderCarNo());
         }
 
         return BaseResultUtil.success(logisticsInfoVo);
@@ -96,8 +98,8 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             return BaseResultUtil.fail("用户位置信息上传失败");
         }
 
-        log.info("===当前用户没有运输任务---未调用位置服务平台接口===");
-        return BaseResultUtil.success("当前用户没有运输任务");
+        log.info("===当前用户没有运输任务---未上传用户位置信息===,用户ID：{}",reqDto.getLoginId());
+        return BaseResultUtil.success("当前用户没有运输任务，未上传用户位置信息");
     }
 
     private UploadUserLocationReq getUploadUserLocationReq(LocationInfoDto reqDto) {
