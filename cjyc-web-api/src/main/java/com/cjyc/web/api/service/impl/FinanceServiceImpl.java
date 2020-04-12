@@ -716,15 +716,12 @@ public class FinanceServiceImpl implements IFinanceService {
     /**
      * 计算两个日期相差几天
      *
-     * @param startMilTime
      * @param endMilTime
+     * @param startMilTime
      * @return
      */
-    private int formatDuring(long startMilTime, long endMilTime) {
-        LocalDateTime startTime = DateUtil.getDateTimeOfTimestamp(startMilTime);
-        LocalDateTime endTime = DateUtil.getDateTimeOfTimestamp(endMilTime);
-        int days = DateUtil.dateDiff(endTime, startTime);
-        return days;
+    private int formatDuring(Long endMilTime, Long startMilTime) {
+        return DateUtil.dateDiff(endMilTime, startMilTime);
     }
 
     @Override
