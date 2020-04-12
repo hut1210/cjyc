@@ -1,7 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.*;
@@ -36,6 +35,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.mine.BankCardVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.util.MiaoxinSmsUtil;
+import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -86,7 +86,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Resource
     private IUserRoleDeptDao userRoleDeptDao;
     @Resource
-    private RedisDistributedLock redisLock;
+    private RedisLock redisLock;
     @Resource
     private ICsSendNoService sendNoService;
     @Resource

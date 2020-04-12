@@ -119,7 +119,7 @@ public class ListOrderCarDto extends BasePageDto {
     @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
     private Integer payType;
     @ApiModelProperty(value = "大区编码")
-    private Integer regionCode;
+    private String regionCode;
     @ApiModelProperty(value = "是否能动 0-否 1-是")
     private Integer isMove;
     @ApiModelProperty(value = "是否新车 0-否 1-是")

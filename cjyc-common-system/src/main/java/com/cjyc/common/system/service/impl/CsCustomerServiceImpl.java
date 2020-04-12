@@ -2,34 +2,30 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.usercenter.dto.common.*;
-import com.cjyc.common.model.constant.Constant;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dto.salesman.customer.SalesCustomerDto;
+import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
+import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.entity.Driver;
 import com.cjyc.common.model.entity.Role;
-import com.cjyc.common.model.dto.salesman.mine.AppCustomerIdDto;
 import com.cjyc.common.model.enums.PayModeEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerSourceEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleNameEnum;
-import com.cjyc.common.model.util.JsonUtils;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
-import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
-import com.cjyc.common.model.entity.Customer;
-import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
-import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.JsonUtils;
 import com.cjyc.common.model.util.YmlProperty;
+import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.salesman.customer.SalesCustomerListVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesCustomerVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerListVo;
 import com.cjyc.common.model.vo.salesman.customer.SalesKeyCustomerVo;
 import com.cjyc.common.model.vo.salesman.mine.AppContractVo;
 import com.cjyc.common.system.feign.ISysRoleService;
-import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsRoleService;
@@ -37,15 +33,12 @@ import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.common.system.util.ResultDataUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,8 +61,6 @@ public class CsCustomerServiceImpl implements ICsCustomerService {
     private ISysUserService sysUserService;
     @Resource
     private ISysRoleService sysRoleService;
-    @Resource
-    private StringRedisUtil redisUtil;
     @Resource
     private ICsRoleService csRoleService;
     @Resource

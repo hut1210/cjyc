@@ -1,6 +1,5 @@
 package com.cjyc.common.system.util;
 
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.log.monitor.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -32,8 +30,6 @@ public class RedisUtils {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
-    @Resource
-    private RedisDistributedLock redisLock;
 
     public void setRedisTemplate(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;

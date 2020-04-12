@@ -1,10 +1,10 @@
 package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjyc.common.model.constant.FieldConstant;
-import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.IVehicleDao;
 import com.cjyc.common.model.dao.IWaybillCarDao;
@@ -47,8 +47,6 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
     @Resource
     private ICsOrderCarLogService csOrderCarLogService;
     @Resource
-    private IOrderCarDao orderCarDao;
-    @Resource
     private ITaskDao taskDao;
     @Resource
     private IVehicleDao vehicleDao;
@@ -70,6 +68,8 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         // 查询车辆实时位置
         if (data != null && FieldConstant.IN_TRANSIT.equals(data.getOutterState())) {
             getLocation(reqDto, logisticsInfoVo);
+        } else {
+            log.info("===当前车辆不在运输中---未查询实时位置信息===,车辆编号：{}",reqDto.getOrderCarNo());
         }
 
         return BaseResultUtil.success(logisticsInfoVo);
@@ -98,8 +98,8 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             return BaseResultUtil.fail("用户位置信息上传失败");
         }
 
-        log.info("===当前用户没有运输任务---未调用位置服务平台接口===");
-        return BaseResultUtil.success("当前用户没有运输任务");
+        log.info("===当前用户没有运输任务---未上传用户位置信息===,用户ID：{}",reqDto.getLoginId());
+        return BaseResultUtil.success("当前用户没有运输任务，未上传用户位置信息");
     }
 
     private UploadUserLocationReq getUploadUserLocationReq(LocationInfoDto reqDto) {
@@ -127,31 +127,36 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         // 判断运输车车牌号是否为自营车辆，是自营车则根据车牌号车讯位置，否则根据司机信息查询
         OutterOrderCarLogVo locationVo = null;
         boolean isOwnerCar = vehicle != null && VehicleOwnerEnum.SELFBUSINESS.code == vehicle.getOwnershipType();
+        // 是自营车，根据车牌号查询位置信息
         if (isOwnerCar) {
-            // 是自营车，根据车牌号查询位置信息
-            log.info("===>调用位置服务平台接口-根据车牌号查询位置信息开始,请求参数：{}", JSON.toJSONString(taskInfo.getPlateNo()));
-            ResultData resultData = sysLocationService.getLocationByPlateNo(taskInfo.getPlateNo());
-            log.info("<===调用位置服务平台接口-根据车牌号查询位置信息结束,响应参数：{}", JSON.toJSONString(resultData));
+            JSONObject obj = new JSONObject();
+            obj.put("plateNo",taskInfo.getPlateNo());
+
+            log.info("===>调用位置服务平台接口-根据车牌号-查询位置信息开始,请求参数：{}", JSON.toJSONString(obj));
+            ResultData resultData = sysLocationService.getLocationByPlateNo(obj);
+            log.info("<===调用位置服务平台接口-根据车牌号-查询位置信息结束,响应参数：{}", JSON.toJSONString(resultData));
 
             if (ResultDataUtil.isSuccess(resultData)) {
-                log.info("===根据车牌号查询位置信息成功===");
+                log.info("===根据车牌号-查询位置信息成功===");
                 locationVo = getOutterOrderCarLogVo(locationVo, resultData, "sendTime");
             } else {
-                log.info("===根据车牌号查询位置信息失败===");
+                log.info("===根据车牌号-查询位置信息失败===");
             }
         }
 
+        // 非自营车，根据司机信息查询APP定位信息
         if (!isOwnerCar || locationVo == null) {
-            // 非自营车，根据司机信息查询APP定位信息
-            log.info("===>调用位置服务平台接口-查询用户实时位置开始,请求参数：{}", JSON.toJSONString(taskInfo.getDriverId()));
-            ResultData resultData = sysLocationService.getUserLocation(String.valueOf(taskInfo.getDriverId()));
-            log.info("<===调用位置服务平台接口-查询用户实时位置结束,响应参数：{}", JSON.toJSONString(resultData));
+            JSONObject object = new JSONObject();
+            object.put("userId",taskInfo.getDriverId());
+            log.info("===>调用位置服务平台接口-根据用户ID-查询用户实时位置开始,请求参数：{}", JSON.toJSONString(object));
+            ResultData resultData = sysLocationService.getUserLocation(object);
+            log.info("<===调用位置服务平台接口-根据用户ID-查询用户实时位置结束,响应参数：{}", JSON.toJSONString(resultData));
 
             if (ResultDataUtil.isSuccess(resultData)) {
-                log.info("===查询用户实时位置成功===");
+                log.info("===根据用户ID-查询用户实时位置成功===");
                 locationVo = getOutterOrderCarLogVo(locationVo, resultData, "gpsTime");
             } else {
-                log.info("===查询用户实时位置失败===");
+                log.info("===根据用户ID-查询用户实时位置失败===");
             }
         }
 
