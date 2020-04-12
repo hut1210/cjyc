@@ -22,26 +22,26 @@ public interface ISysLocationService {
      * @param
      * @return com.cjkj.common.model.ResultData
      */
-    @PostMapping(value = "/cps-api/yunche/uploadUserLocation")
+    @PostMapping(value = "/yunche/uploadUserLocation")
     ResultData uploadUserLocation(@RequestBody UploadUserLocationReq uploadUserLocationReq);
 
     /**
      * 功能描述: 用户实时位置查询
      * @author liuxingxiang
      * @date 2020/4/9
-     * @param userId
+     * @param obj
      * @return com.cjkj.common.model.ResultData
      */
-    @PostMapping(value = "/cps-api/yunche/getUserLocation")
-    ResultData getUserLocation(String userId);
+    @PostMapping(value = "/yunche/getUserLocation")
+    ResultData getUserLocation(@RequestBody Object obj);
 
     /**
      * 功能描述: 根据车牌号查询运输车实时位置
      * @author liuxingxiang
      * @date 2020/4/9
-     * @param plateNo
+     * @param obj
      * @return com.cjkj.common.model.ResultData
      */
-    @PostMapping(value = "/cps-api/vehicle/track")
-    ResultData getLocationByPlateNo(String plateNo);
+    @PostMapping(value = "/yunche/track")
+    ResultData getLocationByPlateNo(@RequestBody Object obj);
 }

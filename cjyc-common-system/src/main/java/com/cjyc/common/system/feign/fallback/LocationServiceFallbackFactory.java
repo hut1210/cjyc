@@ -25,13 +25,13 @@ public class LocationServiceFallbackFactory implements FallbackFactory<ISysLocat
             }
 
             @Override
-            public ResultData getUserLocation(String userId) {
+            public ResultData getUserLocation(Object obj) {
                 log.error("用户实时位置查询服务：降级");
                 return ResultData.failed("网络异常，请稍后再试");
             }
 
             @Override
-            public ResultData getLocationByPlateNo(String plateNo) {
+            public ResultData getLocationByPlateNo(Object obj) {
                 log.error("根据车牌号查询运输车实时位置服务：降级");
                 return ResultData.failed("网络异常，请稍后再试");
             }
