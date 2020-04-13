@@ -13,7 +13,6 @@ import com.cjyc.common.system.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -154,22 +153,20 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
             }
 
             String setKey = getSendNoSetKey(sendNoTypeEnum.prefix, time);
+            Set<String> set;
             if (!redisUtil.hasKey(setKey)) {
-                redisUtil.setEx(setKey, null, 1, TimeUnit.DAYS);
+                set = new HashSet<>();
+            }else{
+                set = redisUtil.sMembers(setKey);
             }
-            Set<String> set = redisUtil.sMembers(setKey);
-            if (CollectionUtils.isEmpty(set)) {
-                random = RandomUtil.getMathRandom(randomLength);
-            } else {
-                while (random == null) {
-                    String temp = RandomUtil.getMathRandom(randomLength);
-                    if (!set.contains(temp)) {
-                        random = temp;
-                    }
+            while (random == null) {
+                String temp = RandomUtil.getMathRandom(randomLength);
+                if (!set.contains(temp)) {
+                    random = temp;
                 }
             }
             redisUtil.sAdd(setKey, random);
-
+            redisUtil.expire(setKey, 1, TimeUnit.DAYS);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             random = RandomUtil.getMathRandom(randomLength);
