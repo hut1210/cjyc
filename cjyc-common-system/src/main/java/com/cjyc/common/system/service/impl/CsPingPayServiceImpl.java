@@ -549,7 +549,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         } catch (Exception e) {
             log.error("【自动打款模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo(), e);
             try{
-                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
                 addPaymentErrorLog(waybill.getNo(),null,errorMessage);
             }catch (Exception err){
                 addPaymentErrorLog(waybill.getNo(),null,e.getMessage());
@@ -733,7 +733,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             redisUtils.delete(lockKey);
             log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo(),e);
             try{
-                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
                 addPaymentErrorLog(waybill.getNo(),null,errorMessage);
             }catch (Exception err){
                 addPaymentErrorLog(waybill.getNo(),null,e.getMessage());
@@ -879,7 +879,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         } catch (Exception e) {
             log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(),e);
             try{
-                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
                 addPaymentErrorLog(null,order.getNo(),errorMessage);
             }catch (Exception err){
                 addPaymentErrorLog(null,order.getNo(),e.getMessage());
@@ -1009,7 +1009,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         } catch (Exception e) {
             log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(),e);
             try{
-                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
                 addPaymentErrorLog(null,order.getNo(),errorMessage);
             }catch (Exception err){
                 addPaymentErrorLog(null,order.getNo(),e.getMessage());
