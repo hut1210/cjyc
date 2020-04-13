@@ -17,7 +17,8 @@ public class ValidateSweepCodePayVo {
 
     @ApiModelProperty(value = "是否需要支付：0否 ，1是")
     private Integer isNeedPay;
-
+    @ApiModelProperty(value = "支付类型")
+    private Integer payType;
     @ApiModelProperty(value = "金额")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal amount;

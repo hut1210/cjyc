@@ -1,4 +1,7 @@
 spring:
+  #激活配置文件
+  profiles:
+    active: local
   #应用名称
   application:
     name: cjyc-foreign-api
@@ -7,5 +10,6 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848 #本机
-#        server-addr: 10.253.96.135:8848 #开发
+        #server-addr: 10.253.96.135:8848 #135
+        #server-addr: 10.253.96.136:8848 #136
 

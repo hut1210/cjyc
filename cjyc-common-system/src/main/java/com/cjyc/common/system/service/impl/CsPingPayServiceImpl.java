@@ -20,7 +20,6 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.util.MoneyUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
@@ -368,6 +367,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             ValidateSweepCodePayVo resVo = new ValidateSweepCodePayVo();
             resVo.setAmount(amount);
+            resVo.setPayType(order.getPayType());
             resVo.setIsNeedPay(isNeedPay);
             resVo.setTaskId(taskId);
             resVo.setTaskCarIds(convertToLongList(taskCarIdList));

@@ -1597,10 +1597,15 @@
         (case when temp.id is not null then temp.unload_link_user_id else null end) as loadLinkUserId,
         (case when temp.id is not null then temp.unload_link_name else (case when oc.pick_type != 4 and o.start_store_id > 0 then null else o.pick_contact_name end) end) as loadLinkName,
         (case when temp.id is not null then temp.unload_link_phone else (case when oc.pick_type != 4 and o.start_store_id > 0 then null else o.pick_contact_phone end) end ) as loadLinkPhone,
+        <!-- 预计发车日期 -->
         (case when temp.id is not null
-        then (case when temp.expect_end_time > UNIX_TIMESTAMP(now()) * 1000 then temp.expect_end_time else UNIX_TIMESTAMP(now()) * 1000 end)
-        else (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) end
-        ) as expectStartTime,
+        then (case when temp.unload_time is not null
+              then (case when temp.unload_time > UNIX_TIMESTAMP(now()) * 1000 then temp.unload_time else UNIX_TIMESTAMP(now()) * 1000 end)
+              else (case when temp.expect_end_time > UNIX_TIMESTAMP(now()) * 1000 then temp.expect_end_time else UNIX_TIMESTAMP(now()) * 1000 end)
+              end)
+        else (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end)
+        end) as expectStartTime,
+
         (case when temp.id is not null then true else false end) as startFixedFlag,
 
         (case when o.end_store_id > 0 and oc.back_type != 4 then se.province else o.end_province end) as endProvince,
@@ -2212,10 +2217,15 @@
         (case when temp.id is not null then temp.unload_link_user_id else (case when o.start_store_id > 0 then null else null end) end) as loadLinkUserId,
         (case when temp.id is not null then temp.unload_link_name else (case when o.start_store_id > 0 then null else o.pick_contact_name end)  end) as loadLinkName,
         (case when temp.id is not null then temp.unload_link_phone else (case when o.start_store_id > 0 then null else o.pick_contact_phone end)  end ) as loadLinkPhone,
+        <!-- 预计发车日期 -->
         (case when temp.id is not null
-        then (case when temp.expect_end_time > UNIX_TIMESTAMP(now()) * 1000 then temp.expect_end_time else UNIX_TIMESTAMP(now()) * 1000 end)
-        else (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end) end
-        ) as expectStartTime,
+        then (case when temp.unload_time is not null
+        then (case when temp.unload_time > UNIX_TIMESTAMP(now()) * 1000 then temp.unload_time else UNIX_TIMESTAMP(now()) * 1000 end)
+        else (case when temp.expect_end_time > UNIX_TIMESTAMP(now()) * 1000 then temp.expect_end_time else UNIX_TIMESTAMP(now()) * 1000 end)
+        end)
+        else (case when o.expect_start_date > UNIX_TIMESTAMP(now()) * 1000 then o.expect_start_date else UNIX_TIMESTAMP(now()) * 1000 end)
+        end) as expectStartTime,
+
         true as startFixedFlag,
 
         o.end_province as endProvince,
@@ -2319,7 +2329,7 @@
         l.id as lineId,
         IFNULL(l.default_freight_fee, 0) as freightFee,
         (case when l.id is not null then true else false end) as hasLine,
-        (shell.expectStartTime + l.days * 24 * 60 * 60 * 1000) as expectEndTime
+        (shell.expectStartTime + l.days * 86400000) as expectEndTime
         from (
             select
             oc.id as orderCarId,
@@ -2644,6 +2654,20 @@
         from w_order_car
         where order_id = #{id}
         and state &lt; 100 and wl_pay_state != 2
+    </select>
+    <select id="findVinListByOrderNo" resultType="java.util.Map">
+        select  vin, id
+        from w_order_car
+        where order_no = #{orderNo}
+        and state &lt;= 100
+        and vin is not null and vin != ''
+    </select>
+    <select id="findPlateNoListByOrderNo" resultType="java.util.Map">
+        select  plate_no, id
+        from w_order_car
+        where order_no = #{orderNo}
+        and state &lt;= 100
+        and plate_no is not null and plate_no != ''
     </select>
 
     <sql id="count_wait_list_for_web">
