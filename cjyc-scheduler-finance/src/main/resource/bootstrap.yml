@@ -16,8 +16,7 @@ spring:
       #        file-extension: yml
       discovery:
         server-addr: 127.0.0.1:8848 #本机
-        #server-addr: 10.253.96.135:8848
-        #server-addr: localhost:8848
-        #server-addr: 10.253.96.126:8848
+        #server-addr: 10.253.96.135:8848 #135
+        #server-addr: 10.253.96.136:8848 #136
 
 
