@@ -1,6 +1,8 @@
 package com.cjyc.common.model.dto.web.finance;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cjyc.common.model.enums.customer.ClientTypeEnum;
+import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -90,13 +92,13 @@ public class ReceiveOrderCarDto implements Serializable {
 
     public String getCustomTypeStr() {
         Integer type = getType();
-        if (type != null && type == 1) {
-            return "C端客户";
-        } else if (type != null && type == 2) {
-            return "企业";
-        } else if (type != null && type == 3) {
-            return "合伙人";
-        } else {
+        if(type!=null && type== ClientTypeEnum.INDIVIDUAL.code){
+            return ClientTypeEnum.INDIVIDUAL.name;
+        }else if(type!=null && type== CustomerTypeEnum.ENTERPRISE.code){
+            return ClientTypeEnum.ENTERPRISE.name;
+        }else if(type!=null && type==CustomerTypeEnum.COOPERATOR.code){
+            return ClientTypeEnum.COOPERATOR.name;
+        }else{
             return "";
         }
     }
