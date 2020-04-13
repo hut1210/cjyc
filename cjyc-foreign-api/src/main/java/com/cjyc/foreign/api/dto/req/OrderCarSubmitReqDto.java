@@ -29,7 +29,7 @@ public class OrderCarSubmitReqDto implements Serializable {
     @ApiModelProperty(value = "车牌号")
     private String plateNo;
 
-    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]$)", message = "vin号格式不正确")
+    @Pattern(regexp = "(^$)|(^[0-9a-zA-Z]{1,20}$)", message = "vin号格式不正确")
     @ApiModelProperty(value = "vin码")
     private String vin;
 
