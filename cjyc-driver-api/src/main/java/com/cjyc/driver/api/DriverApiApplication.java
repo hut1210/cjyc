@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * Created by litan on 2019/9/27.
+ * @author JPG
  */
 @SpringBootApplication
 @EnableDiscoveryClient

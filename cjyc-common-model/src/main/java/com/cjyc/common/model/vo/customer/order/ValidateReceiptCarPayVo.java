@@ -13,6 +13,8 @@ public class ValidateReceiptCarPayVo {
 
     @ApiModelProperty(value = "是否需要支付：0否 ，1是")
     private Integer isNeedPay;
+
+    private Integer payType;
     @ApiModelProperty(value = "金额")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal amount;
