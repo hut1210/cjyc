@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -916,7 +917,16 @@ public class FinanceServiceImpl implements IFinanceService {
 
         for (PaidNewVo paidNewVo : financeVoList) {
             if (paidNewVo.getState().equals("支付失败")) {
-                paidNewVo.setFailReason("请联系管理员");
+                //查询承运商付款失败原因
+                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
+                        .lambda().eq(PaymentErrorLog::getWaybillNo,paidNewVo.getWaybillNo())
+                );
+                //判断是否有失败原因记录
+                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                    paidNewVo.setFailReason("请联系管理员");
+                }else {
+                    paidNewVo.setFailReason(paymentErrorLog.getRemark());
+                }
             }
         }
         log.info("financeVoList = " + financeVoList.size());
@@ -1095,7 +1105,16 @@ public class FinanceServiceImpl implements IFinanceService {
             paidNewVo.setFreightFee(paidNewVo.getFreightFee() != null ? paidNewVo.getFreightFee().divide(new BigDecimal(100)) : null);
             paidNewVo.setFreightFeePayable(new BigDecimal(MoneyUtil.fenToYuan(paidNewVo.getFreightFeePayable(), MoneyUtil.PATTERN_TWO)));
             if (paidNewVo.getState().equals("支付失败")) {
-                paidNewVo.setFailReason("请联系管理员");
+                //查询承运商付款失败原因
+                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
+                        .lambda().eq(PaymentErrorLog::getWaybillNo,paidNewVo.getWaybillNo())
+                );
+                //判断是否有失败原因记录
+                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                    paidNewVo.setFailReason("请联系管理员");
+                }else {
+                    paidNewVo.setFailReason(paymentErrorLog.getRemark());
+                }
             }
         }
         return paidNewVoList;
@@ -1113,7 +1132,16 @@ public class FinanceServiceImpl implements IFinanceService {
             //合伙人服务费
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
             if (cooperatorPaidVo.getState().equals("支付失败")) {
-                cooperatorPaidVo.setDescription("请联系管理员");
+                //查询合伙人付款失败原因
+                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
+                        .lambda().eq(PaymentErrorLog::getOrderNo,cooperatorPaidVo.getOrderNo())
+                );
+                //判断是否有失败原因记录
+                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                    cooperatorPaidVo.setDescription("请联系管理员");
+                }else {
+                    cooperatorPaidVo.setDescription(paymentErrorLog.getRemark());
+                }
             }
             cooperatorPaidVo.setWlFee(MoneyUtil.nullToZero(cooperatorPaidVo.getWlFee()).divide(new BigDecimal(100)));
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(cooperatorPaidVo.getServiceFee()).divide(new BigDecimal(100)));
@@ -1199,9 +1227,17 @@ public class FinanceServiceImpl implements IFinanceService {
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(cooperatorPaidVo.getServiceFee()).divide(new BigDecimal(100)));
             cooperatorPaidVo.setTotalFee(MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).divide(new BigDecimal(100)));
             if (cooperatorPaidVo.getState().equals("支付失败")) {
-                cooperatorPaidVo.setDescription("请联系管理员");
+                //查询合伙人付款失败原因
+                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
+                        .lambda().eq(PaymentErrorLog::getOrderNo,cooperatorPaidVo.getOrderNo())
+                );
+                //判断是否有失败原因记录
+                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                    cooperatorPaidVo.setDescription("请联系管理员");
+                }else {
+                    cooperatorPaidVo.setDescription(paymentErrorLog.getRemark());
+                }
             }
-
             //公户
             if (cooperatorPaidVo != null && cooperatorPaidVo.getCardType().equals("公户")) {
                 cooperatorPaidVo.setBankName("");

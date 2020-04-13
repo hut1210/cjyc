@@ -57,7 +57,7 @@ public class WaybillController {
      */
     @ApiOperation(value = "同城装车")
     @PostMapping(value = "/load/for/local")
-    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody ReplenishInfoDto reqDto) {
+    public ResultVo<ResultReasonVo> loadForLocal(@RequestBody @Validated ReplenishInfoDto reqDto) {
         //验证用户
         Driver driver = csDriverService.validate(reqDto.getLoginId());
         reqDto.setLoginName(driver.getName());
