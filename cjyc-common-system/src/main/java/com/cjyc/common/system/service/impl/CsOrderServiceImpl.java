@@ -1613,6 +1613,42 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     /**
+     * 验证是否重复车牌号，重复返回false
+     * @author JPG
+     * @since 2020/4/13 9:38
+     * @param orderNo
+     * @param orderCarId
+     * @param plateNo
+     */
+    @Override
+    public boolean validateIsNotRepeatPlateNo(String orderNo, Long orderCarId, String plateNo) {
+        String key = RedisKeys.getCheckOrderPlateNo(orderNo);
+        Map<Object, Object> plateNoMap = redisUtils.hGetAll(key);
+        if(CollectionUtils.isEmpty(plateNoMap)){
+            plateNoMap = orderCarDao.findPlateNoListByOrderNo(orderNo);
+        }
+        if(!CollectionUtils.isEmpty(plateNoMap) && plateNoMap.containsKey(plateNo) && !orderCarId.equals(plateNoMap.get(plateNo))){
+            return false;
+        }
+        redisUtils.hset(key, plateNo,  String.valueOf(orderCarId));
+        return true;
+    }
+
+    @Override
+    public boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin) {
+        String vnkey = RedisKeys.getCheckOrderVin(orderNo);
+        Map<Object, Object> vinMap = redisUtils.hGetAll(vnkey);
+        if(CollectionUtils.isEmpty(vinMap)){
+            vinMap = orderCarDao.findVinListByOrderNo(orderNo);
+        }
+        if(!CollectionUtils.isEmpty(vinMap) && vinMap.containsKey(vin) && !orderCarId.equals(vinMap.get(vin))){
+            return false;
+        }
+        redisUtils.hset(vnkey, vin, String.valueOf(orderCarId));
+        return true;
+    }
+
+    /**
      * 均摊优惠券
      *
      * @param orderCarlist

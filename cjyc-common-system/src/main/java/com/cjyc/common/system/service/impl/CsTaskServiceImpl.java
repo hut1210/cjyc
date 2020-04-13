@@ -174,20 +174,18 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
         }
 
-        String pnkey = RedisKeys.getCheckOrderPlateNo(waybillCar.getOrderCarNo().split("-")[0]);
-        Map<Object, Object> plateNoMap = redisUtils.hGetAll(pnkey);
-        if(!CollectionUtils.isEmpty(plateNoMap) && plateNoMap.containsKey(plateNo) && !waybillCar.getOrderCarId().equals(plateNoMap.get(plateNo))){
-            return BaseResultUtil.fail("车牌号已经存在");
-        }else{
-            redisUtils.hset(pnkey, plateNo, waybillCar.getOrderCarId());
+        //验证车牌号和vin是否重复
+        String orderNo = waybillCar.getOrderCarNo().split("-")[0];
+        Long orderCarId = waybillCar.getOrderCarId();
+        boolean isNotRepeatPlateNo = csOrderService.validateIsNotRepeatPlateNo(orderNo, orderCarId, plateNo);
+        if(!isNotRepeatPlateNo){
+            return BaseResultUtil.fail("此车牌号已经在订单中存在");
         }
-        String vnkey = RedisKeys.getCheckOrderVin(waybillCar.getOrderCarNo().split("-")[0]);
-        Map<Object, Object> vinMap = redisUtils.hGetAll(vnkey);
-        if(!CollectionUtils.isEmpty(vinMap) && vinMap.containsKey(plateNo) && !waybillCar.getOrderCarId().equals(vinMap.get(plateNo))){
-            return BaseResultUtil.fail("车牌号已经存在");
-        }else{
-            redisUtils.hset(vnkey, vin, waybillCar.getOrderCarId());
+        boolean isNotRepeatVin = csOrderService.validateIsNotRepeatVin(orderNo, orderCarId, vin);
+        if(!isNotRepeatVin){
+            return BaseResultUtil.fail("此Vin已经在订单中存在");
         }
+
         //更新车辆信息
         OrderCar orderCar = new OrderCar();
         orderCar.setId(waybillCar.getOrderCarId());
