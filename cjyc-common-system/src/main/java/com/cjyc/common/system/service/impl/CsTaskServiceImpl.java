@@ -173,12 +173,18 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 return BaseResultUtil.fail("照片数量不能超过20张");
             }
         }
-        /*String key = RedisKeys.getCheckOrderPlateNo(waybillCar.getOrderCarNo().split("-")[0]);
-        Map<Object, Object> plateNoMap = redisUtils.hGetAll(key);
-        if(!CollectionUtils.isEmpty(plateNoMap) && plateNoMap.containsKey(plateNo) && !waybillCar.getOrderCarId().equals(plateNoMap.get(plateNo))){
-            return BaseResultUtil.fail("车牌号已经存在");
+
+        //验证车牌号和vin是否重复
+        String orderNo = waybillCar.getOrderCarNo().split("-")[0];
+        Long orderCarId = waybillCar.getOrderCarId();
+        boolean isNotRepeatPlateNo = csOrderService.validateIsNotRepeatPlateNo(orderNo, orderCarId, plateNo);
+        if(!isNotRepeatPlateNo){
+            return BaseResultUtil.fail("此车牌号已经在订单中存在");
         }
-        redisUtils.hset(key, plateNo, waybillCar.getOrderCarId());*/
+        boolean isNotRepeatVin = csOrderService.validateIsNotRepeatVin(orderNo, orderCarId, vin);
+        if(!isNotRepeatVin){
+            return BaseResultUtil.fail("此Vin已经在订单中存在");
+        }
 
         //更新车辆信息
         OrderCar orderCar = new OrderCar();

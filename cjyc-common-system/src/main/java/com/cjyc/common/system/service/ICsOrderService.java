@@ -104,4 +104,8 @@ public interface ICsOrderService {
     boolean validateIsArriveStoreOrCityRange(Long endStoreId, String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode);
 
     BigDecimal getCarWlFee(OrderCar orderCar);
+
+    boolean validateIsNotRepeatPlateNo(String orderNo, Long orderCarId, String plateNo);
+
+    boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin);
 }

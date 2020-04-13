@@ -21,7 +21,6 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
 import com.cjyc.common.model.util.MoneyUtil;
-import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
@@ -373,6 +372,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             ValidateSweepCodePayVo resVo = new ValidateSweepCodePayVo();
             resVo.setAmount(amount);
+            resVo.setPayType(order.getPayType());
             resVo.setIsNeedPay(isNeedPay);
             resVo.setTaskId(taskId);
             resVo.setTaskCarIds(convertToLongList(taskCarIdList));
@@ -418,12 +418,12 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
                     if (waybill.getFreightPayState() == 2) {
                         redisUtils.delete(lockKey);
-                        log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
+                        log.error("运费正在支付,请勿重复支付 waybillNo = {}", waybill.getNo());
                         return;
                     }
                     if (waybill.getFreightPayState() == 1) {
                         redisUtils.delete(lockKey);
-                        log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                        log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybill.getNo());
                         return;
                     }
 
@@ -435,20 +435,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             if (tradeBill != null) {
                                 if (tradeBill.getState() == 1) {
                                     redisUtils.delete(lockKey);
-                                    log.error("运费正在支付中,请勿重复支付 waybillId = {}", waybillId);
+                                    log.error("运费正在支付中,请勿重复支付 waybillNo = {}", waybill.getNo());
                                     return;
                                 }
                                 if (tradeBill.getState() == 2) {
                                     redisUtils.delete(lockKey);
-                                    log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                                    log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybill.getNo());
                                     return;
                                 }
 
                             }
                         } else if (tradeBills.size() > 1) {
                             redisUtils.delete(lockKey);
-                            log.error("【自动打款模式，通联代付支付运费】账单数据异常 waybillId = {}", waybillId);
-                            addPaymentErrorLog("auto allinpay 账单数据异常 waybillId =" + waybillId);
+                            log.error("【自动打款模式，通联代付支付运费】账单数据异常 waybillNo = {}", waybill.getNo());
+                            addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】账单数据异常");
                             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                             return;
                         }
@@ -524,31 +524,31 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                             cStransactionService.saveTransactions(transfer, "1");
                                         } else {
                                             redisUtils.delete(lockKey);
-                                            log.error("【自动打款模式，通联代付支付运费】打款金额有误 waybillId = {}", waybillId);
-                                            addPaymentErrorLog("auto allinpay 打款金额有误 waybillId =" + waybillId);
+                                            log.error("【自动打款模式，通联代付支付运费】打款金额有误 waybillNo = {}", waybill.getNo());
+                                            addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】打款金额有误");
                                             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                                             return;
                                         }
 
                                     } else {
                                         redisUtils.delete(lockKey);
-                                        log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
-                                        addPaymentErrorLog("auto allinpay 收款人信息不全 waybillId =" + waybillId);
+                                        log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillNo = {}", waybill.getNo());
+                                        addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】收款人信息不全");
                                         tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                                         return;
                                     }
                                 } else {
                                     redisUtils.delete(lockKey);
-                                    log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
-                                    addPaymentErrorLog("auto allinpay 收款人为账期用户 waybillId = " + waybillId);
+                                    log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillNo = {}", waybill.getNo());
+                                    addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】收款人为账期用户");
                                     //账期承运商此处不处理支付状态
                                     //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                     return;
                                 }
                             } else {
                                 redisUtils.delete(lockKey);
-                                log.error("【自动打款模式，通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
-                                addPaymentErrorLog("auto allinpay 收款人不存在 waybillId = " + waybillId);
+                                log.error("【自动打款模式，通联代付支付运费】收款人不存在 waybillNo = {}", waybill.getNo());
+                                addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】收款人不存在");
                                 tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                                 return;
                             }
@@ -566,9 +566,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
             }
         } catch (Exception e) {
-            log.error("【自动打款模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
-            log.error(e.getMessage(), e);
-            addPaymentErrorLog("【auto allinpay，通联代付支付运费失败】运单" + waybill.getNo() + e.getMessage());
+            log.error("【自动打款模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo(), e);
+            try{
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                addPaymentErrorLog(waybill.getNo(),null,errorMessage);
+            }catch (Exception err){
+                addPaymentErrorLog(waybill.getNo(),null,e.getMessage());
+            }
             //付款失败
             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
             return;
@@ -609,8 +613,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         paymentRecordDao.insert(paymentRecord);
     }
 
-    private void addPaymentErrorLog(String remark) {
+    private void addPaymentErrorLog(String waybillNo,String orderNo,String remark) {
         PaymentErrorLog paymentErrorLog = new PaymentErrorLog();
+        paymentErrorLog.setWaybillNo(waybillNo);
+        paymentErrorLog.setOrderNo(orderNo);
         paymentErrorLog.setRemark(remark);
         paymentErrorLog.setCreateTime(System.currentTimeMillis());
         paymentErrorLogDao.insert(paymentErrorLog);
@@ -632,6 +638,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
                     //校验运单支付状态
                     waybill = waybillDao.selectById(waybillId);
+                    String waybillNo = waybill.getNo();
                     if (waybill.getCarrierType() == null || waybill.getCarrierType() == 3 || waybill.getCarrierType() == 6) {
                         return BaseResultUtil.success("运单ID {} 不需要支付");
                     }
@@ -654,20 +661,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             if (tradeBill != null) {
                                 if (tradeBill.getState() == 1) {
                                     redisUtils.delete(lockKey);
-                                    log.error("运费正在支付中,请勿重复支付 waybillId = {}", waybillId);
+                                    log.error("运费正在支付中,请勿重复支付 waybillNo = {}", waybillNo);
                                     return BaseResultUtil.fail("运费正在支付中,请勿重复支付");
                                 }
                                 if (tradeBill.getState() == 2) {
                                     redisUtils.delete(lockKey);
-                                    log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                                    log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybillNo);
                                     return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
                                 }
 
                             }
                         } else if (tradeBills.size() > 1) {
                             redisUtils.delete(lockKey);
-                            log.error("【对外支付模式，通联代付支付运费】账单数据异常 waybillId = {}", waybillId);
-                            addPaymentErrorLog("external allinpay 账单数据异常 waybillId =" + waybillId);
+                            log.error("【对外支付模式，通联代付支付运费】账单数据异常 waybillNo = {}", waybillNo);
+                            addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】账单数据异常");
                             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                             return BaseResultUtil.fail("通联代付失败,账单数据异常");
                         }
@@ -719,31 +726,31 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                         cStransactionService.saveTransactions(transfer, "1");
                                     } else {
                                         redisUtils.delete(lockKey);
-                                        log.error("【对外支付模式，通联代付支付运费】打款金额有误 waybillId = {}", waybillId);
-                                        addPaymentErrorLog("external allinpay 打款金额有误 waybillId =" + waybillId);
+                                        log.error("【对外支付模式，通联代付支付运费】打款金额有误 waybillNo = {}", waybill.getNo());
+                                        addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】打款金额有误");
                                         tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                                         return BaseResultUtil.fail("通联代付失败,打款金额有误");
                                     }
 
                                 } else {
                                     redisUtils.delete(lockKey);
-                                    log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillId = {}", waybillId);
-                                    addPaymentErrorLog("external allinpay 收款人信息不全 waybillId =" + waybillId);
+                                    log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillNo = {}", waybillNo);
+                                    addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】收款人信息不全");
                                     tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                                     return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                                 }
                             } else {
                                 redisUtils.delete(lockKey);
-                                log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillId = {}", waybillId);
-                                addPaymentErrorLog("external allinpay 收款人为账期用户 waybillId = " + waybillId);
+                                log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillNo = {}", waybillNo);
+                                addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】收款人为账期用户");
                                 //账期承运商此处不处理支付状态
                                 //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                 return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                             }
                         } else {
                             redisUtils.delete(lockKey);
-                            log.error("【对外支付模式，通联代付支付运费】收款人不存在 waybillId = {}", waybillId);
-                            addPaymentErrorLog("external allinpay 收款人不存在 waybillId = " + waybillId);
+                            log.error("【对外支付模式，通联代付支付运费】收款人不存在 waybillNo = {}", waybillNo);
+                            addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】收款人不存在");
                             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                             return BaseResultUtil.fail("通联代付失败,收款人不存在");
                         }
@@ -759,9 +766,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         } catch (Exception e) {
             redisUtils.delete(lockKey);
-            log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo());
-            log.error(e.getMessage(), e);
-            addPaymentErrorLog("external allinpay 运单" + waybill.getNo() + "支付运费支付失败" + e.getMessage());
+            log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo(),e);
+            try{
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                addPaymentErrorLog(waybill.getNo(),null,errorMessage);
+            }catch (Exception err){
+                addPaymentErrorLog(waybill.getNo(),null,e.getMessage());
+            }
             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
             return BaseResultUtil.fail("通联代付失败");
         }
@@ -835,8 +846,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             }
                         } else if (tradeBills.size() > 1) {
                             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());
-                            log.error("合伙人服务费用账单数据多条异常 orderId = {}", orderId);
-                            addPaymentErrorLog("合伙人服务费用账单数据多条异常 orderId = " + orderId);
+                            log.error("合伙人服务费用账单数据多条异常 orderNo = {}", order.getNo());
+                            addPaymentErrorLog(null,order.getNo(),"合伙人服务费用账单数据多条异常");
                             return BaseResultUtil.fail("合伙人服务费用账单数据多条异常,请联系管理员");
                         }
 
@@ -875,15 +886,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                 cStransactionService.updateOrderFlag(order.getNo(), "1", System.currentTimeMillis());//付款中
                                 cStransactionService.saveCooperatorTransactions(transfer, "1");
                             } else {
-                                log.error("【通联代付支付合伙人费用】打款金额有误 orderId = {}", orderId);
-                                addPaymentErrorLog("【通联代付支付合伙人费用】打款金额有误 orderId = " + orderId);
+                                log.error("【通联代付支付合伙人费用】打款金额有误 orderNo = {}", order.getNo());
+                                addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】打款金额有误");
                                 cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
                                 return BaseResultUtil.fail("合伙人服务费用支付失败，打款金额有误");
                             }
 
                         } else {
-                            log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);
-                            addPaymentErrorLog("【通联代付支付合伙人费用】收款人信息不全 orderId = " + orderId);
+                            log.error("【通联代付支付合伙人费用】收款人信息不全 orderNo = {}", order.getNo());
+                            addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】收款人信息不全");
                             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
                             return BaseResultUtil.fail("合伙人服务费用支付失败，收款人信息不全");
                         }
@@ -897,13 +908,17 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
 
             } else {
-                addPaymentErrorLog("合伙人通联代付失败,订单" + orderId + "不存在");
+                log.error("合伙人通联代付失败,订单" + orderId + "不存在");
                 return BaseResultUtil.fail("合伙人服务费用支付失败，订单不存在");
             }
         } catch (Exception e) {
-            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo());
-            log.error(e.getMessage(), e);
-            addPaymentErrorLog("allinpay 订单" + order.getNo() + "支付服务费失败" + e.getMessage());
+            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(),e);
+            try{
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                addPaymentErrorLog(null,order.getNo(),errorMessage);
+            }catch (Exception err){
+                addPaymentErrorLog(null,order.getNo(),e.getMessage());
+            }
             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
             return BaseResultUtil.fail("合伙人服务费用支付失败");
         }
@@ -961,8 +976,8 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             }
                         } else if (tradeBills.size() > 1) {
                             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());
-                            log.error("合伙人服务费用账单数据多条异常 orderId = {}", orderId);
-                            addPaymentErrorLog("合伙人服务费用账单数据多条异常 orderId = " + orderId);
+                            log.error("合伙人服务费用账单数据多条异常 orderNo = {}", order.getNo());
+                            addPaymentErrorLog(null,order.getNo(),"合伙人服务费用账单数据多条异常");
                             return;
                         }
 
@@ -1001,15 +1016,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                                 cStransactionService.updateOrderFlag(order.getNo(), "1", System.currentTimeMillis());//付款中
                                 cStransactionService.saveCooperatorTransactions(transfer, "1");
                             } else {
-                                log.error("【通联代付支付合伙人费用】打款金额有误 orderId = {}", orderId);
-                                addPaymentErrorLog("【通联代付支付合伙人费用】打款金额有误 orderId = " + orderId);
+                                log.error("【通联代付支付合伙人费用】打款金额有误 orderNo = {}", order.getNo());
+                                addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】打款金额有误");
                                 cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
                                 return;
                             }
 
                         } else {
-                            log.error("【通联代付支付合伙人费用】收款人信息不全 orderId = {}", orderId);
-                            addPaymentErrorLog("【通联代付支付合伙人费用】收款人信息不全 orderId = " + orderId);
+                            log.error("【通联代付支付合伙人费用】收款人信息不全 orderNo = {}", order.getNo());
+                            addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】收款人信息不全");
                             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
                             return;
                         }
@@ -1023,13 +1038,17 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
 
             } else {
-                addPaymentErrorLog("合伙人通联代付失败,订单" + orderId + "不存在");
+                log.error("合伙人通联代付失败,订单" + orderId + "不存在");
                 return;
             }
         } catch (Exception e) {
-            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo());
-            log.error(e.getMessage(), e);
-            addPaymentErrorLog("allinpay 订单" + order.getNo() + "，支付服务费失败" + e.getMessage());
+            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(),e);
+            try{
+                String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1];
+                addPaymentErrorLog(null,order.getNo(),errorMessage);
+            }catch (Exception err){
+                addPaymentErrorLog(null,order.getNo(),e.getMessage());
+            }
             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
             return;
         }

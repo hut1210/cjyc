@@ -778,14 +778,30 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
      * 计算到达时间
      **/
     private WaybillCar fillWaybillCarExpectEndTime(WaybillCar waybillCar, Long expectStartDate) {
+        long nowTime = System.currentTimeMillis();
+        //订单提车时间已经过去按当前时间
         if (waybillCar.getExpectStartTime() == null || waybillCar.getExpectStartTime() <= 0) {
-            waybillCar.setExpectStartTime(System.currentTimeMillis() < expectStartDate ? expectStartDate : System.currentTimeMillis());
+            waybillCar.setExpectStartTime(nowTime < expectStartDate ? expectStartDate : nowTime);
         }
+
         Line line = csLineService.getLineByCity(waybillCar.getStartCityCode(), waybillCar.getEndCityCode(), true);
         if (line != null && line.getDays() != null) {
+            //预计提车时间加线路时间
             waybillCar.setExpectEndTime(TimeStampUtil.addDays(waybillCar.getExpectStartTime(), line.getDays().intValue()));
+        }else{
+            //线路时间不存在，同城加1天
+            if(isLocalWaybill(waybillCar)){
+                waybillCar.setExpectEndTime(TimeStampUtil.addDays(waybillCar.getExpectStartTime(), 1));
+            }
         }
         return waybillCar;
+    }
+
+    private boolean isLocalWaybill(WaybillCar waybillCar) {
+        if(waybillCar.getStartCityCode() != null && waybillCar.getStartCityCode().equals(waybillCar.getEndAreaCode())){
+            return true;
+        }
+        return false;
     }
 
     /**
