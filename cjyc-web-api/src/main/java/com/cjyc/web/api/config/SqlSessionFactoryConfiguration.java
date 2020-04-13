@@ -1,4 +1,4 @@
-package com.cjyc.driver.api.config;
+package com.cjyc.web.api.config;
 
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.cjyc.common.model.interceptor.MapV2KInterceptor;
