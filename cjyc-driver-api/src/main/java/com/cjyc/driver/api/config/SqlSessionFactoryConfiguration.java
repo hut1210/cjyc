@@ -21,7 +21,7 @@ public class SqlSessionFactoryConfiguration {
         MybatisSqlSessionFactoryBean factoryBean = new MybatisSqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
         // 读取mapper 配置文件
-        Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*Mapper.xml");
+        Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*.xml");
         factoryBean.setMapperLocations(resources);
         // 加入SQL 语句执行拦截器
         factoryBean.setPlugins(new Interceptor[]{new MapV2KInterceptor()});
