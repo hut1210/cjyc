@@ -23,7 +23,7 @@ public class testController {
     private IOrderCarDao orderCarDao;
     @GetMapping("/test/ds")
     public String test(){
-        Map<Object, Object> map = orderCarDao.findVinListByOrderNo("D20011355643");
+        Map<String, String> map = orderCarDao.findVinListByOrderNo("D20011355643");
         System.out.println(JSON.toJSONString(map));
         return JSON.toJSONString(map);
     }

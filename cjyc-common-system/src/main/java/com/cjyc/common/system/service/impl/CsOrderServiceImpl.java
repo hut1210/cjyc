@@ -54,6 +54,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -1622,12 +1623,22 @@ public class CsOrderServiceImpl implements ICsOrderService {
      */
     @Override
     public boolean validateIsNotRepeatPlateNo(String orderNo, Long orderCarId, String plateNo) {
-        String key = RedisKeys.getCheckOrderPlateNo(orderNo);
-        Map<Object, Object> plateNoMap = redisUtils.hGetAll(key);
-        if(CollectionUtils.isEmpty(plateNoMap)){
-            plateNoMap = orderCarDao.findPlateNoListByOrderNo(orderNo);
+        if(orderNo == null || orderCarId == null){
+            return false;
         }
-        if(!CollectionUtils.isEmpty(plateNoMap) && plateNoMap.containsKey(plateNo) && !orderCarId.equals(plateNoMap.get(plateNo))){
+        if(StringUtils.isBlank(plateNo)){
+            return true;
+        }
+        String key = RedisKeys.getCheckOrderPlateNo(orderNo);
+        Map<String, String> map;
+        if(redisUtils.hasKey(key)){
+            map = redisUtils.loadHash(key);
+        }else{
+            map = orderCarDao.findPlateNoListByOrderNo(orderNo);
+            redisUtils.hPutAll(key, map);
+            redisUtils.expire(key, 1, TimeUnit.DAYS);
+        }
+        if(!CollectionUtils.isEmpty(map) && map.containsKey(plateNo) && !String.valueOf(orderCarId).equals(map.get(plateNo))){
             return false;
         }
         redisUtils.hset(key, plateNo,  String.valueOf(orderCarId));
@@ -1636,15 +1647,28 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin) {
-        String vnkey = RedisKeys.getCheckOrderVin(orderNo);
-        Map<Object, Object> vinMap = redisUtils.hGetAll(vnkey);
-        if(CollectionUtils.isEmpty(vinMap)){
-            vinMap = orderCarDao.findVinListByOrderNo(orderNo);
-        }
-        if(!CollectionUtils.isEmpty(vinMap) && vinMap.containsKey(vin) && !orderCarId.equals(vinMap.get(vin))){
+        if(orderNo == null || orderCarId == null){
             return false;
         }
-        redisUtils.hset(vnkey, vin, String.valueOf(orderCarId));
+        if(StringUtils.isBlank(vin)){
+            return true;
+        }
+        String key = RedisKeys.getCheckOrderVin(orderNo);
+        Map<String, String> map;
+        if(redisUtils.hasKey(key)){
+            map = redisUtils.loadHash(key);
+        }else{
+            map = orderCarDao.findPlateNoListByOrderNo(orderNo);
+            redisUtils.hPutAll(key, map);
+            redisUtils.expire(key, 1, TimeUnit.DAYS);
+        }
+        if(CollectionUtils.isEmpty(map)){
+            map = orderCarDao.findVinListByOrderNo(orderNo);
+        }
+        if(!CollectionUtils.isEmpty(map) && map.containsKey(vin) && !String.valueOf(orderCarId).equals(map.get(vin))){
+            return false;
+        }
+        redisUtils.hset(key, vin, String.valueOf(orderCarId));
         return true;
     }
 
