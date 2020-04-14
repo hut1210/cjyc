@@ -112,6 +112,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     @Resource
     private IBankSubankRelationDao bankSubankRelationDao;
 
+    @Resource
     private final Lock lock = new ReentrantLock();
 
     private static List<String> phoneList = Arrays.asList("15290809152", "18201026858", "13367786789", "18774973990", "13894416363", "18297278387");
@@ -248,9 +249,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
             }
         }
-
         Long taskId = validateSweepCodeDto.getTaskId();
-
         if (taskId == null) {
             return BaseResultUtil.fail("缺少参数taskId");
         } else {
@@ -258,7 +257,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             if (taskVo == null) {
                 return BaseResultUtil.fail("任务不存在");
             }
-
             Waybill waybill = waybillDao.findByNo(taskVo.getWaybillNo());
             if (waybill == null) {
                 return BaseResultUtil.fail("运单不存在");
@@ -353,7 +351,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             //isNeedPay = 0;
                         }
                     }
-
                 }
                 orderCarNos.add(orderCar.getNo());
             }
@@ -389,10 +386,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
 
     @Override
     public void allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+        lock.lock();
         log.info("支付下游费用 waybillId={}", waybillId);
         Waybill waybill = waybillDao.selectById(waybillId);
+        String lockKey = RedisKeys.getCarrierPayKey(waybillId);
         try {
-            String lockKey = RedisKeys.getCarrierPayKey(waybillId);
             //判断缓存是否存在相同运单
             if (lockKey != null && redisUtils.hasKey(lockKey)) {
                 log.error("请勿重复发起支付 waybillId={}", waybillId);
@@ -401,162 +399,144 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 redisUtils.setEx(lockKey, String.valueOf(waybillId), 86400, TimeUnit.SECONDS);
             }
             if (waybill != null) {
-                lock.lock();
-                try {
+                //校验运单支付状态
+                waybill = waybillDao.selectById(waybillId);
+                if (waybill.getCarrierType() == null || waybill.getCarrierType() == 3 || waybill.getCarrierType() == 6) {
+                    log.error("运单ID {} 不需要支付", waybillId);
+                    return;
+                }
+                if (waybill.getFreightPayState() == 2) {
+                    redisUtils.delete(lockKey);
+                    log.error("运费正在支付,请勿重复支付 waybillNo = {}", waybill.getNo());
+                    return;
+                }
+                if (waybill.getFreightPayState() == 1) {
+                    redisUtils.delete(lockKey);
+                    log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybill.getNo());
+                    return;
+                }
 
-                    //校验运单支付状态
-                    waybill = waybillDao.selectById(waybillId);
-                    if (waybill.getCarrierType() == null || waybill.getCarrierType() == 3 || waybill.getCarrierType() == 6) {
-                        log.error("运单ID {} 不需要支付", waybillId);
-                        return;
-                    }
-
-                    if (waybill.getFreightPayState() == 2) {
-                        redisUtils.delete(lockKey);
-                        log.error("运费正在支付,请勿重复支付 waybillNo = {}", waybill.getNo());
-                        return;
-                    }
-                    if (waybill.getFreightPayState() == 1) {
-                        redisUtils.delete(lockKey);
-                        log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybill.getNo());
-                        return;
-                    }
-
-                    //校验流水表支付记录及支付状态
-                    List<TradeBill> tradeBills = cStransactionService.getTradeBillList(String.valueOf(waybillId), ChargeTypeEnum.UNION_PAY.getCode());
-                    if (tradeBills != null) {
-                        if (tradeBills.size() == 1) {
-                            TradeBill tradeBill = tradeBills.get(0);
-                            if (tradeBill != null) {
-                                if (tradeBill.getState() == 1) {
-                                    redisUtils.delete(lockKey);
-                                    log.error("运费正在支付中,请勿重复支付 waybillNo = {}", waybill.getNo());
-                                    return;
-                                }
-                                if (tradeBill.getState() == 2) {
-                                    redisUtils.delete(lockKey);
-                                    log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybill.getNo());
-                                    return;
-                                }
-
+                //校验流水表支付记录及支付状态
+                List<TradeBill> tradeBills = cStransactionService.getTradeBillList(String.valueOf(waybillId), ChargeTypeEnum.UNION_PAY.getCode());
+                if (tradeBills != null) {
+                    if (tradeBills.size() == 1) {
+                        TradeBill tradeBill = tradeBills.get(0);
+                        if (tradeBill != null) {
+                            if (tradeBill.getState() == 1) {
+                                redisUtils.delete(lockKey);
+                                log.error("运费正在支付中,请勿重复支付 waybillNo = {}", waybill.getNo());
+                                return;
                             }
-                        } else if (tradeBills.size() > 1) {
-                            redisUtils.delete(lockKey);
-                            log.error("【自动打款模式，通联代付支付运费】账单数据异常 waybillNo = {}", waybill.getNo());
-                            addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】账单数据异常");
-                            tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
-                            return;
-                        }
-
-                    }
-
-                    Long carrierId = waybill.getCarrierId();
-                    BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-                    log.info("【通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
-
-                    //新增打款记录日志
-                    savePaymentRecord(carrierId, waybillId);
-
-                    Config config = configDao.getByItemKey("external_pay");
-                    if (config != null && config.getState() == 1) {//对外支付模式
-                        try {
-                            log.info("【对外支付模式】运单Id {}", waybillId);
-                            ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
-
-                            if (ep == null) {
-                                //新增对外支付打款日志详情
-                                ExternalPayment externalPayment = new ExternalPayment();
-                                externalPayment.setCarrierId(carrierId);
-                                externalPayment.setWaybillId(waybillId);
-                                externalPaymentDao.insert(externalPayment);
-                            } else {
-                                log.error("【承运商对外打款日志新增失败】 waybillId = {} 已存在", waybillId);
+                            if (tradeBill.getState() == 2) {
+                                redisUtils.delete(lockKey);
+                                log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybill.getNo());
+                                return;
                             }
-
-                        } catch (Exception e) {
-                            log.error("【承运商对外打款日志新增异常】 waybillId = {}", waybillId);
-                            log.error(e.getMessage(), e);
                         }
-                    } else {//自动打款模式
-                        log.info("【自动打款模式】运单Id {}", waybillId);
-                        if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
-                            if (baseCarrierVo != null) {
-                                if (baseCarrierVo.getSettleType() == 0) {
-                                    if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
-                                            && baseCarrierVo.getBankCode() != null) {
-                                        //验证总收益>总打款+本次打款金额
-                                        BigDecimal fee = contrastAmount(carrierId);
-                                        log.info("【自动打款模式】运单Id {},fee = {},要打款金额{}", waybillId, fee, waybill.getFreightFee());
-                                        if (waybill.getFreightFee().compareTo(fee) <= 0) {
-                                            /**
-                                             * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
-                                             * 后续如果优化的话，去掉这段代码的转换
-                                             */
-                                            if (CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
-                                                String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
-                                                log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
-                                                if (StringUtils.isNotEmpty(bankCode)) {
-                                                    baseCarrierVo.setBankCode(bankCode);
-                                                }
+                    } else if (tradeBills.size() > 1) {
+                        redisUtils.delete(lockKey);
+                        log.error("【自动打款模式，通联代付支付运费】账单数据异常 waybillNo = {}", waybill.getNo());
+                        addPaymentErrorLog(waybill.getNo(), null, "【自动打款模式，通联代付支付运费】账单数据异常");
+                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
+                        return;
+                    }
+                }
+                Long carrierId = waybill.getCarrierId();
+                BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
+                log.info("【通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
+                //新增打款记录日志
+                savePaymentRecord(carrierId, waybillId);
+                Config config = configDao.getByItemKey("external_pay");
+                //对外支付模式
+                if (config != null && config.getState() == 1) {
+                    log.info("【对外支付模式】运单Id {}", waybillId);
+                    ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
+                    if (ep == null) {
+                        //新增对外支付打款日志详情
+                        ExternalPayment externalPayment = new ExternalPayment();
+                        externalPayment.setCarrierId(carrierId);
+                        externalPayment.setWaybillId(waybillId);
+                        externalPaymentDao.insert(externalPayment);
+                    } else {
+                        log.error("【承运商对外打款日志新增失败】 waybillId = {} 已存在", waybillId);
+                    }
+                } else {//自动打款模式
+                    log.info("【自动打款模式】运单Id {}", waybillId);
+                    if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
+                        if (baseCarrierVo != null) {
+                            if (baseCarrierVo.getSettleType() == 0) {
+                                if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
+                                        && baseCarrierVo.getBankCode() != null) {
+                                    //验证总收益>总打款+本次打款金额
+                                    BigDecimal fee = contrastAmount(carrierId);
+                                    log.info("【自动打款模式】运单Id {},fee = {},要打款金额{}", waybillId, fee, waybill.getFreightFee());
+                                    if (waybill.getFreightFee().compareTo(fee) <= 0) {
+                                        /**
+                                         * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                                         * 后续如果优化的话，去掉这段代码的转换
+                                         */
+                                        if (CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
+                                            String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
+                                            log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
+                                            if (StringUtils.isNotEmpty(bankCode)) {
+                                                baseCarrierVo.setBankCode(bankCode);
                                             }
-                                            Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo, waybill);
-                                            log.debug("【自动打款模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                                            tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "2");
-                                            cStransactionService.saveTransactions(transfer, "1");
-                                        } else {
-                                            redisUtils.delete(lockKey);
-                                            log.error("【自动打款模式，通联代付支付运费】打款金额有误 waybillNo = {}", waybill.getNo());
-                                            addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】打款金额有误");
-                                            tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
-                                            return;
                                         }
-
+                                        Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo, waybill);
+                                        log.debug("【自动打款模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "2");
+                                        cStransactionService.saveTransactions(transfer, "1");
                                     } else {
                                         redisUtils.delete(lockKey);
-                                        log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillNo = {}", waybill.getNo());
-                                        addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】收款人信息不全");
+                                        log.error("【自动打款模式，通联代付支付运费】打款金额有误 waybillNo = {}", waybill.getNo());
+                                        addPaymentErrorLog(waybill.getNo(), null, "【自动打款模式，通联代付支付运费】打款金额有误");
                                         tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                                         return;
                                     }
+
                                 } else {
                                     redisUtils.delete(lockKey);
-                                    log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillNo = {}", waybill.getNo());
-                                    addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】收款人为账期用户");
-                                    //账期承运商此处不处理支付状态
-                                    //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
+                                    log.error("【自动打款模式，通联代付支付运费】收款人信息不全 waybillNo = {}", waybill.getNo());
+                                    addPaymentErrorLog(waybill.getNo(), null, "【自动打款模式，通联代付支付运费】收款人信息不全");
+                                    tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
                                     return;
                                 }
                             } else {
                                 redisUtils.delete(lockKey);
-                                log.error("【自动打款模式，通联代付支付运费】收款人不存在 waybillNo = {}", waybill.getNo());
-                                addPaymentErrorLog(waybill.getNo(),null,"【自动打款模式，通联代付支付运费】收款人不存在");
-                                tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
+                                log.error("【自动打款模式，通联代付支付运费】收款人为账期用户 waybillNo = {}", waybill.getNo());
+                                addPaymentErrorLog(waybill.getNo(), null, "【自动打款模式，通联代付支付运费】收款人为账期用户");
+                                //账期承运商此处不处理支付状态
+                                //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
                                 return;
                             }
-
                         } else {
-                            log.info("【自动打款模式，通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
-                            cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
+                            redisUtils.delete(lockKey);
+                            log.error("【自动打款模式，通联代付支付运费】收款人不存在 waybillNo = {}", waybill.getNo());
+                            addPaymentErrorLog(waybill.getNo(), null, "【自动打款模式，通联代付支付运费】收款人不存在");
+                            tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
+                            return;
                         }
+
+                    } else {
+                        log.info("【自动打款模式，通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
+                        cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
                     }
-
-                } finally {
-                    redisUtils.delete(lockKey);
-                    lock.unlock();
                 }
-
             }
         } catch (Exception e) {
             log.error("【自动打款模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo(), e);
-            try{
+            try {
                 String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
-                addPaymentErrorLog(waybill.getNo(),null,errorMessage);
-            }catch (Exception err){
-                addPaymentErrorLog(waybill.getNo(),null,e.getMessage());
+                addPaymentErrorLog(waybill.getNo(), null, errorMessage);
+            } catch (Exception err) {
+                addPaymentErrorLog(waybill.getNo(), null, e.getMessage());
             }
             //付款失败
             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
             return;
+        } finally {
+            lock.unlock();
+            redisUtils.delete(lockKey);
         }
     }
 
@@ -594,7 +574,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         paymentRecordDao.insert(paymentRecord);
     }
 
-    private void addPaymentErrorLog(String waybillNo,String orderNo,String remark) {
+    private void addPaymentErrorLog(String waybillNo, String orderNo, String remark) {
         PaymentErrorLog paymentErrorLog = new PaymentErrorLog();
         paymentErrorLog.setWaybillNo(waybillNo);
         paymentErrorLog.setOrderNo(orderNo);
@@ -604,7 +584,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public ResultVo allinpayToCarrierNew(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+    public ResultVo allinpayToCarrierNew(Long waybillId) {
         String lockKey = RedisKeys.getCarrierPayKey(waybillId);
         if (lockKey != null && redisUtils.hasKey(lockKey)) {//判断缓存是否存在相同运单
             return BaseResultUtil.fail("请勿重复发起支付");
@@ -613,135 +593,127 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         }
         Waybill waybill = waybillDao.selectById(waybillId);
         try {
+            lock.lock();
             if (waybill != null) {
-                lock.lock();
-                try {
+                //校验运单支付状态
+                waybill = waybillDao.selectById(waybillId);
+                String waybillNo = waybill.getNo();
+                if (waybill.getCarrierType() == null || waybill.getCarrierType() == 3 || waybill.getCarrierType() == 6) {
+                    return BaseResultUtil.success("运单ID {} 不需要支付");
+                }
+                if (waybill.getFreightPayState() == 2) {
+                    redisUtils.delete(lockKey);
+                    log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
+                    return BaseResultUtil.fail("运费正在支付,请勿重复支付");
+                }
+                if (waybill.getFreightPayState() == 1) {
+                    redisUtils.delete(lockKey);
+                    log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
+                    return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                }
 
-                    //校验运单支付状态
-                    waybill = waybillDao.selectById(waybillId);
-                    String waybillNo = waybill.getNo();
-                    if (waybill.getCarrierType() == null || waybill.getCarrierType() == 3 || waybill.getCarrierType() == 6) {
-                        return BaseResultUtil.success("运单ID {} 不需要支付");
-                    }
-                    if (waybill.getFreightPayState() == 2) {
-                        redisUtils.delete(lockKey);
-                        log.error("运费正在支付,请勿重复支付 waybillId = {}", waybillId);
-                        return BaseResultUtil.fail("运费正在支付,请勿重复支付");
-                    }
-                    if (waybill.getFreightPayState() == 1) {
-                        redisUtils.delete(lockKey);
-                        log.error("运费已支付完成,请勿重复支付 waybillId = {}", waybillId);
-                        return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
-                    }
-
-                    //校验流水表支付记录及支付状态
-                    List<TradeBill> tradeBills = cStransactionService.getTradeBillList(String.valueOf(waybillId), ChargeTypeEnum.UNION_PAY.getCode());
-                    if (tradeBills != null) {
-                        if (tradeBills.size() == 1) {
-                            TradeBill tradeBill = tradeBills.get(0);
-                            if (tradeBill != null) {
-                                if (tradeBill.getState() == 1) {
-                                    redisUtils.delete(lockKey);
-                                    log.error("运费正在支付中,请勿重复支付 waybillNo = {}", waybillNo);
-                                    return BaseResultUtil.fail("运费正在支付中,请勿重复支付");
-                                }
-                                if (tradeBill.getState() == 2) {
-                                    redisUtils.delete(lockKey);
-                                    log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybillNo);
-                                    return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
-                                }
-
+                //校验流水表支付记录及支付状态
+                List<TradeBill> tradeBills = cStransactionService.getTradeBillList(String.valueOf(waybillId), ChargeTypeEnum.UNION_PAY.getCode());
+                if (tradeBills != null) {
+                    if (tradeBills.size() == 1) {
+                        TradeBill tradeBill = tradeBills.get(0);
+                        if (tradeBill != null) {
+                            if (tradeBill.getState() == 1) {
+                                redisUtils.delete(lockKey);
+                                log.error("运费正在支付中,请勿重复支付 waybillNo = {}", waybillNo);
+                                return BaseResultUtil.fail("运费正在支付中,请勿重复支付");
                             }
-                        } else if (tradeBills.size() > 1) {
-                            redisUtils.delete(lockKey);
-                            log.error("【对外支付模式，通联代付支付运费】账单数据异常 waybillNo = {}", waybillNo);
-                            addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】账单数据异常");
-                            tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
-                            return BaseResultUtil.fail("通联代付失败,账单数据异常");
+                            if (tradeBill.getState() == 2) {
+                                redisUtils.delete(lockKey);
+                                log.error("运费已支付完成,请勿重复支付 waybillNo = {}", waybillNo);
+                                return BaseResultUtil.fail("运费已支付完成,请勿重复支付");
+                            }
                         }
-
+                    } else if (tradeBills.size() > 1) {
+                        redisUtils.delete(lockKey);
+                        log.error("【对外支付模式，通联代付支付运费】账单数据异常 waybillNo = {}", waybillNo);
+                        addPaymentErrorLog(waybillNo, null, "【对外支付模式，通联代付支付运费】账单数据异常");
+                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
+                        return BaseResultUtil.fail("通联代付失败,账单数据异常");
                     }
-                    Long carrierId = waybill.getCarrierId();
-                    BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
-                    log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
-                    if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
-
-                        if (baseCarrierVo != null) {
-                            if (baseCarrierVo.getSettleType() == 0) {
-                                if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
-                                        && baseCarrierVo.getBankCode() != null) {
-                                    //验证总收益>总打款+本次打款金额
-                                    BigDecimal fee = contrastAmount(carrierId);
-                                    log.info("【对外支付模式】运单Id {},fee = {},要打款金额{}", waybillId, fee, waybill.getFreightFee());
-                                    if (waybill.getFreightFee().compareTo(fee) <= 0) {
-                                        /**
-                                         * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
-                                         * 后续如果优化的话，去掉这段代码的转换
-                                         */
-                                        if (CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
-                                            String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
-                                            log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
-                                            if (StringUtils.isNotEmpty(bankCode)) {
-                                                baseCarrierVo.setBankCode(bankCode);
-                                            }
+                }
+                Long carrierId = waybill.getCarrierId();
+                BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
+                log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
+                if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
+                    if (baseCarrierVo != null) {
+                        if (baseCarrierVo.getSettleType() == 0) {
+                            if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
+                                    && baseCarrierVo.getBankCode() != null) {
+                                //验证总收益>总打款+本次打款金额
+                                BigDecimal fee = contrastAmount(carrierId);
+                                log.info("【对外支付模式】运单Id {},fee = {},要打款金额{}", waybillId, fee, waybill.getFreightFee());
+                                if (waybill.getFreightFee().compareTo(fee) <= 0) {
+                                    /**
+                                     * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                                     * 后续如果优化的话，去掉这段代码的转换
+                                     */
+                                    if (CardTypeEnum.PUBLIC.code == baseCarrierVo.getCardType()) {
+                                        String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(baseCarrierVo.getPayBankNo());
+                                        log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", baseCarrierVo.getPayBankNo(), bankCode);
+                                        if (StringUtils.isNotEmpty(bankCode)) {
+                                            baseCarrierVo.setBankCode(bankCode);
                                         }
-                                        Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo, waybill);
-                                        log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
-                                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "2");//打款中
-                                        cStransactionService.saveTransactions(transfer, "1");
-                                    } else {
-                                        redisUtils.delete(lockKey);
-                                        log.error("【对外支付模式，通联代付支付运费】打款金额有误 waybillNo = {}", waybill.getNo());
-                                        addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】打款金额有误");
-                                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
-                                        return BaseResultUtil.fail("通联代付失败,打款金额有误");
                                     }
-
+                                    Transfer transfer = allinpayTransferDriverCreate(baseCarrierVo, waybill);
+                                    log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费，账单{}", waybill.getNo(), transfer);
+                                    tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "2");//打款中
+                                    cStransactionService.saveTransactions(transfer, "1");
                                 } else {
                                     redisUtils.delete(lockKey);
-                                    log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillNo = {}", waybillNo);
-                                    addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】收款人信息不全");
+                                    log.error("【对外支付模式，通联代付支付运费】打款金额有误 waybillNo = {}", waybill.getNo());
+                                    addPaymentErrorLog(waybillNo, null, "【对外支付模式，通联代付支付运费】打款金额有误");
                                     tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
-                                    return BaseResultUtil.fail("通联代付失败,收款人信息不全");
+                                    return BaseResultUtil.fail("通联代付失败,打款金额有误");
                                 }
+
                             } else {
                                 redisUtils.delete(lockKey);
-                                log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillNo = {}", waybillNo);
-                                addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】收款人为账期用户");
-                                //账期承运商此处不处理支付状态
-                                //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
-                                return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
+                                log.error("【对外支付模式，通联代付支付运费】收款人信息不全 waybillNo = {}", waybillNo);
+                                addPaymentErrorLog(waybillNo, null, "【对外支付模式，通联代付支付运费】收款人信息不全");
+                                tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
+                                return BaseResultUtil.fail("通联代付失败,收款人信息不全");
                             }
                         } else {
                             redisUtils.delete(lockKey);
-                            log.error("【对外支付模式，通联代付支付运费】收款人不存在 waybillNo = {}", waybillNo);
-                            addPaymentErrorLog(waybillNo,null,"【对外支付模式，通联代付支付运费】收款人不存在");
-                            tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
-                            return BaseResultUtil.fail("通联代付失败,收款人不存在");
+                            log.error("【对外支付模式，通联代付支付运费】收款人为账期用户 waybillNo = {}", waybillNo);
+                            addPaymentErrorLog(waybillNo, null, "【对外支付模式，通联代付支付运费】收款人为账期用户");
+                            //账期承运商此处不处理支付状态
+                            //tradeBillDao.updateWayBillPayState(waybillId,null, System.currentTimeMillis(),"-2");//付款失败
+                            return BaseResultUtil.fail("通联代付失败,收款人为账期用户");
                         }
-
                     } else {
-                        log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
-                        cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
+                        redisUtils.delete(lockKey);
+                        log.error("【对外支付模式，通联代付支付运费】收款人不存在 waybillNo = {}", waybillNo);
+                        addPaymentErrorLog(waybillNo, null, "【对外支付模式，通联代付支付运费】收款人不存在");
+                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
+                        return BaseResultUtil.fail("通联代付失败,收款人不存在");
                     }
-                } finally {
-                    lock.unlock();
-                }
 
+                } else {
+                    log.debug("【对外支付模式，通联代付支付运费】运单{}，支付运费为0", waybill.getNo());
+                    cStransactionService.updateWayBillPayStateNoPay(waybillId, System.currentTimeMillis());
+                }
             }
         } catch (Exception e) {
-            redisUtils.delete(lockKey);
-            log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo(),e);
-            try{
+            log.error("【对外支付模式，通联代付支付运费】运单{}，支付运费支付失败", waybill.getNo(), e);
+            try {
                 String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
-                addPaymentErrorLog(waybill.getNo(),null,errorMessage);
-            }catch (Exception err){
-                addPaymentErrorLog(waybill.getNo(),null,e.getMessage());
+                addPaymentErrorLog(waybill.getNo(), null, errorMessage);
+            } catch (Exception err) {
+                addPaymentErrorLog(waybill.getNo(), null, e.getMessage());
             }
             tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");//付款失败
             return BaseResultUtil.fail("通联代付失败");
+        } finally {
+            redisUtils.delete(lockKey);
+            lock.unlock();
         }
-
         return BaseResultUtil.success("通联代付成功");
     }
 
@@ -767,255 +739,222 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         //支付校验
         Order order = null;
         try {
+            lock.lock();
             order = orderDao.selectById(orderId);
-
             if (order != null) {
-                lock.lock();
-                try {
-                    log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
-                    //校验订单支付状态flag
-                    order = orderDao.selectById(orderId);
-                    /*if(!phoneList.contains(order.getCustomerPhone())){
-                        log.error("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
-                        return BaseResultUtil.fail("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
-                    }*/
-                    if (order.getFlag() != null) {
-                        if (order.getFlag().equals("1")) {
-                            log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
-                            return BaseResultUtil.fail("合伙人服务费支付中,请勿重复支付");
-                        }
-                        if (order.getFlag().equals("2")) {
-                            log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
-                            return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
-                        }
-
+                log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
+                //校验订单支付状态flag
+                order = orderDao.selectById(orderId);
+                if (order.getFlag() != null) {
+                    if (order.getFlag().equals("1")) {
+                        log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
+                        return BaseResultUtil.fail("合伙人服务费支付中,请勿重复支付");
                     }
-                    //验证是否有未支付或者支付中或者已支付的
-                    //TODO 什么时间什么情况下创建账单，查询最后一条的依据？？
-                    //TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
-                    List<TradeBill> tradeBills = cStransactionService.getTradeBillList(order.getNo(), ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
-                    if (tradeBills != null) {
-                        if (tradeBills.size() == 1) {
-                            TradeBill tradeBill = tradeBills.get(0);
-                            if (tradeBill != null) {
-
-                                if (tradeBill.getState() == 1) {
-                                    log.error("合伙人服务费正在支付中,请勿重复支付 orderId = {}", orderId);
-                                    return BaseResultUtil.fail("合伙人服务费正在支付中,请勿重复支付");
-                                }
-                                if (tradeBill.getState() == 2) {
-                                    log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
-                                    return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
-                                }
-
+                    if (order.getFlag().equals("2")) {
+                        log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
+                        return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
+                    }
+                }
+                //验证是否有未支付或者支付中或者已支付的
+                List<TradeBill> tradeBills = cStransactionService.getTradeBillList(order.getNo(), ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+                if (tradeBills != null) {
+                    if (tradeBills.size() == 1) {
+                        TradeBill tradeBill = tradeBills.get(0);
+                        if (tradeBill != null) {
+                            if (tradeBill.getState() == 1) {
+                                log.error("合伙人服务费正在支付中,请勿重复支付 orderId = {}", orderId);
+                                return BaseResultUtil.fail("合伙人服务费正在支付中,请勿重复支付");
                             }
-                        } else if (tradeBills.size() > 1) {
-                            cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());
-                            log.error("合伙人服务费用账单数据多条异常 orderNo = {}", order.getNo());
-                            addPaymentErrorLog(null,order.getNo(),"合伙人服务费用账单数据多条异常");
-                            return BaseResultUtil.fail("合伙人服务费用账单数据多条异常,请联系管理员");
-                        }
-
-                    }
-
-                    Long customId = order.getCustomerId();
-                    ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
-
-                    BigDecimal wlFee = getFee(orderId);
-
-                    log.info("支付合伙人服务费wlFee={},orderId ={}", wlFee, orderId);
-                    //新增打款记录日志
-                    savePaymentRecord(orderId);
-                    BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));//给合伙人费用
-
-                    log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
-                    if (payableFee.compareTo(BigDecimal.ZERO) > 0) {
-                        if (showPartnerVo != null && showPartnerVo.getCardName() != null && showPartnerVo.getCardNo() != null
-                                && showPartnerVo.getBankCode() != null) {
-                            //验证总收益>总打款+本次打款金额
-                            BigDecimal fee = contrastCooperatorAmount(customId);
-                            log.info("支付合伙人服务费 payableFee.compareTo(fee)={},fee={}", payableFee.compareTo(fee), fee);
-                            if (payableFee.compareTo(fee) <= 0) {
-                                /**
-                                 * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
-                                 * 后续如果优化的话，去掉这段代码的转换
-                                 */
-                                if (CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
-                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
-                                    log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
-                                    if (StringUtils.isNotEmpty(bankCode)) {
-                                        showPartnerVo.setBankCode(bankCode);
-                                    }
-                                }
-                                Transfer transfer = allinpayToCooperatorCreate(showPartnerVo, payableFee, order.getNo(), orderId);
-                                cStransactionService.updateOrderFlag(order.getNo(), "1", System.currentTimeMillis());//付款中
-                                cStransactionService.saveCooperatorTransactions(transfer, "1");
-                            } else {
-                                log.error("【通联代付支付合伙人费用】打款金额有误 orderNo = {}", order.getNo());
-                                addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】打款金额有误");
-                                cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
-                                return BaseResultUtil.fail("合伙人服务费用支付失败，打款金额有误");
+                            if (tradeBill.getState() == 2) {
+                                log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
+                                return BaseResultUtil.fail("合伙人服务费已支付完成,请勿重复支付");
                             }
 
+                        }
+                    } else if (tradeBills.size() > 1) {
+                        cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());
+                        log.error("合伙人服务费用账单数据多条异常 orderNo = {}", order.getNo());
+                        addPaymentErrorLog(null, order.getNo(), "合伙人服务费用账单数据多条异常");
+                        return BaseResultUtil.fail("合伙人服务费用账单数据多条异常,请联系管理员");
+                    }
+                }
+                Long customId = order.getCustomerId();
+                ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
+                BigDecimal wlFee = getFee(orderId);
+                log.info("支付合伙人服务费wlFee={},orderId ={}", wlFee, orderId);
+                //新增打款记录日志
+                savePaymentRecord(orderId);
+                //给合伙人费用
+                BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));
+                log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
+                if (payableFee.compareTo(BigDecimal.ZERO) > 0) {
+                    if (showPartnerVo != null && showPartnerVo.getCardName() != null && showPartnerVo.getCardNo() != null
+                            && showPartnerVo.getBankCode() != null) {
+                        //验证总收益>总打款+本次打款金额
+                        BigDecimal fee = contrastCooperatorAmount(customId);
+                        log.info("支付合伙人服务费 payableFee.compareTo(fee)={},fee={}", payableFee.compareTo(fee), fee);
+                        if (payableFee.compareTo(fee) <= 0) {
+                            /**
+                             * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                             * 后续如果优化的话，去掉这段代码的转换
+                             */
+                            if (CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
+                                String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
+                                log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
+                                if (StringUtils.isNotEmpty(bankCode)) {
+                                    showPartnerVo.setBankCode(bankCode);
+                                }
+                            }
+                            Transfer transfer = allinpayToCooperatorCreate(showPartnerVo, payableFee, order.getNo(), orderId);
+                            cStransactionService.updateOrderFlag(order.getNo(), "1", System.currentTimeMillis());//付款中
+                            cStransactionService.saveCooperatorTransactions(transfer, "1");
                         } else {
-                            log.error("【通联代付支付合伙人费用】收款人信息不全 orderNo = {}", order.getNo());
-                            addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】收款人信息不全");
+                            log.error("【通联代付支付合伙人费用】打款金额有误 orderNo = {}", order.getNo());
+                            addPaymentErrorLog(null, order.getNo(), "【通联代付支付合伙人费用】打款金额有误");
                             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
-                            return BaseResultUtil.fail("合伙人服务费用支付失败，收款人信息不全");
+                            return BaseResultUtil.fail("合伙人服务费用支付失败，打款金额有误");
                         }
                     } else {
-                        log.info("【通联代付支付合伙人费用】为0,orderId = {}", orderId);
-                        cStransactionService.updateOrderFlag(order.getNo(), "2", System.currentTimeMillis());
+                        log.error("【通联代付支付合伙人费用】收款人信息不全 orderNo = {}", order.getNo());
+                        addPaymentErrorLog(null, order.getNo(), "【通联代付支付合伙人费用】收款人信息不全");
+                        cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
+                        return BaseResultUtil.fail("合伙人服务费用支付失败，收款人信息不全");
                     }
-
-                } finally {
-                    lock.unlock();
+                } else {
+                    log.info("【通联代付支付合伙人费用】为0,orderId = {}", orderId);
+                    cStransactionService.updateOrderFlag(order.getNo(), "2", System.currentTimeMillis());
                 }
-
             } else {
                 log.error("合伙人通联代付失败,订单" + orderId + "不存在");
                 return BaseResultUtil.fail("合伙人服务费用支付失败，订单不存在");
             }
         } catch (Exception e) {
-            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(),e);
-            try{
+            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(), e);
+            try {
                 String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
-                addPaymentErrorLog(null,order.getNo(),errorMessage);
-            }catch (Exception err){
-                addPaymentErrorLog(null,order.getNo(),e.getMessage());
+                addPaymentErrorLog(null, order.getNo(), errorMessage);
+            } catch (Exception err) {
+                addPaymentErrorLog(null, order.getNo(), e.getMessage());
             }
             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
             return BaseResultUtil.fail("合伙人服务费用支付失败");
+        } finally {
+            lock.unlock();
         }
-
         return BaseResultUtil.success("合伙人服务费用支付成功");
     }
 
     @Override
-    public void allinpayToCooperator(Long orderId) throws FileNotFoundException, RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException {
+    public void allinpayToCooperator(Long orderId) {
         log.info("完成订单（ID：{}），支付合伙人服务费", orderId);
         //支付校验
         Order order = null;
         try {
+            lock.lock();
             order = orderDao.selectById(orderId);
-
             if (order != null) {
-                lock.lock();
-                try {
-                    log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
-                    //校验订单支付状态flag
-                    order = orderDao.selectById(orderId);
-                    /*if(!phoneList.contains(order.getCustomerPhone())){
-                        log.error("账号不在白名单内 orderId = {},phone={}", orderId,order.getCustomerPhone());
+                log.debug("【通联代付支付服务费】订单{}，准备支付服务费", order.getNo());
+                //校验订单支付状态flag
+                order = orderDao.selectById(orderId);
+
+                if (order.getFlag() != null) {
+                    if (order.getFlag().equals("1")) {
+                        log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
                         return;
-                    }*/
-                    if (order.getFlag() != null) {
-                        if (order.getFlag().equals("1")) {
-                            log.error("合伙人服务费支付中,请勿重复支付 orderId = {}", orderId);
-                            return;
-                        }
-                        if (order.getFlag().equals("2")) {
-                            log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
-                            return;
-                        }
-
                     }
-                    //验证是否有未支付或者支付中或者已支付的
-                    //TODO 什么时间什么情况下创建账单，查询最后一条的依据？？
-                    //TradeBill tradeBill = cStransactionService.getTradeBillByOrderNoAndType(order.getNo(),ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
-                    List<TradeBill> tradeBills = cStransactionService.getTradeBillList(order.getNo(), ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
-                    if (tradeBills != null) {
-                        if (tradeBills.size() == 1) {
-                            TradeBill tradeBill = tradeBills.get(0);
-                            if (tradeBill != null) {
-
-                                if (tradeBill.getState() == 1) {
-                                    log.error("合伙人服务费正在支付中,请勿重复支付 orderId = {}", orderId);
-                                    return;
-                                }
-                                if (tradeBill.getState() == 2) {
-                                    log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
-                                    return;
-                                }
-
-                            }
-                        } else if (tradeBills.size() > 1) {
-                            cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());
-                            log.error("合伙人服务费用账单数据多条异常 orderNo = {}", order.getNo());
-                            addPaymentErrorLog(null,order.getNo(),"合伙人服务费用账单数据多条异常");
-                            return;
-                        }
-
+                    if (order.getFlag().equals("2")) {
+                        log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
+                        return;
                     }
+                }
+                //验证是否有未支付或者支付中或者已支付的
+                List<TradeBill> tradeBills = cStransactionService.getTradeBillList(order.getNo(), ChargeTypeEnum.UNION_PAY_PARTNER.getCode());
+                if (tradeBills != null) {
+                    if (tradeBills.size() == 1) {
+                        TradeBill tradeBill = tradeBills.get(0);
+                        if (tradeBill != null) {
 
-                    Long customId = order.getCustomerId();
-                    ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
-
-                    BigDecimal wlFee = getFee(orderId);
-
-                    log.info("支付合伙人服务费wlFee={},orderId ={}", wlFee, orderId);
-                    //新增打款记录日志
-                    savePaymentRecord(orderId);
-                    BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));//给合伙人费用
-
-                    log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
-                    if (payableFee.compareTo(BigDecimal.ZERO) > 0) {
-                        if (showPartnerVo != null && showPartnerVo.getCardName() != null && showPartnerVo.getCardNo() != null
-                                && showPartnerVo.getBankCode() != null) {
-                            //验证总收益>总打款+本次打款金额
-                            BigDecimal fee = contrastCooperatorAmount(customId);
-                            log.info("支付合伙人服务费 payableFee.compareTo(fee)={},fee={}", payableFee.compareTo(fee), fee);
-                            if (payableFee.compareTo(fee) <= 0) {
-                                /**
-                                 * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
-                                 * 后续如果优化的话，去掉这段代码的转换
-                                 */
-                                if (CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
-                                    String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
-                                    log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
-                                    if (StringUtils.isNotEmpty(bankCode)) {
-                                        showPartnerVo.setBankCode(bankCode);
-                                    }
-                                }
-                                Transfer transfer = allinpayToCooperatorCreate(showPartnerVo, payableFee, order.getNo(), orderId);
-                                cStransactionService.updateOrderFlag(order.getNo(), "1", System.currentTimeMillis());//付款中
-                                cStransactionService.saveCooperatorTransactions(transfer, "1");
-                            } else {
-                                log.error("【通联代付支付合伙人费用】打款金额有误 orderNo = {}", order.getNo());
-                                addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】打款金额有误");
-                                cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
+                            if (tradeBill.getState() == 1) {
+                                log.error("合伙人服务费正在支付中,请勿重复支付 orderId = {}", orderId);
                                 return;
                             }
+                            if (tradeBill.getState() == 2) {
+                                log.error("合伙人服务费已支付完成,请勿重复支付 orderId = {}", orderId);
+                                return;
+                            }
+                        }
+                    } else if (tradeBills.size() > 1) {
+                        cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());
+                        log.error("合伙人服务费用账单数据多条异常 orderNo = {}", order.getNo());
+                        addPaymentErrorLog(null, order.getNo(), "合伙人服务费用账单数据多条异常");
+                        return;
+                    }
+                }
+                Long customId = order.getCustomerId();
+                ShowPartnerVo showPartnerVo = customerDao.showPartner(customId);
 
+                BigDecimal wlFee = getFee(orderId);
+
+                log.info("支付合伙人服务费wlFee={},orderId ={}", wlFee, orderId);
+                //新增打款记录日志
+                savePaymentRecord(orderId);
+                //给合伙人费用
+                BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));
+                log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
+                if (payableFee.compareTo(BigDecimal.ZERO) > 0) {
+                    if (showPartnerVo != null && showPartnerVo.getCardName() != null && showPartnerVo.getCardNo() != null
+                            && showPartnerVo.getBankCode() != null) {
+                        //验证总收益>总打款+本次打款金额
+                        BigDecimal fee = contrastCooperatorAmount(customId);
+                        log.info("支付合伙人服务费 payableFee.compareTo(fee)={},fee={}", payableFee.compareTo(fee), fee);
+                        if (payableFee.compareTo(fee) <= 0) {
+                            /**
+                             * 由于设计的问题，对公打款时前端没有传入银行编码，导致打款失败，现通过支付行号查询关联表找到银行编号处理这个问题
+                             * 后续如果优化的话，去掉这段代码的转换
+                             */
+                            if (CardTypeEnum.PUBLIC.code == showPartnerVo.getCardType()) {
+                                String bankCode = bankSubankRelationDao.getBankCodeByPayBankCode(showPartnerVo.getPayBankNo());
+                                log.info("对公支付参数转换后【支付行号:{} 银行编码：{}】", showPartnerVo.getPayBankNo(), bankCode);
+                                if (StringUtils.isNotEmpty(bankCode)) {
+                                    showPartnerVo.setBankCode(bankCode);
+                                }
+                            }
+                            Transfer transfer = allinpayToCooperatorCreate(showPartnerVo, payableFee, order.getNo(), orderId);
+                            cStransactionService.updateOrderFlag(order.getNo(), "1", System.currentTimeMillis());//付款中
+                            cStransactionService.saveCooperatorTransactions(transfer, "1");
                         } else {
-                            log.error("【通联代付支付合伙人费用】收款人信息不全 orderNo = {}", order.getNo());
-                            addPaymentErrorLog(null,order.getNo(),"【通联代付支付合伙人费用】收款人信息不全");
+                            log.error("【通联代付支付合伙人费用】打款金额有误 orderNo = {}", order.getNo());
+                            addPaymentErrorLog(null, order.getNo(), "【通联代付支付合伙人费用】打款金额有误");
                             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
                             return;
                         }
+
                     } else {
-                        log.info("【通联代付支付合伙人费用】为0,orderId = {}", orderId);
-                        cStransactionService.updateOrderFlag(order.getNo(), "2", System.currentTimeMillis());
+                        log.error("【通联代付支付合伙人费用】收款人信息不全 orderNo = {}", order.getNo());
+                        addPaymentErrorLog(null, order.getNo(), "【通联代付支付合伙人费用】收款人信息不全");
+                        cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
+                        return;
                     }
-
-                } finally {
-                    lock.unlock();
+                } else {
+                    log.info("【通联代付支付合伙人费用】为0,orderId = {}", orderId);
+                    cStransactionService.updateOrderFlag(order.getNo(), "2", System.currentTimeMillis());
                 }
-
             } else {
                 log.error("合伙人通联代付失败,订单" + orderId + "不存在");
                 return;
             }
         } catch (Exception e) {
-            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(),e);
-            try{
+            log.error("【通联代付支付服务费】订单{}，支付服务费失败", order.getNo(), e);
+            try {
                 String errorMessage = e.getMessage().split("\n\t")[1].split(":")[1].split("-")[1];
-                addPaymentErrorLog(null,order.getNo(),errorMessage);
-            }catch (Exception err){
-                addPaymentErrorLog(null,order.getNo(),e.getMessage());
+                addPaymentErrorLog(null, order.getNo(), errorMessage);
+            } catch (Exception err) {
+                addPaymentErrorLog(null, order.getNo(), e.getMessage());
             }
             cStransactionService.updateOrderFlag(order.getNo(), "-2", System.currentTimeMillis());//付款失败
             return;
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -1130,7 +1069,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public Charge prePay(WebPrePayDto prePayDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
+    public Charge prePay(WebPrePayDto prePayDto) {
 
         OrderModel om = new OrderModel();
         //创建Charge对象
@@ -1160,7 +1099,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             om.setAmount(wlFee);
             om.setSubject(ChargeTypeEnum.WEB_PREPAY_QRCODE.getName());
             om.setBody("后台订单预付款");
-
             PingxxMetaData pingxxMetaData = new PingxxMetaData();
             pingxxMetaData.setPingAppId(PingProperty.userAppId);
             pingxxMetaData.setChannel(prePayDto.getChannel());
@@ -1169,13 +1107,10 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             pingxxMetaData.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
             pingxxMetaData.setLoginId(prePayDto.getUid());
             pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
-
             om.setPingxxMetaData(pingxxMetaData);
             // 备注：订单号
             om.setDescription("韵车订单号：" + om.getPingxxMetaData().getOrderNo());
-
             charge = createDriverCode(om);
-
             cStransactionService.saveWebPrePayTransactions(charge, "0");
         } catch (Exception e) {
             log.error("后台出示二维码异常", e);
@@ -1184,8 +1119,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public Charge getOutOfStockQrCode(WebOutOfStockDto webOutOfStockDto) throws RateLimitException, APIException, ChannelException, InvalidRequestException,
-            APIConnectionException, AuthenticationException, FileNotFoundException {
+    public Charge getOutOfStockQrCode(WebOutOfStockDto webOutOfStockDto) {
         log.info("webOutOfStockDto taskId =" + webOutOfStockDto.getTaskId());
         ValidateSweepCodeDto validateSweepCodeDto = new ValidateSweepCodeDto();
         validateSweepCodeDto.setTaskId(webOutOfStockDto.getTaskId());
@@ -1193,7 +1127,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         validateSweepCodeDto.setTaskCarIdList(webOutOfStockDto.getTaskCarIdList());
         validateSweepCodeDto.setClientType("1");
         ResultVo<ValidateSweepCodePayVo> resultVo = validateCarPayState(validateSweepCodeDto, true);
-
         if (ResultEnum.SUCCESS.getCode() != resultVo.getCode()) {
             throw new CommonException(resultVo.getMsg());
         }
@@ -1202,21 +1135,17 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             throw new CommonException(("无需支付"));
         }
         OrderModel om = new OrderModel();
-
         om.setClientIp(webOutOfStockDto.getIp());
         //创建Charge对象
         Charge charge = new Charge();
         try {
             List<String> tempList = webOutOfStockDto.getTaskCarIdList();
-
             List<Long> taskCarIdList = convertToLongList(tempList);
             List<String> orderCarNosList = cStransactionService.getOrderCarNosByTaskCarIds(taskCarIdList);
             BigDecimal freightFee = cStransactionService.getAmountByOrderCarNos(orderCarNosList);
             om.setAmount(freightFee);
-
             om.setSubject(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getName());
             om.setBody("确认出库生成二维码！");
-
             PingxxMetaData pingxxMetaData = new PingxxMetaData();
             pingxxMetaData.setPingAppId(PingProperty.userAppId);
             pingxxMetaData.setOrderCarIds(orderCarNosList);
@@ -1225,15 +1154,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             pingxxMetaData.setChannel(webOutOfStockDto.getChannel());
             pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.WEB_OUT_STOCK_QRCODE.getCode()));
             pingxxMetaData.setClientType(String.valueOf(ClientEnum.WEB_SERVER.code));
-
             pingxxMetaData.setLoginId(String.valueOf(webOutOfStockDto.getLoginId()));
             pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
-
             om.setPingxxMetaData(pingxxMetaData);
             om.setDescription("韵车订单号：" + om.getPingxxMetaData().getOrderNo());
-
             charge = createDriverCode(om);
-
             cStransactionService.saveTransactions(charge, "0");
         } catch (Exception e) {
             log.error("扫码支付异常", e);
@@ -1246,7 +1171,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         OrderModel om = new OrderModel();
         //创建Charge对象
         Charge charge = new Charge();
-
         String orderNo = salesPrePayDto.getOrderNo();
         TradeBill tradeBill = cStransactionService.getTradeBillByOrderNo(orderNo);
         if (tradeBill != null) {
@@ -1262,23 +1186,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             String lockKey = RedisKeys.getWlPayLockKey(orderNo);
             String loginId = redisUtils.get(lockKey);
             //判断移动端刷新二维码是否为同一Id
-            if(StringUtils.isNotEmpty(loginId) && loginId.equals(String.valueOf(salesPrePayDto.getLoginId()))){
+            if (StringUtils.isNotEmpty(loginId) && loginId.equals(String.valueOf(salesPrePayDto.getLoginId()))) {
                 log.info("用户正在刷新二维码");
-            }else{
+            } else {
                 if (!redisLock.lock(lockKey, salesPrePayDto.getLoginId(), 300000, 10, 200)) {
                     return BaseResultUtil.fail("订单正在支付中");
                 }
             }
-
         }
-        //try {
         om.setClientIp(salesPrePayDto.getIp());
         BigDecimal wlFee = cStransactionService.getAmountByOrderNo(salesPrePayDto.getOrderNo());
         om.setClientIp(salesPrePayDto.getIp());
         om.setAmount(wlFee);
         om.setSubject(ChargeTypeEnum.SALES_PREPAY_QRCODE.getName());
         om.setBody("业务员订单预付款");
-
         PingxxMetaData pingxxMetaData = new PingxxMetaData();
         pingxxMetaData.setPingAppId(PingProperty.userAppId);
         pingxxMetaData.setChannel(salesPrePayDto.getChannel());
@@ -1287,17 +1208,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         pingxxMetaData.setClientType(String.valueOf(ClientEnum.App_PREPAY_SALESMAN));
         pingxxMetaData.setLoginId(String.valueOf(salesPrePayDto.getLoginId()));
         pingxxMetaData.setLoginType(String.valueOf(UserTypeEnum.ADMIN.code));
-
         om.setPingxxMetaData(pingxxMetaData);
         // 备注：订单号
         om.setDescription("韵车订单号：" + om.getPingxxMetaData().getOrderNo());
-
         charge = createDriverCode(om);
-
         cStransactionService.saveSalesPrePayTransactions(charge, "0");
-        /*} catch (Exception e) {
-            log.error("业务员预付款出示二维码异常",e);
-        }*/
         return BaseResultUtil.success(JSONObject.parseObject(charge.toString()));
     }
 
@@ -1436,9 +1351,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         log.error(e.getMessage(), e);
                     }
                 }
-
             }
-
         } catch (Exception e) {
             log.error("退款异常 orderId={}", orderId);
             log.error(e.getMessage(), e);
@@ -1457,7 +1370,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         params.put("app", app);
         // 付款使用的商户内部订单号。 allinpay 限长20-40位不能重复的数字字母组合，必须以签约的通联的商户号开头（建议组合格式：通联商户号 + 时间戳 + 固定位数顺序流水号，不包含+号）
         params.put("order_no", PingProperty.businessCode + System.currentTimeMillis());
-
         // 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100,企业付款最小发送金额为1 元）
         //确认手续费
         BigDecimal amount = waybill.getFreightFee();
@@ -1471,19 +1383,15 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         } else {
             params.put("type", "b2c");
         }
-
         params.put("currency", "cny");
         params.put("description", "通联代付司机运费");
-
         Map<String, String> extra = new HashMap<String, String>();
         //1~100位，收款人姓名。必须
         extra.put("user_name", baseCarrierVo.getCardName());
-
         //1~32位，收款人银行卡号或者存折号。 必须
         extra.put("card_number", baseCarrierVo.getCardNo());
         //4位，开户银行编号，详情请参考通联代付银行编号说明。 必须
         extra.put("open_bank_code", baseCarrierVo.getBankCode());
-
         //付款账户为公户转账必填
         // sub_bank开户行详细名
         // sub_bank_code支付行号
@@ -1495,17 +1403,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             extra.put("prov", baseCarrierVo.getProvinceName());
             extra.put("city", baseCarrierVo.getAreaName());
         }
-
         params.put("extra", extra);
-
         PingxxMetaData pingxxMetaData = new PingxxMetaData();
         pingxxMetaData.setChargeType(String.valueOf(ChargeTypeEnum.UNION_PAY.getCode()));
         pingxxMetaData.setWaybillId(String.valueOf(waybill.getId()));
         pingxxMetaData.setLoginId(String.valueOf(baseCarrierVo.getCarrierId()));
-
         Map<String, Object> meta = BeanMapUtil.beanToMap(pingxxMetaData);
         params.put("metadata", meta);//自定义参数
-
         log.info("allinpayTransferDriverCreate params={}", params.toString());
         Transfer obj = Transfer.create(params);
         if (Pingpp.apiKey.contains("_test_")) {//test模式调用查询相当于企业付款成功
