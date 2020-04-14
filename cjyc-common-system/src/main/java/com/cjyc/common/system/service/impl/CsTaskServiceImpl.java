@@ -186,10 +186,12 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 return BaseResultUtil.fail("订单中正在录入此车牌号{0}，请5秒稍后操作", plateNo);
             }
             lockSet.add(plateNoKey);
-            boolean isNotRepeatPlateNo = csOrderService.validateIsNotRepeatVin(orderNo, orderCarId, plateNo);
+            boolean isNotRepeatPlateNo = csOrderService.validateIsNotRepeatPlateNo(orderNo, orderCarId, plateNo);
             if(!isNotRepeatPlateNo){
                 return BaseResultUtil.fail("订单中已经存在此车牌号{0}", plateNo);
             }
+
+
             String vinKey = RedisKeys.getCheckOrderPlateNo(orderNo, vin);
             if(!redisLock.lock(vinKey, lockFlag, 30, TimeUnit.MINUTES, 1, 100)){
                 return BaseResultUtil.fail("订单中正在录入此车架号{0}，请5秒稍后操作", vin);

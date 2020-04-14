@@ -2655,19 +2655,21 @@
         where order_id = #{id}
         and state &lt; 100 and wl_pay_state != 2
     </select>
-    <select id="findVinListByOrderNo" resultType="java.util.Map">
-        select  vin, id
+    <select id="countForChechRepeatPlateNo" resultType="java.lang.Integer">
+        select count(0)
         from w_order_car
-        where order_no = #{orderNo}
-        and state &lt;= 100
-        and vin is not null and vin != ''
+        where state &lt;= 100
+        and order_no = #{orderNo}
+        and id != #{orderCarId}
+        and plate_no = #{plateNo}
     </select>
-    <select id="findPlateNoListByOrderNo" resultType="java.util.Map">
-        select  plate_no, id
+    <select id="countForChechRepeatVin" resultType="java.lang.Integer">
+        select count(0)
         from w_order_car
-        where order_no = #{orderNo}
-        and state &lt;= 100
-        and plate_no is not null and plate_no != ''
+        where state &lt;= 100
+        and order_no = #{orderNo}
+        and id != #{orderCarId}
+        and vin = #{vin}
     </select>
 
     <sql id="count_wait_list_for_web">

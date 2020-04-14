@@ -1629,8 +1629,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(StringUtils.isBlank(plateNo)){
             return true;
         }
-        Map<String, String> map = orderCarDao.findPlateNoListByOrderNo(orderNo);
-        if(!CollectionUtils.isEmpty(map) && map.containsKey(plateNo) && !String.valueOf(orderCarId).equals(map.get(plateNo))){
+        int i = orderCarDao.countForChechRepeatPlateNo(orderNo, orderCarId, plateNo);
+        if(i > 0){
             return false;
         }
         return true;
@@ -1644,8 +1644,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(StringUtils.isBlank(vin)){
             return true;
         }
-        Map<String, String> map = orderCarDao.findPlateNoListByOrderNo(orderNo);
-        if(!CollectionUtils.isEmpty(map) && map.containsKey(vin) && !String.valueOf(orderCarId).equals(map.get(vin))){
+        int i = orderCarDao.countForChechRepeatVin(orderNo, orderCarId, vin);
+        if(i > 0){
             return false;
         }
         return true;

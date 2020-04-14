@@ -15,10 +15,10 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
 
-@Configuration
+//@Configuration
 public class SqlSessionFactoryConfiguration {
 
-    @Bean("sqlSessionFactory")
+    //@Bean("sqlSessionFactory")
     public SqlSessionFactory getSqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
         //SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         MybatisSqlSessionFactoryBean factoryBean = new MybatisSqlSessionFactoryBean();
