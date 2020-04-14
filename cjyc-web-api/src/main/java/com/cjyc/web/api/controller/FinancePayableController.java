@@ -38,9 +38,6 @@ public class FinancePayableController {
     @Autowired
     private ICsTransactionService csTransactionService;
 
-    @Resource
-    private ICsPingPayService csPingPayService;
-
     @ApiOperation(value = "财务应付账款列表")
     @PostMapping(value = "/list")
     public ResultVo<PageVo<FinancePayableVo>> getFinancePayableList(@RequestBody PayableQueryDto payableQueryDto) {
@@ -50,22 +47,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务应付账款列表")
     @GetMapping(value = "/exportPayableAll")
     public ResultVo exportPayableAll(HttpServletResponse response, PayableQueryDto payableQueryDto) {
-        log.info("payableQueryDto ={}", payableQueryDto.toString());
-        List<FinancePayableVo> financePayableVoList = financeService.exportPayableAll(payableQueryDto);
-        if (CollectionUtils.isEmpty(financePayableVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        String title = "应付账款";
-        String sheetName = "应付账款";
-        String fileName = "应付账款.xls";
-        log.info("financePayableVoList.size = " + financePayableVoList.size());
-        try {
-            ExcelUtil.exportExcel(financePayableVoList, title, sheetName, FinancePayableVo.class, fileName, response);
-            return null;
-        } catch (Exception e) {
-            log.error("导出应付账款异常:", e);
-            return BaseResultUtil.fail("导出应付账款异常" + e.getMessage());
-        }
+        return financeService.exportPayableAll(response,payableQueryDto);
     }
 
     @ApiOperation(value = "申请开票-获取申请开票运单信息")
@@ -89,22 +71,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务等待收票列表")
     @GetMapping(value = "/exportPayableCollect")
     public ResultVo exportPayableCollect(HttpServletResponse response, WaitTicketCollectDto waitTicketCollectDto) {
-        log.info("waitTicketCollectDto ={}", waitTicketCollectDto.toString());
-        List<SettlementVo> settlementVoList = financeService.exportPayableCollect(waitTicketCollectDto);
-        if (CollectionUtils.isEmpty(settlementVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        String title = "等待收票";
-        String sheetName = "等待收票";
-        String fileName = "等待收票.xls";
-        log.info("settlementVoList.size = " + settlementVoList.size());
-        try {
-            ExcelUtil.exportExcel(settlementVoList, title, sheetName, SettlementVo.class, fileName, response);
-            return null;
-        } catch (Exception e) {
-            log.error("导出等待收票异常:", e);
-            return BaseResultUtil.fail("导出等待收票异常" + e.getMessage());
-        }
+        return financeService.exportPayableCollect(response, waitTicketCollectDto);
     }
 
     @ApiOperation(value = "确认收票-获取确认收票运单信息")
@@ -134,22 +101,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务等待付款列表")
     @GetMapping(value = "/exportPayment")
     public ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto) {
-        log.info("waitPaymentDto ={}", waitPaymentDto.toString());
-        List<SettlementVo> settlementVoList = financeService.exportPayment(waitPaymentDto);
-        if (CollectionUtils.isEmpty(settlementVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        String title = "等待付款";
-        String sheetName = "等待付款";
-        String fileName = "等待付款.xls";
-        log.info("settlementVoList.size = " + settlementVoList.size());
-        try {
-            ExcelUtil.exportExcel(settlementVoList, title, sheetName, SettlementVo.class, fileName, response);
-            return null;
-        } catch (Exception e) {
-            log.error("导出等待付款异常:", e);
-            return BaseResultUtil.fail("导出等待付款异常" + e.getMessage());
-        }
+       return financeService.exportPayment(response, waitPaymentDto);
     }
 
     @ApiOperation(value = "核销-获取核销运单信息")
@@ -173,22 +125,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务已付款（账期）列表")
     @GetMapping(value = "/exportPaid")
     public ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto) {
-        log.info("payablePaidQueryDto ={}", payablePaidQueryDto.toString());
-        List<PayablePaidVo> payablePaidVoList = financeService.exportPaid(payablePaidQueryDto);
-        if (CollectionUtils.isEmpty(payablePaidVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        String title = "应付账款-已付款（账期）";
-        String sheetName = "已付款（账期）";
-        String fileName = "应付账款-已付款（账期）.xls";
-        log.info("payablePaidVoList.size = " + payablePaidVoList.size());
-        try {
-            ExcelUtil.exportExcel(payablePaidVoList, title, sheetName, PayablePaidVo.class, fileName, response);
-            return null;
-        } catch (Exception e) {
-            log.error("导出等待付款异常:", e);
-            return BaseResultUtil.fail("导出等待付款异常" + e.getMessage());
-        }
+        return financeService.exportPaid(response, payablePaidQueryDto);
     }
 
     @ApiOperation(value = "结算明细")
@@ -212,22 +149,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务已付款（时付）列表")
     @GetMapping(value = "/exportTimePaid")
     public ResultVo exportTimePaid(HttpServletResponse response, PayMentQueryDto payMentQueryDto) {
-        log.info("payMentQueryDto ={}", payMentQueryDto.toString());
-        List<PaidNewVo> payablePaidVoList = financeService.exportTimePaid(payMentQueryDto);
-        if (CollectionUtils.isEmpty(payablePaidVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        String title = "应付账款-已付款（时付）";
-        String sheetName = "已付款（时付）";
-        String fileName = "应付账款-已付款（时付）.xls";
-        log.info("payablePaidVoList.size = " + payablePaidVoList.size());
-        try {
-            ExcelUtil.exportExcel(payablePaidVoList, title, sheetName, PaidNewVo.class, fileName, response);
-            return null;
-        } catch (Exception e) {
-            log.error("导出应付账款-已付款（时付）异常:", e);
-            return BaseResultUtil.fail("导出应付账款-已付款（时付）异常" + e.getMessage());
-        }
+        return financeService.exportTimePaid(response, payMentQueryDto);
     }
 
     @ApiOperation(value = "对外支付")
@@ -245,13 +167,7 @@ public class FinancePayableController {
     @ApiOperation("手动支付合伙人服务费")
     @PostMapping("/pay/cooperator")
     public ResultVo payToCooperator(@RequestBody CooperatorPaymentDto cooperatorPaymentDto) {
-
-        try {
-            return financeService.payToCooperator(cooperatorPaymentDto);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return BaseResultUtil.fail("手动支付合伙人费用异常");
-        }
+        return financeService.payToCooperator(cooperatorPaymentDto);
     }
 
     @ApiOperation(value = "合伙人付款列表")
@@ -263,21 +179,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出合伙人付款（时付）列表")
     @GetMapping(value = "/exportCooperator")
     public ResultVo exportCooperator(HttpServletResponse response, CooperatorSearchDto cooperatorSearchDto) {
-        log.info("cooperatorSearchDto ={}", cooperatorSearchDto.toString());
-        List<CooperatorPaidVo> cooperatorPaidVoList = financeService.exportCooperator(cooperatorSearchDto);
-        if (CollectionUtils.isEmpty(cooperatorPaidVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        String title = "合伙人付款（时付）";
-        String sheetName = "付款（时付）";
-        String fileName = "合伙人付款（时付）.xls";
-        log.info("cooperatorPaidVoList.size = " + cooperatorPaidVoList.size());
-        try {
-            ExcelUtil.exportExcel(cooperatorPaidVoList, title, sheetName, CooperatorPaidVo.class, fileName, response);
-            return null;
-        } catch (Exception e) {
-            log.error("导出合伙人付款异常:", e);
-            return BaseResultUtil.fail("导出合伙人付款异常" + e.getMessage());
-        }
+        return financeService.exportCooperator(response, cooperatorSearchDto);
+
     }
 }

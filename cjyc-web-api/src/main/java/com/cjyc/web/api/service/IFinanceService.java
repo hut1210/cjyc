@@ -46,6 +46,12 @@ public interface IFinanceService {
 
     ResultVo updateBackState(String wayBillNo);
 
+    /**
+     * <p>获取财务应付账款列表</p>
+     *
+     * @param payableQueryDto
+     * @return
+     */
     ResultVo<PageVo<FinancePayableVo>> getFinancePayableList(PayableQueryDto payableQueryDto);
 
     ResultVo getSettlementPayable(List<String> taskNo);
@@ -76,21 +82,28 @@ public interface IFinanceService {
 
     ResultVo<Object> exportPaymentExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 
-    List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto);
+    /**
+     * <p>导出财务应付账款列表</p>
+     *
+     * @param response
+     * @param payableQueryDto
+     * @return
+     */
+    ResultVo exportPayableAll(HttpServletResponse response, PayableQueryDto payableQueryDto);
 
-    List<SettlementVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
+    ResultVo exportPayableCollect(HttpServletResponse response, WaitTicketCollectDto waitTicketCollectDto);
 
-    List<SettlementVo> exportPayment(WaitPaymentDto waitPaymentDto);
+    ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto);
 
-    List<PayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
+    ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto);
 
-    List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
+    ResultVo exportTimePaid(HttpServletResponse response, PayMentQueryDto payMentQueryDto);
 
     ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
 
     ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto);
 
-    List<CooperatorPaidVo> exportCooperator(CooperatorSearchDto cooperatorSearchDto);
+    ResultVo exportCooperator(HttpServletResponse response, CooperatorSearchDto cooperatorSearchDto);
 
     ResultVo<List<ExportFinanceDetailVo>> getFinanceDetailList(String no);
 
