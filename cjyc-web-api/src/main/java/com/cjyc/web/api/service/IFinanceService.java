@@ -74,7 +74,7 @@ public interface IFinanceService {
 
     ResultVo externalPayment(ExternalPaymentDto externalPaymentDto);
 
-    List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto);
+    ResultVo<Object> exportPaymentExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 
     List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto);
 

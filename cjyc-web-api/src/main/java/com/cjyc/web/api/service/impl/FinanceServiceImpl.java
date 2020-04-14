@@ -1037,15 +1037,23 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto) {
-
+    public ResultVo<Object> exportPaymentExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
+        if (CollectionUtils.isEmpty(financeVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         for (PaymentVo paymentVo : financeVoList) {
             paymentVo.setFreightPay(paymentVo.getFreightPay() != null ? paymentVo.getFreightPay().divide(new BigDecimal(100)) : null);
             paymentVo.setFreightReceivable(paymentVo.getFreightReceivable() != null ? paymentVo.getFreightReceivable().divide(new BigDecimal(100)) : null);
             paymentVo.setTotalIncome(new BigDecimal(MoneyUtil.fenToYuan(paymentVo.getTotalIncome(), MoneyUtil.PATTERN_TWO)));
         }
-        return financeVoList;
+        try {
+            ExcelUtil.exportExcel(financeVoList, "应收账款", "已收款（时付）", PaymentVo.class, "应收账款.xls", response);
+            return null;
+        } catch (IOException e) {
+            log.error("导出应收账款异常:", e);
+            return BaseResultUtil.fail("导出应收账款异常!");
+        }
     }
 
     @Override
