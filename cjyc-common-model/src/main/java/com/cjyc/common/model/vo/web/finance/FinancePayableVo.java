@@ -46,7 +46,7 @@ public class FinancePayableVo implements Serializable {
     private int settlePeriod;
 
     @ApiModelProperty(value = "剩余账期时间")
-    @Excel(name = "剩余账期时间" ,orderNum = "4")
+    @Excel(name = "剩余账期时间(天)" ,orderNum = "4")
     private int remainDate;
 
     @ApiModelProperty(value = "应付运费")
