@@ -68,8 +68,8 @@ public class LoginController {
     @Resource
     private ICsLoginService csLoginService;
 
-    /*@Value("${cjyc.salesman.clientId}")
-    private String clientId;*/
+    @Value("${cjyc.salesman.clientId}")
+    private String clientId;
     @Value("${cjyc.salesman.clientSecret}")
     private String clientSecret;
     @Value("${cjyc.salesman.grantType}")
