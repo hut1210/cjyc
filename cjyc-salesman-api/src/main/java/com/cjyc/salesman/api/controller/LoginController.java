@@ -90,7 +90,7 @@ public class LoginController {
             AuthMobileLoginReq req = new AuthMobileLoginReq();
             req.setSmsCode(dto.getCaptcha());
             req.setMobile(dto.getPhone());
-            //req.setClientId(clientId);
+            req.setClientId(clientId);
             req.setClientSecret(clientSecret);
             req.setGrantType(grantType);
             ResultData<AuthLoginResp> loginRd = sysLoginService.mobileLogin(req);
@@ -116,7 +116,7 @@ public class LoginController {
             req.setUsername(dto.getUsername());
             req.setPassword(dto.getPassword());
             req.setGrantType(PWD_LOGIN_GRANT_TYPE);
-            //req.setClientId(clientId);
+            req.setClientId(clientId);
             req.setClientSecret(clientSecret);
             ResultData<AuthLoginResp> loginRd = sysLoginService.getAuthentication(req);
             if (!ResultDataUtil.isSuccess(loginRd)) {
