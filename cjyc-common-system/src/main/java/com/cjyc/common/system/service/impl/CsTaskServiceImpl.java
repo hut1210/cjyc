@@ -53,6 +53,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -174,34 +175,50 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
         }
 
-        //验证车牌号和vin是否重复
-        String orderNo = waybillCar.getOrderCarNo().split("-")[0];
-        Long orderCarId = waybillCar.getOrderCarId();
-        boolean isNotRepeatPlateNo = csOrderService.validateIsNotRepeatPlateNo(orderNo, orderCarId, plateNo);
-        if(!isNotRepeatPlateNo){
-            return BaseResultUtil.fail("此车牌号已经在订单中存在");
-        }
-        boolean isNotRepeatVin = csOrderService.validateIsNotRepeatVin(orderNo, orderCarId, vin);
-        if(!isNotRepeatVin){
-            return BaseResultUtil.fail("此Vin已经在订单中存在");
-        }
+        String lockFlag = redisLock.getLockFlag();
+        Set<String> lockSet = Sets.newHashSet();
+        try {
+            //验证车牌号和vin是否重复
+            String orderNo = waybillCar.getOrderCarNo().split("-")[0];
+            Long orderCarId = waybillCar.getOrderCarId();
+            String plateNoKey = RedisKeys.getCheckOrderPlateNo(orderNo, plateNo);
+            if(!redisLock.lock(plateNoKey, lockFlag, 30,  TimeUnit.MINUTES, 1, 100)){
+                return BaseResultUtil.fail("订单中正在录入此车牌号{0}，请5秒稍后操作", plateNo);
+            }
+            lockSet.add(plateNoKey);
+            boolean isNotRepeatPlateNo = csOrderService.validateIsNotRepeatVin(orderNo, orderCarId, plateNo);
+            if(!isNotRepeatPlateNo){
+                return BaseResultUtil.fail("订单中已经存在此车牌号{0}", plateNo);
+            }
+            String vinKey = RedisKeys.getCheckOrderPlateNo(orderNo, vin);
+            if(!redisLock.lock(vinKey, lockFlag, 30, TimeUnit.MINUTES, 1, 100)){
+                return BaseResultUtil.fail("订单中正在录入此车架号{0}，请5秒稍后操作", vin);
+            }
+            lockSet.add(vinKey);
+            boolean isNotRepeatVin = csOrderService.validateIsNotRepeatVin(orderNo, orderCarId, vin);
+            if(!isNotRepeatVin){
+                return BaseResultUtil.fail("订单中正在录入此车架号{0}，请5秒稍后操作", vin);
+            }
 
-        //更新车辆信息
-        OrderCar orderCar = new OrderCar();
-        orderCar.setId(waybillCar.getOrderCarId());
-        orderCar.setVin(vin);
-        orderCar.setBrand(reqDto.getBrand());
-        orderCar.setModel(reqDto.getModel());
-        orderCar.setPlateNo(plateNo);
-        orderCarDao.updateById(orderCar);
-        //更新运单车辆信息
-        if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
-            waybillCarDao.updateForLoadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+            //更新车辆信息
+            OrderCar orderCar = new OrderCar();
+            orderCar.setId(waybillCar.getOrderCarId());
+            orderCar.setVin(vin);
+            orderCar.setBrand(reqDto.getBrand());
+            orderCar.setModel(reqDto.getModel());
+            orderCar.setPlateNo(plateNo);
+            orderCarDao.updateById(orderCar);
+            //更新运单车辆信息
+            if (!CollectionUtils.isEmpty(loadPhotoImgs)) {
+                waybillCarDao.updateForLoadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(loadPhotoImgs));
+            }
+            if (!CollectionUtils.isEmpty(unloadPhotoImgs)) {
+                waybillCarDao.updateForUnloadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(unloadPhotoImgs));
+            }
+            return BaseResultUtil.success();
+        } finally {
+            redisLock.releaseLock(lockSet, lockFlag);
         }
-        if (!CollectionUtils.isEmpty(unloadPhotoImgs)) {
-            waybillCarDao.updateForUnloadReplenishInfo(waybillCar.getId(), Joiner.on(",").join(unloadPhotoImgs));
-        }
-        return BaseResultUtil.success();
     }
 
     @Override

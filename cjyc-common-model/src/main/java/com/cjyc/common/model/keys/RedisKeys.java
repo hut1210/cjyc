@@ -205,7 +205,7 @@ public class RedisKeys {
         return CJYC + I + CHECK_VIN_SET + I + orderNo;
     }
 
-    public static String getCheckOrderPlateNo(String orderNo) {
-        return CJYC + I + CHECK_PLATENO_SET + I + orderNo;
+    public static String getCheckOrderPlateNo(String orderNo, String plateNo) {
+        return CJYC + I + CHECK_PLATENO_SET + I + orderNo + I + plateNo;
     }
 }
