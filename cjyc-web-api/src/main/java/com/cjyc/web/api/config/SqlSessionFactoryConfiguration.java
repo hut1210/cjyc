@@ -25,7 +25,7 @@ public class SqlSessionFactoryConfiguration {
         factoryBean.setDataSource(dataSource);
         factoryBean.setVfs(SpringBootVFS.class);
         // 读取mapper 配置文件
-        Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*Mapper.xml");
+        Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*.xml");
         factoryBean.setMapperLocations(resources);
         // 设置
         MybatisConfiguration mc = new MybatisConfiguration();
