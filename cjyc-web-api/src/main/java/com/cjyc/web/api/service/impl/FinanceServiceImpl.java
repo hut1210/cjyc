@@ -929,6 +929,7 @@ public class FinanceServiceImpl implements IFinanceService {
                     paidNewVo.setFailReason(paymentErrorLog.getRemark());
                 }
             }
+            paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
         }
         log.info("financeVoList = " + financeVoList.size());
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
