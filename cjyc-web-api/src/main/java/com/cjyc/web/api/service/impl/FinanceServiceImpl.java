@@ -1,5 +1,6 @@
 package com.cjyc.web.api.service.impl;
 
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.JsonUtil;
 import com.cjyc.common.model.dao.*;
@@ -236,13 +237,13 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public Map exportExcel(FinanceQueryDto financeQueryDto) {
+    public ResultVo exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
         log.info("financeQueryDto =" + financeQueryDto.toString());
         Map map = new HashMap();
         List<ExportFinanceVo> financeVoList = financeDao.getAllFinanceList(financeQueryDto);
         List<ExportFinanceDetailVo> detailVoList = new ArrayList<>();
         if (financeVoList == null) {
-            return map;
+            return BaseResultUtil.success("未查询到结果");
         }
         for (ExportFinanceVo financeVo : financeVoList) {
 
@@ -331,9 +332,35 @@ public class FinanceServiceImpl implements IFinanceService {
                 detailVoList.addAll(detailList);
             }
         }
-        map.put("financeVoList", financeVoList);
-        map.put("detailVoList", detailVoList);
-        return map;
+        /**
+         * 总流水数据
+         */
+        ExportParams totalFlow = new ExportParams();
+        totalFlow.setSheetName("总流水");
+        Map<String, Object> totalFlowMap = new HashMap<>(4);
+        totalFlowMap.put("title", totalFlow);
+        totalFlowMap.put("entity", ExportFinanceVo.class);
+        totalFlowMap.put("data", financeVoList);
+        /**
+         * 成本明细数据
+         */
+        ExportParams detail = new ExportParams();
+        detail.setSheetName("成本明细");
+        Map<String, Object> detailMap = new HashMap<>(4);
+        detailMap.put("title", detail);
+        detailMap.put("entity", ExportFinanceDetailVo.class);
+        detailMap.put("data", detailVoList);
+
+        List<Map<String, Object>> sheetsList = new ArrayList<>();
+        sheetsList.add(totalFlowMap);
+        sheetsList.add(detailMap);
+        try {
+            ExcelUtil.exportMultipleSheets(sheetsList, "财务总流水.xls", response);
+            return null;
+        } catch (IOException e) {
+            log.error("导出财务总流水异常:", e);
+            return BaseResultUtil.fail("导出财务总流水异常" + e.getMessage());
+        }
     }
 
     private List<FinanceVo> getAllFinanceList(FinanceQueryDto financeQueryDto) {
@@ -515,15 +542,24 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<AdvancePaymentVo> exportAdvancePaymentExcel(FinanceQueryDto financeQueryDto) {
+    public ResultVo exportAdvancePaymentExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
         List<AdvancePaymentVo> advancePaymentVoList = financeDao.getAdvancePayment(financeQueryDto);
+        if (CollectionUtils.isEmpty(advancePaymentVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         if (!CollectionUtils.isEmpty(advancePaymentVoList)) {
             advancePaymentVoList.forEach(e -> {
                 e.setFreightReceivable(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightReceivable(), MoneyUtil.PATTERN_TWO)));
                 e.setFreightPay(new BigDecimal(MoneyUtil.fenToYuan(e.getFreightPay(), MoneyUtil.PATTERN_TWO)));
             });
         }
-        return advancePaymentVoList;
+        try {
+            ExcelUtil.exportExcel(advancePaymentVoList, "已付订单未完结", "已付订单未完结", AdvancePaymentVo.class, "已付订单未完结.xls", response);
+            return null;
+        } catch (IOException e) {
+            log.error("导出已付订单未完结异常:", e);
+            return BaseResultUtil.fail("导出已付订单未完结异常!");
+        }
     }
 
     /**

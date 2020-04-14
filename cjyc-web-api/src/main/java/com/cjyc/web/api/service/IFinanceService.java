@@ -16,7 +16,7 @@ import java.util.Map;
 public interface IFinanceService {
     ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto);
 
-    Map exportExcel(FinanceQueryDto financeQueryDto);
+    ResultVo exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 
     ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
 
@@ -237,5 +237,5 @@ public interface IFinanceService {
      * @param financeQueryDto
      * @return
      */
-    List<AdvancePaymentVo> exportAdvancePaymentExcel(FinanceQueryDto financeQueryDto);
+    ResultVo exportAdvancePaymentExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 }

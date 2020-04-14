@@ -1,9 +1,6 @@
 package com.cjyc.web.api.controller;
 
-import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cjyc.common.model.dto.web.finance.*;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
@@ -13,15 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 财务
@@ -30,8 +20,7 @@ import java.util.Map;
  */
 @RestController
 @Api(tags = "资金-财务")
-@RequestMapping(value = "/finance",
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/finance", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class FinanceController {
 
@@ -47,42 +36,7 @@ public class FinanceController {
     @ApiOperation(value = "导出Excel")
     @GetMapping(value = "/export")
     public ResultVo exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
-        Map map = financeService.exportExcel(financeQueryDto);
-        List<ExportFinanceVo> financeVoList = (List<ExportFinanceVo>) map.get("financeVoList");
-        List<ExportFinanceDetailVo> detailList = (List<ExportFinanceDetailVo>) map.get("detailVoList");
-        if (CollectionUtils.isEmpty(financeVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        /**
-         * 总流水数据
-         */
-        ExportParams totalFlow = new ExportParams();
-        totalFlow.setSheetName("总流水");
-        Map<String, Object> totalFlowMap = new HashMap<>(4);
-        totalFlowMap.put("title", totalFlow);
-        totalFlowMap.put("entity", ExportFinanceVo.class);
-        totalFlowMap.put("data", financeVoList);
-        /**
-         * 成本明细数据
-         */
-        ExportParams detail = new ExportParams();
-        detail.setSheetName("成本明细");
-        Map<String, Object> detailMap = new HashMap<>(4);
-        detailMap.put("title", detail);
-        detailMap.put("entity", ExportFinanceDetailVo.class);
-        detailMap.put("data", detailList);
-
-        List<Map<String, Object>> sheetsList = new ArrayList<>();
-        sheetsList.add(totalFlowMap);
-        sheetsList.add(detailMap);
-        String fileName = "财务总流水.xls";
-        try {
-            ExcelUtil.exportMultipleSheets(sheetsList, fileName, response);
-            return null;
-        } catch (IOException e) {
-            log.error("导出财务总流水异常:", e);
-            return BaseResultUtil.fail("导出财务总流水异常" + e.getMessage());
-        }
+        return financeService.exportExcel(response, financeQueryDto);
     }
 
     @ApiOperation(value = "已收款(时付)列表")
@@ -106,20 +60,7 @@ public class FinanceController {
     @ApiOperation(value = "导出已付订单未完结Excel")
     @GetMapping(value = "/exportAdvancePayment")
     public ResultVo exportAdvancePayment(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
-        List<AdvancePaymentVo> advancePaymentVoList = financeService.exportAdvancePaymentExcel(financeQueryDto);
-        if (CollectionUtils.isEmpty(advancePaymentVoList)) {
-            return BaseResultUtil.success("未查询到结果");
-        }
-        String title = "已付订单未完结";
-        String sheetName = "已付订单未完结";
-        String fileName = "已付订单未完结.xls";
-        try {
-            ExcelUtil.exportExcel(advancePaymentVoList, title, sheetName, AdvancePaymentVo.class, fileName, response);
-            return null;
-        } catch (IOException e) {
-            log.error("导出已付订单未完结异常:", e);
-            return BaseResultUtil.fail("导出已付订单未完结异常" + e.getMessage());
-        }
+        return financeService.exportAdvancePaymentExcel(response, financeQueryDto);
     }
 
     @ApiOperation(value = "应收账款(账期)列表")
