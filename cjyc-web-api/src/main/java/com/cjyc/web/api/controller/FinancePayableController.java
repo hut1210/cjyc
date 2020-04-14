@@ -1,15 +1,11 @@
 package com.cjyc.web.api.controller;
 
-import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import com.cjyc.common.model.dto.web.finance.*;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.finance.*;
-import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.web.api.service.IFinanceService;
-import com.cjyc.web.api.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -47,7 +42,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务应付账款列表")
     @GetMapping(value = "/exportPayableAll")
     public ResultVo exportPayableAll(HttpServletResponse response, PayableQueryDto payableQueryDto) {
-        return financeService.exportPayableAll(response,payableQueryDto);
+        return financeService.exportPayableAll(response, payableQueryDto);
     }
 
     @ApiOperation(value = "申请开票-获取申请开票运单信息")
@@ -101,7 +96,7 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务等待付款列表")
     @GetMapping(value = "/exportPayment")
     public ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto) {
-       return financeService.exportPayment(response, waitPaymentDto);
+        return financeService.exportPayment(response, waitPaymentDto);
     }
 
     @ApiOperation(value = "核销-获取核销运单信息")

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.client.utils.StringUtils;
 import com.cjkj.common.utils.IPUtil;
+import com.cjyc.common.model.constant.PayTypeConstant;
 import com.cjyc.common.model.dto.UnlockDto;
 import com.cjyc.common.model.dto.customer.order.CarCollectPayDto;
 import com.cjyc.common.model.dto.customer.order.CarPayStateDto;
@@ -18,8 +19,6 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateReceiptCarPayVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsPingPayService;
-import com.cjyc.common.system.service.ICsPingxxService;
-import com.cjyc.common.system.service.ICsTransactionService;
 import com.cjyc.customer.api.service.IPingPayService;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.*;
@@ -28,8 +27,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -48,7 +45,6 @@ import java.security.spec.X509EncodedKeySpec;
 @Api(tags = "Ping++支付")
 public class PingPayController {
 
-
     @Autowired
     private IPingPayService pingPayService;
     @Autowired
@@ -60,31 +56,16 @@ public class PingPayController {
     @Resource
     private ICsCustomerService csCustomerService;
 
-
-/*    @ApiOperation("付款")
-    @PostMapping("/order/pre/pay")
-    public ResultVo pay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
-        reqDto.setIp(IPUtil.getIpAddr(request));
-        Order pingOrder;
-        try{
-            pingOrder = pingPayService.prePay(reqDto);
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
-            return BaseResultUtil.fail("预付款异常");
-        }
-        return BaseResultUtil.success(JSONObject.parseObject(pingOrder.toString()));
-    }*/
-
     @ApiOperation("付款")
     @PostMapping("/pay")
-    public ResultVo prepay(HttpServletRequest request,@RequestBody PrePayDto reqDto){
+    public ResultVo prepay(HttpServletRequest request, @RequestBody PrePayDto reqDto) {
         reqDto.setIp(StringUtil.getIp(IPUtil.getIpAddr(request)));
         Order order;
-        try{
-            log.debug("pay---------"+reqDto.toString());
+        try {
+            log.debug("pay---------" + reqDto.toString());
             order = pingPayService.pay(reqDto);
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return BaseResultUtil.fail(e.getMessage());
         }
         return BaseResultUtil.success(JSONObject.parseObject(order.toString()));
@@ -92,18 +73,19 @@ public class PingPayController {
 
     /**
      * 取消订单 退款
+     *
      * @throws Exception
      */
     @ApiOperation("退款")
     @PostMapping("/cancel")
-    public ResultVo cancelOrderRefund(HttpServletRequest request){
+    public ResultVo cancelOrderRefund(HttpServletRequest request) {
         String orderCode = request.getParameter("orderCode");
         String jsonpCallback = request.getParameter("jsonpCallback");
         //退款
         try {
             pingPayService.cancelOrderRefund(orderCode);
         } catch (Exception e) {
-            log.error("取消订单"+orderCode+"，退款异常",e);
+            log.error("取消订单" + orderCode + "，退款异常", e);
             return BaseResultUtil.fail("取消订单退款异常");
         }
 
@@ -112,14 +94,14 @@ public class PingPayController {
 
     @ApiOperation("回调Test")
     @PostMapping("/webhooksNoticeTest")
-    public ResultVo webhooksNoticeTest(HttpServletRequest request){
+    public ResultVo webhooksNoticeTest(HttpServletRequest request) {
         return webhooksNotice(request);
     }
 
     @ApiOperation("回调")
     @PostMapping("/webhooksNotice")
-    public ResultVo webhooksNotice(HttpServletRequest request){
-        try{
+    public ResultVo webhooksNotice(HttpServletRequest request) {
+        try {
             request.setCharacterEncoding("UTF8");
             // 获得 http body 内容
             BufferedReader reader = request.getReader();
@@ -131,58 +113,63 @@ public class PingPayController {
             reader.close();
             String signature = request.getHeader("X-Pingplusplus-Signature");
             boolean verifyData = verifyData(buffer.toString(), signature, getPubKey());
-            if(verifyData) {
+            if (verifyData) {
                 // 解析异步通知数据
                 if (StringUtils.isNotBlank(buffer.toString())) {
                     Event event = Webhooks.eventParse(buffer.toString());
                     EventData data = event.getData();
                     log.info("Ping++支付回调结果{}", JSON.toJSONString(data));
                     log.debug("------event.getType()=" + event.getType());
-                    if ("order.succeeded".equals(event.getType())) {//ping++订单支付成功
-                        Order order = (Order) data.getObject();
-                        if (data.getObject() instanceof Order) {
-                            log.debug("------------->order.succeeded");
-                            transactionService.updateTransactions((Order)data.getObject(),event,"1");
-                        }
-                    }else if("order.refunded".equals(event.getType())){
-                        Order order = (Order) data.getObject();
-                        if(data.getObject() instanceof Charge){
-                            log.debug("------------->order.refunded.succeeded");
-                            //transactionService.update((Charge)data.getObject(),event,"1");
-                        }
-                    }else if("charge.succeeded".equals(event.getType())){
-                        Charge charge = (Charge)data.getObject();
-                        if(data.getObject() instanceof Charge){
-                            log.debug("------------->charge.succeeded");
-                            transactionService.update((Charge)data.getObject(),event,"1");
-                        }
-                    }else if("transfer.succeeded".equals(event.getType())){//通联支付司机运费
-                        if(data.getObject() instanceof Transfer){
-                            log.debug("------------->transfer.succeeded");
-                            transactionService.updateTransfer((Transfer)data.getObject(),event,"1");
-                        }
-                    } else if("transfer.failed".equals(event.getType())){//通联支付司机运费
-                        if(data.getObject() instanceof Transfer){
-                            log.debug("---------------->transfer.failed");
-                            transactionService.transferFailed((Transfer)data.getObject(),event);
-                        }
-                    }else if("refund.succeeded".equals(event.getType())){
-                        if(data.getObject() instanceof Refund) {
-                            log.debug("---------------->refund.succeeded");
-                            transactionService.refund((Refund)data.getObject(),event);
-                        }
+                    switch (event.getType()) {
+                        case PayTypeConstant.ORDER_SUCCEEDED:
+                            if (data.getObject() instanceof Order) {
+                                log.debug("------------->order.succeeded");
+                                transactionService.updateTransactions((Order) data.getObject(), event, "1");
+                            }
+                            break;
+                        case PayTypeConstant.ORDER_REFUNDED:
+                            if (data.getObject() instanceof Charge) {
+                                log.debug("------------->order.refunded.succeeded");
+                            }
+                            break;
+                        case PayTypeConstant.CHARGE_SUCCEEDED:
+                            if (data.getObject() instanceof Charge) {
+                                log.debug("------------->charge.succeeded");
+                                transactionService.update((Charge) data.getObject(), event, "1");
+                            }
+                            break;
+                        case PayTypeConstant.TRANSFER_SUCCEEDED:
+                            if (data.getObject() instanceof Transfer) {
+                                log.debug("------------->transfer.succeeded");
+                                transactionService.updateTransfer((Transfer) data.getObject(), event, "1");
+                            }
+                            break;
+                        case PayTypeConstant.TRANSFER_FAILED:
+                            if (data.getObject() instanceof Transfer) {
+                                log.debug("---------------->transfer.failed");
+                                transactionService.transferFailed((Transfer) data.getObject(), event);
+                            }
+                            break;
+                        case PayTypeConstant.REFUND_SUCCEEDED:
+                            if (data.getObject() instanceof Refund) {
+                                log.debug("---------------->refund.succeeded");
+                                transactionService.refund((Refund) data.getObject(), event);
+                            }
+                            break;
+                        default:
                     }
                 }
             }
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
-            return BaseResultUtil.fail(500,"ping++订单支付回调异常");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return BaseResultUtil.fail(500, "ping++订单支付回调异常");
         }
         return BaseResultUtil.success();
     }
 
     /**
      * 获得公钥
+     *
      * @return
      * @throws Exception
      */
@@ -211,6 +198,7 @@ public class PingPayController {
 
     /**
      * 读取文件, 部署 web 程序的时候, 签名和验签内容需要从 request 中获得
+     *
      * @param filePath
      * @return
      * @throws Exception
@@ -245,6 +233,7 @@ public class PingPayController {
 
     /**
      * 签收-验证支付状态
+     *
      * @author JPG
      */
     @ApiOperation(value = "签收-验证支付状态")
@@ -254,8 +243,10 @@ public class PingPayController {
         reqDto.setLoginName(customer.getName());
         return pingPayService.validateCarPayState(reqDto, false);
     }
+
     /**
      * 签收-按车辆申请支付
+     *
      * @author JPG
      */
     @ApiOperation(value = "签收-按车辆申请支付")
@@ -269,6 +260,7 @@ public class PingPayController {
 
     /**
      * 签收-无需支付
+     *
      * @author JPG
      */
     @ApiOperation(value = "签收-无需支付")
@@ -280,7 +272,6 @@ public class PingPayController {
         reqDto.setLoginType(UserTypeEnum.CUSTOMER);
         return pingPayService.receiptBatch(reqDto);
     }
-
 
     @ApiOperation(value = "解除物流费支付锁")
     @PostMapping(value = "/pay/unlock")
