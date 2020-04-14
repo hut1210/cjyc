@@ -46,10 +46,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.MarshalledObject;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author:Hut
@@ -918,9 +915,13 @@ public class FinanceServiceImpl implements IFinanceService {
         for (PaidNewVo paidNewVo : financeVoList) {
             if (paidNewVo.getState().equals("支付失败")) {
                 //查询承运商付款失败原因
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
-                );
+                List<PaymentErrorLog> listInfo = paymentErrorLogDao.selectList(new QueryWrapper<PaymentErrorLog>()
+                        .lambda()
+                        .eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
+                        .orderByDesc(PaymentErrorLog::getCreateTime));
+                // 获取最新失败原因记录
+                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                 //判断是否有失败原因记录
                 if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     paidNewVo.setFailReason("请联系管理员");
@@ -1126,9 +1127,13 @@ public class FinanceServiceImpl implements IFinanceService {
             paidNewVo.setFreightFeePayable(new BigDecimal(MoneyUtil.fenToYuan(paidNewVo.getFreightFeePayable(), MoneyUtil.PATTERN_TWO)));
             if (paidNewVo.getState().equals("支付失败")) {
                 //查询承运商付款失败原因
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
-                );
+                List<PaymentErrorLog> listInfo = paymentErrorLogDao.selectList(new QueryWrapper<PaymentErrorLog>()
+                        .lambda()
+                        .eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
+                        .orderByDesc(PaymentErrorLog::getCreateTime));
+                // 获取最新失败原因记录
+                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                 //判断是否有失败原因记录
                 if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     paidNewVo.setFailReason("请联系管理员");
@@ -1153,9 +1158,14 @@ public class FinanceServiceImpl implements IFinanceService {
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(serviceFee));
             if (cooperatorPaidVo.getState().equals("支付失败")) {
                 //查询合伙人付款失败原因
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
+                List<PaymentErrorLog> listInfo = paymentErrorLogDao.selectList(new QueryWrapper<PaymentErrorLog>()
+                        .lambda()
+                        .eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
+                        .orderByDesc(PaymentErrorLog::getCreateTime)
                 );
+                // 获取最新失败原因记录
+                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                 //判断是否有失败原因记录
                 if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     cooperatorPaidVo.setDescription("请联系管理员");
@@ -1248,9 +1258,14 @@ public class FinanceServiceImpl implements IFinanceService {
             cooperatorPaidVo.setTotalFee(MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).divide(new BigDecimal(100)));
             if (cooperatorPaidVo.getState().equals("支付失败")) {
                 //查询合伙人付款失败原因
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
+                List<PaymentErrorLog> listInfo = paymentErrorLogDao.selectList(new QueryWrapper<PaymentErrorLog>()
+                        .lambda()
+                        .eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
+                        .orderByDesc(PaymentErrorLog::getCreateTime)
                 );
+                // 获取最新失败原因记录
+                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                 //判断是否有失败原因记录
                 if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     cooperatorPaidVo.setDescription("请联系管理员");
