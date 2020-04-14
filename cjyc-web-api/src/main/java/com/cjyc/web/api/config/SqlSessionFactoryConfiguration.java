@@ -1,4 +1,4 @@
-package com.cjyc.driver.api.config;
+package com.cjyc.web.api.config;
 
 import com.baomidou.mybatisplus.autoconfigure.SpringBootVFS;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
