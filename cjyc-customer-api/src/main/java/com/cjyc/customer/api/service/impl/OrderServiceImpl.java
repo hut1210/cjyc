@@ -66,6 +66,8 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     private ICsPushMsgService csPushMsgService;
     @Resource
     private ICsOrderService csOrderService;
+    @Resource
+    private ILineDao lineDao;
 
 
     @Override
@@ -203,39 +205,52 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     private void fillFee(OrderCenterDetailVo detailVo, Order order) {
         List<OrderCar> orderCarList = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
-        // 计算待确认订单的代驾提车费，拖车送车费，物流费，保险费
-        BigDecimal pickFee = new BigDecimal(0);
-        BigDecimal backFee = new BigDecimal(0);
-        BigDecimal trunkFee = new BigDecimal(0);
-        BigDecimal addInsuranceFee = new BigDecimal(0);
-        for (OrderCar orderCar : orderCarList) {
-            pickFee = pickFee.add(orderCar.getPickFee());
-            backFee = backFee.add(orderCar.getBackFee());
-            trunkFee = trunkFee.add(orderCar.getTrunkFee());
-            addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
-        }
-        detailVo.setPickFee(pickFee);
-        detailVo.setBackFee(backFee);
-        detailVo.setTrunkFee(trunkFee);
-        detailVo.setAddInsuranceFee(addInsuranceFee);
-
-
-        // 计算合伙人物流费 与 车辆代收中介费
+        // 计算合伙人物流费 与 合伙人服务费
         if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
             BigDecimal agencyFees  = new BigDecimal(0);
             BigDecimal wlTotalFees = new BigDecimal(0);
-            for (OrderCar orderCar : orderCarList) {
-                // 代收中介费
-                BigDecimal agencyFee = orderCar.getTotalFee().subtract(orderCar.getTrunkFee()).subtract(orderCar.getPickFee())
-                        .subtract(orderCar.getBackFee()).subtract(orderCar.getAddInsuranceFee());
-                agencyFees = agencyFees.add(agencyFee);
-                // 物流费
-                BigDecimal wlTotalFee = orderCar.getTrunkFee().add(orderCar.getPickFee())
-                        .add(orderCar.getBackFee()).add(orderCar.getAddInsuranceFee());
-                wlTotalFees = wlTotalFees.add(wlTotalFee);
+            if (!CollectionUtils.isEmpty(orderCarList)) {
+                for (OrderCar orderCar : orderCarList) {
+                    // 合伙人物流费：干线费 + 提车费 + 送车费 + 保险费
+                    BigDecimal wlTotalFee = orderCar.getTrunkFee().add(orderCar.getPickFee())
+                            .add(orderCar.getBackFee()).add(orderCar.getAddInsuranceFee());
+                    wlTotalFees = wlTotalFees.add(wlTotalFee);
+
+                    // 合伙人服务费：总费用 - 物流费
+                    BigDecimal agencyFee = orderCar.getTotalFee().subtract(wlTotalFee);
+                    agencyFees = agencyFees.add(agencyFee);
+                }
+            } else {
+                Line line = lineDao.selectById(order.getLineId());
+                // 合伙人下简单 物流费
+                BigDecimal trunkWLFee = line == null ? BigDecimal.ZERO : line.getDefaultWlFee().multiply(BigDecimal.valueOf(order.getCarNum()));
+                wlTotalFees = wlTotalFees.add(trunkWLFee);
+                // 合伙人下简单 服务费
+                agencyFees = agencyFees.add(order.getTotalFee().subtract(trunkWLFee));
             }
             detailVo.setWlTotalFee(wlTotalFees);
             detailVo.setAgencyFee(agencyFees);
+            return;
+        }
+
+        // 计算提车费，拖车送车费，物流费，保险费
+        if (!CollectionUtils.isEmpty(orderCarList)) {
+            BigDecimal pickFee = new BigDecimal(0);
+            BigDecimal backFee = new BigDecimal(0);
+            BigDecimal trunkFee = new BigDecimal(0);
+            BigDecimal addInsuranceFee = new BigDecimal(0);
+            for (OrderCar orderCar : orderCarList) {
+                pickFee = pickFee.add(orderCar.getPickFee());
+                backFee = backFee.add(orderCar.getBackFee());
+                trunkFee = trunkFee.add(orderCar.getTrunkFee());
+                addInsuranceFee = addInsuranceFee.add(orderCar.getAddInsuranceFee());
+            }
+            detailVo.setPickFee(pickFee);
+            detailVo.setBackFee(backFee);
+            detailVo.setTrunkFee(trunkFee);
+            detailVo.setAddInsuranceFee(addInsuranceFee);
+        } else {
+            detailVo.setTrunkFee(order.getTotalFee());
         }
     }
 

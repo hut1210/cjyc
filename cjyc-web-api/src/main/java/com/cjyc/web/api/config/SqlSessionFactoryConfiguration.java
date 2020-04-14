@@ -30,7 +30,7 @@ public class SqlSessionFactoryConfiguration {
         // 设置
         MybatisConfiguration mc = new MybatisConfiguration();
         mc.setDefaultScriptingLanguage(MybatisXMLLanguageDriver.class);
-        mc.setMapUnderscoreToCamelCase(false);
+        mc.setMapUnderscoreToCamelCase(true);
         factoryBean.setConfiguration(mc);
         // 加入SQL 语句执行拦截器
         factoryBean.setPlugins(new Interceptor[]{new MapV2KInterceptor()});
