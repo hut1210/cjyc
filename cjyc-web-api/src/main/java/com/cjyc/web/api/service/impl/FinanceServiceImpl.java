@@ -930,6 +930,8 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             if (null != paidNewVo.getPayTime()) {
                 paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
+            }else{
+                paidNewVo.setFreightFeePayable(null);
             }
         }
         log.info("financeVoList = " + financeVoList.size());
@@ -1145,6 +1147,8 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             if (null != paidNewVo.getPayTime()) {
                 paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
+            }else{
+                paidNewVo.setFreightFeePayable(null);
             }
         }
         return paidNewVoList;
