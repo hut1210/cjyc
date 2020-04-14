@@ -42,9 +42,8 @@ public class FinancePayableVo implements Serializable {
     @Excel(name = "结算类型" ,orderNum = "2")
     private String settleTypeName;
 
-    /*@ApiModelProperty(value = "账期时间")
-    @Excel(name = "账期时间" ,orderNum = "3")
-    private int settlePeriod;*/
+    @ApiModelProperty(value = "账期时间")
+    private int settlePeriod;
 
     @ApiModelProperty(value = "剩余账期时间")
     @Excel(name = "剩余账期时间" ,orderNum = "4")
