@@ -1093,8 +1093,11 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto) {
+    public ResultVo exportPayableAll(HttpServletResponse response, PayableQueryDto payableQueryDto) {
         List<FinancePayableVo> financeVoList = financeDao.getFinancePayableList(payableQueryDto);
+        if (CollectionUtils.isEmpty(financeVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         for (FinancePayableVo financePayableVo : financeVoList) {
             BigDecimal freightFee = new BigDecimal(0);
             List<String> list = new ArrayList<>();
@@ -1109,42 +1112,78 @@ public class FinanceServiceImpl implements IFinanceService {
             financePayableVo.setRemainDate(financePayableVo.getSettlePeriod() - formatDuring(System.currentTimeMillis(), financePayableVo.getCompleteTime()));
             financePayableVo.setFreightPayable(freightFee.divide(new BigDecimal(100)));
         }
-        return financeVoList;
+        try {
+            ExcelUtil.exportExcel(financeVoList, "应付账款", "应付账款", FinancePayableVo.class, "应付账款.xls", response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出应付账款异常:", e);
+            return BaseResultUtil.fail("导出应付账款异常" + e.getMessage());
+        }
     }
 
     @Override
-    public List<SettlementVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto) {
+    public ResultVo exportPayableCollect(HttpServletResponse response, WaitTicketCollectDto waitTicketCollectDto) {
         List<SettlementVo> settlementVoList = financeDao.getCollectTicketList(waitTicketCollectDto);
+        if (CollectionUtils.isEmpty(settlementVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         settlementVoList.forEach(e -> {
             e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
         });
-        return settlementVoList;
+        try {
+            ExcelUtil.exportExcel(settlementVoList, "等待收票", "等待收票", SettlementVo.class, "等待收票.xls", response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出等待收票异常:", e);
+            return BaseResultUtil.fail("导出等待收票异常");
+        }
     }
 
     @Override
-    public List<SettlementVo> exportPayment(WaitPaymentDto waitPaymentDto) {
+    public ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto) {
         List<SettlementVo> settlementVoList = financeDao.getPayablePaymentList(waitPaymentDto);
+        if (CollectionUtils.isEmpty(settlementVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         settlementVoList.forEach(e -> {
             e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
         });
-        return settlementVoList;
+        try {
+            com.cjyc.web.api.util.ExcelUtil.exportExcel(settlementVoList, "等待付款", "等待付款", SettlementVo.class, "等待付款.xls", response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出等待付款异常:", e);
+            return BaseResultUtil.fail("导出等待付款异常");
+        }
     }
 
     @Override
-    public List<PayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto) {
+    public ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto) {
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
+        if (CollectionUtils.isEmpty(payablePaidList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         payablePaidList.forEach(e -> {
             e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
             e.setTotalFreightPay((MoneyUtil.fenToYuan(e.getTotalFreightPay())));
             e.setDifference(MoneyUtil.fenToYuan(e.getDifference()));
 
         });
-        return payablePaidList;
+        try {
+            ExcelUtil.exportExcel(payablePaidList, "应付账款-已付款（账期）", "已付款（账期）", PayablePaidVo.class, "应付账款-已付款（账期）.xls", response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出应付账款-已付款（账期）异常:", e);
+            return BaseResultUtil.fail("导出应付账款-已付款（账期）异常");
+        }
     }
 
     @Override
-    public List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto) {
+    public ResultVo exportTimePaid(HttpServletResponse response, PayMentQueryDto payMentQueryDto) {
         List<PaidNewVo> paidNewVoList = financeDao.getAutoPaidList(payMentQueryDto);
+        if (CollectionUtils.isEmpty(paidNewVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         for (PaidNewVo paidNewVo : paidNewVoList) {
             paidNewVo.setFreightFee(paidNewVo.getFreightFee() != null ? paidNewVo.getFreightFee().divide(new BigDecimal(100)) : null);
             paidNewVo.setFreightFeePayable(new BigDecimal(MoneyUtil.fenToYuan(paidNewVo.getFreightFeePayable(), MoneyUtil.PATTERN_TWO)));
@@ -1161,7 +1200,13 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
             }
         }
-        return paidNewVoList;
+        try {
+            com.cjyc.web.api.util.ExcelUtil.exportExcel(paidNewVoList, "应付账款-已付款（时付）", "已付款（时付）", PaidNewVo.class, "应付账款-已付款（时付）.xls", response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出应付账款-已付款（时付）异常:", e);
+            return BaseResultUtil.fail("导出应付账款-已付款（时付）异常");
+        }
     }
 
     @Override
@@ -1258,8 +1303,11 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<CooperatorPaidVo> exportCooperator(CooperatorSearchDto cooperatorSearchDto) {
+    public ResultVo exportCooperator(HttpServletResponse response, CooperatorSearchDto cooperatorSearchDto) {
         List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cooperatorSearchDto);
+        if (CollectionUtils.isEmpty(cooperatorPaidVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
         for (CooperatorPaidVo cooperatorPaidVo : cooperatorPaidVoList) {
             BigDecimal wlFee = getCooperatorFee(cooperatorPaidVo.getOrderId());
             //总费用
@@ -1296,7 +1344,14 @@ public class FinanceServiceImpl implements IFinanceService {
                 cooperatorPaidVo.setAreaName("");
             }
         }
-        return cooperatorPaidVoList;
+
+        try {
+            ExcelUtil.exportExcel(cooperatorPaidVoList, "合伙人付款（时付）", "付款（时付）", CooperatorPaidVo.class, "合伙人付款（时付）.xls", response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出合伙人付款异常:", e);
+            return BaseResultUtil.fail("导出合伙人付款异常");
+        }
     }
 
     @Override
