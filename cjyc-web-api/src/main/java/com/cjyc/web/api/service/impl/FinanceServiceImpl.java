@@ -911,7 +911,6 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto) {
         log.info("payMentQueryDto = " + payMentQueryDto.toString());
         List<PaidNewVo> financeVoList = getAutoPaidList(payMentQueryDto);
-
         for (PaidNewVo paidNewVo : financeVoList) {
             if (paidNewVo.getState().equals("支付失败")) {
                 //查询承运商付款失败原因
@@ -929,7 +928,9 @@ public class FinanceServiceImpl implements IFinanceService {
                     paidNewVo.setFailReason(paymentErrorLog.getRemark());
                 }
             }
-            paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
+            if (null != paidNewVo.getPayTime()) {
+                paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
+            }
         }
         log.info("financeVoList = " + financeVoList.size());
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
@@ -1094,9 +1095,9 @@ public class FinanceServiceImpl implements IFinanceService {
         });
 
         List<ExportWaitPaymentVo> exportWaitPaymentVoList = new ArrayList<>();
-        settlementVoList.forEach(e->{
+        settlementVoList.forEach(e -> {
             ExportWaitPaymentVo exportWaitPaymentVo = new ExportWaitPaymentVo();
-            BeanUtils.copyProperties(e,exportWaitPaymentVo);
+            BeanUtils.copyProperties(e, exportWaitPaymentVo);
             exportWaitPaymentVoList.add(exportWaitPaymentVo);
         });
         return exportWaitPaymentVoList;
@@ -1111,10 +1112,10 @@ public class FinanceServiceImpl implements IFinanceService {
             e.setDifference(MoneyUtil.fenToYuan(e.getDifference()));
 
         });
-        List<ExportPayablePaidVo> exportPayablePaidVoList =new ArrayList<>();
-        payablePaidList.forEach(e->{
+        List<ExportPayablePaidVo> exportPayablePaidVoList = new ArrayList<>();
+        payablePaidList.forEach(e -> {
             ExportPayablePaidVo exportPayablePaidVo = new ExportPayablePaidVo();
-            BeanUtils.copyProperties(e,exportPayablePaidVo);
+            BeanUtils.copyProperties(e, exportPayablePaidVo);
             exportPayablePaidVoList.add(exportPayablePaidVo);
         });
         return exportPayablePaidVoList;
@@ -1141,6 +1142,9 @@ public class FinanceServiceImpl implements IFinanceService {
                 } else {
                     paidNewVo.setFailReason(paymentErrorLog.getRemark());
                 }
+            }
+            if (null != paidNewVo.getPayTime()) {
+                paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
             }
         }
         return paidNewVoList;
