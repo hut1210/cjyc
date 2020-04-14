@@ -228,6 +228,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 // 合伙人下简单 服务费
                 agencyFees = agencyFees.add(order.getTotalFee().subtract(trunkWLFee));
             }
+            detailVo.setTrunkFee(wlTotalFees);
             detailVo.setWlTotalFee(wlTotalFees);
             detailVo.setAgencyFee(agencyFees);
             return;
