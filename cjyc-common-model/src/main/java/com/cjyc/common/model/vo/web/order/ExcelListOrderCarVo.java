@@ -254,9 +254,9 @@ public class ExcelListOrderCarVo implements Serializable {
         }
         switch (customerType){
             case 1:
-                return "个人";
+                return "C端";
             case 2:
-                return "企业";
+                return "大客户";
             case 3:
                 return "合伙人";
             default:
