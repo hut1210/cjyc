@@ -102,9 +102,11 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询待调度车辆统计")
     @PostMapping(value = "/wait/count/list/{roleId}/{loginId}")
-    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@PathVariable Long loginId,
-                                                                          @PathVariable Long roleId) {
-        return orderService.waitDispatchCarCountListV2(new BaseWebDto(loginId, roleId));
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@PathVariable Long loginId, @PathVariable Long roleId) {
+        BaseWebDto dto = new BaseWebDto();
+        dto.setLoginId(loginId);
+        dto.setLoginId(roleId);
+        return orderService.waitDispatchCarCountListV2(dto);
     }
 
     /**

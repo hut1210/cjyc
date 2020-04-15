@@ -151,9 +151,10 @@ public class OrderController {
     @PostMapping(value = "/check")
     public ResultVo check(@RequestBody CheckOrderDto reqDto) {
         //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
+        ResultVo<CheckOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csOrderService.check(reqDto);
     }
 
@@ -166,10 +167,10 @@ public class OrderController {
     @PostMapping(value = "/reject")
     public ResultVo reject(@RequestBody RejectOrderDto reqDto) {
         //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
+        ResultVo<RejectOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csOrderService.reject(reqDto);
     }
 
@@ -182,8 +183,10 @@ public class OrderController {
     @PostMapping(value = "/allot")
     public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
         //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        ResultVo<AllotOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         Admin toAdmin = csAdminService.validate(reqDto.getToAdminId());
         reqDto.setToAdminName(toAdmin.getName());
         return csOrderService.allot(reqDto);
@@ -198,11 +201,13 @@ public class OrderController {
     @ApiOperation(value = "订单改价")
     @PostMapping(value = "/change/price")
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
+        ResultVo<ChangePriceOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csOrderService.changePrice(reqDto);
     }
+
 
 
     /**
@@ -213,10 +218,10 @@ public class OrderController {
     @ApiOperation(value = "取消订单")
     @PostMapping(value = "/cancel")
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
+        ResultVo<CancelOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csOrderService.cancel(reqDto);
     }
 
@@ -229,10 +234,10 @@ public class OrderController {
     @ApiOperation(value = "作废订单")
     @PostMapping(value = "/obsolete")
     public ResultVo obsolete(@RequestBody CancelOrderDto reqDto) {
-
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-
+        ResultVo<CancelOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csOrderService.obsolete(reqDto);
     }
 

@@ -1,13 +1,13 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.BaseLoginDto;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
-import com.cjyc.common.model.vo.web.admin.CacheData;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface ICsAdminService {
     /**
@@ -31,6 +31,14 @@ public interface ICsAdminService {
     Admin getById(Long adminId, boolean isSearchCache);
 
     Admin validate(Long adminId);
+
+    /**
+     * 
+     * @author JPG
+     * @since 2020/4/15 14:10
+     * @param t
+     */
+    <T extends BaseLoginDto> ResultVo<T> validateForFill(T t);
 
     /**
      * 仅查询业务员信息

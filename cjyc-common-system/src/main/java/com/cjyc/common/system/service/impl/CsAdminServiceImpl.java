@@ -2,19 +2,19 @@ package com.cjyc.common.system.service.impl;
 
 import com.cjkj.common.model.ResultData;
 import com.cjkj.usercenter.dto.common.UserResp;
-import com.cjkj.usercenter.dto.yc.SelectUsersByRoleResp;
 import com.cjyc.common.model.dao.IAdminDao;
+import com.cjyc.common.model.dto.BaseLoginDto;
 import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.entity.Store;
 import com.cjyc.common.model.enums.AdminStateEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
-import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.util.RedisUtils;
-import com.cjyc.common.system.util.ResultDataUtil;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,6 @@ import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 业务员公用业务
@@ -109,7 +107,20 @@ public class CsAdminServiceImpl implements ICsAdminService {
         }
         return admin;
     }
-
+    @Override
+    public <T extends BaseLoginDto> T validateForFill(T t){
+        if(t == null || t.getLoginId() == null){
+            return t;
+        }
+        Admin admin = getById(t.getLoginId(), true);
+        if(admin == null || AdminStateEnum.CHECKED.code != admin.getState()){
+            throw new ParameterException("用户不存在或者已离职");
+        }
+        t.setLoginName(admin.getName());
+        t.setLoginPhone(admin.getPhone());
+        t.setLoginType(UserTypeEnum.ADMIN);
+        return t;
+    }
     @Override
     public Admin getAdminByPhone(String phone, boolean isSearchCache) {
         return adminDao.findByPhone(phone);
