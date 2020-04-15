@@ -173,25 +173,25 @@ public class RedisLock {
      * @param lockFlag
      */
     @Async
-    public boolean delayReleaseLock(String key, Object lockFlag){
-        return delayReleaseLock(key, lockFlag, DELAY_MILLIS);
+    public void delayReleaseLock(String key, Object lockFlag){
+        delayReleaseLock(key, lockFlag, DELAY_MILLIS);
     }
     @Async
-    public boolean delayReleaseLock(String key, Object lockFlag, long delayMillis){
-        return delayReleaseLock(Lists.newArrayList(key), lockFlag, delayMillis);
+    public void delayReleaseLock(String key, Object lockFlag, long delayMillis){
+        delayReleaseLock(Lists.newArrayList(key), lockFlag, delayMillis);
     }
     @Async
-    public boolean delayReleaseLock(Collection<String> keys, Object lockFlag){
-        return delayReleaseLock(keys, lockFlag, DELAY_MILLIS);
+    public void delayReleaseLock(Collection<String> keys, Object lockFlag){
+        delayReleaseLock(keys, lockFlag, DELAY_MILLIS);
     }
     @Async
-    public boolean delayReleaseLock(Collection<String> keys, Object lockFlag, long delayMillis){
+    public void delayReleaseLock(Collection<String> keys, Object lockFlag, long delayMillis){
         try {
             Thread.sleep(delayMillis);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return releaseLock(keys, lockFlag);
+        releaseLock(keys, lockFlag);
     }
 
 
