@@ -209,7 +209,6 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
             loginVos = carrierDao.findDriverLoginNew(driverLoginVo.getId());
         }else{
             loginVos = carrierDao.findDriverLoginNew(driver.getId());
-
         }
         //韵车库中没有
         if(CollectionUtils.isEmpty(loginVos)){
