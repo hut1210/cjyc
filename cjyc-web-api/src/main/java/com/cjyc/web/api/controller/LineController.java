@@ -94,15 +94,15 @@ public class LineController {
         lineService.exportExcel(request, response);
     }
 
-    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importExcel/loginId(导入用户ID)格式")
+    /*@ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importExcel/loginId(导入用户ID)格式")
     @PostMapping("/importExcel/{loginId}")
     public ResultVo importExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId) {
         boolean result = lineService.importExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
-    }
+    }*/
 
-    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/saveOrUpdateExcel/loginId(导入用户ID)格式")
-    @PostMapping("/saveOrUpdateExcel/{loginId}")
+    @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importExcel/loginId(导入用户ID)格式")
+    @PostMapping("/importExcel/{loginId}")
     public ResultVo saveOrUpdateExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId) {
         boolean result = lineService.saveOrUpdateExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
