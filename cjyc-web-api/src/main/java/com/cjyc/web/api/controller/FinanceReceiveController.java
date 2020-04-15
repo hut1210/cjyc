@@ -19,10 +19,10 @@ import javax.servlet.http.HttpServletResponse;
  * @author JPG
  */
 @RestController
-@Api(tags = "资金-财务")
+@Api(tags = "资金-财务-应收账款")
 @RequestMapping(value = "/finance", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
-public class FinanceController {
+public class FinanceReceiveController {
 
     @Autowired
     private IFinanceService financeService;
