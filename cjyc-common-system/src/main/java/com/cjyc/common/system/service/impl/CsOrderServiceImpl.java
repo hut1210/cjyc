@@ -1629,19 +1629,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(StringUtils.isBlank(plateNo)){
             return true;
         }
-        String key = RedisKeys.getCheckOrderPlateNo(orderNo);
-        Map<String, String> map;
-        if(redisUtils.hasKey(key)){
-            map = redisUtils.loadHash(key);
-        }else{
-            map = orderCarDao.findPlateNoListByOrderNo(orderNo);
-            redisUtils.hPutAll(key, map);
-            redisUtils.expire(key, 1, TimeUnit.DAYS);
-        }
-        if(!CollectionUtils.isEmpty(map) && map.containsKey(plateNo) && !String.valueOf(orderCarId).equals(map.get(plateNo))){
+        int i = orderCarDao.countForChechRepeatPlateNo(orderNo, orderCarId, plateNo);
+        if(i > 0){
             return false;
         }
-        redisUtils.hset(key, plateNo,  String.valueOf(orderCarId));
         return true;
     }
 
@@ -1653,22 +1644,10 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(StringUtils.isBlank(vin)){
             return true;
         }
-        String key = RedisKeys.getCheckOrderVin(orderNo);
-        Map<String, String> map;
-        if(redisUtils.hasKey(key)){
-            map = redisUtils.loadHash(key);
-        }else{
-            map = orderCarDao.findPlateNoListByOrderNo(orderNo);
-            redisUtils.hPutAll(key, map);
-            redisUtils.expire(key, 1, TimeUnit.DAYS);
-        }
-        if(CollectionUtils.isEmpty(map)){
-            map = orderCarDao.findVinListByOrderNo(orderNo);
-        }
-        if(!CollectionUtils.isEmpty(map) && map.containsKey(vin) && !String.valueOf(orderCarId).equals(map.get(vin))){
+        int i = orderCarDao.countForChechRepeatVin(orderNo, orderCarId, vin);
+        if(i > 0){
             return false;
         }
-        redisUtils.hset(key, vin, String.valueOf(orderCarId));
         return true;
     }
 
