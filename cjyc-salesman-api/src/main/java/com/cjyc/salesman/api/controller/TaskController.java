@@ -7,8 +7,8 @@ import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.BaseTaskDto;
 import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
@@ -58,11 +58,11 @@ public class TaskController {
     @PostMapping(value = "/load/for/local")
     public ResultVo<ResultReasonVo> loadForLocal(@RequestBody ReplenishInfoDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.loadForLocal(reqDto);
+        ResultVo<ReplenishInfoDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.loadForLocal(resVo.getData());
     }
     /**
      * 提车完善信息
@@ -72,10 +72,11 @@ public class TaskController {
     @PostMapping(value = "/replenish/info/update")
     public ResultVo replenishInfo(@Validated @RequestBody ReplenishInfoDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.replenishInfo(reqDto);
+        ResultVo<ReplenishInfoDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.replenishInfo(resVo.getData());
     }
 
     /**
@@ -86,11 +87,11 @@ public class TaskController {
     @PostMapping(value = "/car/load")
     public ResultVo<ResultReasonVo> load(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.load(reqDto);
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.load(resVo.getData());
     }
 
     /**
@@ -101,11 +102,11 @@ public class TaskController {
     @PostMapping(value = "/car/unload")
     public ResultVo<ResultReasonVo> unload(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.unload(reqDto);
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.unload(resVo.getData());
     }
 
     /**
@@ -115,13 +116,12 @@ public class TaskController {
     @ApiOperation(value = "确认出库")
     @PostMapping(value = "/car/out/store")
     public ResultVo<ResultReasonVo> outStore(@Validated @RequestBody BaseTaskDto reqDto) {
-
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.outStore(reqDto);
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.outStore(resVo.getData());
     }
 
     /**
@@ -132,11 +132,11 @@ public class TaskController {
     @PostMapping(value = "/car/in/store")
     public ResultVo inStore(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.inStore(reqDto);
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.inStore(resVo.getData());
     }
     /**
      * 提车完善信息
@@ -145,11 +145,13 @@ public class TaskController {
     @ApiOperation(value = "入库完善信息")
     @PostMapping(value = "/unload/replenish/info")
     public ResultVo unloadReplenishInfo(@Valid @RequestBody ReplenishInfoDto reqDto) {
+        reqDto.setType(2);//入库拍照
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setType(2);
-        return csTaskService.replenishInfo(reqDto);
+        ResultVo<ReplenishInfoDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.replenishInfo(resVo.getData());
     }
     /**
      * 确认入库
@@ -158,13 +160,13 @@ public class TaskController {
     @ApiOperation(value = "确认入库")
     @PostMapping(value = "/car/in/store/For/local")
     public ResultVo inStoreForLocal(@Validated @RequestBody ReplenishInfoDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
         reqDto.setType(2);
-        return csTaskService.inStoreForLocal(reqDto);
+        //验证用户
+        ResultVo<ReplenishInfoDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.inStoreForLocal(resVo.getData());
     }
 
 
@@ -176,10 +178,11 @@ public class TaskController {
     @PostMapping(value = "/car/receipt")
     public ResultVo receipt(@Validated @RequestBody ReceiptTaskDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        return csTaskService.receipt(reqDto);
+        ResultVo<ReceiptTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.receipt(resVo.getData());
     }
 
     /**

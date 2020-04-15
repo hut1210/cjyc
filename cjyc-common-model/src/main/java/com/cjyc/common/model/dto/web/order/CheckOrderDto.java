@@ -1,6 +1,6 @@
 package com.cjyc.common.model.dto.web.order;
 
-import com.cjyc.common.model.dto.web.BaseWebDto;
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Accessors(chain = true)
 @ApiModel
-public class CheckOrderDto extends BaseWebDto {
+public class CheckOrderDto extends BaseLoginDto {
 
     @NotNull
     @ApiModelProperty(value = "订单ID", required = true)

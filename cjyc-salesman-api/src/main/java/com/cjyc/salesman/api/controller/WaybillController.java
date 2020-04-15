@@ -1,12 +1,12 @@
 package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.web.waybill.*;
-import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.enums.ResultEnum;
+import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.BaseTipVo;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.system.service.ICsAdminService;
-import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.service.ICsWaybillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,8 +35,6 @@ public class WaybillController {
     private ICsWaybillService csWaybillService;
     @Autowired
     private ICsAdminService csAdminService;
-    @Autowired
-    private ICsStoreService csStoreService;
 
     /**
      * 提送车调度
@@ -47,9 +45,10 @@ public class WaybillController {
     @ApiOperation("提送车调度")
     @PostMapping("/local/save")
     public ResultVo saveLocal(@Validated @RequestBody SaveLocalDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        ResultVo<SaveLocalDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csWaybillService.saveLocal(reqDto);
     }
 
@@ -64,9 +63,10 @@ public class WaybillController {
     @ApiOperation(value = "修改同城调度", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/local/update")
     public ResultVo updateLocal(@Validated @RequestBody UpdateLocalDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        ResultVo<UpdateLocalDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csWaybillService.updateLocal(reqDto);
     }
 
@@ -80,9 +80,10 @@ public class WaybillController {
     @ApiOperation("干线调度")
     @PostMapping("/trunk/save")
     public ResultVo saveTrunk(@Validated @RequestBody SaveTrunkWaybillDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        ResultVo<SaveTrunkWaybillDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csWaybillService.saveTrunk(reqDto);
     }
 
@@ -95,9 +96,10 @@ public class WaybillController {
     @ApiOperation("修改干线调度")
     @PostMapping("/trunk/update")
     public ResultVo updateTrunk(@Validated @RequestBody UpdateTrunkWaybillDto reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        ResultVo<UpdateTrunkWaybillDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csWaybillService.updateTrunk(reqDto);
     }
 
@@ -111,9 +113,10 @@ public class WaybillController {
     @ApiOperation("中途卸载车辆")
     @PostMapping("/trunk/midway/unload")
     public ResultVo trunkMidwayUnload(@Validated @RequestBody TrunkMidwayUnload reqDto) {
-        //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        ResultVo<TrunkMidwayUnload> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csWaybillService.trunkMidwayUnload(reqDto);
     }
 
@@ -128,8 +131,10 @@ public class WaybillController {
     @PostMapping("/cancel")
     public ResultVo<ListVo<BaseTipVo>> cancel(@Validated @RequestBody CancelWaybillDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
+        ResultVo<CancelWaybillDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         return csWaybillService.cancel(reqDto);
     }
 
