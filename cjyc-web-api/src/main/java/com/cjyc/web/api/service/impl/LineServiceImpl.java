@@ -234,16 +234,10 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         try {
             List<SaveOrUpdateLineExcel> excelLineList = ExcelUtil.importExcel(file, 1, 1, SaveOrUpdateLineExcel.class);
             if(!CollectionUtils.isEmpty(excelLineList)){
-                int count = 0;
-                int updateSaveCount = 0;
-                int nullCount = 0;
                 for(SaveOrUpdateLineExcel lineExcel : excelLineList) {
                     //根据城市名称查询城市code
                     City fromCity = cityDao.getCodeByName(lineExcel.getFromCity());
                     City toCity = cityDao.getCodeByName(lineExcel.getToCity());
-                    if(fromCity == null || toCity == null){
-                        nullCount++;
-                    }
                     if(fromCity != null && toCity != null){
                         Line line = lineDao.getLinePriceByCode(fromCity.getCode(),toCity.getCode());
                         if(line != null){
@@ -272,11 +266,8 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                                 lineDao.insert(newLine);
                             }
                         }
-                        updateSaveCount++;
                     }
-                    count++;
                 }
-                log.info("数量:{}，{},{}",nullCount,updateSaveCount,count);
                 result = true;
             }else{
                 result = false;
