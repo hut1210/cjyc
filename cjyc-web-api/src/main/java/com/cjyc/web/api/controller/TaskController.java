@@ -1,9 +1,8 @@
 package com.cjyc.web.api.controller;
 
 import com.cjyc.common.model.dto.web.task.*;
-import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
@@ -87,11 +86,11 @@ public class TaskController {
     @PostMapping(value = "/car/out/store")
     public ResultVo<ResultReasonVo> outStore(@RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.outStore(reqDto);
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.outStore(resVo.getData());
     }
 
 
@@ -104,11 +103,11 @@ public class TaskController {
     @PostMapping(value = "/car/in/store")
     public ResultVo inStore(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csTaskService.inStore(reqDto);
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.inStore(resVo.getData());
     }
 
     /**
@@ -119,10 +118,11 @@ public class TaskController {
     @ApiOperation(value = "签收")
     @PostMapping(value = "/car/receipt")
     public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        return csTaskService.receipt(reqDto);
+        ResultVo<ReceiptTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.receipt(resVo.getData());
     }
 
     /**

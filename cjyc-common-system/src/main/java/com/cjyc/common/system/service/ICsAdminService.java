@@ -38,7 +38,7 @@ public interface ICsAdminService {
      * @since 2020/4/15 14:10
      * @param t
      */
-    <T extends BaseLoginDto> ResultVo<T> validateForFill(T t);
+    <T extends BaseLoginDto> ResultVo<T> validateEnabled(T t);
 
     /**
      * 仅查询业务员信息

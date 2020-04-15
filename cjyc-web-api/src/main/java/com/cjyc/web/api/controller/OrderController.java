@@ -8,6 +8,7 @@ import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
+import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
@@ -151,11 +152,11 @@ public class OrderController {
     @PostMapping(value = "/check")
     public ResultVo check(@RequestBody CheckOrderDto reqDto) {
         //验证用户存不存在
-        ResultVo<CheckOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        ResultVo<CheckOrderDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
-        return csOrderService.check(reqDto);
+        return csOrderService.check(resVo.getData());
     }
 
     /**
@@ -167,11 +168,11 @@ public class OrderController {
     @PostMapping(value = "/reject")
     public ResultVo reject(@RequestBody RejectOrderDto reqDto) {
         //验证用户存不存在
-        ResultVo<RejectOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        ResultVo<RejectOrderDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
-        return csOrderService.reject(reqDto);
+        return csOrderService.reject(resVo.getData());
     }
 
     /**
@@ -183,13 +184,16 @@ public class OrderController {
     @PostMapping(value = "/allot")
     public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
         //验证用户存不存在
-        ResultVo<AllotOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        ResultVo<AllotOrderDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
-        Admin toAdmin = csAdminService.validate(reqDto.getToAdminId());
-        reqDto.setToAdminName(toAdmin.getName());
-        return csOrderService.allot(reqDto);
+        Admin toAdmin = csAdminService.getById(reqDto.getToAdminId(), true);
+        if(toAdmin == null || AdminStateEnum.CHECKED.code != toAdmin.getState()){
+            return BaseResultUtil.fail("目标用户不存在或者已离职");
+        }
+        resVo.getData().setToAdminName(toAdmin.getName());
+        return csOrderService.allot(resVo.getData());
     }
 
 
@@ -201,11 +205,11 @@ public class OrderController {
     @ApiOperation(value = "订单改价")
     @PostMapping(value = "/change/price")
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
-        ResultVo<ChangePriceOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        ResultVo<ChangePriceOrderDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
-        return csOrderService.changePrice(reqDto);
+        return csOrderService.changePrice(resVo.getData());
     }
 
 
@@ -218,11 +222,11 @@ public class OrderController {
     @ApiOperation(value = "取消订单")
     @PostMapping(value = "/cancel")
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
-        ResultVo<CancelOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        ResultVo<CancelOrderDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
-        return csOrderService.cancel(reqDto);
+        return csOrderService.cancel(resVo.getData());
     }
 
 
@@ -234,11 +238,11 @@ public class OrderController {
     @ApiOperation(value = "作废订单")
     @PostMapping(value = "/obsolete")
     public ResultVo obsolete(@RequestBody CancelOrderDto reqDto) {
-        ResultVo<CancelOrderDto> resVo = csAdminService.validateForFill(reqDto);
+        ResultVo<CancelOrderDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
-        return csOrderService.obsolete(reqDto);
+        return csOrderService.obsolete(resVo.getData());
     }
 
     /**

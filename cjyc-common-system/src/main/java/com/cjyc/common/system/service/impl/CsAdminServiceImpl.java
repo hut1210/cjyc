@@ -9,6 +9,8 @@ import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.keys.RedisKeys;
+import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
@@ -108,18 +110,18 @@ public class CsAdminServiceImpl implements ICsAdminService {
         return admin;
     }
     @Override
-    public <T extends BaseLoginDto> T validateForFill(T t){
+    public <T extends BaseLoginDto> ResultVo<T> validateEnabled(T t){
         if(t == null || t.getLoginId() == null){
-            return t;
+            return BaseResultUtil.fail("登录用户存不在");
         }
         Admin admin = getById(t.getLoginId(), true);
         if(admin == null || AdminStateEnum.CHECKED.code != admin.getState()){
-            throw new ParameterException("用户不存在或者已离职");
+            return BaseResultUtil.fail("用户不存在或者已离职");
         }
         t.setLoginName(admin.getName());
         t.setLoginPhone(admin.getPhone());
         t.setLoginType(UserTypeEnum.ADMIN);
-        return t;
+        return BaseResultUtil.success();
     }
     @Override
     public Admin getAdminByPhone(String phone, boolean isSearchCache) {
