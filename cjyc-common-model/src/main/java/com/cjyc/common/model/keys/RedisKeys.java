@@ -52,7 +52,7 @@ public class RedisKeys {
     /**验证vin重复*/
     private final static String REPEAT_CHECK_VIN = "repeat:check:vin";
     /**验证车牌号重复*/
-    private final static String REPEAT_CHECK_PLATENO = "REPEAT:CHECK:PLATENO";
+    private final static String REPEAT_CHECK_PLATENO = "repeat:check:plateno";
 
     private final static String CAR_SERIES = "car:series";
     private final static String THREE_CITY = "three:city";
