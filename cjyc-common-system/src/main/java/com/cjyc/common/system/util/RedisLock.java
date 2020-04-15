@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.TimeoutUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +26,7 @@ public class RedisLock {
     private final long EXPIRE_MILLIS = 5000L;
     private final int RETRY_TIMES = 30;
     private final long SLEEP_MILLIS = 100L;
+    private final long DELAY_MILLIS = 2000L;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -44,6 +45,12 @@ public class RedisLock {
         this.redisTemplate = redisTemplate;
     }
 
+    /**
+     * 锁
+     * @author JPG
+     * @since 2020/4/15 11:51
+     * @param key
+     */
     public boolean lock(String key) {
         return this.lock(key, null, EXPIRE_MILLIS, TimeUnit.MILLISECONDS, RETRY_TIMES, SLEEP_MILLIS);
     }
@@ -114,15 +121,17 @@ public class RedisLock {
         }
     }
 
+    /**
+     * 解锁
+     * @author JPG
+     * @since 2020/4/15 11:51
+     * @param key
+     */
     public boolean releaseLock(String key){
-        List<String> list = new ArrayList<>();
-        list.add(key);
-        return releaseLock(list, null);
+        return releaseLock(Lists.newArrayList(key), null);
     }
     public boolean releaseLock(String key, Object lockFlag){
-        List<String> list = new ArrayList<>();
-        list.add(key);
-        return releaseLock(list, lockFlag);
+        return releaseLock(Lists.newArrayList(key), lockFlag);
     }
 
     public boolean releaseLock(Collection<String> keys){
@@ -154,11 +163,48 @@ public class RedisLock {
         }
         return false;
     }
+
+
+    /**
+     * 延时解锁, 延时解锁需要lockFlag
+     * @author JPG
+     * @since 2020/4/15 11:43
+     * @param key
+     * @param lockFlag
+     */
+    @Async
+    public boolean delayReleaseLock(String key, Object lockFlag){
+        return delayReleaseLock(key, lockFlag, DELAY_MILLIS);
+    }
+    @Async
+    public boolean delayReleaseLock(String key, Object lockFlag, long delayMillis){
+        return delayReleaseLock(Lists.newArrayList(key), lockFlag, delayMillis);
+    }
+    @Async
+    public boolean delayReleaseLock(Collection<String> keys, Object lockFlag){
+        return delayReleaseLock(keys, lockFlag, DELAY_MILLIS);
+    }
+    @Async
+    public boolean delayReleaseLock(Collection<String> keys, Object lockFlag, long delayMillis){
+        try {
+            Thread.sleep(delayMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return releaseLock(keys, lockFlag);
+    }
+
+
+    /**
+     * 获取锁标识，默认UUID
+     * @author JPG
+     * @since 2020/4/15 11:43
+     * @param
+     */
     public String getLockFlag() {
         return getLockFlag(null);
     }
     public String getLockFlag(Object value) {
         return value == null || StringUtils.isEmpty(String.valueOf(value))? UUID.randomUUID().toString() : String.valueOf(value);
     }
-
 }

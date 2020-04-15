@@ -219,7 +219,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
             return BaseResultUtil.success();
         } finally {
-            redisLock.releaseLock(lockSet, lockFlag);
+            redisLock.delayReleaseLock(lockSet, lockFlag);
         }
     }
 
