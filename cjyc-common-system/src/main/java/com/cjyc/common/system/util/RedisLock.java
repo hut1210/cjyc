@@ -154,7 +154,10 @@ public class RedisLock {
         }
         return false;
     }
-    private String getLockFlag(Object value) {
+    public String getLockFlag() {
+        return getLockFlag(null);
+    }
+    public String getLockFlag(Object value) {
         return value == null || StringUtils.isEmpty(String.valueOf(value))? UUID.randomUUID().toString() : String.valueOf(value);
     }
 

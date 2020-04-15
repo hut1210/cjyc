@@ -297,8 +297,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateLocationForCancel(Long orderId);
 
-    @MapV2K()
-    Map<String, String> findVinListByOrderNo(String orderNo);
-    @MapV2K()
-    Map<String, String> findPlateNoListByOrderNo(String orderNo);
+    int countForChechRepeatPlateNo(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("plateNo") String plateNo);
+
+    int countForChechRepeatVin(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("vin") String vin);
 }
