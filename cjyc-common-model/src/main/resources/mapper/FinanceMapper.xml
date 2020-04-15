@@ -1486,4 +1486,35 @@
         LEFT JOIN f_payable fp on fpd.serial_number = fp.serial_number
         WHERE fpd.no like concat('%',#{wayBillNo},'%') and fp.state=2
     </select>
+
+
+    <!-- 获取车辆成本类表数据-->
+    <select id="getCostList" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
+select ww.no as wayBillNo,
+        ww.carrier_name as name,ww.type,
+        wwc.freight_fee as freightFee,
+        if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
+        ww.freight_pay_time as payTime,
+        dc.settle_type as settleType,
+        (CASE
+            when ww.freight_pay_state=2 then '付款中'
+            when ww.freight_pay_state=1 then '已付款'
+            when ww.freight_pay_state=0 then '未付款'
+            when ww.freight_pay_state=-2 then '支付失败'
+        END) as payState,
+        (CASE
+            when dc.type=1 then '个人司机'
+            when dc.type=2 then '承运商'
+        END) as carrierType,
+        dc.linkman_phone as phone,
+        wwc.start_city as pickUpPlace,
+        wwc.end_city as deliveryPlace
+
+        from w_waybill_car wwc
+        left join w_waybill ww on wwc.waybill_no = ww.no
+        left join d_carrier dc on ww.carrier_id = dc.id
+        where wwc.order_car_no = #{orderCarNo}
+        and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
+        order by ww.create_time desc
+    </select>
 </mapper>

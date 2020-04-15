@@ -12,6 +12,7 @@ import com.cjyc.common.model.enums.customer.CustomerPayEnum;
 import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
 import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
 import com.cjyc.common.model.util.MoneyUtil;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author:Hut
@@ -125,18 +127,40 @@ public class FinanceServiceImpl implements IFinanceService {
         for (FinanceVo financeVo : financeVoList) {
             if (financeVo != null) {
                 String orderCarNo = financeVo.getNo();
-                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
-                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
-                BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
-                financeVo.setPickUpCarFee(pickUpCarFee);
-                financeVo.setTrunkLineFee(trunkLineFee);
-                financeVo.setCarryCarFee(carryCarFee);
-                List<TrunkLineVo> pickUpCarList = financeDao.getTrunkCostList(orderCarNo, 1);
-                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo, 2);
-                List<TrunkLineVo> carryCarList = financeDao.getTrunkCostList(orderCarNo, 3);
-                BigDecimal totalCost = new BigDecimal(0);
+                //获取车辆成本列表
+                List<TrunkLineVo> costList = financeDao.getCostList(orderCarNo);
+                //筛选出提车运单列表
+                List<TrunkLineVo> pickUpCarList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.PICK.code).collect(Collectors.toList());
+                //筛选出干线运单列表
+                List<TrunkLineVo> trunkLineVoList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.TRUNK.code).collect(Collectors.toList());
+                //筛选出送车运单列表
+                List<TrunkLineVo> carryCarList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.BACK.code).collect(Collectors.toList());
+                //提车成本费用
+                financeVo.setPickUpCarFee(pickUpCarList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add));
+                //干线成本费用
+                financeVo.setTrunkLineFee(trunkLineVoList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add));
+                //送车成本费用
+                financeVo.setCarryCarFee(carryCarList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add));
                 //成本合计
-                if (pickUpCarList != null) {
+                BigDecimal totalCost = costList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                pickUpCarList.forEach(e->{
+                    if("1".equals(e.getSettleType())){
+                        //获取账期运单开票信息
+                        AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
+                        if(accountPeriodVo!=null){
+                            e.setPayTime(accountPeriodVo.getWriteOffTime());
+                            e.setPayState("已付款");
+                            e.setPaidFreightFee(e.getFreightFee());
+                        }else{
+                            e.setPayTime(null);
+                            e.setPayState("");
+                            e.setPaidFreightFee(null);
+                        }
+                    }
+                });
+                //成本合计
+                /*if (pickUpCarList != null) {
                     for (TrunkLineVo trunkLineVo : pickUpCarList) {
                         if("1".equals(trunkLineVo.getSettleType())){
                             //获取账期运单开票信息
@@ -196,7 +220,7 @@ public class FinanceServiceImpl implements IFinanceService {
                             totalCost = totalCost.add(trunkLineVo.getFreightFee());
                         }
                     }
-                }
+                }*/
                 //提车成本列表
                 financeVo.setPickUpCarList(pickUpCarList);
                 //干线成本列表
@@ -309,22 +333,22 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
 
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
-                if(!CollectionUtils.isEmpty(detailList)){
-                    detailList.forEach(e->{
-                        if("1".equals(e.getSettleType())){
+                if (!CollectionUtils.isEmpty(detailList)) {
+                    detailList.forEach(e -> {
+                        if ("1".equals(e.getSettleType())) {
                             //获取账期运单开票信息
                             AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
-                            if(accountPeriodVo!=null){
+                            if (accountPeriodVo != null) {
                                 e.setPayTime(accountPeriodVo.getWriteOffTime());
                                 e.setPayState("已付款");
                                 e.setPaidFreightFee(e.getFreightFee());
-                            }else{
+                            } else {
                                 e.setPayTime(null);
                                 e.setPayState("");
                                 e.setPaidFreightFee(null);
                             }
                             e.setSettleType("账期");
-                        }else{
+                        } else {
                             e.setSettleType("时付");
                         }
                     });
@@ -856,7 +880,7 @@ public class FinanceServiceImpl implements IFinanceService {
         PageInfo<SettlementVo> pageInfo = new PageInfo<>(settlementVoList);
         Map countInfo = getCountInfo();
         BigDecimal paymentSummary = financeDao.paymentSummary(waitPaymentDto);
-        countInfo.put("paymentSummary",  MoneyUtil.fenToYuan(paymentSummary));
+        countInfo.put("paymentSummary", MoneyUtil.fenToYuan(paymentSummary));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -887,11 +911,11 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo writeOffPayable(WriteOffTicketDto writeOffTicketDto) {
         SettlementVo settlementVoTemp = financeDao.getPayableSettlement(writeOffTicketDto.getSerialNumber());
-        if(settlementVoTemp == null){
+        if (settlementVoTemp == null) {
             return BaseResultUtil.fail("结算信息不存在！");
         }
-        if(MoneyUtil.yuanToFen(writeOffTicketDto.getTotalFreightPay()).compareTo(settlementVoTemp.getFreightFee()) > 0){
-           return BaseResultUtil.fail("实付总费用不能大于应收总运费！");
+        if (MoneyUtil.yuanToFen(writeOffTicketDto.getTotalFreightPay()).compareTo(settlementVoTemp.getFreightFee()) > 0) {
+            return BaseResultUtil.fail("实付总费用不能大于应收总运费！");
         }
         SettlementVo settlementVo = new SettlementVo();
         settlementVo.setState("2");
@@ -955,12 +979,12 @@ public class FinanceServiceImpl implements IFinanceService {
             if (paidNewVo.getState().equals("支付失败")) {
                 //查询承运商付款失败原因
                 PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getWaybillNo,paidNewVo.getWaybillNo())
+                        .lambda().eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
                 );
                 //判断是否有失败原因记录
-                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     paidNewVo.setFailReason("请联系管理员");
-                }else {
+                } else {
                     paidNewVo.setFailReason(paymentErrorLog.getRemark());
                 }
             }
@@ -1190,12 +1214,12 @@ public class FinanceServiceImpl implements IFinanceService {
             if (paidNewVo.getState().equals("支付失败")) {
                 //查询承运商付款失败原因
                 PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getWaybillNo,paidNewVo.getWaybillNo())
+                        .lambda().eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
                 );
                 //判断是否有失败原因记录
-                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     paidNewVo.setFailReason("请联系管理员");
-                }else {
+                } else {
                     paidNewVo.setFailReason(paymentErrorLog.getRemark());
                 }
             }
@@ -1223,12 +1247,12 @@ public class FinanceServiceImpl implements IFinanceService {
             if (cooperatorPaidVo.getState().equals("支付失败")) {
                 //查询合伙人付款失败原因
                 PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getOrderNo,cooperatorPaidVo.getOrderNo())
+                        .lambda().eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
                 );
                 //判断是否有失败原因记录
-                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     cooperatorPaidVo.setDescription("请联系管理员");
-                }else {
+                } else {
                     cooperatorPaidVo.setDescription(paymentErrorLog.getRemark());
                 }
             }
@@ -1321,12 +1345,12 @@ public class FinanceServiceImpl implements IFinanceService {
             if (cooperatorPaidVo.getState().equals("支付失败")) {
                 //查询合伙人付款失败原因
                 PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getOrderNo,cooperatorPaidVo.getOrderNo())
+                        .lambda().eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
                 );
                 //判断是否有失败原因记录
-                if(ObjectUtils.isEmpty(paymentErrorLog)){
+                if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     cooperatorPaidVo.setDescription("请联系管理员");
-                }else {
+                } else {
                     cooperatorPaidVo.setDescription(paymentErrorLog.getRemark());
                 }
             }
