@@ -9,6 +9,7 @@ import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
 import com.cjyc.common.model.enums.customer.CustomerPayEnum;
+import com.cjyc.common.model.enums.driver.DriverSettleTypeEnum;
 import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
 import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
@@ -129,6 +130,22 @@ public class FinanceServiceImpl implements IFinanceService {
                 String orderCarNo = financeVo.getNo();
                 //获取车辆成本列表
                 List<TrunkLineVo> costList = financeDao.getCostList(orderCarNo);
+
+                //成本为账期的数据处理
+                costList.stream().filter(e -> String.valueOf(DriverSettleTypeEnum.ACCOUNT_PERIOD.code).equals(e.getSettleType()))
+                        .forEach(e -> {
+                            //获取账期运单开票信息
+                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
+                            if (accountPeriodVo != null) {
+                                e.setPayTime(accountPeriodVo.getWriteOffTime());
+                                e.setPayState("已付款");
+                                e.setPaidFreightFee(e.getFreightFee());
+                            } else {
+                                e.setPayTime(null);
+                                e.setPayState("");
+                                e.setPaidFreightFee(null);
+                            }
+                        });
                 //筛选出提车运单列表
                 List<TrunkLineVo> pickUpCarList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.PICK.code).collect(Collectors.toList());
                 //筛选出干线运单列表
@@ -143,84 +160,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 financeVo.setCarryCarFee(carryCarList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add));
                 //成本合计
                 BigDecimal totalCost = costList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                pickUpCarList.forEach(e->{
-                    if("1".equals(e.getSettleType())){
-                        //获取账期运单开票信息
-                        AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
-                        if(accountPeriodVo!=null){
-                            e.setPayTime(accountPeriodVo.getWriteOffTime());
-                            e.setPayState("已付款");
-                            e.setPaidFreightFee(e.getFreightFee());
-                        }else{
-                            e.setPayTime(null);
-                            e.setPayState("");
-                            e.setPaidFreightFee(null);
-                        }
-                    }
-                });
-                //成本合计
-                /*if (pickUpCarList != null) {
-                    for (TrunkLineVo trunkLineVo : pickUpCarList) {
-                        if("1".equals(trunkLineVo.getSettleType())){
-                            //获取账期运单开票信息
-                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
-                            if(accountPeriodVo!=null){
-                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
-                                trunkLineVo.setPayState("已付款");
-                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
-                            }else{
-                                trunkLineVo.setPayTime(null);
-                                trunkLineVo.setPayState("");
-                                trunkLineVo.setPaidFreightFee(null);
-                            }
-                        }
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }
-                if (trunkLineVoList != null) {
-                    for (TrunkLineVo trunkLineVo : trunkLineVoList) {
-                        if("1".equals(trunkLineVo.getSettleType())){
-                            //获取账期运单开票信息
-                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
-                            if(accountPeriodVo!=null){
-                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
-                                trunkLineVo.setPayState("已付款");
-                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
-                            }else{
-                                trunkLineVo.setPayTime(null);
-                                trunkLineVo.setPayState("");
-                                trunkLineVo.setPaidFreightFee(null);
-                            }
-                        }
-
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }
-                if (carryCarList != null) {
-                    for (TrunkLineVo trunkLineVo : carryCarList) {
-                        if("1".equals(trunkLineVo.getSettleType())){
-                            //获取账期运单开票信息
-                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
-                            if(accountPeriodVo!=null){
-                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
-                                trunkLineVo.setPayState("已付款");
-                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
-                            }else{
-                                trunkLineVo.setPayTime(null);
-                                trunkLineVo.setPayState("");
-                                trunkLineVo.setPaidFreightFee(null);
-                            }
-                        }
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }*/
                 //提车成本列表
                 financeVo.setPickUpCarList(pickUpCarList);
                 //干线成本列表
@@ -231,32 +170,31 @@ public class FinanceServiceImpl implements IFinanceService {
                 financeVo.setTotalCost(totalCost);
                 //毛利
                 financeVo.setGrossProfit(financeVo.getTotalIncome().subtract(totalCost));
-                //账期数据查询开票金额
+                //客户为账期的数据处理，查询开票金额
                 if (financeVo.getPayMode() != null && CustomerPayEnum.PERIOD_PAY.code == financeVo.getPayMode()) {
                     FinanceSettlementDetailVo financeSettlementDetailVo = financeDao.getSettlementDetail(financeVo.getNo());
                     if (financeSettlementDetailVo != null) {
                         BigDecimal difference = MoneyUtil.nullToZero(financeSettlementDetailVo.getFreightFee()).subtract(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
+                        //差额
                         financeVo.setDifference(new BigDecimal(MoneyUtil.fenToYuan(difference, MoneyUtil.PATTERN_TWO)));
+                        //开票金额
                         financeVo.setInvoiceFee(financeSettlementDetailVo.getInvoiceFee());
+                        //付款时间
                         financeVo.setReceivedTime(financeSettlementDetailVo.getVerificationTime());
                     }
                 }
             }
         }
         PageInfo<FinanceVo> pageInfo = new PageInfo<>(financeVoList);
-        //收益合计
-        BigDecimal incomeSummary = tradeBillService.incomeSummary(financeQueryDto);
-        //成本合计
-        BigDecimal costSummary = tradeBillService.costSummary(financeQueryDto);
-        //毛利汇总
-        BigDecimal grossProfit = tradeBillService.grossProfit(financeQueryDto);
-        //实收汇总
-        BigDecimal actualReceiptSummary = tradeBillService.financeActualReceiptSummary(financeQueryDto);
         Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
-        countInfo.put("costSummary", costSummary.divide(new BigDecimal(100)));
-        countInfo.put("grossProfit", grossProfit.divide(new BigDecimal(100)));
-        countInfo.put("actualReceiptSummary", actualReceiptSummary.divide(new BigDecimal(100)));
+        //收益合计
+        countInfo.put("incomeSummary", MoneyUtil.fenToYuan(tradeBillService.incomeSummary(financeQueryDto)));
+        //成本合计
+        countInfo.put("costSummary", MoneyUtil.fenToYuan(tradeBillService.costSummary(financeQueryDto)));
+        //毛利汇总
+        countInfo.put("grossProfit", MoneyUtil.fenToYuan(tradeBillService.grossProfit(financeQueryDto)));
+        //实收汇总
+        countInfo.put("actualReceiptSummary", MoneyUtil.fenToYuan(tradeBillService.financeActualReceiptSummary(financeQueryDto)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -273,52 +211,36 @@ public class FinanceServiceImpl implements IFinanceService {
 
             if (financeVo != null) {
                 String orderCarNo = financeVo.getNo();
-                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
-                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
-                BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
+                //获取车辆成本列表
+                List<TrunkLineVo> costList = financeDao.getCostList(orderCarNo);
 
-                financeVo.setPickUpCarFee(pickUpCarFee != null ? pickUpCarFee.divide(new BigDecimal(100)) : null);
-                financeVo.setTrunkLineFee(trunkLineFee != null ? trunkLineFee.divide(new BigDecimal(100)) : null);
-                financeVo.setCarryCarFee(carryCarFee != null ? carryCarFee.divide(new BigDecimal(100)) : null);
-
-                List<TrunkLineVo> pickUpCarList = financeDao.getTrunkCostList(orderCarNo, 1);
-                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo, 2);
-                List<TrunkLineVo> carryCarList = financeDao.getTrunkCostList(orderCarNo, 3);
-
-                BigDecimal totalCost = new BigDecimal(0);
+                //筛选出提车运单列表
+                List<TrunkLineVo> pickUpCarList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.PICK.code).collect(Collectors.toList());
+                //筛选出干线运单列表
+                List<TrunkLineVo> trunkLineVoList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.TRUNK.code).collect(Collectors.toList());
+                //筛选出送车运单列表
+                List<TrunkLineVo> carryCarList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.BACK.code).collect(Collectors.toList());
+                //提车成本费用
+                financeVo.setPickUpCarFee(MoneyUtil.fenToYuan(pickUpCarList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add)));
+                //干线成本费用
+                financeVo.setTrunkLineFee(MoneyUtil.fenToYuan(trunkLineVoList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add)));
+                //送车成本费用
+                financeVo.setCarryCarFee(MoneyUtil.fenToYuan(carryCarList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add)));
                 //成本合计
-                if (pickUpCarList != null) {
-                    for (TrunkLineVo trunkLineVo : pickUpCarList) {
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }
+                BigDecimal totalCost = costList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add);
+                //毛利计算
+                financeVo.setGrossProfit(MoneyUtil.fenToYuan((financeVo.getTotalIncome().subtract(totalCost))));
 
-                if (trunkLineVoList != null) {
-                    for (TrunkLineVo trunkLineVo : trunkLineVoList) {
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }
-
-                if (carryCarList != null) {
-                    for (TrunkLineVo trunkLineVo : carryCarList) {
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }
-
-                financeVo.setFreightReceivable(financeVo.getFreightReceivable() != null ? financeVo.getFreightReceivable().divide(new BigDecimal(100)) : financeVo.getFreightReceivable());
-
-                financeVo.setFeeShare(financeVo.getFeeShare() != null ? financeVo.getFeeShare().divide(new BigDecimal(100)) : financeVo.getFeeShare());
-                financeVo.setAmountReceived(financeVo.getAmountReceived() != null ? financeVo.getAmountReceived().divide(new BigDecimal(100)) : financeVo.getAmountReceived());
-                financeVo.setTotalCost(totalCost != null ? totalCost.divide(new BigDecimal(100)) : null);
-
-                financeVo.setGrossProfit((financeVo.getTotalIncome().subtract(totalCost)).divide(new BigDecimal(100)));
-                financeVo.setTotalIncome(financeVo.getTotalIncome() != null ? financeVo.getTotalIncome().divide(new BigDecimal(100)) : financeVo.getTotalIncome());
+                financeVo.setTotalCost(MoneyUtil.fenToYuan(totalCost));
+                //应收运费
+                financeVo.setFreightReceivable(MoneyUtil.fenToYuan(financeVo.getFreightReceivable()));
+                //分摊费用
+                financeVo.setFeeShare(MoneyUtil.fenToYuan(financeVo.getFeeShare()));
+                //实收运费
+                financeVo.setAmountReceived(MoneyUtil.fenToYuan(financeVo.getAmountReceived()));
+                //收益合计
+                financeVo.setTotalIncome(MoneyUtil.fenToYuan(financeVo.getTotalIncome()));
+                //实际收益
                 financeVo.setActualIncome(MoneyUtil.nullToZero(financeVo.getTotalIncome()));
 
                 //账期数据查询开票金额
@@ -326,8 +248,11 @@ public class FinanceServiceImpl implements IFinanceService {
                     FinanceSettlementDetailVo financeSettlementDetailVo = financeDao.getSettlementDetail(financeVo.getNo());
                     if (financeSettlementDetailVo != null) {
                         BigDecimal difference = MoneyUtil.nullToZero(financeSettlementDetailVo.getFreightFee()).subtract(MoneyUtil.nullToZero(financeSettlementDetailVo.getInvoiceFee()));
+                        //差额
                         financeVo.setDifference(new BigDecimal(MoneyUtil.fenToYuan(difference, MoneyUtil.PATTERN_TWO)));
+                        //开票金额
                         financeVo.setInvoiceFee(new BigDecimal(MoneyUtil.fenToYuan(financeSettlementDetailVo.getInvoiceFee(), MoneyUtil.PATTERN_TWO)));
+                        //付款时间
                         financeVo.setReceivedTime(financeSettlementDetailVo.getVerificationTime());
                     }
                 }
