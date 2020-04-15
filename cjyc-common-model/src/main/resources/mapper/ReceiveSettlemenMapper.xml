@@ -36,7 +36,7 @@
             AND rs.apply_time >= #{startApplyTime}
         </if>
         <if test="endApplyTime!= null">
-            AND woc.apply_time &lt;= #{endApplyTime}
+            AND rs.apply_time &lt;= #{endApplyTime}
         </if>
         <if test="startConfirmTime!= null">
             AND rs.confirm_time >= #{startConfirmTime}
