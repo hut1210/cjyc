@@ -5,7 +5,7 @@
 
 server:
   #服务端口
-  port: 9505
+  port: 9504
   #服务baseURl
   servlet:
     context-path: /cjyc/customer
