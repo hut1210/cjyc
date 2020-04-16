@@ -1,5 +1,6 @@
 package com.cjyc.salesman.api.controller;
 
+import com.cjyc.common.model.dto.LocationInfoDto;
 import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
@@ -232,6 +233,19 @@ public class TaskController {
     @PostMapping(value = "/getLogisticsInfo")
     public ResultVo<LogisticsInformationVo> getLogisticsInformation(@RequestBody @Valid LogisticsInformationDto reqDto) {
         return csLogisticsInformationService.getLogisticsInformation(reqDto);
+    }
+
+    /**
+     * 功能描述: 定位信息上传
+     * @author liuxingxiang
+     * @date 2020/4/9
+     * @param reqDto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    @ApiOperation(value = "定位信息上传")
+    @PostMapping(value = "/uploadUserLocation")
+    public ResultVo uploadUserLocation(@RequestBody @Valid LocationInfoDto reqDto) {
+        return csLogisticsInformationService.uploadUserLocation(reqDto);
     }
 
 }
