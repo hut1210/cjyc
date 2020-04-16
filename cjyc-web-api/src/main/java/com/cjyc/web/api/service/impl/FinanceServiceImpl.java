@@ -13,7 +13,6 @@ import com.cjyc.common.model.enums.driver.DriverSettleTypeEnum;
 import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
 import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillPayStateEnum;
-import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
@@ -34,7 +33,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,8 +46,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.rmi.MarshalledObject;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,12 +74,6 @@ public class FinanceServiceImpl implements IFinanceService {
     private ICsSendNoService csSendNoService;
 
     @Resource
-    private ICustomerService customerService;
-
-    @Resource
-    private IOrderService orderService;
-
-    @Resource
     private ICsPingPayService csPingPayService;
 
     @Resource
@@ -96,13 +86,7 @@ public class FinanceServiceImpl implements IFinanceService {
     private IWaybillDao waybillDao;
 
     @Resource
-    private IConfigDao configDao;
-
-    @Resource
     private IPaymentErrorLogDao paymentErrorLogDao;
-
-    @Resource
-    private IOrderDao orderDao;
 
     @Resource
     private IOrderCarDao orderCarDao;
@@ -131,11 +115,10 @@ public class FinanceServiceImpl implements IFinanceService {
                 String orderCarNo = financeVo.getNo();
                 //获取车辆成本列表
                 List<TrunkLineVo> costList = financeDao.getCostList(orderCarNo);
-
                 //成本为账期的数据处理
                 costList.stream().filter(e -> String.valueOf(DriverSettleTypeEnum.ACCOUNT_PERIOD.code).equals(e.getSettleType()))
                         .forEach(e -> {
-                            //获取账期运单开票信息
+                            //获取账期运单开票信息（已开票付款的显示付款时间、付款状态、付款金额；未付款的不显示）
                             AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
                             if (accountPeriodVo != null) {
                                 e.setPayTime(accountPeriodVo.getWriteOffTime());
@@ -169,7 +152,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 financeVo.setCarryCarList(carryCarList);
                 //成本合计
                 financeVo.setTotalCost(totalCost);
-                //毛利
+                //毛利 = 收入合计-成本合计
                 financeVo.setGrossProfit(financeVo.getTotalIncome().subtract(totalCost));
                 //客户为账期的数据处理，查询开票金额
                 if (financeVo.getPayMode() != null && CustomerPayEnum.PERIOD_PAY.code == financeVo.getPayMode()) {
@@ -201,7 +184,6 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
-        log.info("financeQueryDto =" + financeQueryDto.toString());
         Map map = new HashMap();
         List<ExportFinanceVo> financeVoList = financeDao.getAllFinanceList(financeQueryDto);
         List<ExportFinanceDetailVo> detailVoList = new ArrayList<>();
@@ -209,12 +191,10 @@ public class FinanceServiceImpl implements IFinanceService {
             return BaseResultUtil.success("未查询到结果");
         }
         for (ExportFinanceVo financeVo : financeVoList) {
-
             if (financeVo != null) {
                 String orderCarNo = financeVo.getNo();
                 //获取车辆成本列表
                 List<TrunkLineVo> costList = financeDao.getCostList(orderCarNo);
-
                 //筛选出提车运单列表
                 List<TrunkLineVo> pickUpCarList = costList.stream().filter(e -> e.getType() == WaybillTypeEnum.PICK.code).collect(Collectors.toList());
                 //筛选出干线运单列表
@@ -231,7 +211,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 BigDecimal totalCost = costList.stream().map(TrunkLineVo::getFreightFee).reduce(BigDecimal.ZERO, BigDecimal::add);
                 //毛利计算
                 financeVo.setGrossProfit(MoneyUtil.fenToYuan((financeVo.getTotalIncome().subtract(totalCost))));
-
                 financeVo.setTotalCost(MoneyUtil.fenToYuan(totalCost));
                 //应收运费
                 financeVo.setFreightReceivable(MoneyUtil.fenToYuan(financeVo.getFreightReceivable()));
@@ -243,7 +222,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 financeVo.setTotalIncome(MoneyUtil.fenToYuan(financeVo.getTotalIncome()));
                 //实际收益
                 financeVo.setActualIncome(MoneyUtil.nullToZero(financeVo.getTotalIncome()));
-
                 //账期数据查询开票金额
                 if (financeVo.getPayMode() != null && CustomerPayEnum.PERIOD_PAY.code == financeVo.getPayMode()) {
                     FinanceSettlementDetailVo financeSettlementDetailVo = financeDao.getSettlementDetail(financeVo.getNo());
@@ -257,12 +235,13 @@ public class FinanceServiceImpl implements IFinanceService {
                         financeVo.setReceivedTime(financeSettlementDetailVo.getVerificationTime());
                     }
                 }
-
+                //查询车辆成本列表
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
                 if (!CollectionUtils.isEmpty(detailList)) {
                     detailList.forEach(e -> {
+                        //过滤账期数据
                         if (String.valueOf(DriverSettleTypeEnum.ACCOUNT_PERIOD.code).equals(e.getSettleType())) {
-                            //获取账期运单开票信息
+                            //获取账期运单开票信息（已开票付款的显示付款时间、付款状态、付款金额；未付款的不显示）
                             AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
                             if (accountPeriodVo != null) {
                                 e.setPayTime(accountPeriodVo.getWriteOffTime());
@@ -311,25 +290,6 @@ public class FinanceServiceImpl implements IFinanceService {
             log.error("导出财务总流水异常:", e);
             return BaseResultUtil.fail("导出财务总流水异常" + e.getMessage());
         }
-    }
-
-    private List<FinanceVo> getAllFinanceList(FinanceQueryDto financeQueryDto) {
-        List<FinanceVo> financeVoList = financeDao.getFinanceList(financeQueryDto);
-        for (FinanceVo financeVo : financeVoList) {
-            if (financeVo != null) {
-                String orderCarNo = financeVo.getNo();
-                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo, 0);
-                financeVo.setTrunkLineVoList(trunkLineVoList);
-            }
-        }
-
-        return financeVoList;
-    }
-
-    private FinanceQueryDto getFinanceQueryDto(HttpServletRequest request) {
-        FinanceQueryDto financeQueryDto = new FinanceQueryDto();
-        String no = request.getParameter("no");
-        return financeQueryDto;
     }
 
     @Override
@@ -448,7 +408,6 @@ public class FinanceServiceImpl implements IFinanceService {
         financeQueryDto.setSettleType(0);
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
-        log.info("financeVoList.size ={}", financeVoList.size());
         PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
         //应收汇总数据
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
@@ -498,21 +457,6 @@ public class FinanceServiceImpl implements IFinanceService {
             log.error("导出已付订单未完结异常:", e);
             return BaseResultUtil.fail("导出已付订单未完结异常!");
         }
-    }
-
-    /**
-     * 获取应收所有table总数
-     *
-     * @return
-     */
-    private Map getReceivableCountInfo() {
-        FinanceQueryDto fqd = new FinanceQueryDto();
-        List<PaymentVo> pv = financeDao.getPaymentList(fqd);
-        List<AdvancePaymentVo> ap = financeDao.getAdvancePayment(fqd);
-        Map<String, Object> countInfo = new HashMap<>();
-        countInfo.put("receiptCount", pv.size());
-        countInfo.put("advancePaymentCount", ap.size());
-        return countInfo;
     }
 
     @Override
@@ -717,7 +661,6 @@ public class FinanceServiceImpl implements IFinanceService {
             settlement.setNo(taskNo);
             financeDao.applyDetail(settlement);
         }
-
         return BaseResultUtil.success();
     }
 
@@ -742,7 +685,6 @@ public class FinanceServiceImpl implements IFinanceService {
         if (list != null && list.size() > 0) {
             settlementVoList = financeDao.getSettlementInfo(list);
         }
-
         BigDecimal freightFee = new BigDecimal(0);
         for (PayableTaskVo settlementVo : settlementVoList) {
             if (settlementVo != null && settlementVo.getFreightFee() != null) {
@@ -792,7 +734,6 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo getWriteOffTicket(String serialNumber) {
         List<String> list = financeDao.getTaskNoList(serialNumber);
         List<PayableTaskVo> settlementVoList = financeDao.getSettlementInfo(list);
-
         BigDecimal freightFee = new BigDecimal(0);
         for (PayableTaskVo settlementVo : settlementVoList) {
             if (settlementVo != null && settlementVo.getFreightFee() != null) {
@@ -852,7 +793,6 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo payableDetail(String serialNumber) {
         List<String> list = financeDao.getTaskNoList(serialNumber);
         List<PayableTaskVo> settlementVoList = financeDao.getSettlementInfo(list);
-
         BigDecimal freightFee = new BigDecimal(0);
         for (PayableTaskVo settlementVo : settlementVoList) {
             if (settlementVo != null && settlementVo.getFreightFee() != null) {
@@ -874,9 +814,7 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<PaidNewVo>> getPaidListNew(PayMentQueryDto payMentQueryDto) {
-        log.info("payMentQueryDto = " + payMentQueryDto.toString());
         List<PaidNewVo> financeVoList = getAutoPaidList(payMentQueryDto);
-
         for (PaidNewVo paidNewVo : financeVoList) {
             if (paidNewVo.getState().equals("支付失败")) {
                 //查询承运商付款失败原因
@@ -891,18 +829,14 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
             }
         }
-        log.info("financeVoList = " + financeVoList.size());
         PageInfo<PaidNewVo> pageInfo = new PageInfo<>(financeVoList);
-
         Map countInfo = getCountInfo();
-
         //承运商应付款汇总
         BigDecimal carrierSummary = tradeBillService.payToCarrierSummary(payMentQueryDto);
         countInfo.put("carrierSummary", carrierSummary.divide(new BigDecimal(100)));
         //承运商实付款汇总
         BigDecimal paidCarrierSummary = tradeBillService.paidToCarrierSummary(payMentQueryDto);
         countInfo.put("paidCarrierSummary", paidCarrierSummary.divide(new BigDecimal(100)));
-
         return BaseResultUtil.success(pageInfo, countInfo);
     }
 
@@ -941,16 +875,13 @@ public class FinanceServiceImpl implements IFinanceService {
                             result.append(waybill.getNo());
                             result.append(resultVo.getMsg());
                         }
-
                         try {
                             log.info("result = {}", result.toString());
                             if (result.length() == 0) {
                                 if (externalPaymentDto != null && externalPaymentDto.getLoginId() != null) {
                                     Admin admin = csAdminService.getById(externalPaymentDto.getLoginId(), true);
-
                                     if (admin != null) {
                                         ExternalPayment ep = externalPaymentDao.getByWayBillId(waybillId);
-
                                         if (ep == null) {
                                             ExternalPayment externalPayment = new ExternalPayment();
                                             externalPayment.setWaybillId(waybillId);
@@ -1088,7 +1019,6 @@ public class FinanceServiceImpl implements IFinanceService {
             e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
             e.setTotalFreightPay((MoneyUtil.fenToYuan(e.getTotalFreightPay())));
             e.setDifference(MoneyUtil.fenToYuan(e.getDifference()));
-
         });
         try {
             ExcelUtil.exportExcel(payablePaidList, "应付账款-已付款（账期）", "已付款（账期）", PayablePaidVo.class, "应付账款-已付款（账期）.xls", response);
@@ -1156,12 +1086,9 @@ public class FinanceServiceImpl implements IFinanceService {
             cooperatorPaidVo.setWlFee(MoneyUtil.nullToZero(cooperatorPaidVo.getWlFee()).divide(new BigDecimal(100)));
             cooperatorPaidVo.setServiceFee(MoneyUtil.nullToZero(cooperatorPaidVo.getServiceFee()).divide(new BigDecimal(100)));
             cooperatorPaidVo.setTotalFee(MoneyUtil.nullToZero(cooperatorPaidVo.getTotalFee()).divide(new BigDecimal(100)));
-
         }
         PageInfo<CooperatorPaidVo> pageInfo = new PageInfo<>(cooperatorPaidVoList);
-
         Map countInfo = getCountInfo();
-
         //合伙人应付汇总
         BigDecimal payCooperatorSummary = tradeBillService.payToCooperatorSummary(cooperatorSearchDto);
         countInfo.put("payCooperatorSummary", payCooperatorSummary.divide(new BigDecimal(100)));
@@ -1173,7 +1100,6 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto) {
-
         //记录支付操作者
         StringBuilder result = new StringBuilder();
         try {
@@ -1197,7 +1123,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 if (result.length() == 0) {
                     if (cooperatorPaymentDto != null && cooperatorPaymentDto.getLoginId() != null) {
                         Admin admin = csAdminService.getById(cooperatorPaymentDto.getLoginId(), true);
-
                         if (admin != null) {
                             ExternalPayment externalPayment = new ExternalPayment();
                             externalPayment.setPayTime(System.currentTimeMillis());
