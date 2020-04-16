@@ -12,6 +12,7 @@ import com.cjyc.common.model.enums.customer.CustomerPayEnum;
 import com.cjyc.common.model.enums.driver.DriverSettleTypeEnum;
 import com.cjyc.common.model.enums.finance.NeedInvoiceStateEnum;
 import com.cjyc.common.model.enums.finance.ReceiveSettlementStateEnum;
+import com.cjyc.common.model.enums.waybill.WaybillPayStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
@@ -138,7 +139,7 @@ public class FinanceServiceImpl implements IFinanceService {
                             AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
                             if (accountPeriodVo != null) {
                                 e.setPayTime(accountPeriodVo.getWriteOffTime());
-                                e.setPayState("已付款");
+                                e.setPayState(WaybillPayStateEnum.PAID.name);
                                 e.setPaidFreightFee(e.getFreightFee());
                             } else {
                                 e.setPayTime(null);
@@ -260,21 +261,21 @@ public class FinanceServiceImpl implements IFinanceService {
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
                 if (!CollectionUtils.isEmpty(detailList)) {
                     detailList.forEach(e -> {
-                        if ("1".equals(e.getSettleType())) {
+                        if (String.valueOf(DriverSettleTypeEnum.ACCOUNT_PERIOD.code).equals(e.getSettleType())) {
                             //获取账期运单开票信息
                             AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(e.getWayBillNo());
                             if (accountPeriodVo != null) {
                                 e.setPayTime(accountPeriodVo.getWriteOffTime());
-                                e.setPayState("已付款");
+                                e.setPayState(WaybillPayStateEnum.PAID.name);
                                 e.setPaidFreightFee(e.getFreightFee());
                             } else {
                                 e.setPayTime(null);
                                 e.setPayState("");
                                 e.setPaidFreightFee(null);
                             }
-                            e.setSettleType("账期");
+                            e.setSettleType(DriverSettleTypeEnum.ACCOUNT_PERIOD.name);
                         } else {
-                            e.setSettleType("时付");
+                            e.setSettleType(DriverSettleTypeEnum.TIME_PAY.name);
                         }
                     });
                 }
