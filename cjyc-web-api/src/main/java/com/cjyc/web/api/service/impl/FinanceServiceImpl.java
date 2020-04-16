@@ -340,6 +340,7 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
+    @Transactional
     public void applySettlement(ApplySettlementDto applySettlementDto) {
         int invoiceId = 0;
         String state = "0";
@@ -359,7 +360,6 @@ public class FinanceServiceImpl implements IFinanceService {
             invoiceId = customerInvoiceDao.insert(customerInvoice);
             state = "1";
         }
-
         InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
         invoiceReceipt.setOrderCarNo(applySettlementDto.getNo());
         invoiceReceipt.setCustomerId(applySettlementDto.getCustomerId());
@@ -370,7 +370,6 @@ public class FinanceServiceImpl implements IFinanceService {
         invoiceReceipt.setInvoiceTime(System.currentTimeMillis());
         invoiceReceipt.setSerialNumber(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
         invoiceReceipt.setInvoiceMan("");
-
         invoiceReceiptDao.insert(invoiceReceipt);
     }
 
@@ -387,7 +386,6 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto) {
-
         PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
         List<WaitInvoiceVo> waitInvoiceVoList = invoiceReceiptDao.getWaitInvoiceList(waitInvoiceQueryDto);
         PageInfo<WaitInvoiceVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
@@ -427,14 +425,12 @@ public class FinanceServiceImpl implements IFinanceService {
         InvoiceReceipt invoiceReceipt = invoiceReceiptDao.selectDetailById(Id);
         if (invoiceReceipt != null) {
             CustomerInvoice customerInvoice = customerInvoiceDao.selectById(invoiceReceipt.getInvoiceId());
-
             settlementDetailVo.setCustomerInvoice(customerInvoice);
             settlementDetailVo.setAmount(invoiceReceipt.getAmount());
             settlementDetailVo.setFreightFee(invoiceReceipt.getFreightFee());
             settlementDetailVo.setInvoiceNo(invoiceReceipt.getInvoiceNo());
             settlementDetailVo.setWriteOffTime(invoiceReceipt.getWriteOffTime());
         }
-
         return settlementDetailVo;
     }
 
@@ -451,23 +447,17 @@ public class FinanceServiceImpl implements IFinanceService {
         financeQueryDto.setSettleType(0);
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<PaymentVo> financeVoList = financeDao.getPaymentList(financeQueryDto);
-
         log.info("financeVoList.size ={}", financeVoList.size());
         PageInfo<PaymentVo> pageInfo = new PageInfo<>(financeVoList);
         //应收汇总数据
         BigDecimal receiptSummary = tradeBillService.receiptSummary(financeQueryDto);
         //实收汇总数据
         BigDecimal actualReceiptSummary = tradeBillService.actualReceiptSummary(financeQueryDto);
-
         //获取所有应收tab页总数
         Map<String, Object> countInfo = statisticCount();
-
         BigDecimal incomeSummary = tradeBillService.receiptIncomeSummary(financeQueryDto);
-
         countInfo.put("incomeSummary", incomeSummary.divide(new BigDecimal(100)));
-
         countInfo.put("receiptSummary", receiptSummary.divide(new BigDecimal(100)));
-
         countInfo.put("ActualReceiptSummary", actualReceiptSummary.divide(new BigDecimal(100)));
         return BaseResultUtil.success(pageInfo, countInfo);
     }
@@ -476,9 +466,7 @@ public class FinanceServiceImpl implements IFinanceService {
     public ResultVo<PageVo<AdvancePaymentVo>> getAdvancePayment(FinanceQueryDto financeQueryDto) {
         PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
         List<AdvancePaymentVo> advancePaymentVoList = financeDao.getAdvancePayment(financeQueryDto);
-
         PageInfo<AdvancePaymentVo> pageInfo = new PageInfo<>(advancePaymentVoList);
-
         //获取所有应收tab页总数
         Map<String, Object> countInfo = statisticCount();
         //未完结订单应收汇总
@@ -517,7 +505,6 @@ public class FinanceServiceImpl implements IFinanceService {
      * @return
      */
     private Map getReceivableCountInfo() {
-
         FinanceQueryDto fqd = new FinanceQueryDto();
         List<PaymentVo> pv = financeDao.getPaymentList(fqd);
         List<AdvancePaymentVo> ap = financeDao.getAdvancePayment(fqd);
@@ -610,8 +597,6 @@ public class FinanceServiceImpl implements IFinanceService {
         countInfo.put("needInvoiceCount", CollectionUtils.isEmpty(needInvoiceCount) ? 0 : needInvoiceCount.size());
         countInfo.put("needPayedCount", CollectionUtils.isEmpty(needPayedCount) ? 0 : needPayedCount.size());
         countInfo.put("payedCount", CollectionUtils.isEmpty(payedCount) ? 0 : payedCount.size());
-
-
         List<PaymentVo> pv = financeDao.getPaymentList(new FinanceQueryDto());
         List<AdvancePaymentVo> ap = financeDao.getAdvancePayment(new FinanceQueryDto());
         countInfo.put("receiptCount", CollectionUtils.isEmpty(pv) ? 0 : pv.size());
@@ -684,10 +669,8 @@ public class FinanceServiceImpl implements IFinanceService {
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(pp);
         PayMentQueryDto pq = new PayMentQueryDto();
         List<PaidNewVo> paidList = financeDao.getAutoPaidList(pq);
-
         CooperatorSearchDto cs = new CooperatorSearchDto();
         List<CooperatorPaidVo> cooperatorPaidVoList = financeDao.getCooperatorPaidList(cs);
-
         Map<String, Object> countInfo = new HashMap<>();
         countInfo.put("payableCount", fpv.size());
         countInfo.put("waitTicketCount", sv.size());
@@ -695,7 +678,6 @@ public class FinanceServiceImpl implements IFinanceService {
         countInfo.put("paidCount", payablePaidList.size());
         countInfo.put("timePaidCount", paidList.size());
         countInfo.put("cooperstorCount", cooperatorPaidVoList.size());
-
         return countInfo;
     }
 
@@ -728,7 +710,6 @@ public class FinanceServiceImpl implements IFinanceService {
         settlementVo.setFreightFee(MoneyUtil.yuanToFen(appSettlementPayableDto.getFreightFee()));
         settlementVo.setState("0");
         financeDao.apply(settlementVo);
-
         for (String taskNo : list) {
             SettlementVo settlement = new SettlementVo();
             settlement.setSerialNumber(serialNumber);
@@ -768,17 +749,14 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
         }
-
         PayableSettlementVo payableSettlementVo = new PayableSettlementVo();
         payableSettlementVo.setPayableTaskVo(settlementVoList);
         payableSettlementVo.setTotalFreightFee(freightFee.divide(new BigDecimal(100)));
-
         return BaseResultUtil.success(payableSettlementVo);
     }
 
     @Override
     public ResultVo confirm(ConfirmTicketDto confirmTicketDto) {
-
         SettlementVo settlementVo = new SettlementVo();
         settlementVo.setState("1");
         settlementVo.setSerialNumber(confirmTicketDto.getSerialNumber());
@@ -821,7 +799,6 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             settlementVo.setFreightFee(settlementVo.getFreightFee().divide(new BigDecimal(100)));
         }
-
         PayableSettlementVo payableSettlementVo = new PayableSettlementVo();
         SettlementVo settlementVo = financeDao.getPayableSettlement(serialNumber);
         if (settlementVo != null && settlementVo.getInvoiceNo() != null) {
@@ -829,7 +806,6 @@ public class FinanceServiceImpl implements IFinanceService {
         }
         payableSettlementVo.setPayableTaskVo(settlementVoList);
         payableSettlementVo.setTotalFreightFee(freightFee.divide(new BigDecimal(100)));
-
         return BaseResultUtil.success(payableSettlementVo);
     }
 
@@ -991,16 +967,12 @@ public class FinanceServiceImpl implements IFinanceService {
                                             externalPayment.setState(2);
                                             externalPaymentDao.updateByWayBillId(externalPayment);
                                         }
-
                                     }
-
                                 }
                             }
                         } catch (Exception e) {
                             log.error("运单打款详情更新失败 waybillId = {}", waybillId);
                         }
-
-
                     } catch (Exception e) {
                         if (result.length() > 0) {
                             result.append(",");
@@ -1010,7 +982,6 @@ public class FinanceServiceImpl implements IFinanceService {
                         log.error("运单打款失败 waybillId = {}", waybillId);
                     }
                 }
-
             } else {
                 result.append("运单不存在");
             }
@@ -1235,7 +1206,6 @@ public class FinanceServiceImpl implements IFinanceService {
                             externalPayment.setState(2);
                             externalPaymentDao.insert(externalPayment);
                         }
-
                     }
                 }
             } catch (Exception e) {
@@ -1293,7 +1263,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 cooperatorPaidVo.setAreaName("");
             }
         }
-
         try {
             ExcelUtil.exportExcel(cooperatorPaidVoList, "合伙人付款（时付）", "付款（时付）", CooperatorPaidVo.class, "合伙人付款（时付）.xls", response);
             return null;
@@ -1334,7 +1303,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 }
             }
         }
-
         return MoneyUtil.nullToZero(wlFee);
     }
 
