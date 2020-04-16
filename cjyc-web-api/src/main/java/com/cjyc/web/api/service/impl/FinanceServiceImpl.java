@@ -24,9 +24,7 @@ import com.cjyc.common.model.vo.web.finance.*;
 import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsPingPayService;
 import com.cjyc.common.system.service.ICsSendNoService;
-import com.cjyc.web.api.service.ICustomerService;
 import com.cjyc.web.api.service.IFinanceService;
-import com.cjyc.web.api.service.IOrderService;
 import com.cjyc.web.api.service.ITradeBillSummaryService;
 import com.cjyc.web.api.util.DateUtil;
 import com.github.pagehelper.PageHelper;
@@ -42,7 +40,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -184,7 +181,6 @@ public class FinanceServiceImpl implements IFinanceService {
 
     @Override
     public ResultVo exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto) {
-        Map map = new HashMap();
         List<ExportFinanceVo> financeVoList = financeDao.getAllFinanceList(financeQueryDto);
         List<ExportFinanceDetailVo> detailVoList = new ArrayList<>();
         if (financeVoList == null) {
