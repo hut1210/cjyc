@@ -4,7 +4,6 @@ import com.cjyc.common.model.dto.web.salesman.AddDto;
 import com.cjyc.common.model.dto.web.salesman.AssignRoleDto;
 import com.cjyc.common.model.dto.web.salesman.AssignRoleNewDto;
 import com.cjyc.common.model.dto.web.salesman.ResetStateDto;
-import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.ISalesmanService;
 import io.swagger.annotations.Api;
@@ -28,9 +27,9 @@ public class SalesmanController {
         return salesmanService.saveAdmin(dto);
     }
 
-//    @PostMapping("/assignRoles")
+    //    @PostMapping("/assignRoles")
     @ApiOperation(value = "分配角色(即分配业务范围)")
-    public ResultVo assignRoles(@Valid @RequestBody AssignRoleDto dto){
+    public ResultVo assignRoles(@Valid @RequestBody AssignRoleDto dto) {
         return salesmanService.assignRoles(dto);
     }
 
@@ -43,7 +42,7 @@ public class SalesmanController {
     @PostMapping("/resetPwd/{id}")
     @ApiOperation(value = "重置用户密码")
     public ResultVo resetPwd(@ApiParam(name = "id", value = "用户标识", required = true)
-                             @PathVariable("id")Long id) {
+                             @PathVariable("id") Long id) {
         return salesmanService.resetPwd(id);
     }
 
@@ -51,7 +50,7 @@ public class SalesmanController {
 //    @PostMapping("/assignRolesNew")
     @PostMapping("/assignRoles")
     @ApiOperation(value = "分配角色(即分配业务范围)")
-    public ResultVo assignRolesNew(@Valid @RequestBody AssignRoleNewDto dto){
+    public ResultVo assignRolesNew(@Valid @RequestBody AssignRoleNewDto dto) {
         return salesmanService.assignRolesNew(dto);
     }
     /************************************韵车集成改版 ed***********************************/

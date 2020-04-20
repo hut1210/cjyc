@@ -179,7 +179,7 @@ public class LocalDateTimeUtil {
     }
 
     /**
-     * 将日期格式的字符串转换为长整型
+     * 将日期格式的字符串转换为LocalDate
      *
      * @param dateStr
      * @param format
@@ -208,6 +208,19 @@ public class LocalDateTimeUtil {
      */
     public static Long convertToLong(LocalDate localDate){
         return localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond();
+    }
+
+    /**
+     * 将日期格式的字符串转换为Long
+     *
+     * @param dateStr
+     * @param format
+     * @return
+     */
+    public static Long convertDateStrToLong (String dateStr, String format) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format);
+        LocalDateTime dateTime = LocalDateTime.parse(dateStr, fmt);
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
 }

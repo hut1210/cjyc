@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.annotations.MapV2K;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
@@ -296,4 +297,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateLocationForCancel(Long orderId);
 
+    int countForChechRepeatPlateNo(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("plateNo") String plateNo);
+
+    int countForChechRepeatVin(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("vin") String vin);
 }

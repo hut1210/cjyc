@@ -1,6 +1,5 @@
 package com.cjyc.common.system.service.impl;
 
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.ICustomerDao;
 import com.cjyc.common.model.dao.IDriverDao;
@@ -9,11 +8,11 @@ import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.RandomUtil;
 import com.cjyc.common.system.service.ICsSendNoService;
+import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -33,19 +32,15 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CsSendNoServiceImpl implements ICsSendNoService {
     @Resource
-    private RedisDistributedLock redisLock;
+    private RedisLock redisLock;
     @Resource
     private IDriverDao driverDao;
     @Resource
     private ICustomerDao customerDao;
-    @Autowired
+    @Resource
     private RedisUtils redisUtil;
     private static final DecimalFormat TWO_FORMAT = new DecimalFormat("00");
     private static final DecimalFormat THREE_FORMAT = new DecimalFormat("000");
-    private static final DecimalFormat FOUR_FORMAT = new DecimalFormat("0000");
-    private static final DecimalFormat FIVE_FORMAT = new DecimalFormat("00000");
-    private static final DecimalFormat SIX_FORMAT = new DecimalFormat("000000");
-    private static final DecimalFormat SEVEN_FORMAT = new DecimalFormat("0000000");
 
     @Override
     public String formatNo(String prefixNo, int indexNo, int formatLength) {
@@ -89,7 +84,6 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
         String driverNo = null;
         String lockKey = getRandomNosKey(type.prefix);
         try {
-            String s = redisUtil.get(lockKey);
             if (!redisLock.lock(lockKey, 20000, 99, 200)) {
                 throw new RuntimeException("服务器繁忙稍后再试");
             }
@@ -134,7 +128,7 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
         }catch(Exception e){
             throw new ServerException(e.getMessage());
         } finally {
-            redisUtil.delete(lockKey);
+            redisLock.releaseLock(lockKey);
         }
 
         return driverNo;
@@ -159,33 +153,29 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
             }
 
             String setKey = getSendNoSetKey(sendNoTypeEnum.prefix, time);
+            Set<String> set;
             if (!redisUtil.hasKey(setKey)) {
-                redisUtil.expire(setKey, 1, TimeUnit.DAYS);
+                set = new HashSet<>();
+            }else{
+                set = redisUtil.sMembers(setKey);
             }
-            Set<String> set = redisUtil.sMembers(setKey);
-            if (CollectionUtils.isEmpty(set)) {
-                random = RandomUtil.getMathRandom(randomLength);
-            } else {
-                while (random == null) {
-                    String temp = RandomUtil.getMathRandom(randomLength);
-                    if (!set.contains(temp)) {
-                        random = temp;
-                    }
+            while (random == null) {
+                String temp = RandomUtil.getMathRandom(randomLength);
+                if (!set.contains(temp)) {
+                    random = temp;
                 }
             }
             redisUtil.sAdd(setKey, random);
-
+            redisUtil.expire(setKey, 1, TimeUnit.DAYS);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             random = RandomUtil.getMathRandom(randomLength);
         } finally {
             redisUtil.delete(lockKey);
         }
-        StringBuffer resNo = new StringBuffer();
-        resNo.append(sendNoTypeEnum.prefix == null ? "" : sendNoTypeEnum.prefix);
-        resNo.append(time);
-        resNo.append(random);
-        return resNo.toString();
+        return (sendNoTypeEnum.prefix == null ? "" : sendNoTypeEnum.prefix) +
+                time +
+                random;
     }
 
     /**
@@ -198,23 +188,23 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
      */
     public String getNo(SendNoTypeEnum sendNoType, int noLength, Integer timeTailRandomLength, Integer noTailRandomLength) {
         String time = LocalDateTimeUtil.formatLDTNow(TimePatternConstant.SUB_SIMPLE_SIMPLE_DATE);
-        String no = "";
+        String no;
         try {
             String key = getSendNoKey(sendNoType.name, time);
             if (!redisUtil.hasKey(key)) {
-                redisUtil.expire(key, 1, TimeUnit.DAYS);
+                redisUtil.setEx(key, "0", 1, TimeUnit.DAYS);
             }
 
             long incrbySendNo = redisUtil.incrBy(key, 1);
 
-            DecimalFormat DECIMAL_FORMAT = getDecimalFormat(noLength);
+            DecimalFormat df = getDecimalFormat(noLength);
 
-            no = DECIMAL_FORMAT.format(incrbySendNo);
+            no = df.format(incrbySendNo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             no = RandomStringUtils.random(noLength, false, true);
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String value = sendNoType.prefix;
         if (StringUtils.isNotBlank(value)) {
             sb.append(value);
@@ -235,17 +225,12 @@ public class CsSendNoServiceImpl implements ICsSendNoService {
             case 3:
                 decimalFormat = THREE_FORMAT;
                 break;
-            case 4:
-                decimalFormat = FOUR_FORMAT;
-                break;
-            case 5:
-                decimalFormat = FIVE_FORMAT;
-                break;
-            case 6:
-                decimalFormat = SIX_FORMAT;
-                break;
             default:
-                decimalFormat = SEVEN_FORMAT;
+                StringBuilder s = new StringBuilder();
+                for (int i = 1; i <= noLength; i++){
+                    s.append("0");
+                }
+                decimalFormat = new DecimalFormat(s.toString());
         }
         return decimalFormat;
 

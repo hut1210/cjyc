@@ -1,6 +1,5 @@
 package com.cjyc.web.api.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.utils.ExcelUtil;
 import com.cjyc.common.model.dto.web.postal.PostalDto;
 import com.cjyc.common.model.dto.web.postal.PostalImportExcel;

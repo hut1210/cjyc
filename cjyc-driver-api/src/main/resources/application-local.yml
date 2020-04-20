@@ -38,7 +38,7 @@ spring:
     #url: jdbc:mysql://10.253.96.142:3306/cjyc_pro?useUnicode=true&characterEncoding=utf-8&useSSL=false #测试环境-线上库
     #url: jdbc:mysql://10.253.96.142:3306/cjyc_zj_test?useUnicode=true&characterEncoding=utf-8&useSSL=false #开发-郑佳
     username: root
-    password: l!vWT#mL93
+    password: Qaz123$%^231#
     #连接池
     hikari:
       minimum-idle: 5
@@ -173,9 +173,10 @@ cjyc:
       enabled: true
       appKey: 8a4abf674ba61fc9c47d6616
       masterSecret: 6fc93a75e2f813f4798e88ff
+  #登录
   driver:
-    clientId: "1186108891007336449"
-    clientSecret: acffa1064e9a629d3140e5b36be31bd3
+    clientId: "1249902118563790850"
+    clientSecret: 0623aea284d13b2533c5d093e91b4224
     grantType: mobile
 
   #支付

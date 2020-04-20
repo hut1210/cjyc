@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
@@ -10,19 +11,19 @@ import com.cjyc.common.model.dto.web.waybill.GetDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
 import com.cjyc.common.model.dto.web.waybill.TrunkListWaybillCarDto;
 import com.cjyc.common.model.entity.WaybillCar;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.entity.defined.BillCarNum;
 import com.cjyc.common.model.entity.defined.DispatchNum;
 import com.cjyc.common.model.entity.defined.FullWaybillCar;
-import com.cjyc.common.model.entity.defined.BillCarNum;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
+import com.cjyc.common.model.vo.salesman.task.TaskInfo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
 import com.cjyc.common.model.vo.web.finance.DriverUpstreamPaidInfoVo;
 import com.cjyc.common.model.vo.web.mineStore.StorageCarVo;
-import com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo;
-import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
 import com.cjyc.common.model.vo.web.waybill.TrunkCarListWaybillCarVo;
+import com.cjyc.common.model.vo.web.waybill.WaybillCarTransportVo;
+import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
@@ -228,13 +229,13 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     List<DriverUpstreamPaidInfoVo> listDriverUpstreamPaidInfo(String waybillNo);
 
     /**
-     * 功能描述: 根据车辆编号查询运输车车牌号
+     * 功能描述: 根据车辆编号查询运输车车牌号和司机ID
      * @author liuxingxiang
      * @date 2020/4/3
      * @param orderCarNo
-     * @return java.lang.String
+     * @return TaskInfo
      */
-    String selectPlateNoByOrderCarNo(@Param("orderCarNo") String orderCarNo);
+    TaskInfo selectTaskInfoByOrderCarNo(@Param("orderCarNo") String orderCarNo);
 
     List<WaybillCar> findListByTaskCarIds(@Param("list") List<Long> list);
 

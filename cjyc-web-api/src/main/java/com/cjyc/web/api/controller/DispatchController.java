@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 /**
  * 订单
+ *
  * @author JPG
  */
 @RestController
@@ -72,11 +73,11 @@ public class DispatchController {
             return;
         }
         dispatchList = dispatchList.stream().filter(Objects::nonNull).collect(Collectors.toList());
-        try{
+        try {
             ExcelUtil.exportExcel(dispatchList, "调度信息", "调度信息",
-                    OrderCarWaitDispatchVo.class, System.currentTimeMillis()+"调度信息.xls", response);
+                    OrderCarWaitDispatchVo.class, System.currentTimeMillis() + "调度信息.xls", response);
             return;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
             ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出调度池信息异常: " + e.getMessage()),
                     "导出异常.xls", response);
@@ -86,6 +87,7 @@ public class DispatchController {
 
     /**
      * V2.0
+     *
      * @author JPG
      */
     @ApiOperation(value = "查询待调度车辆统计")
@@ -93,6 +95,7 @@ public class DispatchController {
     public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountListV2(@RequestBody BaseWebDto reqDto) {
         return orderService.waitDispatchCarCountListV2(reqDto);
     }
+
     /**
      * @author JPG
      * @deprecated replace by {@link DispatchController#waitDispatchCarCountListV2}
@@ -118,6 +121,7 @@ public class DispatchController {
 
     /**
      * V2.0
+     *
      * @author JPG
      */
     @ApiOperation(value = "按线路统计待调度车辆（统计列表）")
@@ -134,6 +138,7 @@ public class DispatchController {
     public ResultVo<PageVo<OrderCarWaitDispatchVo>> waitDispatchTrunkCarList(@RequestBody WaitDispatchTrunkDto reqDto) {
         return orderService.waitDispatchTrunkCarList(reqDto);
     }
+
     /**
      * @author JPG
      */
@@ -142,6 +147,7 @@ public class DispatchController {
     public ResultVo<ListVo<Map<String, Object>>> waitDispatchTrunkCarCountList(@RequestBody BaseWebDto reqDto) {
         return orderService.waitDispatchTrunkCarCountList(reqDto);
     }
+
     /**
      * @author JPG
      */
@@ -171,6 +177,7 @@ public class DispatchController {
 
     /**
      * 检查返回结果是否成功
+     *
      * @param resultVo
      * @return
      */

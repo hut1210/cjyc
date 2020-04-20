@@ -1,12 +1,12 @@
 package com.cjyc.common.system.util;
 
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjkj.log.monitor.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -32,15 +31,9 @@ public class RedisUtils {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
-    @Resource
-    private RedisDistributedLock redisLock;
-
-    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public StringRedisTemplate getRedisTemplate() {
-        return this.redisTemplate;
+        return redisTemplate;
     }
 
     /** -------------------key相关操作--------------------- */
@@ -1285,4 +1278,11 @@ public class RedisUtils {
         LogUtil.debug("【延时解锁】----------->结束" + new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(System.currentTimeMillis()));
 
     }
+
+
+    public Map<String, String> loadHash(String key){
+        HashOperations<String, String, String> ops = redisTemplate.opsForHash();
+        return ops.entries(key);
+    }
+
 }

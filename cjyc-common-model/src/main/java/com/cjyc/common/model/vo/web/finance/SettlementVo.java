@@ -44,7 +44,7 @@ public class SettlementVo {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 
     private Long applicantId;
@@ -53,10 +53,10 @@ public class SettlementVo {
     @Excel(name = "申请人" ,orderNum = "4")
     private String applicant;
 
-    @ApiModelProperty(value = "确认开票时间")
+    @ApiModelProperty(value = "确认收票时间")
     private Long confirmTime;
 
-    @Excel(name = "确认开票时间" ,orderNum = "5")
+    @Excel(name = "确认收票时间" ,orderNum = "5")
     private String confirmTimeStr;
 
     public String getConfirmTimeStr() {
@@ -64,20 +64,20 @@ public class SettlementVo {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "确认人Id")
     private Long confirmId;
 
     @ApiModelProperty(value = "确认人")
-    @Excel(name = "运单单号" ,orderNum = "6")
+    @Excel(name = "确认人" ,orderNum = "6")
     private String confirmMan;
 
     @ApiModelProperty(value = "核销时间")
     private Long writeOffTime;
 
-    @Excel(name = "确认开票时间" ,orderNum = "7")
+    @Excel(name = "核销时间" ,orderNum = "7")
     private String writeOffTimeStr;
 
     public String getWriteOffTimeStr() {
@@ -85,7 +85,7 @@ public class SettlementVo {
         if (null == date || date <= 0L) {
             return "";
         }
-        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd");
+        return LocalDateTimeUtil.formatLDT(LocalDateTimeUtil.convertLongToLDT(date), "yyyy-MM-dd HH:mm:ss");
     }
 
     @ApiModelProperty(value = "核销人Id")

@@ -173,9 +173,9 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (customerType) {
             case 1:
-                str = "个人"; break;
+                str = "C端"; break;
             case 2:
-                str = "企业"; break;
+                str = "大客户"; break;
             case 3:
                 str = "合伙人"; break;
         }

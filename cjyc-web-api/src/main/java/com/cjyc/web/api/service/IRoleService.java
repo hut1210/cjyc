@@ -118,11 +118,4 @@ public interface IRoleService extends IService<Role> {
      */
     void exportRoleListExcel(HttpServletRequest request, HttpServletResponse response);
     /*********************************韵车集成改版 ed*****************************/
-
-    /**
-     * 根据角色id删除角色以及该角色相关下的人
-     * @param roleId
-     * @return
-     */
-    ResultVo deleteRoleAndUser(Long roleId);
 }

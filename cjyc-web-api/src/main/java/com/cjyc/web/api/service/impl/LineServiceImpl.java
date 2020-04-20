@@ -234,16 +234,10 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
         try {
             List<SaveOrUpdateLineExcel> excelLineList = ExcelUtil.importExcel(file, 1, 1, SaveOrUpdateLineExcel.class);
             if(!CollectionUtils.isEmpty(excelLineList)){
-                int count = 0;
-                int updateSaveCount = 0;
-                int nullCount = 0;
                 for(SaveOrUpdateLineExcel lineExcel : excelLineList) {
                     //根据城市名称查询城市code
                     City fromCity = cityDao.getCodeByName(lineExcel.getFromCity());
                     City toCity = cityDao.getCodeByName(lineExcel.getToCity());
-                    if(fromCity == null || toCity == null){
-                        nullCount++;
-                    }
                     if(fromCity != null && toCity != null){
                         Line line = lineDao.getLinePriceByCode(fromCity.getCode(),toCity.getCode());
                         if(line != null){
@@ -259,7 +253,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                                     String fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
                                     String toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
                                     double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-                                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                                    BigDecimal bd = BigDecimal.valueOf(distance).setScale(0, BigDecimal.ROUND_DOWN);
                                     line.setKilometer(bd);
                                 }
                                 LambdaUpdateWrapper<Line> updateWrapper = new UpdateWrapper<Line>().lambda().eq(Line::getId, line.getId());
@@ -272,11 +266,8 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                                 lineDao.insert(newLine);
                             }
                         }
-                        updateSaveCount++;
                     }
-                    count++;
                 }
-                log.info("数量:{}，{},{}",nullCount,updateSaveCount,count);
                 result = true;
             }else{
                 result = false;
@@ -324,7 +315,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                 fromCityLocation = PositionUtil.getLngAndLat(lineExcel.getFromCity());
                 toCityLocation = PositionUtil.getLngAndLat(lineExcel.getToCity());
                 double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-                BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                BigDecimal bd = BigDecimal.valueOf(distance).setScale(0, BigDecimal.ROUND_DOWN);
                 line.setKilometer(bd);
             }
         }else{
@@ -338,7 +329,7 @@ public class LineServiceImpl extends ServiceImpl<ILineDao, Line> implements ILin
                 fromCityLocation = PositionUtil.getLngAndLat(excel.getFromCity());
                 toCityLocation = PositionUtil.getLngAndLat(excel.getToCity());
                 double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-                BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                BigDecimal bd = BigDecimal.valueOf(distance).setScale(0, BigDecimal.ROUND_DOWN);
                 line.setKilometer(bd);
             }
         }

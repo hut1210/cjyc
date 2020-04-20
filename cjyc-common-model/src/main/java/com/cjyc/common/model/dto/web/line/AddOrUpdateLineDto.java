@@ -38,7 +38,6 @@ public class AddOrUpdateLineDto implements Serializable {
 
     @ApiModelProperty(value = "总里程",required = true)
     @NotNull(message = "总里程不能为空")
-    @DecimalMin(value = "0.01")
     private BigDecimal kilometer;
 
     @ApiModelProperty(value = "总耗时(天)",required = true)

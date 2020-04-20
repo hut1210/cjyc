@@ -474,6 +474,7 @@ public class PingPayServiceImpl implements IPingPayService {
 
             ValidateReceiptCarPayVo resVo = new ValidateReceiptCarPayVo();
             resVo.setIsNeedPay(isNeedPay);
+            resVo.setPayType(order.getPayType());
             resVo.setAmount(amount);
             resVo.setOrderCarNos(orderCarNos);
             resVo.setOrderNo(order.getNo());

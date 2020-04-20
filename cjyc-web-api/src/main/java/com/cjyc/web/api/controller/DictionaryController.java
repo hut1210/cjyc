@@ -10,16 +10,13 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.web.api.service.IDictionaryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 /**
- *  @author: zj
- *  @Date: 2019/10/12 9:46
- *  @Description: 韵车2.0字典维护
+ * @author: zj
+ * @Date: 2019/10/12 9:46
+ * @Description: 韵车2.0字典维护
  */
 @Api(tags = "基础数据-字典")
 @CrossOrigin
@@ -32,14 +29,14 @@ public class DictionaryController {
 
     @ApiOperation(value = "根据id更新字典项")
     @PostMapping(value = "/modify")
-    public ResultVo modify(@RequestBody DictionaryDto dictionaryDto){
+    public ResultVo modify(@RequestBody DictionaryDto dictionaryDto) {
         boolean result = dictionaryService.modify(dictionaryDto);
-        return result ? BaseResultUtil.success():BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
+        return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据条件查询字典项")
     @PostMapping(value = "/queryPage")
-    public ResultVo<PageVo<Dictionary>> queryPage(@RequestBody SelectDictionaryDto dto){
+    public ResultVo<PageVo<Dictionary>> queryPage(@RequestBody SelectDictionaryDto dto) {
         return dictionaryService.queryPage(dto);
     }
 }

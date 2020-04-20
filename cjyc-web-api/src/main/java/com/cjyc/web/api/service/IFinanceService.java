@@ -78,11 +78,11 @@ public interface IFinanceService {
 
     List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto);
 
-    List<SettlementVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
+    List<ExportPayableCollectVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
 
-    List<SettlementVo> exportPayment(WaitPaymentDto waitPaymentDto);
+    List<ExportWaitPaymentVo> exportPayment(WaitPaymentDto waitPaymentDto);
 
-    List<PayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
+    List<ExportPayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
 
     List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
 

@@ -29,6 +29,7 @@ import java.util.List;
 
 /**
  * 任务
+ *
  * @author JPG
  */
 @RestController
@@ -47,10 +48,11 @@ public class TaskController {
 
     /**
      * 功能描述: 查询任务分页列表
-     * @author liuxingxiang
-     * @date 2019/12/20
+     *
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/20
      */
     @ApiOperation(value = "查询任务分页列表(后加功能)")
     @PostMapping(value = "/getTaskPage")
@@ -60,6 +62,7 @@ public class TaskController {
 
     /**
      * 分配任务
+     *
      * @author JPG
      */
     @ApiOperation(value = "分配任务")
@@ -77,6 +80,7 @@ public class TaskController {
 
     /**
      * 确认出库
+     *
      * @author JPG
      */
     @ApiOperation(value = "确认出库")
@@ -93,6 +97,7 @@ public class TaskController {
 
     /**
      * 确认入库
+     *
      * @author JPG
      */
     @ApiOperation(value = "确认入库")
@@ -108,6 +113,7 @@ public class TaskController {
 
     /**
      * 签收-业务员
+     *
      * @author JPG
      */
     @ApiOperation(value = "签收")
@@ -150,7 +156,6 @@ public class TaskController {
     }
 
 
-
     /************************************韵车集成改版 st***********************************/
 
     /**
@@ -166,8 +171,8 @@ public class TaskController {
     @ApiOperation(value = "我的公司-已指派导出Excel", notes = "\t 请求接口为/task/exportCrAllottedListExcel?waybillNo=主运单编号&taskNo=运单号&" +
             "driverName=司机名称&driverPhone=司机电话&vehiclePlateNo=车牌号&carrierId=承运商id")
     @GetMapping("/exportCrAllottedListExcel")
-    public void exportCrAllottedListExcel(HttpServletRequest request, HttpServletResponse response){
-        taskService.exportCrAllottedListExcel(request,response);
+    public void exportCrAllottedListExcel(HttpServletRequest request, HttpServletResponse response) {
+        taskService.exportCrAllottedListExcel(request, response);
     }
 
 }

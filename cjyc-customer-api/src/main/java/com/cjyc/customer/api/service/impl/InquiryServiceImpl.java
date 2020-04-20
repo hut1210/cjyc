@@ -36,6 +36,7 @@ public class InquiryServiceImpl extends SuperServiceImpl<IInquiryDao, Inquiry> i
                             .eq(Inquiry::getFromCode,dto.getFromCode())
                             .eq(Inquiry::getToCode,dto.getToCode()));
         if(inquiry != null){
+            return;
         }else{
             //根据用户id查询用户
             Customer customer = customerDao.selectById(dto.getLgoinId());
@@ -47,7 +48,7 @@ public class InquiryServiceImpl extends SuperServiceImpl<IInquiryDao, Inquiry> i
             inquiry.setPhone(customer.getContactPhone());
             inquiry.setLogisticsFee(defaultWlFee);
             inquiry.setState(InquiryStateEnum.NO_HANDLE.code);
-            inquiry.setInquiryTime(LocalDateTimeUtil.getMillisByLDT(LocalDateTime.now()));
+            inquiry.setInquiryTime(System.currentTimeMillis());
             super.save(inquiry);
         }
     }

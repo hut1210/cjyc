@@ -41,6 +41,7 @@ public class StoreController {
 
     /**
      * 根据二级城市编码查询业务中心
+     *
      * @author JPG
      */
     @ApiOperation(value = "根据二级城市编码查询业务中心")
@@ -52,6 +53,7 @@ public class StoreController {
 
     /**
      * 根据角色查询角色所属机构下属业务中心
+     *
      * @author JPG
      */
     @Deprecated
@@ -68,6 +70,7 @@ public class StoreController {
 
     /**
      * v2.0
+     *
      * @author JPG
      */
     @ApiOperation(value = "根据角色和登录ID查询业务中心")
@@ -91,8 +94,10 @@ public class StoreController {
         List<StoreVo> list = storeService.listVoByWebLogin(baseWebDto);
         return BaseResultUtil.success(list);
     }
+
     /**
      * v2.0
+     *
      * @author JPG
      */
     @ApiOperation(value = "根据角色和登录ID查询业务中心")
@@ -101,8 +106,10 @@ public class StoreController {
         List<StoreVo> list = storeService.listVoByWebLogin(reqDto);
         return BaseResultUtil.success(list);
     }
+
     /**
      * 根据角色查询角色所属机构下属业务中心
+     *
      * @author JPG
      */
     @ApiOperation(value = "根据角色查询业务中心")
@@ -114,10 +121,11 @@ public class StoreController {
 
     /**
      * 功能描述: 分页查询业务中心列表
+     *
+     * @param storeQueryDto
+     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo < com.cjyc.common.model.vo.web.store.StoreVo>>
      * @author liuxingxiang
      * @date 2019/12/17
-     * @param storeQueryDto
-     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.vo.web.store.StoreVo>>
      */
     @ApiOperation(value = "分页查询业务中心列表", notes = "\t 请求接口为json格式")
     @PostMapping("/queryPage")
@@ -127,10 +135,11 @@ public class StoreController {
 
     /**
      * 功能描述: 新增
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param storeAddDto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "新增", notes = "\t 请求接口为json格式")
     @PostMapping("/add")
@@ -140,10 +149,11 @@ public class StoreController {
 
     /**
      * 功能描述: 删除
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param id
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "删除", notes = "\t 请求接口为/remove/id格式")
     @PostMapping("/remove/{id}")
@@ -153,10 +163,11 @@ public class StoreController {
 
     /**
      * 功能描述: 查询详情
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param id
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.entity.Store>
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "查询详情", notes = "\t 请求接口为/get/id格式")
     @PostMapping("/getDetail/{id}")
@@ -166,10 +177,11 @@ public class StoreController {
 
     /**
      * 功能描述: 修改
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param storeUpdateDto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "修改", notes = "\t 请求接口为json格式")
     @PostMapping("/modify")
@@ -179,40 +191,43 @@ public class StoreController {
 
     /**
      * 功能描述: 导出Excel
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param request
      * @param response
      * @return void
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "导出Excel", notes = "\t 请求接口为/store/exportExcel?currentPage=1&pageSize=6" +
             "&name=业务中心名称&provinceCode=省编码&cityCode=市编码&areaCode=区编码")
     @GetMapping("/exportExcel")
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response){
-        storeService.exportExcel(request,response);
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response) {
+        storeService.exportExcel(request, response);
     }
 
     /**
      * 功能描述: 业务中心下用户列表信息
+     *
+     * @param storeId
+     * @return com.cjyc.common.model.vo.ResultVo<java.util.List < com.cjyc.common.model.entity.Admin>>
      * @author zhangcangman
      * @date 2019/12/17
-     * @param storeId
-     * @return com.cjyc.common.model.vo.ResultVo<java.util.List<com.cjyc.common.model.entity.Admin>>
      */
     @ApiOperation(value = "业务中心下用户列表信息", notes = "查询用户关联此用户中心角色信息")
     //@GetMapping("/listAdminsByStoreId/{storeId}")
     public ResultVo<List<Admin>> listAdminsByStoreId(
             @ApiParam(name = "storeId", value = "业务中心标识", required = true)
-            @PathVariable Long storeId){
+            @PathVariable Long storeId) {
         return storeService.listAdminsByStoreId(storeId);
     }
 
     /**
      * 功能描述: 根据业务中心ID查询覆盖区列表
+     *
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo < com.cjyc.common.model.entity.defined.FullCity>>
      * @author liuxingxiang
      * @date 2019/12/17
-     * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.entity.defined.FullCity>>
      */
     @ApiOperation(value = "根据业务中心ID查询覆盖区列表")
     @PostMapping("/getStoreCoveredAreaList")
@@ -222,10 +237,11 @@ public class StoreController {
 
     /**
      * 功能描述: 查询未覆盖区列表
+     *
+     * @param dto
+     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo < com.cjyc.common.model.entity.defined.FullCity>>
      * @author liuxingxiang
      * @date 2019/12/17
-     * @param dto
-     * @return com.cjyc.common.model.vo.ResultVo<com.github.pagehelper.PageInfo<com.cjyc.common.model.entity.defined.FullCity>>
      */
     @ApiOperation(value = "查询未覆盖区列表")
     @PostMapping("/getStoreNoCoveredAreaList")
@@ -235,10 +251,11 @@ public class StoreController {
 
     /**
      * 功能描述: 新增前业务中心覆盖区域
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "新增前业务中心覆盖区域")
     @PostMapping("/addCoveredArea")
@@ -248,10 +265,11 @@ public class StoreController {
 
     /**
      * 功能描述: 删除当前业务中心覆盖区域
-     * @author liuxingxiang
-     * @date 2019/12/17
+     *
      * @param dto
      * @return com.cjyc.common.model.vo.ResultVo
+     * @author liuxingxiang
+     * @date 2019/12/17
      */
     @ApiOperation(value = "删除当前业务中心覆盖区域")
     @PostMapping("/removeCoveredArea")
@@ -261,7 +279,7 @@ public class StoreController {
 
     @ApiOperation(value = "导入Excel", notes = "\t 请求接口为/importStoreExcel/loginId(导入用户ID)格式")
     @PostMapping("/importStoreExcel/{loginId}")
-    public ResultVo importStoreExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
+    public ResultVo importStoreExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId) {
         boolean result = storeService.importStoreExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }

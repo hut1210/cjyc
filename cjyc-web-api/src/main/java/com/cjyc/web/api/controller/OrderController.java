@@ -10,7 +10,6 @@ import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.entity.Customer;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
@@ -41,13 +40,13 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * 订单
+ *
  * @author JPG
  */
 @RestController
@@ -70,25 +69,27 @@ public class OrderController {
     private KeyCustomerOrderExcelVerifyHandler keyCustomerOrderVerifyHandler;
     @Autowired
     private PatCustomerOrderExcelVerifyHandler patCustomerOrderExcelVerifyHandler;
+
     /**
      * 保存,只保存无验证
+     *
      * @author JPG
      */
     @ApiOperation(value = "订单保存")
     @PostMapping(value = "/save")
     public ResultVo save(@Validated @RequestBody SaveOrderDto reqDto) {
 
-        if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
+        if (reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()) {
             //验证用户存不存在
             ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
-            if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+            if (vo.getCode() != ResultEnum.SUCCESS.getCode()) {
                 return BaseResultUtil.fail(vo.getMsg());
             }
             Customer customer = vo.getData();
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
             reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
-        }else{
+        } else {
             //验证用户存不存在
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
@@ -103,22 +104,23 @@ public class OrderController {
 
     /**
      * 提交
+     *
      * @author JPG
      */
     @ApiOperation(value = "订单提交")
     @PostMapping(value = "/commit")
     public ResultVo commit(@Validated @RequestBody CommitOrderDto reqDto) {
-        if(reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()){
+        if (reqDto.getLoginType() != null && UserTypeEnum.CUSTOMER.code == reqDto.getLoginType()) {
             //验证用户存不存在
             ResultVo<Customer> vo = csCustomerService.validateAndGetActive(reqDto.getLoginId());
-            if(vo.getCode() != ResultEnum.SUCCESS.getCode()){
+            if (vo.getCode() != ResultEnum.SUCCESS.getCode()) {
                 return BaseResultUtil.fail(vo.getMsg());
             }
             Customer customer = vo.getData();
             reqDto.setLoginName(customer.getName());
             reqDto.setLoginPhone(customer.getContactPhone());
             reqDto.setLoginType(UserTypeEnum.CUSTOMER.code);
-        }else{
+        } else {
             //验证用户存不存在
             Admin admin = csAdminService.validate(reqDto.getLoginId());
             reqDto.setLoginName(admin.getName());
@@ -131,6 +133,7 @@ public class OrderController {
 
     /**
      * 完善订单信息
+     *
      * @author JPG
      */
     @ApiOperation(value = "完善订单信息")
@@ -141,6 +144,7 @@ public class OrderController {
 
     /**
      * 审核订单
+     *
      * @author JPG
      */
     @ApiOperation(value = "审核订单")
@@ -155,6 +159,7 @@ public class OrderController {
 
     /**
      * 驳回订单
+     *
      * @author JPG
      */
     @ApiOperation(value = "驳回订单")
@@ -170,6 +175,7 @@ public class OrderController {
 
     /**
      * 分配订单
+     *
      * @author JPG
      */
     @ApiOperation(value = "分配订单")
@@ -186,6 +192,7 @@ public class OrderController {
 
     /**
      * 订单改价
+     *
      * @author JPG
      */
     @ApiOperation(value = "订单改价")
@@ -200,6 +207,7 @@ public class OrderController {
 
     /**
      * 取消订单
+     *
      * @author JPG
      */
     @ApiOperation(value = "取消订单")
@@ -215,6 +223,7 @@ public class OrderController {
 
     /**
      * 作废订单
+     *
      * @author JPG
      */
     @ApiOperation(value = "作废订单")
@@ -229,6 +238,7 @@ public class OrderController {
 
     /**
      * 查询订单-根据ID
+     *
      * @author JPG
      */
     @ApiOperation(value = "查询订单-根据ID")
@@ -241,6 +251,7 @@ public class OrderController {
 
     /**
      * 查询订单-根据车辆ID
+     *
      * @author JPG
      */
     @ApiOperation(value = "查询订单-根据ID")
@@ -252,6 +263,7 @@ public class OrderController {
 
     /**
      * 查询订单取消记录-根据ID
+     *
      * @author JPG
      */
     @ApiOperation(value = "查询订单取消记录-根据ID")
@@ -263,6 +275,7 @@ public class OrderController {
 
     /**
      * 查询订单列表
+     *
      * @author JPG
      */
     @ApiOperation(value = "查询订单列表")
@@ -273,7 +286,7 @@ public class OrderController {
 
     @ApiOperation(value = "分页导出订单列表")
     @GetMapping(value = "/exportPageList")
-    public ResultVo exportPageList(ListOrderDto reqDto, HttpServletResponse response){
+    public ResultVo exportPageList(ListOrderDto reqDto, HttpServletResponse response) {
         ResultVo<PageVo<ListOrderVo>> resultVo = orderService.list(reqDto);
         if (!isResultSuccess(resultVo)) {
             return BaseResultUtil.fail("导出数据异常");
@@ -282,11 +295,11 @@ public class OrderController {
         if (data == null || CollectionUtils.isEmpty(data.getList())) {
             return BaseResultUtil.success("未查询到数据");
         }
-        try{
+        try {
             ExcelUtil.exportExcel(data.getList(), "订单信息", "订单信息",
-                    ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
+                    ListOrderVo.class, System.currentTimeMillis() + "订单信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
             return BaseResultUtil.fail("导出订单信息异常: " + e.getMessage());
         }
@@ -308,10 +321,10 @@ public class OrderController {
             return;
         }
         orderList = orderList.stream().filter(Objects::nonNull).collect(Collectors.toList());
-        try{
+        try {
             ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
-                    ListOrderVo.class, System.currentTimeMillis()+"订单信息.xls", response);
-        }catch (Exception e) {
+                    ListOrderVo.class, System.currentTimeMillis() + "订单信息.xls", response);
+        } catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
             ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出订单信息异常: " + e.getMessage()),
                     "导出异常.xls", response);
@@ -320,6 +333,7 @@ public class OrderController {
 
     /**
      * 查询订单车辆列表
+     *
      * @author JPG
      */
     @ApiOperation(value = "订单车辆查询")
@@ -340,11 +354,11 @@ public class OrderController {
         if (data == null || CollectionUtils.isEmpty(data.getList())) {
             return BaseResultUtil.success("未查询到数据");
         }
-        try{
+        try {
             ExcelUtil.exportExcel(data.getList(), "车辆信息", "车辆信息",
-                    ListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);
+                    ListOrderCarVo.class, System.currentTimeMillis() + "车辆信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出车辆信息异常", e);
             return BaseResultUtil.fail("导出车辆信息异常: " + e.getMessage());
         }
@@ -359,22 +373,24 @@ public class OrderController {
         }
         carList = carList.stream().filter(Objects::nonNull).collect(Collectors.toList());
         List<ExcelListOrderCarVo> excelOrderCarVoList = Lists.newArrayList();
-        for(ListOrderCarVo vo : carList){
+        for (ListOrderCarVo vo : carList) {
             ExcelListOrderCarVo excelOrderCarVo = new ExcelListOrderCarVo();
-            BeanUtils.copyProperties(vo,excelOrderCarVo);
+            BeanUtils.copyProperties(vo, excelOrderCarVo);
             excelOrderCarVoList.add(excelOrderCarVo);
         }
         try {
             ExcelUtil.exportExcel(excelOrderCarVoList, "车辆信息", "车辆信息",
-                    ExcelListOrderCarVo.class, System.currentTimeMillis()+"车辆信息.xls", response);
+                    ExcelListOrderCarVo.class, System.currentTimeMillis() + "车辆信息.xls", response);
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("导出车辆信息异常", e);
             return BaseResultUtil.fail("导出车辆信息异常: " + e.getMessage());
         }
     }
+
     /**
      * 查询订单车辆运输信息-根据ID
+     *
      * @author JPG
      */
     @ApiOperation(value = "查询订单车辆运输状态-根据ID")
@@ -385,10 +401,9 @@ public class OrderController {
     }
 
 
-
     @ApiOperation(value = "c端客户订单导入", notes = "验证失败返回失败Excel文件流，其它情况返回json结果信息")
     @PostMapping(value = "/importCustomerOrder")
-    public void importCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response){
+    public void importCustomerOrder(MultipartFile file, Long loginId, HttpServletResponse response) {
         if (file != null && !file.isEmpty() && loginId != null && loginId > 0L) {
             ImportParams orderParams = new ImportParams();
             orderParams.setSheetNum(1);
@@ -425,11 +440,11 @@ public class OrderController {
                         printJsonResult(BaseResultUtil.success("成功"), response);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 printJsonResult(BaseResultUtil.fail("异常: " + e.getMessage()), response);
             }
-        }else {
+        } else {
             printJsonResult(BaseResultUtil.fail("参数错误，请检查"), response);
         }
     }
@@ -458,14 +473,14 @@ public class OrderController {
                 if (orderResult.isVerfiyFail()) {
                     String fileName = "验证失败.xlsx";
                     printExcelResult(orderResult.getFailWorkbook(), fileName, response);
-                }else {
+                } else {
                     orderList = orderResult.getList();
                     ExcelImportResult<ImportKeyCustomerOrderCarDto> carResult = ExcelImportUtil.importExcelMore(file.getInputStream(),
                             ImportKeyCustomerOrderCarDto.class, carParams);
                     if (carResult.isVerfiyFail()) {
                         String fileName = "验证失败.xlsx";
                         printExcelResult(carResult.getFailWorkbook(), fileName, response);
-                    }else {
+                    } else {
                         carList = carResult.getList();
                         //导入操作
                         Admin admin = csAdminService.validate(loginId);
@@ -473,7 +488,7 @@ public class OrderController {
                         printJsonResult(BaseResultUtil.success("成功"), response);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 LogUtil.error("导入大客户订单异常：", e);
                 printJsonResult(BaseResultUtil.fail("异常: " + e.getMessage()), response);
@@ -505,14 +520,14 @@ public class OrderController {
                 if (orderResult.isVerfiyFail()) {
                     String fileName = "验证失败.xlsx";
                     printExcelResult(orderResult.getFailWorkbook(), fileName, response);
-                }else {
+                } else {
                     orderList = orderResult.getList();
                     ExcelImportResult<ImportPatCustomerOrderCarDto> carResult = ExcelImportUtil.importExcelMore(file.getInputStream(),
                             ImportPatCustomerOrderCarDto.class, carParams);
                     if (carResult.isVerfiyFail()) {
                         String fileName = "验证失败.xlsx";
                         printExcelResult(carResult.getFailWorkbook(), fileName, response);
-                    }else {
+                    } else {
                         carList = carResult.getList();
                         //TODO 导入操作
                         Admin admin = csAdminService.validate(loginId);
@@ -520,15 +535,17 @@ public class OrderController {
                         printJsonResult(BaseResultUtil.success("成功"), response);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 LogUtil.error("导入大客户订单异常：", e);
                 printJsonResult(BaseResultUtil.fail("异常: " + e.getMessage()), response);
             }
         }
     }
+
     /**
      * 检查返回结果是否成功
+     *
      * @param resultVo
      * @return
      */
@@ -541,6 +558,7 @@ public class OrderController {
 
     /**
      * 响应json格式信息
+     *
      * @param resultObj
      * @param response
      */
@@ -549,13 +567,14 @@ public class OrderController {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json");
             response.getOutputStream().write(JSONObject.toJSONBytes(resultObj));
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("响应信息异常", e);
         }
     }
 
     /**
      * 响应返回Excel文件信息
+     *
      * @param workbook
      * @param fileName
      * @param response
@@ -567,7 +586,7 @@ public class OrderController {
             response.setHeader("Content-disposition", "attachment; filename="
                     + new String(fileName.getBytes("UTF-8"), "ISO8859-1"));
             workbook.write(response.getOutputStream());
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error("响应信息异常", e);
         }
     }

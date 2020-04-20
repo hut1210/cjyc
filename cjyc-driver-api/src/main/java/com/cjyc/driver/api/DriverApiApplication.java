@@ -6,12 +6,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
- * Created by litan on 2019/9/27.
+ * @author JPG
  */
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableAsync
 @EnableFeignClients({"com.cjyc"})
 @MapperScan("com.cjyc.common.model.dao")
 @ComponentScan({"com.cjyc.driver.api", "com.cjyc.common.system","com.cjkj.common.redis"})

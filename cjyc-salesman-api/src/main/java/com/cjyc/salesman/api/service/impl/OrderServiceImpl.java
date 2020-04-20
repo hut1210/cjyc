@@ -107,15 +107,16 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         BeanUtils.copyProperties(order,detailVo);
         List<OrderCar> orderCars = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
         String logoImg = LogoImgProperty.logoImg;
-        BigDecimal totalPickFee = new BigDecimal(0);
-        BigDecimal totalBackFee = new BigDecimal(0);
-        BigDecimal totalAddInsuranceFee = new BigDecimal(0);
-        BigDecimal totalTrunkFee = new BigDecimal(0);
+        BigDecimal totalPickFee = BigDecimal.ZERO;
+        BigDecimal totalBackFee = BigDecimal.ZERO;
+        BigDecimal totalAddInsuranceFee = BigDecimal.ZERO;
+        BigDecimal totalTrunkFee = BigDecimal.ZERO;
         if(!CollectionUtils.isEmpty(orderCars)){
             for(OrderCar orderCar : orderCars){
                 String carLogoImg = carSeriesDao.getLogoImgByBraMod(orderCar.getBrand(), orderCar.getModel());
                 SalesOrderCarVo carVo = new SalesOrderCarVo();
                 carVo.setOrderCarId(orderCar.getId());
+                carVo.setOrderCarNo(orderCar.getNo());
                 carVo.setLogoImg(logoImg+carLogoImg);
                 BeanUtils.copyProperties(orderCar,carVo);
                 carVoList.add(carVo);

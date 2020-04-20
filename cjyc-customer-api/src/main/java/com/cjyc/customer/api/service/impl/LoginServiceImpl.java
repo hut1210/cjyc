@@ -3,7 +3,6 @@ package com.cjyc.customer.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
-import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.common.service.impl.SuperServiceImpl;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginReq;
 import com.cjkj.usercenter.dto.common.auth.AuthLoginResp;
@@ -22,7 +21,6 @@ import com.cjyc.common.model.enums.customer.*;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.login.CustomerLoginVo;
@@ -31,6 +29,7 @@ import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsSendNoService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
+import com.cjyc.common.system.util.RedisUtils;
 import com.cjyc.customer.api.config.LoginProperty;
 import com.cjyc.customer.api.service.ILoginService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 
 /**
  * 登录
@@ -56,7 +54,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
     @Resource
     private ICheckDao checkDao;
     @Autowired
-    private StringRedisUtil redisUtil;
+    private RedisUtils redisUtil;
     @Resource
     private ISysLoginService sysLoginService;
     @Resource
@@ -144,7 +142,7 @@ public class LoginServiceImpl extends SuperServiceImpl<ICustomerDao, Customer> i
         String captcha = paramsDto.getCaptcha();
         //校验验证码
         String key = RedisKeys.getCaptchaKey(ClientEnum.APP_CUSTOMER, phone, CaptchaTypeEnum.LOGIN);
-        String captchaCached = redisUtil.getStrValue(key);
+        String captchaCached = redisUtil.get(key);
         if(captchaCached == null){
             return BaseResultUtil.fail("请重新获取验证码");
         }

@@ -9,6 +9,7 @@ import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
+import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
@@ -16,9 +17,9 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleTitleEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
@@ -30,6 +31,7 @@ import com.cjyc.common.system.service.ICsRoleService;
 import com.cjyc.common.system.service.ICsUserRoleDeptService;
 import com.cjyc.driver.api.config.LoginProperty;
 import com.cjyc.driver.api.service.ILoginService;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -48,6 +49,8 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     private IDriverDao driverDao;
     @Resource
     private ICarrierDao carrierDao;
+    @Resource
+    private ITaskDao taskDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
@@ -212,26 +215,35 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
             return BaseResultUtil.fail("数据错误，请联系管理员");
         }
         BaseLoginVo baseLoginVo = null;
-        if(!CollectionUtils.isEmpty(loginVos)){
-            //处理韵车业务
-            if(loginVos.size() == 1){
-                baseLoginVo = loginVos.get(0);
+        //处理韵车业务
+        if(loginVos.size() == 1){
+            baseLoginVo = loginVos.get(0);
+        }
+        //企业承运商
+        if(loginVos.size() > 1){
+            //把角色存入到set集合中
+            //一个司机在多个承运商下，取角色最大的一个
+            Set<Integer> set = Sets.newHashSet();
+            for(BaseLoginVo vo : loginVos){
+                set.add(vo.getRole());
             }
-            //企业承运商
-            if(loginVos.size() > 1){
-                //把角色存入到set集合中
-                //一个司机在多个承运商下，取角色最大的一个
-                Set<Integer> set = new HashSet<>(10);
-                for(BaseLoginVo vo : loginVos){
-                    set.add(vo.getRole());
+            //取出可用的集合中role值最大的一个
+            for(BaseLoginVo vo : loginVos){
+                if(vo.getRole().equals(Collections.max(set))){
+                    baseLoginVo = vo;
+                    break;
                 }
-                //取出可用的集合中role值最大的一个
-                for(BaseLoginVo vo : loginVos){
-                    if(vo.getRole().equals(Collections.max(set))){
-                        baseLoginVo = vo;
-                        break;
-                    }
-                }
+            }
+        }
+        //处理该司机当前营运状态
+        if(driver != null){
+            Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                    .eq(Task::getDriverId, driver.getId())
+                    .lt(Task::getState, TaskStateEnum.FINISHED.code));
+            if(taskCount > 0){
+                baseLoginVo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+            }else{
+                baseLoginVo.setBusinessState(BusinessStateEnum.BUSINESS.code);
             }
         }
         //调用架构组验证手机号验证码登陆

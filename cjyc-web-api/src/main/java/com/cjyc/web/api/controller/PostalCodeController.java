@@ -27,15 +27,15 @@ public class PostalCodeController {
     @ApiOperation(value = "邮政区号导入Excel", notes = "\t 请求接口为/importPostalCodeExcel/loginId(登录用户ID)格式")
     @PostMapping("/importPostalCodeExcel/{loginId}")
     @Deprecated
-    public ResultVo importPostalCodeExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId){
-        boolean result = postalCodeService.importPostalCodeExcel(file,loginId);
+    public ResultVo importPostalCodeExcel(@RequestParam("file") MultipartFile file, @PathVariable Long loginId) {
+        boolean result = postalCodeService.importPostalCodeExcel(file, loginId);
         return result ? BaseResultUtil.success() : BaseResultUtil.fail(ResultEnum.FAIL.getMsg());
     }
 
     @ApiOperation(value = "根据关键字模糊搜索省/地区")
     @PostMapping(value = "/findChinaPostal")
     public ResultVo<List<ProvinceVo>> findChinaPostal(@RequestBody PostalDto dto) {
-        return postalCodeService.findChinaPostal(true,dto);
+        return postalCodeService.findChinaPostal(true, dto);
     }
 
     @ApiOperation(value = "查询所有的省")
@@ -47,6 +47,6 @@ public class PostalCodeController {
     @ApiOperation(value = "根据省/直辖市名称查询下属区县")
     @PostMapping(value = "/findSubArea/{provinceName}")
     public ResultVo<List<AreaVo>> findSubArea(@PathVariable String provinceName) {
-        return postalCodeService.findSubArea(true,provinceName);
+        return postalCodeService.findSubArea(true, provinceName);
     }
 }

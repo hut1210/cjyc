@@ -254,6 +254,7 @@ public class OrderCarWaitDispatchVo extends OrderCar {
             case 4: str = "司机APP"; break;
             case 6: str = "用户端APP"; break;
             case 7: str = "用户端小程序"; break;
+            default:break;
         }
         return str;
     }
@@ -299,6 +300,7 @@ public class OrderCarWaitDispatchVo extends OrderCar {
                 str = "拖车上门"; break;
             case 4:
                 str = "物流上门"; break;
+            default:break;
         }
         return str;
     }
@@ -318,6 +320,7 @@ public class OrderCarWaitDispatchVo extends OrderCar {
                 str = "拖车上门"; break;
             case 4:
                 str = "物流上门"; break;
+            default:break;
         }
         return str;
     }

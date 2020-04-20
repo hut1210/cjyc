@@ -1,7 +1,6 @@
 package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.cjkj.common.redis.lock.RedisDistributedLock;
 import com.cjyc.common.model.constant.TimeConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
@@ -35,6 +34,7 @@ import com.cjyc.common.model.vo.web.order.OrderVo;
 import com.cjyc.common.model.vo.web.waybill.WaybillCarVo;
 import com.cjyc.common.system.service.*;
 import com.cjyc.common.system.service.sys.ICsSysService;
+import com.cjyc.common.system.util.RedisLock;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -54,6 +54,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -68,7 +69,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Resource
     private RedisUtils redisUtils;
     @Resource
-    private RedisDistributedLock redisLock;
+    private RedisLock redisLock;
     @Resource
     private IOrderDao orderDao;
     @Resource
@@ -1610,6 +1611,44 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 .add(MoneyUtil.nullToZero(orderCar.getTrunkFee()))
                 .add(MoneyUtil.nullToZero(orderCar.getBackFee()))
                 .add(MoneyUtil.nullToZero(orderCar.getAddInsuranceFee()));
+    }
+
+    /**
+     * 验证是否重复车牌号，重复返回false
+     * @author JPG
+     * @since 2020/4/13 9:38
+     * @param orderNo
+     * @param orderCarId
+     * @param plateNo
+     */
+    @Override
+    public boolean validateIsNotRepeatPlateNo(String orderNo, Long orderCarId, String plateNo) {
+        if(orderNo == null || orderCarId == null){
+            return false;
+        }
+        if(StringUtils.isBlank(plateNo)){
+            return true;
+        }
+        int i = orderCarDao.countForChechRepeatPlateNo(orderNo, orderCarId, plateNo);
+        if(i > 0){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin) {
+        if(orderNo == null || orderCarId == null){
+            return false;
+        }
+        if(StringUtils.isBlank(vin)){
+            return true;
+        }
+        int i = orderCarDao.countForChechRepeatVin(orderNo, orderCarId, vin);
+        if(i > 0){
+            return false;
+        }
+        return true;
     }
 
     /**

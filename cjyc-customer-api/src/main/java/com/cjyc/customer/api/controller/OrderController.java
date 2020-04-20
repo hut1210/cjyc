@@ -1,6 +1,5 @@
 package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.dto.customer.order.OrderDetailDto;
 import com.cjyc.common.model.dto.customer.order.OrderQueryDto;
 import com.cjyc.common.model.dto.customer.order.SimpleSaveOrderDto;
@@ -16,7 +15,6 @@ import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.RegexUtil;
-import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OrderCenterDetailVo;
@@ -202,19 +200,6 @@ public class OrderController {
     @PostMapping(value = "/car/log/list")
     public ResultVo<OutterLogVo> getOrderCarLog(@RequestBody @Valid OrderCarNoDto reqDto) {
         return csOrderCarLogService.getOrderCarLog(reqDto.getOrderCarNo());
-    }
-
-    /**
-     * 功能描述: 查询物流信息
-     * @author liuxingxiang
-     * @date 2020/4/3
-     * @param reqDto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.LogisticsInformationVo>
-     */
-    @ApiOperation(value = "查询物流信息")
-    @PostMapping(value = "/car/getLogisticsInfo")
-    public ResultVo<LogisticsInformationVo> getLogisticsInformation(@RequestBody @Valid LogisticsInformationDto reqDto) {
-        return csLogisticsInformationService.getLogisticsInformation(reqDto);
     }
 
 }

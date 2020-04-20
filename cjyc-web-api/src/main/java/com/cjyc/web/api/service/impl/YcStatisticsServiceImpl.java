@@ -18,6 +18,7 @@ import com.cjyc.common.system.util.ResultDataUtil;
 import com.cjyc.web.api.service.IYcStatisticsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -132,8 +133,12 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
                     String fromCityLocation = PositionUtil.getLngAndLat(line.getFromCity());
                     String toCityLocation = PositionUtil.getLngAndLat(line.getToCity());
                     double distance = PositionUtil.getDistance(Double.valueOf(fromCityLocation.split(",")[0]), Double.valueOf(fromCityLocation.split(",")[1]), Double.valueOf(toCityLocation.split(",")[0]), Double.valueOf(toCityLocation.split(",")[1]));
-                    BigDecimal bd = new BigDecimal(distance).setScale(0, BigDecimal.ROUND_DOWN);
-                    line.setKilometer(bd);
+                    if(Double.valueOf(distance) != null){
+                        BigDecimal bd = BigDecimal.valueOf(distance).setScale(0, BigDecimal.ROUND_DOWN);
+                        line.setKilometer(bd);
+                    }else{
+                        line.setKilometer(BigDecimal.ZERO);
+                    }
                     lineDao.updateById(line);
                 }else{
                     continue;
@@ -158,6 +163,42 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
         if(!ResultDataUtil.isSuccess(userRd)){
             return BaseResultUtil.fail("查询用户信息错误，原因：" + userRd.getMsg());
         }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVo deleteRoleAndUser(Long roleId) {
+        //因为只是删除app_调度经理角色，慎重起见先查询
+        //处理架构组那边角色
+        ResultData<SelectRoleResp> roleRd = sysRoleService.getById(roleId);
+        if(!ResultDataUtil.isSuccess(roleRd)){
+            return BaseResultUtil.fail("获取角色失败");
+        }
+        if(!"APP_调度经理".equals(roleRd.getData().getRoleName())){
+            return BaseResultUtil.fail("APP_调度经理角色不存在");
+        }
+        ResultData<SelectRoleResp> deleRd = sysRoleService.delete(roleId);
+        if(!ResultDataUtil.isSuccess(deleRd)){
+            return BaseResultUtil.fail("删除角色失败");
+        }
+        //处理韵车这边角色，查询角色信息
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().lambda().eq(Role::getRoleId, roleId));
+        if(role == null){
+            return BaseResultUtil.fail("APP_调度经理不存在");
+        }
+        //根据角色查询该角色下所挂用户
+        List<UserRoleDept> urdList = userRoleDeptDao.selectList(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getRoleId, role.getId()));
+        if(!CollectionUtils.isEmpty(urdList)){
+            //循环删除用户
+            urdList.forEach(urd -> {
+                adminDao.deleteById(urd.getUserId());
+            });
+        }
+        //删除用户关系数据
+        userRoleDeptDao.delete(new QueryWrapper<UserRoleDept>().lambda().eq(UserRoleDept::getRoleId,role.getId()));
+        //删除角色
+        roleDao.delete(new QueryWrapper<Role>().lambda().eq(Role::getRoleId,roleId));
         return BaseResultUtil.success();
     }
 }

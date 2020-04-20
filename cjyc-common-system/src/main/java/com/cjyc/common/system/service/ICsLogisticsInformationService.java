@@ -1,5 +1,6 @@
 package com.cjyc.common.system.service;
 
+import com.cjyc.common.model.dto.LocationInfoDto;
 import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -18,4 +19,13 @@ public interface ICsLogisticsInformationService {
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.LogisticsInformationVo>
      */
     ResultVo<LogisticsInformationVo> getLogisticsInformation(LogisticsInformationDto reqDto);
+
+    /**
+     * 功能描述: 定位信息上传
+     * @author liuxingxiang
+     * @date 2020/4/9
+     * @param reqDto
+     * @return com.cjyc.common.model.vo.ResultVo
+     */
+    ResultVo uploadUserLocation(LocationInfoDto reqDto);
 }
