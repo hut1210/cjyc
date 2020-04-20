@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@AllArgsConstructor
 @Accessors(chain = true)
 @ApiModel
 public class CheckOrderDto extends BaseLoginDto {

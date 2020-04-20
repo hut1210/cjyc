@@ -1,6 +1,5 @@
 package com.cjyc.common.model.dto.web.order;
 
-import com.cjyc.common.model.dto.BaseLoginDto;
 import com.cjyc.common.model.dto.web.BaseWebDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,6 +12,8 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 public class AllotOrderDto extends BaseWebDto {
+    @ApiModelProperty(value = "订单ID", required = true)
+    private Long orderId;
     @NotNull
     @ApiModelProperty(value = "被分配人ID", required = true)
     private Long toAdminId;

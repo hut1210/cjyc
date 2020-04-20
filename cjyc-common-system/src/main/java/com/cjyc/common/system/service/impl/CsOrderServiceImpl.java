@@ -959,7 +959,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
             //提交订单
             Order order = commitOrder(paramsDto);
             //审核订单
-            check(new CheckOrderDto(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), order.getId()));
+            CheckOrderDto checkOrderDto = new CheckOrderDto();
+            checkOrderDto.setLoginId(paramsDto.getLoginId());
+            checkOrderDto.setLoginName(paramsDto.getLoginName());
+            checkOrderDto.setLoginPhone(paramsDto.getLoginPhone());
+            checkOrderDto.setOrderId(order.getId());
+            checkOrderDto.setLoginId(paramsDto.getLoginId());
+            check(checkOrderDto);
             //调度
             if (paramsDto.isDispatch()) {
                 SaveLocalDto slDto = getPickSaveLocalDto(order, new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
