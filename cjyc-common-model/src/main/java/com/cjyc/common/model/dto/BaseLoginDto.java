@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Data
 public class BaseLoginDto {
@@ -19,4 +20,6 @@ public class BaseLoginDto {
     private String loginPhone;
     @ApiModelProperty(value = "登录人手机号", hidden = true)
     private UserTypeEnum loginType;
+    @ApiModelProperty(hidden = true)
+    private Set<Long> bizScope;
 }
