@@ -133,8 +133,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         }
 
         // 查询运输车信息
-        Vehicle vehicle = vehicleDao.selectOne(new QueryWrapper<Vehicle>().lambda()
-                .eq(Vehicle::getPlateNo, taskInfo.getPlateNo()).select(Vehicle::getOwnershipType));
+        Vehicle vehicle = vehicleDao.selectVehicleInfoByDriverId(taskInfo.getDriverId());
 
         // 判断运输车车牌号是否为自营车辆，是自营车则根据车牌号车讯位置，否则根据司机信息查询
         OutterOrderCarLogVo locationVo = null;
@@ -142,7 +141,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         // 是自营车，根据车牌号查询位置信息
         if (isOwnerCar) {
             JSONObject obj = new JSONObject();
-            obj.put("plateNo",taskInfo.getPlateNo());
+            obj.put("plateNo",vehicle.getPlateNo());
 
             log.info("===>调用位置服务平台接口-根据车牌号-查询位置信息开始,请求参数：{}", JSON.toJSONString(obj));
             ResultData resultData = sysLocationService.getLocationByPlateNo(obj);
@@ -180,7 +179,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
     private OutterOrderCarLogVo getOutterOrderCarLogVo(OutterOrderCarLogVo locationVo, ResultData resultData, String gpsTime) {
         Map resMap = JSON.parseObject(JSON.toJSONString(resultData.getData()), Map.class);
-        String location = resMap == null ? "" : String.valueOf(resMap.get(GPS_LOCATION));
+        String location = resMap == null ? null : String.valueOf(resMap.get(GPS_LOCATION));
         String sendTime = resMap == null ? null : String.valueOf(resMap.get(gpsTime));
 
         if (!StringUtils.isEmpty(sendTime) && !StringUtils.isEmpty(location)) {

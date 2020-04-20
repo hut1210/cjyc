@@ -1,15 +1,14 @@
 package com.cjyc.common.model.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.KeywordDto;
-import com.cjyc.common.model.dto.driver.mine.CarrierVehicleNoDto;
 import com.cjyc.common.model.dto.web.carrier.TransportDto;
 import com.cjyc.common.model.dto.web.mineCarrier.QueryMyCarDto;
 import com.cjyc.common.model.dto.web.vehicle.SelectVehicleDto;
 import com.cjyc.common.model.entity.Vehicle;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.carrier.TransportVehicleVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarVo;
-import com.cjyc.common.model.vo.FreeVehicleVo;
 import com.cjyc.common.model.vo.web.vehicle.VehicleVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -84,5 +83,13 @@ public interface IVehicleDao extends BaseMapper<Vehicle> {
      */
     List<TransportVehicleVo> findTransportVehicleNew(TransportDto dto);
 
+    /**
+     * 功能描述: 根据司机ID查询司机车辆信息
+     * @author liuxingxiang
+     * @date 2020/4/20
+     * @param driverId
+     * @return com.cjyc.common.model.entity.Vehicle
+     */
+    Vehicle selectVehicleInfoByDriverId(Long driverId);
 
 }
