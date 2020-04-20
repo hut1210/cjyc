@@ -3,7 +3,7 @@ package com.cjyc.common.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cjkj.common.model.ResultData;
+import com.cjkj.common.model.ReturnMsg;
 import com.cjyc.common.model.constant.FieldConstant;
 import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dao.IVehicleDao;
@@ -21,11 +21,11 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OutterLogVo;
 import com.cjyc.common.model.vo.customer.order.OutterOrderCarLogVo;
 import com.cjyc.common.model.vo.salesman.task.TaskInfo;
-import com.cjyc.common.system.entity.UploadUserLocationReq;
+import com.cjyc.common.system.dto.location.ResultData;
+import com.cjyc.common.system.dto.location.UploadUserLocationReq;
 import com.cjyc.common.system.feign.ISysLocationService;
 import com.cjyc.common.system.service.ICsLogisticsInformationService;
 import com.cjyc.common.system.service.ICsOrderCarLogService;
-import com.cjyc.common.system.util.ResultDataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -89,7 +89,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             ResultData resultData = sysLocationService.uploadUserLocation(uploadUserLocationReq);
             log.info("<===调用位置服务平台接口-用户位置信息上传结束,响应参数：{}", JSON.toJSONString(resultData));
 
-            if (ResultDataUtil.isSuccess(resultData)) {
+            if (isSuccess(resultData)) {
                 log.info("===用户位置信息上传成功===");
                 return BaseResultUtil.success();
             }
@@ -136,7 +136,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             ResultData resultData = sysLocationService.getLocationByPlateNo(obj);
             log.info("<===调用位置服务平台接口-根据车牌号-查询位置信息结束,响应参数：{}", JSON.toJSONString(resultData));
 
-            if (ResultDataUtil.isSuccess(resultData)) {
+            if (isSuccess(resultData)) {
                 log.info("===根据车牌号-查询位置信息成功===");
                 locationVo = getOutterOrderCarLogVo(locationVo, resultData, "sendTime");
             } else {
@@ -152,7 +152,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             ResultData resultData = sysLocationService.getUserLocation(object);
             log.info("<===调用位置服务平台接口-根据用户ID-查询用户实时位置结束,响应参数：{}", JSON.toJSONString(resultData));
 
-            if (ResultDataUtil.isSuccess(resultData)) {
+            if (isSuccess(resultData)) {
                 log.info("===根据用户ID-查询用户实时位置成功===");
                 locationVo = getOutterOrderCarLogVo(locationVo, resultData, "gpsTime");
             } else {
@@ -179,6 +179,21 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             locationVo.setTag(1);
         }
         return locationVo;
+    }
+
+    /**
+     * ResultData是否处理成功
+     * @param resultData
+     * @return
+     */
+    public boolean isSuccess(ResultData resultData) {
+        if (resultData == null) {
+            return false;
+        }
+        if (ReturnMsg.SUCCESS.getCode().equals(resultData.getCode())) {
+            return true;
+        }
+        return false;
     }
 
 }
