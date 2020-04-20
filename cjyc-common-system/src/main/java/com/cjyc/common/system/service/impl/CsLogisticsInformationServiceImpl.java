@@ -44,6 +44,17 @@ import java.util.Map;
 @Slf4j
 @Service
 public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformationService {
+    // 返回移动端 位置名称
+    private final String CURRENT_LOCATION = "实时位置";
+    // 上传用户位置信息 时间格式
+    private final String DATE_FORMAT_HMS = "yyyy-MM-dd HH:mm:ss";
+    // 根据车牌号-查询位置信息 返回定位时间字段名
+    private final String SEND_TIME = "sendTime";
+    // 根据用户ID-查询用户实时位置 返回定位时间字段名
+    private final String GPS_TIME = "gpsTime";
+    // 定位位置信息
+    private final String GPS_LOCATION = "location";
+
     @Resource
     private ICsOrderCarLogService csOrderCarLogService;
     @Resource
@@ -77,6 +88,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
     @Override
     public ResultVo uploadUserLocation(LocationInfoDto reqDto) {
+        log.info("===>移动端APP-用户位置信息上传,请求参数：{}", JSON.toJSONString(reqDto));
         // 判断任务单状态是否为“运输中”状态，状态为“运输中”时才保存位置信息
         List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                 .eq(Task::getDriverId, reqDto.getLoginId())
@@ -108,8 +120,8 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         uploadUserLocationReq.setCoordinateType(reqDto.getCoordinateType());
         uploadUserLocationReq.setLat(reqDto.getLat());
         uploadUserLocationReq.setLng(reqDto.getLng());
-        uploadUserLocationReq.setGpsTime(LocalDateTimeUtil.formatLong(reqDto.getGpsTime(),"yyyy-MM-dd HH:mm:ss"));
-        uploadUserLocationReq.setSendTime(LocalDateTimeUtil.formatLong(reqDto.getSendTime(),"yyyy-MM-dd HH:mm:ss"));
+        uploadUserLocationReq.setGpsTime(LocalDateTimeUtil.formatLong(reqDto.getGpsTime(),DATE_FORMAT_HMS));
+        uploadUserLocationReq.setSendTime(LocalDateTimeUtil.formatLong(reqDto.getSendTime(),DATE_FORMAT_HMS));
         return uploadUserLocationReq;
     }
 
@@ -138,7 +150,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
             if (isSuccess(resultData)) {
                 log.info("===根据车牌号-查询位置信息成功===");
-                locationVo = getOutterOrderCarLogVo(locationVo, resultData, "sendTime");
+                locationVo = getOutterOrderCarLogVo(locationVo, resultData, SEND_TIME);
             } else {
                 log.info("===根据车牌号-查询位置信息失败===");
             }
@@ -154,7 +166,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
             if (isSuccess(resultData)) {
                 log.info("===根据用户ID-查询用户实时位置成功===");
-                locationVo = getOutterOrderCarLogVo(locationVo, resultData, "gpsTime");
+                locationVo = getOutterOrderCarLogVo(locationVo, resultData, GPS_TIME);
             } else {
                 log.info("===根据用户ID-查询用户实时位置失败===");
             }
@@ -168,13 +180,13 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
     private OutterOrderCarLogVo getOutterOrderCarLogVo(OutterOrderCarLogVo locationVo, ResultData resultData, String gpsTime) {
         Map resMap = JSON.parseObject(JSON.toJSONString(resultData.getData()), Map.class);
-        String location = resMap == null ? "" : String.valueOf(resMap.get("location"));
+        String location = resMap == null ? "" : String.valueOf(resMap.get(GPS_LOCATION));
         String sendTime = resMap == null ? null : String.valueOf(resMap.get(gpsTime));
 
         if (!StringUtils.isEmpty(sendTime) && !StringUtils.isEmpty(location)) {
             locationVo = new OutterOrderCarLogVo();
-            locationVo.setTypeStr("实时位置");
-            locationVo.setCreateTime(LocalDateTimeUtil.convertDateStrToLong(sendTime, "yyyy-MM-dd HH:mm:ss"));
+            locationVo.setTypeStr(CURRENT_LOCATION);
+            locationVo.setCreateTime(LocalDateTimeUtil.convertDateStrToLong(sendTime, DATE_FORMAT_HMS));
             locationVo.setOuterLog(location);
             locationVo.setTag(1);
         }
