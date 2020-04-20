@@ -43,11 +43,10 @@ public class FinancePayableVo implements Serializable {
     private String settleTypeName;
 
     @ApiModelProperty(value = "账期时间")
-    @Excel(name = "账期时间" ,orderNum = "3")
     private int settlePeriod;
 
     @ApiModelProperty(value = "剩余账期时间")
-    @Excel(name = "剩余账期时间" ,orderNum = "4")
+    @Excel(name = "剩余账期时间(天)" ,orderNum = "4")
     private int remainDate;
 
     @ApiModelProperty(value = "应付运费")
@@ -73,8 +72,8 @@ public class FinancePayableVo implements Serializable {
         }
     }
 
-    @ApiModelProperty(value = "指导路线")
-    @Excel(name = "指导路线" ,orderNum = "7")
+    @ApiModelProperty(value = "指导线路")
+    @Excel(name = "指导线路" ,orderNum = "7")
     private String transportLine;
 
     @ApiModelProperty(value = "承运商ID")
@@ -83,12 +82,12 @@ public class FinancePayableVo implements Serializable {
     @ApiModelProperty(value = "承运类型")
     private Integer carrierType;
 
-    @ApiModelProperty(value = "承运商名称")
-    @Excel(name = "承运商名称" ,orderNum = "8")
+    @ApiModelProperty(value = "承运商")
+    @Excel(name = "承运商" ,orderNum = "8")
     private String carrierName;
 
-    @ApiModelProperty(value = "司机名称")
-    @Excel(name = "司机名称" ,orderNum = "9")
+    @ApiModelProperty(value = "司机")
+    @Excel(name = "司机" ,orderNum = "9")
     private String driverName;
 
     @ApiModelProperty(value = "司机电话")

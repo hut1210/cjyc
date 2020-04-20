@@ -9,6 +9,7 @@ import com.cjkj.usercenter.dto.common.auth.AuthMobileLoginReq;
 import com.cjyc.common.model.dao.ICarrierDao;
 import com.cjyc.common.model.dao.ICarrierDriverConDao;
 import com.cjyc.common.model.dao.IDriverDao;
+import com.cjyc.common.model.dao.ITaskDao;
 import com.cjyc.common.model.dto.LoginDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
@@ -16,6 +17,7 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.role.DeptTypeEnum;
 import com.cjyc.common.model.enums.role.RoleTitleEnum;
+import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.YmlProperty;
@@ -47,6 +49,8 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
     private IDriverDao driverDao;
     @Resource
     private ICarrierDao carrierDao;
+    @Resource
+    private ITaskDao taskDao;
     @Resource
     private ICarrierDriverConDao carrierDriverConDao;
     @Resource
@@ -229,6 +233,17 @@ public class LoginServiceImpl extends SuperServiceImpl<IDriverDao, Driver> imple
                     baseLoginVo = vo;
                     break;
                 }
+            }
+        }
+        //处理该司机当前营运状态
+        if(driver != null){
+            Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
+                    .eq(Task::getDriverId, driver.getId())
+                    .lt(Task::getState, TaskStateEnum.FINISHED.code));
+            if(taskCount > 0){
+                baseLoginVo.setBusinessState(BusinessStateEnum.OUTAGE.code);
+            }else{
+                baseLoginVo.setBusinessState(BusinessStateEnum.BUSINESS.code);
             }
         }
         //调用架构组验证手机号验证码登陆

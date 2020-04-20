@@ -162,9 +162,10 @@ cjyc:
     basePackage: com.cjyc.salesman.api.controller
     groupName: Salesman
     usePathMapping: false
+  #登录
   salesman:
-    clientId: "1186108891007336449"
-    clientSecret: acffa1064e9a629d3140e5b36be31bd3
+    clientId: "1249902523863580674"
+    clientSecret: d5560eab7ea26fa8e7c3ca5a5309dcd3
     grantType: mobile
 
   #短信

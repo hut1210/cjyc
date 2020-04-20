@@ -96,6 +96,22 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务等待付款列表")
     @GetMapping(value = "/exportPayment")
     public ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto) {
+        log.info("waitPaymentDto ={}", waitPaymentDto.toString());
+        List<ExportWaitPaymentVo> exportWaitPaymentVoList = financeService.exportPayment(waitPaymentDto);
+        if (CollectionUtils.isEmpty(exportWaitPaymentVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        String title = "等待付款";
+        String sheetName = "等待付款";
+        String fileName = "等待付款.xls";
+        log.info("exportWaitPaymentVoList.size = " + exportWaitPaymentVoList.size());
+        try {
+            ExcelUtil.exportExcel(exportWaitPaymentVoList, title, sheetName, ExportWaitPaymentVo.class, fileName, response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出等待付款异常:", e);
+            return BaseResultUtil.fail("导出等待付款异常" + e.getMessage());
+        }
         return financeService.exportPayment(response, waitPaymentDto);
     }
 
@@ -120,6 +136,22 @@ public class FinancePayableController {
     @ApiOperation(value = "导出财务已付款（账期）列表")
     @GetMapping(value = "/exportPaid")
     public ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto) {
+        log.info("payablePaidQueryDto ={}", payablePaidQueryDto.toString());
+        List<ExportPayablePaidVo> exportPayablePaidVoList = financeService.exportPaid(payablePaidQueryDto);
+        if (CollectionUtils.isEmpty(exportPayablePaidVoList)) {
+            return BaseResultUtil.success("未查询到结果");
+        }
+        String title = "应付账款-已付款（账期）";
+        String sheetName = "已付款（账期）";
+        String fileName = "应付账款-已付款（账期）.xls";
+        log.info("exportPayablePaidVoList.size = " + exportPayablePaidVoList.size());
+        try {
+            ExcelUtil.exportExcel(exportPayablePaidVoList, title, sheetName, ExportPayablePaidVo.class, fileName, response);
+            return null;
+        } catch (Exception e) {
+            log.error("导出等待付款异常:", e);
+            return BaseResultUtil.fail("导出等待付款异常" + e.getMessage());
+        }
         return financeService.exportPaid(response, payablePaidQueryDto);
     }
 

@@ -91,10 +91,13 @@ public interface IFinanceService {
      */
     ResultVo exportPayableAll(HttpServletResponse response, PayableQueryDto payableQueryDto);
 
+    List<ExportPayableCollectVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
     ResultVo exportPayableCollect(HttpServletResponse response, WaitTicketCollectDto waitTicketCollectDto);
 
+    List<ExportWaitPaymentVo> exportPayment(WaitPaymentDto waitPaymentDto);
     ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto);
 
+    List<ExportPayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
     ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto);
 
     ResultVo exportTimePaid(HttpServletResponse response, PayMentQueryDto payMentQueryDto);

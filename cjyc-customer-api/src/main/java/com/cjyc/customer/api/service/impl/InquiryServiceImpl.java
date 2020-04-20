@@ -36,6 +36,7 @@ public class InquiryServiceImpl extends SuperServiceImpl<IInquiryDao, Inquiry> i
                             .eq(Inquiry::getFromCode,dto.getFromCode())
                             .eq(Inquiry::getToCode,dto.getToCode()));
         if(inquiry != null){
+            return;
         }else{
             //根据用户id查询用户
             Customer customer = customerDao.selectById(dto.getLgoinId());
