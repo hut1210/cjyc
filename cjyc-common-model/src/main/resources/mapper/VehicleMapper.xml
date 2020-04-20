@@ -250,4 +250,17 @@
             order by dv.create_time desc
         </where>
     </select>
+
+    <!--根据司机ID查询司机车辆信息-->
+    <select id="selectVehicleInfoByDriverId" resultType="com.cjyc.common.model.entity.Vehicle">
+        select
+            v.ownership_type as ownershipType,
+            v.plate_no as plateNo
+        from
+            d_vehicle v
+            left join d_vehicle_running vr on v.id = vr.vehicle_id
+        where
+            vr.state = 1 and vr.driver_id = #{driverId}
+            limit 1
+    </select>
 </mapper>
