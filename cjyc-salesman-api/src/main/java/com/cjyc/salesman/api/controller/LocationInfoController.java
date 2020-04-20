@@ -1,4 +1,4 @@
-package com.cjyc.driver.api.controller;
+package com.cjyc.salesman.api.controller;
 
 import com.cjyc.common.model.dto.LocationInfoDto;
 import com.cjyc.common.model.dto.LogisticsInformationDto;
@@ -32,7 +32,7 @@ public class LocationInfoController {
      * @param reqDto
      * @return com.cjyc.common.model.vo.ResultVo
      */
-    @ApiOperation(value = "定位信息上传")
+    @ApiOperation(value = "app用户定位信息上传")
     @PostMapping(value = "/uploadUserLocation")
     public ResultVo uploadUserLocation(@RequestBody @Valid LocationInfoDto reqDto) {
         return csLogisticsInformationService.uploadUserLocation(reqDto);

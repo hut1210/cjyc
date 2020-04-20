@@ -1,7 +1,5 @@
 package com.cjyc.salesman.api.controller;
 
-import com.cjyc.common.model.dto.LocationInfoDto;
-import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
@@ -10,7 +8,6 @@ import com.cjyc.common.model.dto.web.task.BaseTaskDto;
 import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -220,32 +217,6 @@ public class TaskController {
     @PostMapping("/getOutAndInStoragePage")
     public ResultVo<PageVo<TaskWaybillVo>> getOutAndInStoragePage(@RequestBody @Validated OutAndInStorageQueryDto dto) {
         return taskService.getOutAndInStoragePage(dto);
-    }
-
-    /**
-     * 功能描述: 查询物流信息
-     * @author liuxingxiang
-     * @date 2020/4/3
-     * @param reqDto
-     * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.LogisticsInformationVo>
-     */
-    @ApiOperation(value = "查询物流信息")
-    @PostMapping(value = "/getLogisticsInfo")
-    public ResultVo<LogisticsInformationVo> getLogisticsInformation(@RequestBody @Valid LogisticsInformationDto reqDto) {
-        return csLogisticsInformationService.getLogisticsInformation(reqDto);
-    }
-
-    /**
-     * 功能描述: 定位信息上传
-     * @author liuxingxiang
-     * @date 2020/4/9
-     * @param reqDto
-     * @return com.cjyc.common.model.vo.ResultVo
-     */
-    @ApiOperation(value = "定位信息上传")
-    @PostMapping(value = "/uploadUserLocation")
-    public ResultVo uploadUserLocation(@RequestBody @Valid LocationInfoDto reqDto) {
-        return csLogisticsInformationService.uploadUserLocation(reqDto);
     }
 
 }

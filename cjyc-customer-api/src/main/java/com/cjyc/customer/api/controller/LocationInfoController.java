@@ -1,6 +1,5 @@
-package com.cjyc.driver.api.controller;
+package com.cjyc.customer.api.controller;
 
-import com.cjyc.common.model.dto.LocationInfoDto;
 import com.cjyc.common.model.dto.LogisticsInformationDto;
 import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -24,19 +23,6 @@ import javax.validation.Valid;
 public class LocationInfoController {
     @Resource
     private ICsLogisticsInformationService csLogisticsInformationService;
-
-    /**
-     * 功能描述: 定位信息上传
-     * @author liuxingxiang
-     * @date 2020/4/9
-     * @param reqDto
-     * @return com.cjyc.common.model.vo.ResultVo
-     */
-    @ApiOperation(value = "定位信息上传")
-    @PostMapping(value = "/uploadUserLocation")
-    public ResultVo uploadUserLocation(@RequestBody @Valid LocationInfoDto reqDto) {
-        return csLogisticsInformationService.uploadUserLocation(reqDto);
-    }
 
     /**
      * 功能描述: 查询物流信息
