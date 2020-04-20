@@ -1,5 +1,6 @@
 package com.cjyc.common.model.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Consts;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -24,17 +25,20 @@ import java.util.Map;
 /**
  * http请求工具
  * 依赖jar包httpclient(org.apache.httpcomponents)
+ *
  * @author JPG
  */
+@Slf4j
 public class HttpClientUtil {
 
 
     /**
      * Get-map请求(url参数)
-     * @author JPG
-     * @date 2019/7/24 13:37
+     *
      * @param url 请求地址
      * @return jsonString
+     * @author JPG
+     * @date 2019/7/24 13:37
      */
     public static String doGet(String url) {
         return doGet(url, null);
@@ -42,11 +46,12 @@ public class HttpClientUtil {
 
     /**
      * Get-map请求(url参数)
-     * @author JPG
-     * @date 2019/7/24 13:36
-     * @param url 请求地址
+     *
+     * @param url      请求地址
      * @param urlParam url参数
      * @return jsonString
+     * @author JPG
+     * @date 2019/7/24 13:36
      */
     public static String doGet(String url, Map<String, String> urlParam) {
 
@@ -58,7 +63,7 @@ public class HttpClientUtil {
         try {
             HttpGet httpGet;
             // 创建uri
-            if(urlParam != null){
+            if (urlParam != null) {
                 URIBuilder builder = new URIBuilder(url);
                 if (urlParam != null) {
                     for (String key : urlParam.keySet()) {
@@ -68,7 +73,7 @@ public class HttpClientUtil {
                 URI uri = builder.build();
                 // 创建http GET请求
                 httpGet = new HttpGet(uri);
-            }else{
+            } else {
                 httpGet = new HttpGet(url);
             }
             // 执行请求
@@ -78,7 +83,7 @@ public class HttpClientUtil {
                 resultString = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("发送get请求：{}出现异常：", url, e);
         } finally {
             try {
                 if (response != null) {
@@ -86,7 +91,7 @@ public class HttpClientUtil {
                 }
                 httpClient.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("关闭httpClient出现异常：", e);
             }
         }
         return resultString;
@@ -94,11 +99,12 @@ public class HttpClientUtil {
 
     /**
      * Post-application/x-www-form-urlencoded请求(form参数)
-     * @author JPG
-     * @date 2019/7/24 13:26
-     * @param url 请求地址
+     *
+     * @param url       请求地址
      * @param formParam Post-form格式参数
      * @return jsonString
+     * @author JPG
+     * @date 2019/7/24 13:26
      */
     public static String doPost(String url, Map<String, String> formParam) {
         return doPost(url, null, null, formParam, null);
@@ -106,10 +112,11 @@ public class HttpClientUtil {
 
     /**
      * Post-application/x-www-form-urlencoded请求(无参)
-     * @author JPG
-     * @date 2019/7/24 13:26
+     *
      * @param url 请求地址
      * @return jsonString
+     * @author JPG
+     * @date 2019/7/24 13:26
      */
     public static String doPost(String url) {
         return doPost(url, null, null, null, null);
@@ -117,79 +124,86 @@ public class HttpClientUtil {
 
     /**
      * Post-application/x-www-form-urlencoded请求(header参数、form参数)
+     *
+     * @param url         请求地址
+     * @param headerParam 请求头参数
+     * @param formParam   Post-form格式参数
+     * @return jsonString
      * @author JPG
      * @date 2019/7/24 13:26
-     * @param url 请求地址
-     * @param headerParam 请求头参数
-     * @param formParam Post-form格式参数
-     * @return jsonString
      */
-    public static String doPost(String url, Map<String, String> headerParam, Map<String, String> formParam){
+    public static String doPost(String url, Map<String, String> headerParam, Map<String, String> formParam) {
         return doPost(url, headerParam, null, formParam, null);
     }
 
     /**
      * Post-application/x-www-form-urlencoded请求(header参数、url参数、form参数)
+     *
+     * @param url         请求地址
+     * @param headerParam 请求头参数
+     * @param urlParam    url参数
+     * @param formParam   Post-form格式参数
+     * @return jsonString
      * @author JPG
      * @date 2019/7/24 13:26
-     * @param url 请求地址
-     * @param headerParam 请求头参数
-     * @param urlParam url参数
-     * @param formParam Post-form格式参数
-     * @return jsonString
      */
-    public static String doPost(String url, Map<String, String> headerParam, Map<String, String> urlParam, Map<String, String> formParam){
+    public static String doPost(String url, Map<String, String> headerParam, Map<String, String> urlParam, Map<String, String> formParam) {
         return doPost(url, headerParam, urlParam, formParam, null);
     }
 
     /**
      * Post-application/json请求(json参数)
-     * @author JPG
-     * @date 2019/7/24 13:26
-     * @param url 请求地址
+     *
+     * @param url       请求地址
      * @param jsonParam json格式参数
      * @return jsonString
+     * @author JPG
+     * @date 2019/7/24 13:26
      */
-    public static String doPostJson(String url, String jsonParam){
+    public static String doPostJson(String url, String jsonParam) {
         return doPost(url, null, null, null, jsonParam);
     }
 
     /**
      * Post-application/json请求(header参数、json参数)
+     *
+     * @param url         请求地址
+     * @param headerParam 请求头参数
+     * @param jsonParam   json格式参数
+     * @return jsonString
      * @author JPG
      * @date 2019/7/24 13:26
-     * @param url 请求地址
-     * @param headerParam 请求头参数
-     * @param jsonParam json格式参数
-     * @return jsonString
      */
-    public static String doPostJson(String url, Map<String, String> headerParam,  String jsonParam){
+    public static String doPostJson(String url, Map<String, String> headerParam, String jsonParam) {
         return doPost(url, headerParam, null, null, jsonParam);
     }
+
     /**
      * Post-application/json请求(header参数、url参数、json参数)
+     *
+     * @param url         请求地址
+     * @param headerParam 请求头参数
+     * @param urlParam    url参数
+     * @param jsonParam   json格式参数
+     * @return jsonString
      * @author JPG
      * @date 2019/7/24 13:26
-     * @param url 请求地址
-     * @param headerParam 请求头参数
-     * @param urlParam url参数
-     * @param jsonParam json格式参数
-     * @return jsonString
      */
-    public static String doPostJson(String url, Map<String, String> headerParam, Map<String, String> urlParam, String jsonParam){
+    public static String doPostJson(String url, Map<String, String> headerParam, Map<String, String> urlParam, String jsonParam) {
         return doPost(url, headerParam, urlParam, null, jsonParam);
     }
 
     /**
      * BasePost请求
+     *
+     * @param url         请求地址
+     * @param headerParam 请求头参数
+     * @param urlParam    url参数
+     * @param formParam   Post-form格式参数
+     * @param jsonParam   json格式参数
+     * @return jsonString
      * @author JPG
      * @date 2019/7/24 13:26
-     * @param url 请求地址
-     * @param headerParam 请求头参数
-     * @param urlParam url参数
-     * @param formParam Post-form格式参数
-     * @param jsonParam json格式参数
-     * @return jsonString
      */
     private static String doPost(String url, Map<String, String> headerParam, Map<String, String> urlParam, Map<String, String> formParam, String jsonParam) {
         // 创建Httpclient对象
@@ -208,11 +222,11 @@ public class HttpClientUtil {
                 }
                 URI uri = builder.build();
                 httpPost = new HttpPost(uri);
-            }else{
+            } else {
                 httpPost = new HttpPost(url);
             }
             //添加header参数
-            if(headerParam != null){
+            if (headerParam != null) {
                 for (String key : headerParam.keySet()) {
                     httpPost.addHeader(key, headerParam.get(key));
                 }
@@ -228,13 +242,13 @@ public class HttpClientUtil {
                 httpPost.setEntity(entity);
             }
             //添加json参数
-            if(jsonParam != null){
+            if (jsonParam != null) {
                 StringEntity entity = new StringEntity(jsonParam, ContentType.APPLICATION_JSON);
                 httpPost.setEntity(entity);
             }
             // 执行http请求
             response = httpClient.execute(httpPost);
-            if (response.getStatusLine().getStatusCode() ==  HttpStatus.SC_OK) {
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 resultString = EntityUtils.toString(response.getEntity(), Consts.UTF_8);
             }
         } catch (Exception e) {

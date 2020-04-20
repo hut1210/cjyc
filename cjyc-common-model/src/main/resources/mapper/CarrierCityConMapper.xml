@@ -41,7 +41,7 @@
     </delete>
 
     <!-- 根据承运商id获取业务范围 -->
-    <select id="getMapCodes" resultType="java.util.Map" parameterType="java.lang.Long">
+    <select id="getMapCodes" resultType="java.util.LinkedHashMap" parameterType="java.lang.Long">
           SELECT
             c.parent_code as parentCode,
             c.NAME as name,
