@@ -88,7 +88,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
     @Override
     public ResultVo uploadUserLocation(LocationInfoDto reqDto) {
-        log.info("===>移动端APP-用户位置信息上传,请求参数：{}", JSON.toJSONString(reqDto));
+        log.info("===>移动端APP调用用户位置信息上传接口-请求参数：{}", JSON.toJSONString(reqDto));
         // 判断任务单状态是否为“运输中”状态，状态为“运输中”时才保存位置信息
         List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                 .eq(Task::getDriverId, reqDto.getLoginId())
