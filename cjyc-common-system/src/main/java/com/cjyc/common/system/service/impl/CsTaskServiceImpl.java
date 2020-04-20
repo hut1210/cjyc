@@ -449,11 +449,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
                     return BaseResultUtil.fail("车辆{0}已经装过车", orderCarNo);
                 }
-                //验证是否上传过照片
-                String photo = waybillCarDao.findUploadPhoto(waybillCar.getOrderCarId());
-                if (StringUtils.isBlank(photo) || photo.split(",").length < Constant.MIN_LOAD_PHOTO_NUM) {
-                    return BaseResultUtil.fail("车辆{0}尚未上传照片,至少上传8张照片", orderCarNo);
-                }
                 //验证车辆当前所在地是否与出发区县匹配
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 if (orderCar == null) {
@@ -477,6 +472,11 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 //验证运单车辆信息是否完全
                 if (!validateOrderCarInfo(orderCar)) {
                     return BaseResultUtil.fail("订单车辆{0}信息不完整", orderCarNo);
+                }
+                //验证是否上传过照片
+                String photo = waybillCarDao.findUploadPhoto(waybillCar.getOrderCarId());
+                if (StringUtils.isBlank(photo) || photo.split(",").length < Constant.MIN_LOAD_PHOTO_NUM) {
+                    return BaseResultUtil.fail("车辆{0}尚未上传照片,至少上传8张照片", orderCarNo);
                 }
                 csOrderService.validateOrderCarVinInfo(vinSet, orderCar.getVin());
                 csOrderService.validateOrderCarPlateNoInfo(plateNoSet, orderCar.getPlateNo());
