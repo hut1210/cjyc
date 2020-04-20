@@ -370,6 +370,9 @@
         <if test="receiveEndTime!= null">
             and woc.wl_pay_time &lt;= #{receiveEndTime}
         </if>
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
     </sql>
     <select id="receiptSummary" resultType="java.math.BigDecimal">
         select sum(total_fee) from
@@ -464,6 +467,12 @@
         </if>
         <if test="completeEndTime!= null">
             and ww.complete_time &lt;= #{completeEndTime}
+        </if>
+        <if test="payStartTime!= null">
+            and ww.freight_pay_time &gt;= #{payStartTime}
+        </if>
+        <if test="payEndTime!= null">
+            and ww.freight_pay_time &lt;= #{payEndTime}
         </if>
         <if test="waybillType!= null">
             and ww.type =#{waybillType}
@@ -653,6 +662,12 @@
         <if test="payType != null">
             and wo.pay_type = #{payType}
         </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
     </sql>
     <select id="advancePaymentSummary" resultType="java.math.BigDecimal">
         SELECT sum(freightReceivable) from (select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
@@ -668,6 +683,7 @@
         left join w_order wo on wo.id= woc.order_id
         where (wo.state &lt; 100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=1
         <include refid="advancePaymentSummaryCondition"></include>
+
         union
 
         select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
@@ -700,6 +716,7 @@
         left join w_order wo on wo.id= woc.order_id
         where (wo.state &lt; 100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=1
         <include refid="advancePaymentSummaryCondition"></include>
+
         union
 
         select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,

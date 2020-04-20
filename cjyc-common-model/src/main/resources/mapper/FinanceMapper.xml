@@ -439,7 +439,9 @@
                 </otherwise>
             </choose>
         </if>
-
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
         <if test="type != null">
             and cc.type = #{type}
         </if>
@@ -478,6 +480,12 @@
         </if>
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
             and wo.end_area_code = #{endAreaCode}
+        </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time &gt;= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
         </if>
     </sql>
     <sql id="payMentListHeader">
@@ -589,6 +597,13 @@
         <if test="payType != null">
             and wo.pay_type = #{payType}
         </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
+
         union
 
         select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
@@ -614,6 +629,12 @@
         </if>
         <if test="payType != null">
             and wo.pay_type = #{payType}
+        </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
         </if>
         order by payTime desc
     </select>
@@ -772,6 +793,12 @@
         </if>
         <if test="completeEndTime!= null">
             and ww.complete_time &lt;= #{completeEndTime}
+        </if>
+        <if test="payStartTime!= null">
+            and ww.freight_pay_time &gt;= #{payStartTime}
+        </if>
+        <if test="payEndTime!= null">
+            and ww.freight_pay_time &lt;= #{payEndTime}
         </if>
         <if test="waybillType!= null">
             and ww.type =#{waybillType}
