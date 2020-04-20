@@ -48,8 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.rmi.MarshalledObject;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -113,71 +111,7 @@ public class FinanceServiceImpl implements IFinanceService {
         for (FinanceVo financeVo : financeVoList) {
             if (financeVo != null) {
                 String orderCarNo = financeVo.getNo();
-                BigDecimal pickUpCarFee = financeDao.getFee(orderCarNo, 1);
-                BigDecimal trunkLineFee = financeDao.getFee(orderCarNo, 2);
-                BigDecimal carryCarFee = financeDao.getFee(orderCarNo, 3);
-                financeVo.setPickUpCarFee(pickUpCarFee);
-                financeVo.setTrunkLineFee(trunkLineFee);
-                financeVo.setCarryCarFee(carryCarFee);
-                List<TrunkLineVo> pickUpCarList = financeDao.getTrunkCostList(orderCarNo, 1);
-                List<TrunkLineVo> trunkLineVoList = financeDao.getTrunkCostList(orderCarNo, 2);
-                List<TrunkLineVo> carryCarList = financeDao.getTrunkCostList(orderCarNo, 3);
-                BigDecimal totalCost = new BigDecimal(0);
-                //成本合计
-                if (pickUpCarList != null) {
-                    for (TrunkLineVo trunkLineVo : pickUpCarList) {
-                        if ("1".equals(trunkLineVo.getSettleType())) {
-                            //获取账期运单开票信息
-                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
-                            if (accountPeriodVo != null) {
-                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
-                                trunkLineVo.setPayState("已付款");
-                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
-                            } else {
-                                trunkLineVo.setPayTime(null);
-                                trunkLineVo.setPayState("");
-                                trunkLineVo.setPaidFreightFee(null);
-                            }
-                        }
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }
-                if (trunkLineVoList != null) {
-                    for (TrunkLineVo trunkLineVo : trunkLineVoList) {
-                        if ("1".equals(trunkLineVo.getSettleType())) {
-                            //获取账期运单开票信息
-                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
-                            if (accountPeriodVo != null) {
-                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
-                                trunkLineVo.setPayState("已付款");
-                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
-                            } else {
-                                trunkLineVo.setPayTime(null);
-                                trunkLineVo.setPayState("");
-                                trunkLineVo.setPaidFreightFee(null);
-                            }
-                        }
 
-                        if (trunkLineVo != null && trunkLineVo.getFreightFee() != null) {
-                            totalCost = totalCost.add(trunkLineVo.getFreightFee());
-                        }
-                    }
-                }
-                if (carryCarList != null) {
-                    for (TrunkLineVo trunkLineVo : carryCarList) {
-                        if ("1".equals(trunkLineVo.getSettleType())) {
-                            //获取账期运单开票信息
-                            AccountPeriodVo accountPeriodVo = financeDao.getAccountPeriodInfo(trunkLineVo.getWayBillNo());
-                            if (accountPeriodVo != null) {
-                                trunkLineVo.setPayTime(accountPeriodVo.getWriteOffTime());
-                                trunkLineVo.setPayState("已付款");
-                                trunkLineVo.setPaidFreightFee(trunkLineVo.getFreightFee());
-                            } else {
-                                trunkLineVo.setPayTime(null);
-                                trunkLineVo.setPayState("");
-                                trunkLineVo.setPaidFreightFee(null);
                 //获取车辆成本列表
                 List<TrunkLineVo> costList = financeDao.getCostList(orderCarNo);
                 //成本为账期的数据处理
@@ -303,10 +237,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(financeVo.getNo());
                 if (!CollectionUtils.isEmpty(detailList)) {
                     detailList.forEach(e -> {
-                        if ("1".equals(e.getSettleType())) {
-                            //获取账期运单开票信息
-                if (!CollectionUtils.isEmpty(detailList)) {
-                    detailList.forEach(e -> {
                         //过滤账期数据
                         if (String.valueOf(DriverSettleTypeEnum.ACCOUNT_PERIOD.code).equals(e.getSettleType())) {
                             //获取账期运单开票信息（已开票付款的显示付款时间、付款状态、付款金额；未付款的不显示）
@@ -320,9 +250,6 @@ public class FinanceServiceImpl implements IFinanceService {
                                 e.setPayState("");
                                 e.setPaidFreightFee(null);
                             }
-                            e.setSettleType("账期");
-                        } else {
-                            e.setSettleType("时付");
                             e.setSettleType(DriverSettleTypeEnum.ACCOUNT_PERIOD.name);
                         } else {
                             e.setSettleType(DriverSettleTypeEnum.TIME_PAY.name);
@@ -364,94 +291,6 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto) {
-        PageHelper.startPage(financeQueryDto.getCurrentPage(), financeQueryDto.getPageSize());
-        List<FinanceReceiptVo> financeVoList = financeDao.getFinanceReceiptList(financeQueryDto);
-        PageInfo<FinanceReceiptVo> pageInfo = new PageInfo<>(financeVoList);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    @Transactional
-    public void applySettlement(ApplySettlementDto applySettlementDto) {
-        int invoiceId = 0;
-        String state = "0";
-        if (applySettlementDto != null && applySettlementDto.getIsInvoice() != null && applySettlementDto.getIsInvoice().equals("1")) {
-            CustomerInvoice customerInvoice = new CustomerInvoice();
-            customerInvoice.setCustomerId(applySettlementDto.getCustomerId());
-            customerInvoice.setType(applySettlementDto.getType());
-            customerInvoice.setName(applySettlementDto.getCustomerName());
-            customerInvoice.setTaxCode(applySettlementDto.getTaxPayerNumber());
-            customerInvoice.setInvoiceAddress(applySettlementDto.getAddress());
-            customerInvoice.setTel(applySettlementDto.getPhone());
-            customerInvoice.setBankName(applySettlementDto.getBankName());
-            customerInvoice.setBankAccount(applySettlementDto.getBankAccount());
-            customerInvoice.setPickupPerson(applySettlementDto.getAddressee());
-            customerInvoice.setPickupPhone(applySettlementDto.getAddresseePhone());
-            customerInvoice.setPickupAddress(applySettlementDto.getMailAddress());
-            invoiceId = customerInvoiceDao.insert(customerInvoice);
-            state = "1";
-        }
-        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
-        invoiceReceipt.setOrderCarNo(applySettlementDto.getNo());
-        invoiceReceipt.setCustomerId(applySettlementDto.getCustomerId());
-        invoiceReceipt.setFreightFee(applySettlementDto.getFreightFee());
-        invoiceReceipt.setAmount(applySettlementDto.getAmount().multiply(new BigDecimal(100)));
-        invoiceReceipt.setInvoiceId(Long.valueOf(invoiceId));
-        invoiceReceipt.setState(state);
-        invoiceReceipt.setInvoiceTime(System.currentTimeMillis());
-        invoiceReceipt.setSerialNumber(csSendNoService.getNo(SendNoTypeEnum.RECEIPT));
-        invoiceReceipt.setInvoiceMan("");
-        invoiceReceiptDao.insert(invoiceReceipt);
-    }
-
-    @Override
-    public void confirmSettlement(String serialNumber, String invoiceNo) {
-        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
-        invoiceReceipt.setSerialNumber(serialNumber);
-        invoiceReceipt.setInvoiceNo(invoiceNo);
-        invoiceReceipt.setState("2");
-        invoiceReceipt.setConfirmMan("");
-        invoiceReceipt.setConfirmTime(System.currentTimeMillis());
-        invoiceReceiptDao.confirmSettlement(invoiceReceipt);
-    }
-
-    @Override
-    public ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto) {
-        PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
-        List<WaitInvoiceVo> waitInvoiceVoList = invoiceReceiptDao.getWaitInvoiceList(waitInvoiceQueryDto);
-        PageInfo<WaitInvoiceVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public void cancelSettlement(String serialNumber) {
-        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
-        invoiceReceipt.setSerialNumber(serialNumber);
-        invoiceReceipt.setState("1");
-        invoiceReceiptDao.confirmSettlement(invoiceReceipt);
-    }
-
-    @Override
-    public ResultVo<PageVo<WaitForBackVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto) {
-        PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
-        List<WaitForBackVo> waitInvoiceVoList = invoiceReceiptDao.getWaitForBackList(waitInvoiceQueryDto);
-        PageInfo<WaitForBackVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public void writeOff(String serialNumber, String invoiceNo) {
-        InvoiceReceipt invoiceReceipt = new InvoiceReceipt();
-        invoiceReceipt.setSerialNumber(serialNumber);
-        invoiceReceipt.setInvoiceNo(invoiceNo);
-        invoiceReceipt.setState("3");
-        invoiceReceipt.setWriteOffMan("");
-        invoiceReceipt.setWriteOffTime(System.currentTimeMillis());
-        invoiceReceiptDao.writeOff(invoiceReceipt);
-    }
-
-    @Override
     public SettlementDetailVo detail(Long Id) {
         SettlementDetailVo settlementDetailVo = new SettlementDetailVo();
         InvoiceReceipt invoiceReceipt = invoiceReceiptDao.selectDetailById(Id);
@@ -464,14 +303,6 @@ public class FinanceServiceImpl implements IFinanceService {
             settlementDetailVo.setWriteOffTime(invoiceReceipt.getWriteOffTime());
         }
         return settlementDetailVo;
-    }
-
-    @Override
-    public ResultVo<PageVo<ReceivableVo>> getReceivableList(WaitQueryDto waitInvoiceQueryDto) {
-        PageHelper.startPage(waitInvoiceQueryDto.getCurrentPage(), waitInvoiceQueryDto.getPageSize());
-        List<ReceivableVo> waitInvoiceVoList = invoiceReceiptDao.getReceivableList(waitInvoiceQueryDto);
-        PageInfo<ReceivableVo> pageInfo = new PageInfo<>(waitInvoiceVoList);
-        return BaseResultUtil.success(pageInfo);
     }
 
     @Override
@@ -618,35 +449,6 @@ public class FinanceServiceImpl implements IFinanceService {
         countInfo.put("receiptCount", CollectionUtils.isEmpty(pv) ? 0 : pv.size());
         countInfo.put("advancePaymentCount", CollectionUtils.isEmpty(ap) ? 0 : ap.size());
         return countInfo;
-    }
-
-    @Override
-    public ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto) {
-        PageHelper.startPage(payMentQueryDto.getCurrentPage(), payMentQueryDto.getPageSize());
-        List<PaidVo> financeVoList = financeDao.getPaidList(payMentQueryDto);
-        PageInfo<PaidVo> pageInfo = new PageInfo<>(financeVoList);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto) {
-        PageHelper.startPage(collectReceiveQueryDto.getCurrentPage(), collectReceiveQueryDto.getPageSize());
-        List<CollectReceiveVo> collectReceiveList = financeDao.getCollectReceiveList(collectReceiveQueryDto);
-        PageInfo<CollectReceiveVo> pageInfo = new PageInfo<>(collectReceiveList);
-        return BaseResultUtil.success(pageInfo);
-    }
-
-    @Override
-    public ResultVo<CashSettlementDetailVo> settleDetail(String wayBillNo) {
-        CashSettlementDetailVo cashSettlementDetailVo = new CashSettlementDetailVo();
-        List<CashCarDetailVo> cashCarDetailVos = new ArrayList<>();
-        cashSettlementDetailVo.setCashCarDetailVoList(cashCarDetailVos);
-        return BaseResultUtil.success(cashSettlementDetailVo);
-    }
-
-    @Override
-    public ResultVo updateBackState(String wayBillNo) {
-        return BaseResultUtil.success();
     }
 
     @Override
@@ -896,9 +698,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 // 获取最新失败原因记录
                 PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
                         .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
-                );
                 //判断是否有失败原因记录
                 if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     paidNewVo.setFailReason("请联系管理员");
@@ -908,7 +707,7 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             if (null != paidNewVo.getPayTime()) {
                 paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
-            }else{
+            } else {
                 paidNewVo.setFreightFeePayable(null);
             }
         }
@@ -1057,7 +856,6 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<ExportPayableCollectVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto) {
     public ResultVo exportPayableCollect(HttpServletResponse response, WaitTicketCollectDto waitTicketCollectDto) {
         List<SettlementVo> settlementVoList = financeDao.getCollectTicketList(waitTicketCollectDto);
         if (CollectionUtils.isEmpty(settlementVoList)) {
@@ -1073,7 +871,6 @@ public class FinanceServiceImpl implements IFinanceService {
             BeanUtils.copyProperties(e, exportPayableCollectVo);
             exportPayableCollectVoList.add(exportPayableCollectVo);
         });
-        return exportPayableCollectVoList;
         try {
             ExcelUtil.exportExcel(settlementVoList, "等待收票", "等待收票", SettlementVo.class, "等待收票.xls", response);
             return null;
@@ -1084,7 +881,6 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<ExportWaitPaymentVo> exportPayment(WaitPaymentDto waitPaymentDto) {
     public ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto) {
         List<SettlementVo> settlementVoList = financeDao.getPayablePaymentList(waitPaymentDto);
         if (CollectionUtils.isEmpty(settlementVoList)) {
@@ -1100,7 +896,6 @@ public class FinanceServiceImpl implements IFinanceService {
             BeanUtils.copyProperties(e, exportWaitPaymentVo);
             exportWaitPaymentVoList.add(exportWaitPaymentVo);
         });
-        return exportWaitPaymentVoList;
         try {
             com.cjyc.web.api.util.ExcelUtil.exportExcel(settlementVoList, "等待付款", "等待付款", SettlementVo.class, "等待付款.xls", response);
             return null;
@@ -1111,7 +906,6 @@ public class FinanceServiceImpl implements IFinanceService {
     }
 
     @Override
-    public List<ExportPayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto) {
     public ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto) {
         List<PayablePaidVo> payablePaidList = financeDao.getPayablePaidList(payablePaidQueryDto);
         if (CollectionUtils.isEmpty(payablePaidList)) {
@@ -1128,7 +922,6 @@ public class FinanceServiceImpl implements IFinanceService {
             BeanUtils.copyProperties(e, exportPayablePaidVo);
             exportPayablePaidVoList.add(exportPayablePaidVo);
         });
-        return exportPayablePaidVoList;
         try {
             ExcelUtil.exportExcel(payablePaidList, "应付账款-已付款（账期）", "已付款（账期）", PayablePaidVo.class, "应付账款-已付款（账期）.xls", response);
             return null;
@@ -1156,9 +949,6 @@ public class FinanceServiceImpl implements IFinanceService {
                 // 获取最新失败原因记录
                 PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
                         .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
-                );
                 //判断是否有失败原因记录
                 if (ObjectUtils.isEmpty(paymentErrorLog)) {
                     paidNewVo.setFailReason("请联系管理员");
@@ -1168,7 +958,7 @@ public class FinanceServiceImpl implements IFinanceService {
             }
             if (null != paidNewVo.getPayTime()) {
                 paidNewVo.setFreightFeePayable(MoneyUtil.nullToZero(paidNewVo.getFreightFeePayable()));
-            }else{
+            } else {
                 paidNewVo.setFreightFeePayable(null);
             }
         }
@@ -1197,10 +987,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 List<PaymentErrorLog> listInfo = paymentErrorLogDao.selectList(new QueryWrapper<PaymentErrorLog>()
                         .lambda()
                         .eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
-                        .orderByDesc(PaymentErrorLog::getCreateTime)
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
-                );
+                        .orderByDesc(PaymentErrorLog::getCreateTime));
                 // 获取最新失败原因记录
                 PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
                         .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
@@ -1296,10 +1083,7 @@ public class FinanceServiceImpl implements IFinanceService {
                 List<PaymentErrorLog> listInfo = paymentErrorLogDao.selectList(new QueryWrapper<PaymentErrorLog>()
                         .lambda()
                         .eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
-                        .orderByDesc(PaymentErrorLog::getCreateTime)
-                PaymentErrorLog paymentErrorLog = paymentErrorLogDao.selectOne(new QueryWrapper<PaymentErrorLog>()
-                        .lambda().eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
-                );
+                        .orderByDesc(PaymentErrorLog::getCreateTime));
                 // 获取最新失败原因记录
                 PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
                         .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
@@ -1331,12 +1115,6 @@ public class FinanceServiceImpl implements IFinanceService {
             log.error("导出合伙人付款异常:", e);
             return BaseResultUtil.fail("导出合伙人付款异常");
         }
-    }
-
-    @Override
-    public ResultVo<List<ExportFinanceDetailVo>> getFinanceDetailList(String no) {
-        List<ExportFinanceDetailVo> detailList = financeDao.getFinanceDetailList(no);
-        return BaseResultUtil.success(detailList);
     }
 
     /**

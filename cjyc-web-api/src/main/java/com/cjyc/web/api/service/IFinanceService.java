@@ -18,33 +18,9 @@ public interface IFinanceService {
 
     ResultVo exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 
-    ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
-
-    void applySettlement(ApplySettlementDto applySettlementDto);
-
-    void confirmSettlement(String serialNumber,String invoiceNo);
-
-    ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto);
-
-    void cancelSettlement(String serialNumber);
-
-    ResultVo<PageVo<WaitForBackVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto);
-
-    void writeOff(String serialNumber,String invoiceNo);
-
     SettlementDetailVo detail(Long Id);
 
-    ResultVo<PageVo<ReceivableVo>> getReceivableList(WaitQueryDto waitInvoiceQueryDto);
-
     ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto);
-
-    ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto);
-
-    ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
-
-    ResultVo<CashSettlementDetailVo> settleDetail(String wayBillNo);
-
-    ResultVo updateBackState(String wayBillNo);
 
     /**
      * <p>获取财务应付账款列表</p>
@@ -91,13 +67,10 @@ public interface IFinanceService {
      */
     ResultVo exportPayableAll(HttpServletResponse response, PayableQueryDto payableQueryDto);
 
-    List<ExportPayableCollectVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
     ResultVo exportPayableCollect(HttpServletResponse response, WaitTicketCollectDto waitTicketCollectDto);
 
-    List<ExportWaitPaymentVo> exportPayment(WaitPaymentDto waitPaymentDto);
     ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto);
 
-    List<ExportPayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
     ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto);
 
     ResultVo exportTimePaid(HttpServletResponse response, PayMentQueryDto payMentQueryDto);
@@ -107,8 +80,6 @@ public interface IFinanceService {
     ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto);
 
     ResultVo exportCooperator(HttpServletResponse response, CooperatorSearchDto cooperatorSearchDto);
-
-    ResultVo<List<ExportFinanceDetailVo>> getFinanceDetailList(String no);
 
     /**
      * <p>根据运单号查看上游付款状态列表</p>
@@ -152,7 +123,6 @@ public interface IFinanceService {
     ResultVo cancelReceiveSettlement(CancelInvoiceVo cancelInvoiceVo);
 
     /**
-     *
      * <p>应收账款-待开票-确认开票</p>
      * <ol>
      *     <li>修改结算状态为已确认</li>
@@ -243,6 +213,7 @@ public interface IFinanceService {
 
     /**
      * 预付未完结列表
+     *
      * @param financeQueryDto
      * @return
      */
@@ -250,6 +221,7 @@ public interface IFinanceService {
 
     /**
      * 导出预付未完结 Excel
+     *
      * @param financeQueryDto
      * @return
      */
