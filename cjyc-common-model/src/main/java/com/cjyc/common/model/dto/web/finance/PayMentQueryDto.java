@@ -48,12 +48,6 @@ public class PayMentQueryDto extends BasePageDto implements Serializable {
     @ApiModelProperty(value = "付款状态 0未付款 2已付款")
     private Integer state;
 
-    @ApiModelProperty(value = "付款开始时间")
-    private Long payStartTime;
-
-    @ApiModelProperty(value = "付款结束时间")
-    private Long payEndTime;
-
     @ApiModelProperty(value = "付款操作人")
     private String operator;
 
