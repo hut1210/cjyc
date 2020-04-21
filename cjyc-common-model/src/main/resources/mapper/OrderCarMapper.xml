@@ -2693,6 +2693,16 @@
         and id != #{orderCarId}
         and vin = #{vin}
     </select>
+    <select id="findListbyOrderNos" resultType="com.cjyc.common.model.entity.OrderCar">
+        select * from
+        w_order_car
+        where state &lt; 100
+        and order_no in (
+          <foreach collection="collection" item="item" index="index" separator=",">
+              #{item}
+          </foreach>
+        )
+    </select>
 
     <sql id="count_wait_list_for_web">
         select

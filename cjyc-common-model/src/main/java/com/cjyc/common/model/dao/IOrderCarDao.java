@@ -302,4 +302,6 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     int updateReleaseFlagByOrderNos(@Param("collection") Collection<String> orderNoSet, @Param("releaseFlag") Integer releaseFlag);
     int updateReleaseFlagByNos(@Param("collection") Collection<String> noSet, @Param("releaseFlag") Integer releaseFlag);
+
+    List<OrderCar> findListbyOrderNos(@Param("collection") Collection<String> orderNoSet);
 }

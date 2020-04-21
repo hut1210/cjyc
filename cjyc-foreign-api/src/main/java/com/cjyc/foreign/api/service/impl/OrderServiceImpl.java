@@ -291,6 +291,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
                 //更新订单车辆标识
                 orderCarDao.updateReleaseFlagByOrderNos(orderNoSet, reqDto.getType());
                 //记录车辆日志
+                List<OrderCar> list = orderCarDao.findListbyOrderNos(orderNoSet);
             }
             //处理车辆
             if(!CollectionUtils.isEmpty(orderCarNoSet)){
