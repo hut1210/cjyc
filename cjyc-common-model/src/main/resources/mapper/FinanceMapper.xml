@@ -505,7 +505,8 @@
         wo.customer_name as customerName,
         wo.customer_contract_id as customerContractId,
         woc.finish_time as deliveryDate,
-        woc.wl_pay_time as payTime
+        woc.wl_pay_time as payTime,
+        wo.pay_type as payType
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
