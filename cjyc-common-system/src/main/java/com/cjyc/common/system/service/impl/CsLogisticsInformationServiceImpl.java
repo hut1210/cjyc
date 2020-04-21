@@ -89,14 +89,24 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
     @Override
     public ResultVo uploadUserLocation(LocationInfoDto reqDto) {
         log.info("===>移动端APP调用用户位置信息上传接口-请求参数：{}", JSON.toJSONString(reqDto));
-        // 判断任务单状态是否为“运输中”状态，状态为“运输中”时才保存位置信息
+        // 查询当前用户在 运输中 的任务单
         List<Task> taskList = taskDao.selectList(new QueryWrapper<Task>().lambda()
                 .eq(Task::getDriverId, reqDto.getLoginId())
                 .eq(Task::getState, TaskStateEnum.TRANSPORTING.code));
+
+        // 判断任务单状态是否为“运输中”状态，状态为“运输中”时才保存位置信息
         if (!CollectionUtils.isEmpty(taskList)) {
             // 调用位置服务位置平台同步接口
-            UploadUserLocationReq uploadUserLocationReq = getUploadUserLocationReq(reqDto);
+            return uploadLocation(reqDto);
+        }
 
+        log.info("===当前用户没有运输任务---未上传用户位置信息===,用户ID：{}",reqDto.getLoginId());
+        return BaseResultUtil.success("当前用户没有运输任务，未上传用户位置信息");
+    }
+
+    private ResultVo uploadLocation(LocationInfoDto reqDto) {
+        UploadUserLocationReq uploadUserLocationReq = getUploadUserLocationReq(reqDto);
+        try {
             log.info("===>调用位置服务平台接口-用户位置信息上传开始,请求参数：{}", JSON.toJSONString(uploadUserLocationReq));
             ResultData resultData = sysLocationService.uploadUserLocation(uploadUserLocationReq);
             log.info("<===调用位置服务平台接口-用户位置信息上传结束,响应参数：{}", JSON.toJSONString(resultData));
@@ -108,10 +118,10 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
             log.info("===用户位置信息上传失败===");
             return BaseResultUtil.fail("用户位置信息上传失败");
+        } catch (Exception e) {
+            log.error("===用户位置信息上传出现异常=== {}",e);
+            return BaseResultUtil.fail("用户位置信息上传出现异常");
         }
-
-        log.info("===当前用户没有运输任务---未上传用户位置信息===,用户ID：{}",reqDto.getLoginId());
-        return BaseResultUtil.success("当前用户没有运输任务，未上传用户位置信息");
     }
 
     private UploadUserLocationReq getUploadUserLocationReq(LocationInfoDto reqDto) {
@@ -138,11 +148,29 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
         // 判断运输车车牌号是否为自营车辆，是自营车则根据车牌号车讯位置，否则根据司机信息查询
         OutterOrderCarLogVo locationVo = null;
         boolean isOwnerCar = vehicle != null && VehicleOwnerEnum.SELFBUSINESS.code == vehicle.getOwnershipType();
-        // 是自营车，根据车牌号查询位置信息
-        if (isOwnerCar) {
-            JSONObject obj = new JSONObject();
-            obj.put("plateNo",vehicle.getPlateNo());
 
+        // 是自营车，根据车牌号-查询位置信息
+        if (isOwnerCar) {
+            locationVo = getLocationByPlateNo(vehicle);
+        }
+
+        // 非自营车，根据司机id-查询APP定位信息
+        if (!isOwnerCar || locationVo == null) {
+            locationVo =  getUserLocation(taskInfo);
+        }
+
+        if (locationVo != null) {
+            List<OutterOrderCarLogVo> list = logisticsInfoVo.getList();
+            locationVo.setOrderCarNo(reqDto.getOrderCarNo());
+            list.add(0,locationVo);
+        }
+    }
+
+    private OutterOrderCarLogVo getLocationByPlateNo(Vehicle vehicle) {
+        OutterOrderCarLogVo locationVo = null;
+        JSONObject obj = new JSONObject();
+        obj.put("plateNo",vehicle.getPlateNo());
+        try {
             log.info("===>调用位置服务平台接口-根据车牌号-查询位置信息开始,请求参数：{}", JSON.toJSONString(obj));
             ResultData resultData = sysLocationService.getLocationByPlateNo(obj);
             log.info("<===调用位置服务平台接口-根据车牌号-查询位置信息结束,响应参数：{}", JSON.toJSONString(resultData));
@@ -153,14 +181,20 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             } else {
                 log.info("===根据车牌号-查询位置信息失败===");
             }
+        } catch (Exception e) {
+            log.error("===根据车牌号-查询位置信息出现异常=== {}",e);
         }
+        return locationVo;
+    }
 
-        // 非自营车，根据司机信息查询APP定位信息
-        if (!isOwnerCar || locationVo == null) {
-            JSONObject object = new JSONObject();
-            object.put("userId",taskInfo.getDriverId());
+    private OutterOrderCarLogVo getUserLocation(TaskInfo taskInfo) {
+        OutterOrderCarLogVo locationVo = null;
+        JSONObject object = new JSONObject();
+        object.put("userId",taskInfo.getDriverId());
+        ResultData resultData = null;
+        try {
             log.info("===>调用位置服务平台接口-根据用户ID-查询用户实时位置开始,请求参数：{}", JSON.toJSONString(object));
-            ResultData resultData = sysLocationService.getUserLocation(object);
+            resultData = sysLocationService.getUserLocation(object);
             log.info("<===调用位置服务平台接口-根据用户ID-查询用户实时位置结束,响应参数：{}", JSON.toJSONString(resultData));
 
             if (isSuccess(resultData)) {
@@ -169,12 +203,10 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
             } else {
                 log.info("===根据用户ID-查询用户实时位置失败===");
             }
+        } catch (Exception e) {
+            log.error("===根据用户ID-查询用户实时位置出现异常=== {}",e);
         }
-
-        if (locationVo != null) {
-            List<OutterOrderCarLogVo> list = logisticsInfoVo.getList();
-            list.add(0,locationVo);
-        }
+        return locationVo;
     }
 
     private OutterOrderCarLogVo getOutterOrderCarLogVo(OutterOrderCarLogVo locationVo, ResultData resultData, String gpsTime) {
