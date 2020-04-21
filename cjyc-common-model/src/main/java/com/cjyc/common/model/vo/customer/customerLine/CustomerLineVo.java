@@ -15,6 +15,48 @@ public class CustomerLineVo implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
+    @ApiModelProperty("起始省")
+    private String startProvince;
+
+    @ApiModelProperty("起始省编码")
+    private String startProvinceCode;
+
+    @ApiModelProperty("起始城市")
+    private String startCity;
+
+    @ApiModelProperty("起始城市编码")
+    private String startCityCode;
+
+    @ApiModelProperty("起始区")
+    private String startArea;
+
+    @ApiModelProperty("起始区编码")
+    private String startAreaCode;
+
+    @ApiModelProperty("起始城市编码")
+    private String startParentCode;
+
+    @ApiModelProperty("目的省")
+    private String endProvince;
+
+    @ApiModelProperty("目的省编码")
+    private String endProvinceCode;
+
+    @ApiModelProperty("目的城市")
+    private String endCity;
+
+    @ApiModelProperty("目的城市编码")
+    private String endCityCode;
+
+    @ApiModelProperty("目的区")
+    private String endArea;
+
+    @ApiModelProperty("目的区编码")
+    private String endAreaCode;
+
+    @ApiModelProperty("目的城市编码")
+    private String endParentCode;
+
     @ApiModelProperty("起始地址")
     private String startAdress;
 

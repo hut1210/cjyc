@@ -364,6 +364,9 @@
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
             and wo.end_area_code = #{endAreaCode}
         </if>
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
         <if test="receiveStartTime!= null">
             and woc.wl_pay_time >= #{receiveStartTime}
         </if>
@@ -496,6 +499,12 @@
         </if>
         <if test="operator!= null and operator.trim() != ''">
             and fep.operator like concat('%',#{operator},'%')
+        </if>
+        <if test="payStartTime!= null">
+            and ww.freight_pay_time &gt;= #{payStartTime}
+        </if>
+        <if test="payEndTime!= null">
+            and ww.freight_pay_time &lt;= #{payEndTime}
         </if>
     </sql>
     <select id="paidToCarrierSummary" resultType="java.math.BigDecimal">
