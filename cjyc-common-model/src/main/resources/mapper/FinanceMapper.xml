@@ -504,7 +504,7 @@
         wo.input_store_name as inputStoreName,
         wo.customer_name as customerName,
         wo.customer_contract_id as customerContractId,
-        woc.finish_time as deliveryDate,woc.finish_time,
+        woc.finish_time as deliveryDate,
         woc.wl_pay_time as payTime
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
@@ -571,7 +571,7 @@
         where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and wo.customer_contract_id is null
         <include refid="payMentListCondition"></include>
         group by woc.no
-        ) t order by t.finish_time desc
+        ) t order by t.deliveryDate desc, t.payTime desc
     </select>
 
     <select id="getAdvancePayment" resultType="com.cjyc.common.model.vo.web.finance.AdvancePaymentVo">
@@ -821,7 +821,7 @@
         <if test="payEndTime!= null">
             and ww.freight_pay_time &lt;= #{payEndTime}
         </if>
-        order by ww.complete_time desc
+        order by ww.complete_time desc, ww.freight_pay_time desc
     </select>
 
     <select id="getCollectReceiveList" parameterType="com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto"
@@ -1154,7 +1154,7 @@
         <if test="operator !=null and operator.trim() !=''">
             and fep.operator like concat('%',#{operator},'%')
         </if>
-        order by wo.finish_time desc
+        order by wo.finish_time desc, wo.service_fee_pay_time desc
     </select>
     <select id="getFinanceDetailList" resultType="com.cjyc.common.model.vo.web.finance.ExportFinanceDetailVo">
         select DISTINCT(woc.no),woc.brand,woc.model,woc.vin,wo.input_store_name as inputStoreName,
