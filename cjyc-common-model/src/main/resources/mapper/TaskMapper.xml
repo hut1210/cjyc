@@ -591,7 +591,8 @@
           SELECT
             wt.id,
             wt.driver_id,
-            wwc.order_car_id
+            wwc.order_car_id,
+            wwc.freight_fee
         FROM
             w_task wt
             LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
