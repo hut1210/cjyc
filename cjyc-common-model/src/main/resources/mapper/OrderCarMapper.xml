@@ -194,7 +194,29 @@
         set now_store_id = null
         where order_id = #{orderId}
     </update>
+    <update id="updateReleaseFlagByOrderNos">
+        update w_order_car
+        set release_flag = #{releaseFlag},
+        release_flag_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where state &lt;= 100
+        and order_no in(
+          <foreach collection="collection" item="item" index="index" separator=",">
+              #{item}
+          </foreach>
+        )
+    </update>
+    <update id="updateReleaseFlagByNos">
+        update w_order_car
+        set release_flag = #{releaseFlag},
+        release_flag_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where state &lt;= 100
+        and no in(
+        <foreach collection="collection" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+        )
 
+    </update>
 
     <delete id="deleteBatchByOrderId">
         delete from w_order_car

@@ -3,6 +3,7 @@ package com.cjyc.foreign.api.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cjyc.common.model.constant.AccountConstant;
 import com.cjyc.common.model.dao.IOrderCarDao;
 import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.dto.web.order.CancelOrderDto;
@@ -20,16 +21,15 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.TransportInfoOrderCarVo;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsLineService;
+import com.cjyc.common.system.service.ICsOrderCarLogService;
 import com.cjyc.common.system.service.ICsOrderService;
-import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
-import com.cjyc.foreign.api.dto.req.OrderCarSubmitReqDto;
-import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
-import com.cjyc.foreign.api.dto.req.OrderSubmitReqDto;
+import com.cjyc.foreign.api.dto.req.*;
 import com.cjyc.foreign.api.dto.res.OrderCarDetailResDto;
 import com.cjyc.foreign.api.dto.res.OrderCarTransportDetailResDto;
 import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 import com.cjyc.foreign.api.service.IOrderService;
 import com.cjyc.foreign.api.utils.LoginAccountUtil;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -40,6 +40,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -47,11 +48,15 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
     @Resource
     private IOrderCarDao orderCarDao;
     @Resource
+    private IOrderDao orderDao;
+    @Resource
     private ICsCustomerService csCustomerService;
     @Resource
     private ICsOrderService csOrderService;
     @Resource
     private ICsLineService csLineService;
+    @Resource
+    private ICsOrderCarLogService csOrderCarLogService;
 
     @Override
     public ResultVo<String> submitOrder(OrderSubmitReqDto reqDto) {
@@ -262,4 +267,53 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao, Order> implements I
         orderDetailResDto.setOrderCarDetailList(orderCarDetailList);
     }
 
+    @Override
+    public ResultVo<String> allowReleaseCar(ReleaseCarReqDto reqDto) {
+        if(AccountConstant.ACCOUNT_99CC.equals(reqDto.getCustomerPhone())){
+            //九九车圈
+            Set<String> orderNoSet = Sets.newHashSet();
+            Set<String> orderCarNoSet = Sets.newHashSet();
+            for (String no : reqDto.getNoList()) {
+                if(no.contains("-")){
+                    orderCarNoSet.add(no);
+                }else{
+                    orderNoSet.add(no);
+                }
+            }
+            //处理订单
+            if(!CollectionUtils.isEmpty(orderNoSet)){
+                for (String no : orderNoSet) {
+                    Order order = orderDao.findByNo(no);
+                    if(order == null || !reqDto.getCustomerPhone().equals(order.getCustomerPhone())){
+                        return BaseResultUtil.fail("订单号错误，请检查");
+                    }
+                }
+                //更新订单车辆标识
+                orderCarDao.updateReleaseFlagByOrderNos(orderNoSet, reqDto.getType());
+                //记录车辆日志
+            }
+            //处理车辆
+            if(!CollectionUtils.isEmpty(orderCarNoSet)){
+                //验证订单是否是当前客户的
+                List<Order> oList = orderDao.findListByCarNos(orderCarNoSet);
+                if(CollectionUtils.isEmpty(oList)){
+                    return BaseResultUtil.fail("车辆编号错误，请检查");
+                }
+                for (Order order : oList) {
+                    if(!reqDto.getCustomerPhone().equals(order.getCustomerPhone())){
+                        return BaseResultUtil.fail("车辆编号错误，请检查");
+                    }
+                }
+                //更新车辆标识
+                orderCarDao.updateReleaseFlagByNos(orderCarNoSet, reqDto.getType());
+                //记录车辆日志
+
+                csOrderCarLogService.asyncSaveBatchForReleaseCar(orderCarNoSet, reqDto.getType());
+            }
+
+
+        }
+
+        return BaseResultUtil.success();
+    }
 }

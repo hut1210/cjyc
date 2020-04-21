@@ -22,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -45,7 +46,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
     @Override
     public void asyncSave(OrderCar orderCar, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
         LogUtil.debug("【车辆物流日志】------------>开始");
-        if(orderCar == null){
+        if (orderCar == null) {
             return;
         }
         try {
@@ -57,7 +58,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
             orderCarLog.setInnerLog(String.valueOf(log[1]));
             orderCarLog.setRemark(log.length > 2 ? String.valueOf(log[2]) : null);
             orderCarLog.setCreateTime(System.currentTimeMillis());
-            if(userInfo != null){
+            if (userInfo != null) {
                 orderCarLog.setCreateUser(userInfo.getName());
                 orderCarLog.setCreateUserId(userInfo.getId());
                 orderCarLog.setCreateUserPhone(userInfo.getPhone());
@@ -66,15 +67,14 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
             LogUtil.debug("【车辆物流日志】" + JSON.toJSONString(orderCarLog));
             orderCarLogDao.insert(orderCarLog);
         } catch (Exception e) {
-            LogUtil.error(e.getMessage(),e);
+            LogUtil.error(e.getMessage(), e);
         }
     }
 
-
     @Async
     @Override
-    public void asyncSaveBatch(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo) {
-        if(CollectionUtils.isEmpty(orderCarList)){
+    public void asyncSaveBatch(Set<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
+        if (CollectionUtils.isEmpty(orderCarList)) {
             return;
         }
         try {
@@ -87,7 +87,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
     @Async
     @Override
     public void asyncSaveBatch(List<WaybillCar> wcs, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
-        if(CollectionUtils.isEmpty(wcs)){
+        if (CollectionUtils.isEmpty(wcs)) {
             return;
         }
         List<OrderCarLog> ocls = Lists.newArrayList();
@@ -100,7 +100,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
             orderCarLog.setInnerLog(String.valueOf(log[1]));
             orderCarLog.setRemark(log.length > 2 ? String.valueOf(log[2]) : null);
             orderCarLog.setCreateTime(System.currentTimeMillis());
-            if(userInfo != null){
+            if (userInfo != null) {
                 orderCarLog.setCreateUser(userInfo.getName());
                 orderCarLog.setCreateUserId(userInfo.getId());
                 orderCarLog.setCreateUserPhone(userInfo.getPhone());
@@ -113,7 +113,7 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
     }
 
     private void saveBatch(List<OrderCarLog> ocls) {
-         orderCarLogDao.insertBatch(ocls);
+        orderCarLogDao.insertBatch(ocls);
     }
 
     @Override
@@ -125,5 +125,41 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
         List<OutterOrderCarLogVo> list = orderCarLogDao.findCarLogByOrderNoAndCarNo(orderCarNo.split("-")[0], orderCarNo);
         outterLogVo.setList(list);
         return BaseResultUtil.success(outterLogVo);
+    }
+
+    @Override
+    public void asyncSaveBatchForReleaseCar(Set<String> orderCarNoSet, Integer type) {
+        if (CollectionUtils.isEmpty(orderCarNoSet)) {
+            return;
+        }
+        List<OrderCar> list = orderCarDao.findListByNos(orderCarNoSet);
+        List<OrderCarLog> ocls = Lists.newArrayList();
+        for (OrderCar oc : list) {
+            OrderCarLog orderCarLog = new OrderCarLog();
+            orderCarLog.setOrderCarId(oc.getId());
+            orderCarLog.setOrderCarNo(oc.getNo());
+            OrderCarLogEnum ocLogEnum;
+            switch (type) {
+                case 1:
+                    ocLogEnum = OrderCarLogEnum.C_RELEASE_UNPAID;
+                    break;
+                case 2:
+                    ocLogEnum = OrderCarLogEnum.C_UNRELEASE_PAID;
+                    break;
+                case 9:
+                    ocLogEnum = OrderCarLogEnum.C_RELEASE_PAID;
+                    break;
+                default:
+                    ocLogEnum = OrderCarLogEnum.C_UNRELEASE_UNPAID;
+            }
+
+            orderCarLog.setType(ocLogEnum.getCode());
+            orderCarLog.setOuterLog(String.valueOf(ocLogEnum.getOutterLog()));
+            orderCarLog.setInnerLog(String.valueOf(ocLogEnum.getInnerLog()));
+            orderCarLog.setCreateTime(System.currentTimeMillis());
+            ocls.add(orderCarLog);
+        }
+
+        saveBatch(ocls);
     }
 }
