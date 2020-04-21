@@ -1169,7 +1169,7 @@
                 when ww.type=2 then '干线运单'
                 when ww.type=3 then '送车运单'
         END) as wayBillTypeName,
-        dc.settle_type as settleType,
+        wst.settle_type as settleType,
         wwc.freight_fee as freightFee,
         if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
         (CASE
@@ -1192,6 +1192,7 @@
         left join w_order wo on wo.id = woc.order_id
         LEFT JOIN w_waybill_car wwc on wwc.order_car_id = woc.id
         left join w_waybill ww on wwc.waybill_id = ww.id
+         left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id =ww.carrier_id
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
@@ -1519,12 +1520,12 @@
 
     <!-- 获取车辆成本类表数据-->
     <select id="getCostList" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
-select ww.no as wayBillNo,
+        select ww.no as wayBillNo,
         ww.carrier_name as name,ww.type,
         wwc.freight_fee as freightFee,
         if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
         ww.freight_pay_time as payTime,
-        dc.settle_type as settleType,
+        wst.settle_type as settleType,
         (CASE
             when ww.freight_pay_state=2 then '付款中'
             when ww.freight_pay_state=1 then '已付款'
@@ -1541,6 +1542,7 @@ select ww.no as wayBillNo,
 
         from w_waybill_car wwc
         left join w_waybill ww on wwc.waybill_no = ww.no
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on ww.carrier_id = dc.id
         where wwc.order_car_no = #{orderCarNo}
         and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
