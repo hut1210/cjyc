@@ -696,13 +696,12 @@ public class FinanceServiceImpl implements IFinanceService {
                         .eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
                         .orderByDesc(PaymentErrorLog::getCreateTime));
                 // 获取最新失败原因记录
-                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
-                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
-                //判断是否有失败原因记录
-                if (ObjectUtils.isEmpty(paymentErrorLog)) {
-                    paidNewVo.setFailReason("请联系管理员");
-                } else {
+                if(!CollectionUtils.isEmpty(listInfo)) {
+                    PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                            .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                     paidNewVo.setFailReason(paymentErrorLog.getRemark());
+                }else {
+                    paidNewVo.setFailReason("请联系管理员");
                 }
             }
             if (null != paidNewVo.getPayTime()) {
@@ -947,13 +946,12 @@ public class FinanceServiceImpl implements IFinanceService {
                         .eq(PaymentErrorLog::getWaybillNo, paidNewVo.getWaybillNo())
                         .orderByDesc(PaymentErrorLog::getCreateTime));
                 // 获取最新失败原因记录
-                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
-                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
-                //判断是否有失败原因记录
-                if (ObjectUtils.isEmpty(paymentErrorLog)) {
-                    paidNewVo.setFailReason("请联系管理员");
-                } else {
+                if(!CollectionUtils.isEmpty(listInfo)) {
+                    PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                            .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                     paidNewVo.setFailReason(paymentErrorLog.getRemark());
+                }else {
+                    paidNewVo.setFailReason("请联系管理员");
                 }
             }
             if (null != paidNewVo.getPayTime()) {
@@ -989,13 +987,12 @@ public class FinanceServiceImpl implements IFinanceService {
                         .eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
                         .orderByDesc(PaymentErrorLog::getCreateTime));
                 // 获取最新失败原因记录
-                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
-                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
-                //判断是否有失败原因记录
-                if (ObjectUtils.isEmpty(paymentErrorLog)) {
-                    cooperatorPaidVo.setDescription("请联系管理员");
-                } else {
+                if(!CollectionUtils.isEmpty(listInfo)) {
+                    PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                            .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                     cooperatorPaidVo.setDescription(paymentErrorLog.getRemark());
+                }else {
+                    cooperatorPaidVo.setDescription("请联系管理员");
                 }
             }
             cooperatorPaidVo.setWlFee(MoneyUtil.nullToZero(cooperatorPaidVo.getWlFee()).divide(new BigDecimal(100)));
@@ -1085,13 +1082,12 @@ public class FinanceServiceImpl implements IFinanceService {
                         .eq(PaymentErrorLog::getOrderNo, cooperatorPaidVo.getOrderNo())
                         .orderByDesc(PaymentErrorLog::getCreateTime));
                 // 获取最新失败原因记录
-                PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
-                        .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
-                //判断是否有失败原因记录
-                if (ObjectUtils.isEmpty(paymentErrorLog)) {
-                    cooperatorPaidVo.setDescription("请联系管理员");
-                } else {
+                if(!CollectionUtils.isEmpty(listInfo)) {
+                    PaymentErrorLog paymentErrorLog = listInfo.stream().filter(Objects::nonNull).filter(item -> item.getCreateTime() != null)
+                            .sorted(Comparator.comparing(PaymentErrorLog::getCreateTime).reversed()).findFirst().get();
                     cooperatorPaidVo.setDescription(paymentErrorLog.getRemark());
+                }else {
+                    cooperatorPaidVo.setDescription("请联系管理员");
                 }
             }
             //公户

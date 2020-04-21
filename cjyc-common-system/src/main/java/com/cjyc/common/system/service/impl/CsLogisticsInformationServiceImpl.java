@@ -161,6 +161,7 @@ public class CsLogisticsInformationServiceImpl implements ICsLogisticsInformatio
 
         if (locationVo != null) {
             List<OutterOrderCarLogVo> list = logisticsInfoVo.getList();
+            locationVo.setOrderCarNo(reqDto.getOrderCarNo());
             list.add(0,locationVo);
         }
     }
