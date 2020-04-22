@@ -53,4 +53,10 @@ public interface IYcStatisticsService extends IService<YcStatistics> {
      */
     ResultVo driverStatis();
 
+    /**
+     * 统计客户下单量
+     * @return
+     */
+    ResultVo customerOrderStatis();
+
 }
