@@ -102,21 +102,21 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Override
     public ResultVo saveOrModifyCarrier(CarrierDto dto) {
-        if(dto.getCarrierId() == null){
+        if (dto.getCarrierId() == null) {
             Carrier carr = carrierDao.selectOne(new QueryWrapper<Carrier>().lambda().eq(Carrier::getName, dto.getName()));
-            if(carr != null){
+            if (carr != null) {
                 return BaseResultUtil.fail("该企业名称已存在,不可添加");
             }
             List<Driver> driverList = driverDao.selectList(new QueryWrapper<Driver>().lambda()
-                    .eq(Driver::getPhone,dto.getLinkmanPhone())
+                    .eq(Driver::getPhone, dto.getLinkmanPhone())
                     .or()
-                    .eq(Driver::getIdCard,dto.getLegalIdCard()));
-            if(!CollectionUtils.isEmpty(driverList)){
+                    .eq(Driver::getIdCard, dto.getLegalIdCard()));
+            if (!CollectionUtils.isEmpty(driverList)) {
                 return BaseResultUtil.fail("该承运商账号已存在");
             }
             //添加承运商
             Carrier carrier = new Carrier();
-            BeanUtils.copyProperties(dto,carrier);
+            BeanUtils.copyProperties(dto, carrier);
             carrier.setState(CommonStateEnum.WAIT_CHECK.code);
             carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
@@ -156,12 +156,12 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             cdc.setRole(DriverRoleEnum.SUPERADMIN.code);
             carrierDriverConDao.insert(cdc);
 
-            saveBankCardBand(dto,null,carrier.getId());
+            saveBankCardBand(dto, null, carrier.getId());
             //添加承运商业务范围
-            carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-        }else{
+            carrierCityConService.batchSave(carrier.getId(), dto.getCodes());
+        } else {
             Integer count = carrierDao.existBusinessDriver(dto);
-            if(count != 1){
+            if (count != 1) {
                 return BaseResultUtil.fail("该手机号不是承运商下司机，请先添加");
             }
             return modifyCarrier(dto);
@@ -171,6 +171,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     /**
      * 修改承运商
+     *
      * @param dto
      * @return
      */
@@ -179,14 +180,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         CarrierDriverCon cdc = carrierDriverConDao.selectOne(new QueryWrapper<CarrierDriverCon>().lambda()
                 .eq(CarrierDriverCon::getCarrierId, dto.getCarrierId())
                 .eq(CarrierDriverCon::getRole, DriverRoleEnum.SUPERADMIN.code));
-        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getLinkmanPhone()));
-        if(origCarrier == null || cdc == null || driver == null){
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone, dto.getLinkmanPhone()));
+        if (origCarrier == null || cdc == null || driver == null) {
             return BaseResultUtil.fail("数据信息有误");
         }
-        if(cdc.getState() == CommonStateEnum.WAIT_CHECK.code){
+        if (cdc.getState() == CommonStateEnum.WAIT_CHECK.code) {
             //待审核
             //更换手机号
-            if(!dto.getLinkmanPhone().equals(origCarrier.getLinkmanPhone())){
+            if (!dto.getLinkmanPhone().equals(origCarrier.getLinkmanPhone())) {
                 //更新手机号,查出之前的
                 cdc.setRole(DriverRoleEnum.SUB_DRIVER.code);
                 carrierDriverConDao.updateById(cdc);
@@ -198,7 +199,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 cdCon.setState(CommonStateEnum.WAIT_CHECK.code);
                 cdCon.setRole(DriverRoleEnum.SUPERADMIN.code);
                 carrierDriverConDao.updateById(cdc);
-            }else{
+            } else {
                 //没换手机号
                 cdc.setMode(dto.getMode());
                 cdc.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -211,7 +212,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             }
         }
         //更新承运商
-        BeanUtils.copyProperties(dto,origCarrier);
+        BeanUtils.copyProperties(dto, origCarrier);
         origCarrier.setState(CommonStateEnum.WAIT_CHECK.code);
         origCarrier.setId(dto.getCarrierId());
         origCarrier.setCheckUserId(dto.getLoginId());
@@ -226,11 +227,11 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
         //更新银行卡信息(先删除后添加)
         bankCardBindDao.removeBandCarBind(dto.getCarrierId());
-        saveBankCardBand(dto,null,origCarrier.getId());
+        saveBankCardBand(dto, null, origCarrier.getId());
 
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(origCarrier.getId());
-        carrierCityConService.batchSave(origCarrier.getId(),dto.getCodes());
+        carrierCityConService.batchSave(origCarrier.getId(), dto.getCodes());
         return BaseResultUtil.success();
     }
 
@@ -238,7 +239,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     public ResultVo findCarrier(SeleCarrierDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<CarrierVo> carrierVos = encapCarrier(dto);
-        PageInfo<CarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        PageInfo<CarrierVo> pageInfo = new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -255,19 +256,19 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return BaseResultUtil.fail("承运商信息错误，请检查");
         }
         //审核通过
-        if(FlagEnum.AUDIT_PASS.code == dto.getFlag()){
+        if (FlagEnum.AUDIT_PASS.code == dto.getFlag()) {
             //更新司机userID信息
             cdc.setState(CommonStateEnum.CHECKED.code);
             carrier.setState(CommonStateEnum.CHECKED.code);
-        }else if(FlagEnum.AUDIT_REJECT.code == dto.getFlag()){
+        } else if (FlagEnum.AUDIT_REJECT.code == dto.getFlag()) {
             //审核拒绝
             cdc.setState(CommonStateEnum.REJECT.code);
             carrier.setState(CommonStateEnum.REJECT.code);
-        }else if(FlagEnum.FROZEN.code == dto.getFlag()){
+        } else if (FlagEnum.FROZEN.code == dto.getFlag()) {
             //冻结
             cdc.setState(CommonStateEnum.FROZEN.code);
             carrier.setState(CommonStateEnum.FROZEN.code);
-        }else if(FlagEnum.THAW.code == dto.getFlag()){
+        } else if (FlagEnum.THAW.code == dto.getFlag()) {
             //解冻
             cdc.setState(CommonStateEnum.CHECKED.code);
             carrier.setState(CommonStateEnum.CHECKED.code);
@@ -285,7 +286,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo<BaseCarrierVo> showBaseCarrier(Long carrierId) {
         BaseCarrierVo vo = carrierDao.showCarrierById(carrierId);
-        if(vo != null){
+        if (vo != null) {
             vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
         }
         return BaseResultUtil.success(vo);
@@ -303,7 +304,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                         sysUserService.resetPwd(driver.getUserId(), YmlProperty.get("cjkj.salesman.password"));
                 if (ReturnMsg.SUCCESS.getCode().equals(rd.getCode())) {
                     return BaseResultUtil.success();
-                }else {
+                } else {
                     return BaseResultUtil.fail(rd.getMsg());
                 }
             }
@@ -313,12 +314,12 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Override
     public ResultVo<PageVo<TransportDriverVo>> transportDriver(TransportDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<TransportDriverVo> transportDriverVos =  driverDao.findTransportDriver(dto);
-        if(!CollectionUtils.isEmpty(transportDriverVos)){
-            for(TransportDriverVo vo : transportDriverVos){
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<TransportDriverVo> transportDriverVos = driverDao.findTransportDriver(dto);
+        if (!CollectionUtils.isEmpty(transportDriverVos)) {
+            for (TransportDriverVo vo : transportDriverVos) {
                 CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
-                if(count != null){
+                if (count != null) {
                     vo.setCarNum(count.getCarNum());
                 }
             }
@@ -329,7 +330,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Override
     public ResultVo<PageVo<TransportVehicleVo>> transportVehicle(TransportDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicle(dto);
         PageInfo<TransportVehicleVo> pageInfo = new PageInfo<>(transportVehicleVos);
         return BaseResultUtil.success(pageInfo);
@@ -355,7 +356,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             ExcelUtil.exportExcel(exportExcelList, title, sheetName, CarrierExportExcel.class, fileName, response);
             //}
         } catch (IOException e) {
-            log.error("导出承运商管理信息异常:{}",e);
+            log.error("导出承运商管理信息异常:{}", e);
         }
         //}
     }
@@ -363,6 +364,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     /*********************************韵车集成改版 st*****************************/
     /**
      * 添加承运商_改版
+     *
      * @param dto
      * @return
      */
@@ -389,7 +391,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             Long userId = addUserRd.getData();
             //添加承运商
             Carrier carrier = new Carrier();
-            BeanUtils.copyProperties(dto,carrier);
+            BeanUtils.copyProperties(dto, carrier);
             carrier.setState(CommonStateEnum.WAIT_CHECK.code);
             carrier.setType(CarrierTypeEnum.ENTERPRISE.code);
             carrier.setBusinessState(BusinessStateEnum.BUSINESS.code);
@@ -416,7 +418,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             UserRoleDept userRoleDept = new UserRoleDept();
             userRoleDept.setUserId(driver.getId());
             userRoleDept.setRoleId(role.getId());
-            userRoleDept.setDeptId(carrier.getId()+"");
+            userRoleDept.setDeptId(carrier.getId() + "");
             userRoleDept.setDeptType(2);
             userRoleDept.setUserType(UserTypeEnum.DRIVER.code);
             userRoleDept.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -425,13 +427,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             userRoleDept.setCreateUserId(dto.getLoginId());
             userRoleDeptDao.insert(userRoleDept);
 
-            saveBankCardBand(dto,null,carrier.getId());
+            saveBankCardBand(dto, null, carrier.getId());
             //添加承运商业务范围
-            carrierCityConService.batchSave(carrier.getId(),dto.getCodes());
-        }else {
+            carrierCityConService.batchSave(carrier.getId(), dto.getCodes());
+        } else {
             //修改
             Integer count = carrierDao.existBusinessDriverNew(dto);
-            if(count != 1){
+            if (count != 1) {
                 return BaseResultUtil.fail("该手机号不是承运商下司机，请先添加");
             }
             return modifyCarrierNew(dto);
@@ -443,7 +445,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     public ResultVo findCarrierNew(SeleCarrierDto dto) {
         PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<CarrierVo> carrierVos = encapCarrierNew(dto);
-        PageInfo<CarrierVo> pageInfo =  new PageInfo<>(carrierVos);
+        PageInfo<CarrierVo> pageInfo = new PageInfo<>(carrierVos);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -463,15 +465,15 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             //审核通过
             userRoleDept.setState(CommonStateEnum.CHECKED.code);
             carrier.setState(CommonStateEnum.CHECKED.code);
-        }else if (FlagEnum.AUDIT_REJECT.code == dto.getFlag()) {
+        } else if (FlagEnum.AUDIT_REJECT.code == dto.getFlag()) {
             //审核拒绝
             userRoleDept.setState(CommonStateEnum.REJECT.code);
             carrier.setState(CommonStateEnum.REJECT.code);
-        }else if (FlagEnum.FROZEN.code == dto.getFlag()) {
+        } else if (FlagEnum.FROZEN.code == dto.getFlag()) {
             //冻结
             userRoleDept.setState(CommonStateEnum.FROZEN.code);
             carrier.setState(CommonStateEnum.FROZEN.code);
-        }else if (FlagEnum.THAW.code == dto.getFlag()) {
+        } else if (FlagEnum.THAW.code == dto.getFlag()) {
             //解冻
             userRoleDept.setState(CommonStateEnum.CHECKED.code);
             carrier.setState(CommonStateEnum.CHECKED.code);
@@ -489,7 +491,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     @Override
     public ResultVo showBaseCarrierNew(Long carrierId) {
         BaseCarrierVo vo = carrierDao.showCarrierByIdNew(carrierId);
-        if(vo != null){
+        if (vo != null) {
             vo.setMapCodes(carrierCityConService.getMapCodes(carrierId));
         }
         return BaseResultUtil.success(vo);
@@ -510,7 +512,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         UserRoleDept userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getDeptId, id)
                 .eq(UserRoleDept::getRoleId, role.getId()));
-        if(userRoleDept == null){
+        if (userRoleDept == null) {
             userRoleDept = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                     .eq(UserRoleDept::getDeptId, id)
                     .eq(UserRoleDept::getRoleId, roleC.getId()));
@@ -522,7 +524,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                         sysUserService.resetPwd(driver.getUserId(), YmlProperty.get("cjkj.salesman.password"));
                 if (!ResultDataUtil.isSuccess(rd)) {
                     return BaseResultUtil.fail("重置密码错误，原因：" + rd.getMsg());
-                }else {
+                } else {
                     return BaseResultUtil.success();
                 }
             }
@@ -532,10 +534,11 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
     /*********************************韵车集成改版 ed*****************************/
     /**
      * 封装承运商excel请求
+     *
      * @param request
      * @return
      */
-    private SeleCarrierDto getCarrierDto(HttpServletRequest request){
+    private SeleCarrierDto getCarrierDto(HttpServletRequest request) {
         SeleCarrierDto dto = new SeleCarrierDto();
         dto.setName(request.getParameter("name"));
         dto.setLinkman(request.getParameter("linkman"));
@@ -543,23 +546,24 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         dto.setCardNo(request.getParameter("cardNo"));
         dto.setLegalName(request.getParameter("legalName"));
         dto.setLegalIdCard(request.getParameter("legalIdCard"));
-        dto.setIsInvoice(StringUtils.isBlank(request.getParameter("isInvoice")) ? null:Integer.valueOf(request.getParameter("isInvoice")));
-        dto.setSettleType(StringUtils.isBlank(request.getParameter("settleType")) ? null:Integer.valueOf(request.getParameter("settleType")));
-        dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null:Integer.valueOf(request.getParameter("state")));
+        dto.setIsInvoice(StringUtils.isBlank(request.getParameter("isInvoice")) ? null : Integer.valueOf(request.getParameter("isInvoice")));
+        dto.setSettleType(StringUtils.isBlank(request.getParameter("settleType")) ? null : Integer.valueOf(request.getParameter("settleType")));
+        dto.setState(StringUtils.isBlank(request.getParameter("state")) ? null : Integer.valueOf(request.getParameter("state")));
         return dto;
     }
 
     /**
      * 封装承运商
+     *
      * @param dto
      * @return
      */
-    private List<CarrierVo> encapCarrier(SeleCarrierDto dto){
+    private List<CarrierVo> encapCarrier(SeleCarrierDto dto) {
         List<CarrierVo> carrierVos = carrierDao.getCarrierByTerm(dto);
-        if(!CollectionUtils.isEmpty(carrierVos)){
-            for(CarrierVo vo : carrierVos){
+        if (!CollectionUtils.isEmpty(carrierVos)) {
+            for (CarrierVo vo : carrierVos) {
                 CarrierCarCount count = carrierCarCountDao.count(vo.getCarrierId());
-                if(count != null){
+                if (count != null) {
                     vo.setCarNum(count.getCarNum());
                     vo.setTotalIncome(count.getIncome());
                 }
@@ -567,23 +571,25 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         return carrierVos;
     }
+
     /**
      * 保存银行卡信息
+     *
      * @param dto
      * @param carrierId
      */
-    private void saveBankCardBand(CarrierDto dto,CarrierImportExcel excel,Long carrierId){
+    private void saveBankCardBand(CarrierDto dto, CarrierImportExcel excel, Long carrierId) {
         //保存银行卡信息
         BankCardBind bcb = new BankCardBind();
-        if(dto != null){
-            BeanUtils.copyProperties(dto,bcb);
+        if (dto != null) {
+            BeanUtils.copyProperties(dto, bcb);
             bcb.setIdCard(dto.getLegalIdCard());
             bcb.setCardPhone(dto.getLinkmanPhone());
-        }else{
-            BeanUtils.copyProperties(excel,bcb);
-            if("对公".equals(excel.getCardType())){
+        } else {
+            BeanUtils.copyProperties(excel, bcb);
+            if ("对公".equals(excel.getCardType())) {
                 bcb.setCardType(1);
-            }else{
+            } else {
                 bcb.setCardType(2);
             }
             bcb.setIdCard(excel.getLegalIdCard());
@@ -597,14 +603,14 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         bcb.setCardColour(RandomUtil.getIntRandom());
         bcb.setCreateTime(System.currentTimeMillis());
         //获取银行编码
-        if(dto.getCardType().equals(CardTypeEnum.PRIVATE.code)){
+        if (dto.getCardType().equals(CardTypeEnum.PRIVATE.code)) {
             BankInfo bankInfo = bankInfoService.findBankCode(bcb.getBankName());
-            if(bankInfo != null){
+            if (bankInfo != null) {
                 bcb.setBankCode(bankInfo.getBankCode());
             }
-        }else if(dto.getCardType().equals(CardTypeEnum.PUBLIC.code)){
+        } else if (dto.getCardType().equals(CardTypeEnum.PUBLIC.code)) {
             PayBank payBank = payBankService.findPayBank(bcb.getBankName());
-            if(payBank != null){
+            if (payBank != null) {
                 bcb.setBankCode(payBank.getBankCode());
                 bcb.setPayBankNo(payBank.getPayBankNo());
             }
@@ -616,6 +622,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     /**
      * 保存司机及承运商-司机关联关系
+     *
      * @param carrierId
      */
     private Driver findDriver(Long carrierId) {
@@ -637,6 +644,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     /**
      * 将承运商管理员账号及超级管理员角色关系添加到物流平台
+     *
      * @return
      */
     private ResultData<Long> saveCarrierSuperAdminToPlatform(String name, String phone, Role role) {
@@ -648,7 +656,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return ResultData.failed("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
                     ",未查询到角色信息");
         }
-        Long existUserId = existUser.getData() == null?null: existUser.getData().getUserId();
+        Long existUserId = existUser.getData() == null ? null : existUser.getData().getUserId();
         if (existUserId == null) {
             //用户不存在， 需要新增
             AddUserReq addUserReq = new AddUserReq();
@@ -663,7 +671,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 return ResultData.failed("司机信息保存失败，原因：" + rd.getMsg());
             }
             return ResultData.ok(rd.getData().getUserId());
-        }else {
+        } else {
             //用户已存在，需要更新
             ResultData<List<SelectRoleResp>> rolesRd =
                     sysRoleService.getListByUserId(existUser.getData().getUserId());
@@ -677,13 +685,13 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 req.setUserId(existUserId);
                 req.setRoleIdList(Arrays.asList(role.getRoleId()));
                 updateRd = sysUserService.update(req);
-            }else {
+            } else {
                 //角色信息不为空，需新增当前角色
                 List<Long> roleIdList = rolesRd.getData().stream()
                         .map(r -> r.getRoleId()).collect(Collectors.toList());
                 if (roleIdList.contains(role.getRoleId())) {
                     return ResultData.ok(existUserId);
-                }else {
+                } else {
                     roleIdList.add(role.getRoleId());
                     UpdateUserReq req = new UpdateUserReq();
                     req.setUserId(existUserId);
@@ -700,6 +708,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     /**
      * 修改承运商
+     *
      * @param dto
      * @return
      */
@@ -710,11 +719,11 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             return BaseResultUtil.fail("根据角色名称：" + CARRIER_SUPER_ROLE_NAME +
                     ",未查询到角色信息");
         }
-        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone,dto.getLinkmanPhone()));
+        Driver driver = driverDao.selectOne(new QueryWrapper<Driver>().lambda().eq(Driver::getPhone, dto.getLinkmanPhone()));
         UserRoleDept urd = userRoleDeptDao.selectOne(new QueryWrapper<UserRoleDept>().lambda()
                 .eq(UserRoleDept::getDeptId, origCarrier.getId())
                 .eq(UserRoleDept::getUserId, driver.getId()));
-        if(origCarrier == null || urd == null || driver == null){
+        if (origCarrier == null || urd == null || driver == null) {
             return BaseResultUtil.fail("数据信息有误");
         }
 //        if (CommonStateEnum.WAIT_CHECK.code == urd.getState()) {
@@ -745,7 +754,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             updateUrd.setState(CommonStateEnum.WAIT_CHECK.code);
             updateUrd.setRoleId(role.getId());
             userRoleDeptDao.updateById(updateUrd);
-        }else {
+        } else {
             //无需更换手机号
             urd.setMode(dto.getMode());
             urd.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -758,7 +767,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
 //        }
         //更新承运商
-        BeanUtils.copyProperties(dto,origCarrier);
+        BeanUtils.copyProperties(dto, origCarrier);
         origCarrier.setState(CommonStateEnum.WAIT_CHECK.code);
         origCarrier.setId(dto.getCarrierId());
         origCarrier.setCheckUserId(dto.getLoginId());
@@ -767,26 +776,27 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
         //更新银行卡信息(先删除后添加)
         bankCardBindDao.removeBandCarBind(dto.getCarrierId());
-        saveBankCardBand(dto,null, origCarrier.getId());
+        saveBankCardBand(dto, null, origCarrier.getId());
 
         //承运商业务范围,先批量删除，再添加
         carrierCityConService.batchDelete(origCarrier.getId());
-        carrierCityConService.batchSave(origCarrier.getId(),dto.getCodes());
+        carrierCityConService.batchSave(origCarrier.getId(), dto.getCodes());
         return BaseResultUtil.success();
     }
 
 
     /**
      * 封装承运商
+     *
      * @param dto
      * @return
      */
-    private List<CarrierVo> encapCarrierNew(SeleCarrierDto dto){
+    private List<CarrierVo> encapCarrierNew(SeleCarrierDto dto) {
         List<CarrierVo> carrierVos = carrierDao.getCarrierByTermNew(dto);
-        if(!CollectionUtils.isEmpty(carrierVos)){
-            for(CarrierVo vo : carrierVos){
+        if (!CollectionUtils.isEmpty(carrierVos)) {
+            for (CarrierVo vo : carrierVos) {
                 CarrierCarCount count = carrierCarCountDao.countNew(vo.getCarrierId());
-                if(count != null){
+                if (count != null) {
                     vo.setCarNum(count.getCarNum());
                     vo.setTotalIncome(count.getIncome());
                 }
@@ -797,6 +807,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     /**
      * 保存司机及承运商-司机关联关系_改版
+     *
      * @param carrierId
      */
     private Driver findDriverNew(Long carrierId, Role role) {
@@ -818,21 +829,21 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Override
     public ResultVo<PageVo<TransportDriverVo>> transportDriverNew(TransportDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
-        List<TransportDriverVo> transportDriverVos =  driverDao.findTransportDriverNew(dto);
-        if(!CollectionUtils.isEmpty(transportDriverVos)){
-            for(TransportDriverVo vo : transportDriverVos){
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
+        List<TransportDriverVo> transportDriverVos = driverDao.findTransportDriverNew(dto);
+        if (!CollectionUtils.isEmpty(transportDriverVos)) {
+            for (TransportDriverVo vo : transportDriverVos) {
                 CarrierCarCount count = carrierCarCountDao.driverCount(vo.getDriverId());
-                if(count != null){
+                if (count != null) {
                     vo.setCarNum(count.getCarNum());
                 }
                 //处理该司机当前营运状态
                 Integer taskCount = taskDao.selectCount(new QueryWrapper<Task>().lambda()
                         .eq(Task::getDriverId, vo.getDriverId())
                         .lt(Task::getState, TaskStateEnum.FINISHED.code));
-                if(taskCount > 0){
+                if (taskCount > 0) {
                     vo.setBusinessState(BusinessStateEnum.OUTAGE.code);
-                }else{
+                } else {
                     vo.setBusinessState(BusinessStateEnum.BUSINESS.code);
                 }
             }
@@ -843,7 +854,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     @Override
     public ResultVo<PageVo<TransportVehicleVo>> transportVehicleNew(TransportDto dto) {
-        PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
+        PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
         List<TransportVehicleVo> transportVehicleVos = vehicleDao.findTransportVehicleNew(dto);
         PageInfo<TransportVehicleVo> pageInfo = new PageInfo<>(transportVehicleVos);
         return BaseResultUtil.success(pageInfo);
@@ -851,6 +862,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
 
     /**
      * 承运商变更修改角色信息到物流平台
+     *
      * @return
      */
     private ResultData updateRoleForCarrierToPlatform(Driver origDriver, Driver newDriver,
@@ -892,7 +904,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                 return ResultData.failed("用户角色信息更新失败，原因：" + newUpdateRd.getMsg());
             }
             return ResultData.ok("成功");
-        }else {
+        } else {
             return ResultData.failed("角色信息数据错误，请检查");
         }
     }
@@ -922,20 +934,20 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                         continue;
                     }
                     Long userId = addUserRd.getData();
-                    if(userId == null){
+                    if (userId == null) {
                         continue;
                     }
                     //添加承运商
                     Carrier carrier = new Carrier();
-                    BeanUtils.copyProperties(carrierImportExcel,carrier);
-                    if("是".equals(carrierImportExcel.getIsInvoice())){
+                    BeanUtils.copyProperties(carrierImportExcel, carrier);
+                    if ("是".equals(carrierImportExcel.getIsInvoice())) {
                         carrier.setIsInvoice(1);
-                    }else{
+                    } else {
                         carrier.setIsInvoice(0);
                     }
-                    if("账期".equals(carrierImportExcel.getSettleType())){
+                    if ("账期".equals(carrierImportExcel.getSettleType())) {
                         carrier.setSettleType(1);
-                    }else{
+                    } else {
                         carrier.setSettleType(0);
                     }
                     carrier.setState(CommonStateEnum.WAIT_CHECK.code);
@@ -972,7 +984,7 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
                     userRoleDept.setCreateUserId(loginId);
                     userRoleDeptDao.insert(userRoleDept);
                     //保存银行卡信息
-                    saveBankCardBand(null,carrierImportExcel,carrier.getId());
+                    saveBankCardBand(null, carrierImportExcel, carrier.getId());
                 }
                 result = true;
             } else {
