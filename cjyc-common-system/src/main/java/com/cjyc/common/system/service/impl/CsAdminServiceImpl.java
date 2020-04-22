@@ -102,7 +102,7 @@ public class CsAdminServiceImpl implements ICsAdminService {
         t.setLoginName(admin.getName());
         t.setLoginPhone(admin.getPhone());
         t.setLoginType(UserTypeEnum.ADMIN);
-        return BaseResultUtil.success();
+        return BaseResultUtil.success(t);
     }
     @Override
     public Admin getAdminByPhone(String phone, boolean isSearchCache) {

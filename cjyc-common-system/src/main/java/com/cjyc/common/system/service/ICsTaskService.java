@@ -4,7 +4,6 @@ import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.AllotTaskDto;
 import com.cjyc.common.model.dto.web.task.BaseTaskDto;
-import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.WaybillCar;
@@ -42,7 +41,7 @@ public interface ICsTaskService {
 
     ResultVo<ResultReasonVo> inStore(BaseTaskDto paramsDto);
 
-    ResultVo receipt(ReceiptTaskDto reqDto);
+    ResultVo receipt(BaseTaskDto reqDto);
 
     ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto);
 

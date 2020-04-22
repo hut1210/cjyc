@@ -10,6 +10,7 @@ import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
+import com.cjyc.common.model.dto.web.task.BaseTaskDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -22,7 +23,6 @@ import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.JsonUtils;
-import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.YmlProperty;
 import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,10 +83,12 @@ public class CsDriverServiceImpl implements ICsDriverService {
     private IRoleDao roleDao;
 
     @Override
-    public Driver getById(Long userId, boolean b) {
+    public Driver getById(Long userId, boolean searchCache) {
         return driverDao.selectById(userId);
     }
-
+    public Driver getEnabledById(Long userId) {
+        return driverDao.getEnabledById(userId);
+    }
     @Override
     public Driver getByUserId(Long userId) {
         return driverDao.findByUserId(userId);
@@ -323,6 +324,21 @@ public class CsDriverServiceImpl implements ICsDriverService {
         }
         return driver;
 
+    }
+
+    @Override
+    public <T extends BaseTaskDto> ResultVo<T> validateEnabled(T t) {
+        if(t == null || t.getLoginId() == null){
+            return BaseResultUtil.fail("登录用户存不在");
+        }
+        Driver driver = getById(t.getLoginId(), true);
+        if(driver == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        t.setLoginName(driver.getName());
+        t.setLoginPhone(driver.getPhone());
+        t.setLoginType(UserTypeEnum.DRIVER);
+        return BaseResultUtil.success(t);
     }
 
     @Override

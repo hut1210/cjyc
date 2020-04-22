@@ -9,7 +9,6 @@ import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.AllotTaskDto;
 import com.cjyc.common.model.dto.web.task.BaseTaskDto;
-import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.*;
 import com.cjyc.common.model.enums.*;
@@ -1199,7 +1198,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
     }*/
 
     @Override
-    public ResultVo receipt(ReceiptTaskDto paramsDto) {
+    public ResultVo receipt(BaseTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
         Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
