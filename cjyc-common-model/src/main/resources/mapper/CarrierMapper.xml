@@ -817,4 +817,17 @@
              dc.id = #{carrierId} and (dd.phone = #{phone} or dd.id_card = #{idCard}) and dc.type = 2
         </where>
     </select>
+
+    <!--获取承运商结算明细 -->
+    <select id="getCarrierSettlementDetails" resultType="com.cjyc.common.model.vo.web.SettlementDetailsVo">
+        SELECT ww.no as waybillNo,wt.car_num as carNum,
+        ww.complete_time as deliveryDate,ww.freight_pay_time as payTime,ww.freight_pay_state as payState,
+        ww.freight_fee as freightFee,ww.type as waybillType,wt.guide_line as transPortLine,
+        ww.carrier_name as carrierName,wt.driver_name as driverName,wt.driver_phone as driverPhone,
+        wt.vehicle_plate_no as vehiclePlateNo
+        FROM d_carrier dc
+        LEFT JOIN w_waybill ww ON ww.carrier_id = dc.id
+        LEFT JOIN w_task wt ON wt.waybill_id = ww.id
+        WHERE dc.id = #{carrierId}
+    </select>
 </mapper>
