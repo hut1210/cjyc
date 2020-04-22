@@ -12,7 +12,7 @@ public class VehicleExportExcel implements Serializable {
     @Excel(name = "车牌号" ,orderNum = "0",width = 25)
     private String plateNo;
 
-    @Excel(name = "车位数" ,orderNum = "1",width = 25)
+    @Excel(name = "车位数" ,orderNum = "1",width = 25, type = 10)
     private Integer defaultCarryNum;
 
     @Excel(name = "司机姓名" ,orderNum = "2",width = 25)
