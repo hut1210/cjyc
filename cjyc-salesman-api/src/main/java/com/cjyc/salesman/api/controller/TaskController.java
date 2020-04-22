@@ -5,12 +5,8 @@ import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.salesman.task.OutAndInStorageQueryDto;
 import com.cjyc.common.model.dto.salesman.task.TaskWaybillQueryDto;
 import com.cjyc.common.model.dto.web.task.BaseTaskDto;
-import com.cjyc.common.model.dto.web.task.ReceiptTaskDto;
-import com.cjyc.common.model.entity.Admin;
-import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.vo.LogisticsInformationVo;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -177,9 +173,9 @@ public class TaskController {
      */
     @ApiOperation(value = "签收")
     @PostMapping(value = "/car/receipt")
-    public ResultVo receipt(@Validated @RequestBody ReceiptTaskDto reqDto) {
+    public ResultVo receipt(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        ResultVo<ReceiptTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }

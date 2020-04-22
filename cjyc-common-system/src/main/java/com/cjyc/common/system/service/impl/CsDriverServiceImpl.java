@@ -5,12 +5,12 @@ import com.cjkj.common.model.ResultData;
 import com.cjkj.common.model.ReturnMsg;
 import com.cjkj.usercenter.dto.common.*;
 import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dto.BaseLoginDto;
 import com.cjyc.common.model.dto.CarrierDriverDto;
 import com.cjyc.common.model.dto.CarrierVehicleDto;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
-import com.cjyc.common.model.dto.web.task.BaseTaskDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.CommonStateEnum;
 import com.cjyc.common.model.enums.ResultEnum;
@@ -327,7 +327,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
     }
 
     @Override
-    public <T extends BaseTaskDto> ResultVo<T> validateEnabled(T t) {
+    public <T extends BaseLoginDto> ResultVo<T> validateEnabled(T t) {
         if(t == null || t.getLoginId() == null){
             return BaseResultUtil.fail("登录用户存不在");
         }
@@ -340,6 +340,7 @@ public class CsDriverServiceImpl implements ICsDriverService {
         t.setLoginType(UserTypeEnum.DRIVER);
         return BaseResultUtil.success(t);
     }
+
 
     @Override
     public ResultVo<List<FreeDriverVo>> findCarrierFreeDriver(FreeDto dto) {

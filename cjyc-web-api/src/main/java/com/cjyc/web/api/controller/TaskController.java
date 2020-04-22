@@ -117,8 +117,8 @@ public class TaskController {
      */
     @ApiOperation(value = "签收")
     @PostMapping(value = "/car/receipt")
-    public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
-        ResultVo<ReceiptTaskDto> resVo = csAdminService.validateEnabled(reqDto);
+    public ResultVo receipt(@RequestBody BaseTaskDto reqDto) {
+        ResultVo<BaseTaskDto> resVo = csAdminService.validateEnabled(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
