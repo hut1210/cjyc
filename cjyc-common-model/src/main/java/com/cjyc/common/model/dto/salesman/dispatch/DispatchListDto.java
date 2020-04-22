@@ -41,8 +41,8 @@ public class DispatchListDto extends BasePageDto {
 
     @ApiModelProperty(value = "订单号/VIN码/车牌号")
     private String searchValue;
-    @ApiModelProperty(value = "运单号")
-    private String waybillNo;
+    /*@ApiModelProperty(value = "运单号")
+    private String waybillNo;*/
     @ApiModelProperty(value = "品牌")
     private String brand;
     @ApiModelProperty(value = "车系")
