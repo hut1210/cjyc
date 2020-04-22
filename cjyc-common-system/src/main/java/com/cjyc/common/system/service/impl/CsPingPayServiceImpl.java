@@ -14,6 +14,7 @@ import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.order.OrderCarReleaseEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.model.keys.RedisKeys;
@@ -303,15 +304,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 if (orderCar == null || orderCar.getNo() == null) {
                     return BaseResultUtil.fail("订单车辆信息丢失");
                 }
+                String orderCarNo = orderCar.getNo();
                 if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
-                    return BaseResultUtil.fail("订单车辆{0}已交付，请刷新后重试", orderCar.getNo());
+                    return BaseResultUtil.fail("订单车辆{0}已交付，请刷新后重试", orderCarNo);
+                }
+                //99车圈增加放车指令验证
+                if(!validateIsAllowRelease(orderCar)){
+                    BaseResultUtil.fail("车辆{0}未收到交车指令, 请联系{1}/{2}", orderCarNo, order.getCustomerName(), order.getCustomerPhone());
                 }
 
                 if (addLock) {
-                    String lockKey = RedisKeys.getWlPayLockKey(orderCar.getNo());
+                    String lockKey = RedisKeys.getWlPayLockKey(orderCarNo);
                     String value = redisUtils.get(lockKey);
                     if (value != null && !value.equals(validateSweepCodeDto.getTaskId().toString())) {
-                        return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
+                        return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCarNo);
                     }
                     if (value != null) {
                         redisUtils.delete(lockKey);
@@ -326,32 +332,46 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 if (PayModeEnum.PERIOD.code == order.getPayType()) {
                     //账期
                     isNeedPay = 0;
+                    log.info("【支付验证】账期订单车辆{0}不需要即时收款", orderCarNo);
                 } else if (PayModeEnum.PREPAY.code == order.getPayType()) {
                     //预付
                     if (PayStateEnum.PAID.code != orderCar.getWlPayState()) {
-                        return BaseResultUtil.fail("支付车辆{0}支付状态异常，预付未支付", orderCar.getNo());
+                        return BaseResultUtil.fail("支付车辆{0}支付状态异常，预付未支付", orderCarNo);
                     }
                     isNeedPay = 0;
+                    log.info("【支付验证】预付订单车辆{0}不需要即时收款", orderCarNo);
                 } else {
-                    //时付
-                    if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
-                        isNeedPay = 0;
-                    } else {
-                        isNeedPay = 1;
-                        if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
-                            amount = amount.add(orderCar.getTotalFee());
+                    //到付
+                    Integer releaseCarFlag = orderCar.getReleaseCarFlag();
+                    if(releaseCarFlag == OrderCarReleaseEnum.UNLIMIT.code){
+                        if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
+                            isNeedPay = 0;
+                            log.info("【支付验证】到付订单车辆{0}已支付，不需要收款", orderCarNo);
                         } else {
-                            amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
-                        }
+                            isNeedPay = 1;
+                            if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
+                                amount = amount.add(orderCar.getTotalFee());
+                            } else {
+                                amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
+                            }
 
-                        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                            //金额验证
-                            return BaseResultUtil.fail("获取金额失败");
-                            //isNeedPay = 0;
+                            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                                //金额验证
+                                return BaseResultUtil.fail("获取金额失败");
+                                //isNeedPay = 0;
+                            }
+                            log.info("【支付验证】到付订单车辆{0}未支付，需即时收款{1}", orderCarNo, amount);
+                        }
+                    }else{
+                        if(validateIsAllowRelease(orderCar)){
+                            isNeedPay = 0;
+                            log.info("【支付验证】到付订单车辆{0}未支付，客户允许不支付放车", orderCarNo, amount);
+                        }else{
+                            return BaseResultUtil.fail("车辆{0}未收到交车指令, 请联系{1}/{2}", orderCarNo, order.getCustomerName(), order.getCustomerPhone());
                         }
                     }
                 }
-                orderCarNos.add(orderCar.getNo());
+                orderCarNos.add(orderCarNo);
             }
             if (CollectionUtils.isEmpty(orderCarNos)) {
                 return BaseResultUtil.fail("至少包含一辆车编号");
@@ -375,6 +395,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         }
 
+    }
+
+    private boolean validateIsAllowRelease(OrderCar orderCar) {
+        Integer releaseCarFlag = orderCar.getReleaseCarFlag();
+        switch (releaseCarFlag){
+            case -1:
+                return true;
+            case 1:
+                return true;
+            case 9:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override

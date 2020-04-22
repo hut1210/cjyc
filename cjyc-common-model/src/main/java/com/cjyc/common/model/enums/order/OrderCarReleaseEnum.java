@@ -7,6 +7,7 @@ public enum OrderCarReleaseEnum {
      * @since 2020/4/21 15:33
      * @param null
      */
+    UNLIMIT("无限制",-1),
     UNRELEASE_UNPAID("未支付且不可交车",0),
     RELEASE_UNPAID("未支付但可交车",1),
     UNRELEASE_PAID("已支付但不可交车",2),
