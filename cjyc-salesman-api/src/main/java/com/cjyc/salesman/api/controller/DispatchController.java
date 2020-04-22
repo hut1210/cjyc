@@ -4,9 +4,9 @@ import com.cjyc.common.model.dto.CommonDto;
 import com.cjyc.common.model.dto.salesman.dispatch.*;
 import com.cjyc.common.model.dto.web.carrier.DispatchCarrierDto;
 import com.cjyc.common.model.dto.web.carrier.TrailCarrierDto;
-import com.cjyc.common.model.dto.web.dispatch.ValidateLineDto;
 import com.cjyc.common.model.dto.web.dispatch.ValidateLineShellDto;
 import com.cjyc.common.model.dto.web.driver.DispatchDriverDto;
+import com.cjyc.common.model.dto.web.order.ChangeCarryTypeDto;
 import com.cjyc.common.model.dto.web.order.ComputeCarEndpointDto;
 import com.cjyc.common.model.vo.ListVo;
 import com.cjyc.common.model.vo.PageVo;
@@ -24,7 +24,6 @@ import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.salesman.api.service.IDispatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -35,10 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
-import java.util.List;
 
 /**
  * @Description 调度模块接口控制层
@@ -179,7 +174,14 @@ public class DispatchController {
         return dispatchService.getWaybillDetail(dto.getWaybillId());
     }
 
-
+    /**
+     * @author JPG
+     */
+    @ApiOperation(value = "修改提送车方式")
+    @PostMapping(value = "/car/carry/type/update")
+    public ResultVo changeOrderCarCarryType(@Validated @RequestBody ChangeCarryTypeDto dtoList) {
+        return csOrderService.changeOrderCarCarryType(dtoList);
+    }
     /************************************韵车集成改版 st***********************************/
 
     @ApiOperation(value = "干线调度个人(承运商)司机信息_改版")
