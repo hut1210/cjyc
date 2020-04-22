@@ -8,6 +8,7 @@ import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.SettlementDetailsVo;
 import com.cjyc.common.model.vo.web.bankInfo.BankInfoVo;
 import com.cjyc.common.model.vo.web.carrier.*;
 import com.cjyc.common.system.service.ICsBankInfoService;
@@ -188,4 +189,10 @@ public class CarrierController {
     }
 
     /*********************************韵车集成改版 ed*****************************/
+
+    @ApiOperation(value = "承运商结算明细")
+    @PostMapping(value = "/getCarrierSettlementDetails/{carrierId}")
+    public ResultVo<List<SettlementDetailsVo>> getCarrierSettlementDetails(@PathVariable @ApiParam(value = "承运商id", required = true) Long carrierId) {
+        return carrierService.getCarrierSettlementDetails(carrierId);
+    }
 }

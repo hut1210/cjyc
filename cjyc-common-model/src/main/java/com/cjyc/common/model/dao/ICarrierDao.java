@@ -8,6 +8,7 @@ import com.cjyc.common.model.entity.Carrier;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.vo.driver.login.BaseLoginVo;
 import com.cjyc.common.model.vo.driver.mine.AppDriverInfoVo;
+import com.cjyc.common.model.vo.web.SettlementDetailsVo;
 import com.cjyc.common.model.vo.web.carrier.*;
 import com.cjyc.common.model.vo.web.mineCarrier.MyCarrierVo;
 import org.apache.ibatis.annotations.Param;
@@ -214,4 +215,10 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      */
     Integer existBusinessCarrierExcel(@Param("carrierId") Long carrierId,@Param("phone") String phone,@Param("idCard") String idCard);
 
+    /**
+     * 承运商结算明细
+     * @param carrierId
+     * @return
+     */
+    List<SettlementDetailsVo> getCarrierSettlementDetails(Long carrierId);
 }
