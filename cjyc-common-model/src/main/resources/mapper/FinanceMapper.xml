@@ -1079,7 +1079,7 @@
             and bd.name like concat('%',#{writeOffMan},'%')
         </if>
         <if test="invoiceNo !=null and invoiceNo.trim!=''">
-            and fp.invoice_no lifp.writeoff_timeke concat('%',#{invoiceNo},'%')
+            and fp.invoice_no like concat('%',#{invoiceNo},'%')
         </if>
         order by fp.writeoff_time desc
     </select>
@@ -1355,7 +1355,7 @@
             and bd.name like concat('%',#{writeOffMan},'%')
         </if>
         <if test="invoiceNo !=null and invoiceNo.trim!=''">
-            and fp.invoice_no lifp.writeoff_timeke concat('%',#{invoiceNo},'%')
+            and fp.invoice_no like concat('%',#{invoiceNo},'%')
         </if>) t
     </select>
     <!--账期应收账款列表查询开始-->
