@@ -192,7 +192,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
             }
 
 
-            String vinKey = RedisKeys.getCheckOrderPlateNo(orderNo, vin);
+            String vinKey = RedisKeys.getCheckOrderVin(orderNo, vin);
             if(!redisLock.lock(vinKey, lockFlag, 30, TimeUnit.MINUTES, 1, 100)){
                 return BaseResultUtil.fail("订单中正在录入此车架号：{0}，请5秒稍后操作", vin);
             }

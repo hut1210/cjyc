@@ -201,8 +201,8 @@ public class RedisKeys {
         return CJYC + I + ORDER_LOCK_KEY + I + id;
     }
 
-    public static String getCheckOrderVin(String orderNo) {
-        return CJYC + I + REPEAT_CHECK_VIN + I + orderNo;
+    public static String getCheckOrderVin(String orderNo, String vin) {
+        return CJYC + I + REPEAT_CHECK_VIN + I + orderNo + I + vin;
     }
 
     public static String getCheckOrderPlateNo(String orderNo, String plateNo) {

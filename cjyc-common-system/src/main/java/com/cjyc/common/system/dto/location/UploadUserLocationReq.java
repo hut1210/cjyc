@@ -1,4 +1,4 @@
-package com.cjyc.common.system.entity;
+package com.cjyc.common.system.dto.location;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -28,7 +28,6 @@ public class UploadUserLocationReq implements Serializable {
     @ApiModelProperty(value = "经度")
     private Double lng;
 
-    @ApiModelProperty(value = "坐标系统类型 bd09:BD-09(百度地图采用坐标系);" +
-            "gcj02:GCJ-02(高德地图采用坐标系);wgs84:WGS-84(GPS设备常用的坐标系)")
+    @ApiModelProperty(value = "坐标系统类型 bd09:百度地图采用坐标系;gcj02:高德地图采用坐标系;wgs84:GPS设备常用的坐标系")
     private String coordinateType;
 }

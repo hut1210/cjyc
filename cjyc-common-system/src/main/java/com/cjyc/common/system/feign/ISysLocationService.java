@@ -1,7 +1,7 @@
 package com.cjyc.common.system.feign;
 
-import com.cjkj.common.model.ResultData;
-import com.cjyc.common.system.entity.UploadUserLocationReq;
+import com.cjyc.common.system.dto.location.ResultData;
+import com.cjyc.common.system.dto.location.UploadUserLocationReq;
 import com.cjyc.common.system.feign.fallback.LocationServiceFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

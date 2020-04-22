@@ -1,7 +1,7 @@
 package com.cjyc.common.system.feign.fallback;
 
-import com.cjkj.common.model.ResultData;
-import com.cjyc.common.system.entity.UploadUserLocationReq;
+import com.cjyc.common.system.dto.location.ResultData;
+import com.cjyc.common.system.dto.location.UploadUserLocationReq;
 import com.cjyc.common.system.feign.ISysLocationService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.log4j.Log4j2;

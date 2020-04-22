@@ -57,11 +57,10 @@ public class CsCronTaskServiceImpl implements ICsCronTaskService {
         List<DriverCarCountVo> driverCars = taskDao.findDriverCarCount(beforeStartDay, beforeEndDay);
         if(!CollectionUtils.isEmpty(driverCars)){
             for(DriverCarCountVo vo : driverCars){
-                OrderCar orderCar = orderCarDao.selectById(vo.getOrderCarId());
                 DriverCarCount dcc = new DriverCarCount();
                 dcc.setCarNum(1);
                 dcc.setDriverId(vo.getDriverId());
-                dcc.setIncome(orderCar.getTotalFee());
+                dcc.setIncome(vo.getFreightFee());
                 dcc.setCreateTime(System.currentTimeMillis());
                 driverCarCountDao.insert(dcc);
             }

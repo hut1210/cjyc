@@ -151,7 +151,7 @@
                          when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
             car.start_city as startCity,
             car.end_city as endCity,
-            (case t.state when 5 then car.expect_start_time else car.load_time end) AS startTime,
+            (case when car.load_time is not null then car.load_time else car.expect_start_time end) AS startTime,
             count(car.id) AS carNum,
             sum(car.freight_fee) AS freightFee
         FROM
@@ -169,13 +169,13 @@
             <where>
                 /*待提车*/
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@PICK_CAR_TASK">
-                    car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD.code}
+                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD.code},
+                                 ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
                 </if>
                 /*待交车*/
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@GIVE_CAR_TASK">
-                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code}
-                    ,${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
-                    ,${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
+                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code},
+                                 ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
                 </if>
             </where>
         GROUP BY t.id
@@ -391,7 +391,7 @@
             (case w.type when 1 then concat(car.start_city,'-',car.end_city)
                          when 3 then concat(car.start_city,'-',car.end_city) else t.guide_line end) AS guideLine,
             w.type AS type,
-            (case t.state when 5 then car.expect_start_time else car.load_time end) AS startTime,
+            (case when car.load_time is not null then car.load_time else car.expect_start_time end) AS startTime,
             sum(car.freight_fee) AS freightFee
         FROM
             ( SELECT task.id, task.waybill_id, task.no, task.guide_line,
@@ -591,7 +591,8 @@
           SELECT
             wt.id,
             wt.driver_id,
-            wwc.order_car_id
+            wwc.order_car_id,
+            wwc.freight_fee
         FROM
             w_task wt
             LEFT JOIN w_task_car wtc ON wtc.task_id = wt.id
