@@ -54,7 +54,6 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -274,6 +273,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
             Customer customer = validateVo.getData();
             paramsDto.setCustomerId(customer.getId());
             paramsDto.setCustomerType(customer.getType());
+            paramsDto.setReleaseCarFlag(customer.getReleaseCarLimit() != null && customer.getReleaseCarLimit());
 
             //提交订单
             Order order = commitOrder(paramsDto);
@@ -411,6 +411,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 orderCar.setTrunkFee(MoneyUtil.yuanToFen(dto.getTrunkFee()));
                 orderCar.setBackFee(MoneyUtil.yuanToFen(dto.getBackFee()));
                 orderCar.setAddInsuranceFee(MoneyUtil.yuanToFen(dto.getAddInsuranceFee()));
+                orderCar.setReleaseCarFlag(paramsDto.getReleaseCarFlag() && PayModeEnum.PREPAY.code != order.getPayType() ? 0 : -1);
                 orderCarDao.insert(orderCar);
 
                 //提取数据
@@ -956,6 +957,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
             Customer customer = validateVo.getData();
             paramsDto.setCustomerId(customer.getId());
             paramsDto.setCustomerType(customer.getType());
+            paramsDto.setReleaseCarFlag(customer.getReleaseCarLimit() != null && customer.getReleaseCarLimit());
+
             //提交订单
             Order order = commitOrder(paramsDto);
             //审核订单

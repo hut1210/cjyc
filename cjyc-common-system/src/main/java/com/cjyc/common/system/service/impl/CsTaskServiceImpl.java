@@ -106,8 +106,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
     @Resource
     private RedisUtils redisUtils;
     @Resource
-    private ITradeBillDao tradeBillDao;
-    @Resource
     private ICsAmqpService csAmqpService;
 
     /**
@@ -448,7 +446,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (waybillCar.getState() >= WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code) {
                     return BaseResultUtil.fail("车辆{0}已经装过车", orderCarNo);
                 }
-                //验证车辆当前所在地是否与出发区县匹配
+
                 OrderCar orderCar = csWaybillService.getOrderCarFromMap(orderCarMap, waybillCar.getOrderCarId());
                 if (orderCar == null) {
                     return BaseResultUtil.fail("订单车辆{0}不存在", orderCarNo);
@@ -458,7 +456,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                     return BaseResultUtil.fail("订单{0}不存在", orderCarNo);
                 }
 
-                //验证目的地业务中心是否与当前业务中心匹配
+                //验证始发地业务中心是否与当前业务中心匹配
                 if (waybillCar.getStartStoreId() != null && waybillCar.getStartStoreId() != 0) {
                     if (!waybillCar.getStartStoreId().equals(orderCar.getNowStoreId())) {
                         return BaseResultUtil.fail("订单车辆{0}未入库，请业务员先将车辆入库", orderCarNo);
@@ -782,7 +780,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
         int newState;
         //下一段是否调度
         int m = waybillCarDao.countByStartAddress(waybillCar.getOrderCarId(), waybillCar.getEndAreaCode(), waybillCar.getEndAddress());
-        //计算是否到达目的地城市范围
+        //计算是否到达目的地业务中心范围
         if (csWaybillService.validateIsArriveEndStore(order.getEndStoreId(), waybillCar.getEndStoreId())) {
             //配送
             newState = m == 0 ? OrderCarStateEnum.WAIT_BACK_DISPATCH.code : OrderCarStateEnum.WAIT_BACK.code;

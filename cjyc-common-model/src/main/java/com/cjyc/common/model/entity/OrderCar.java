@@ -1,14 +1,10 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
-
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
@@ -16,6 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -150,5 +149,12 @@ public class OrderCar implements Serializable {
 
     @ApiModelProperty(value = "完成时间")
     private Long finishTime;
+
+    @ApiModelProperty(value = "允许放车标识：-1无限制，0未付款不允许放车，1未付款允许放车，2已付款不允许放车，9已付款允许放车")
+    private Integer releaseCarFlag;
+
+    @ApiModelProperty(value = "允许放车标识更新时间")
+    private Long releaseCarFlagTime;
+
 
 }
