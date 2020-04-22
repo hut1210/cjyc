@@ -12,10 +12,8 @@ import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
-import com.cjyc.common.system.feign.ISysDeptService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsAdminService;
-import com.cjyc.common.system.service.ICsStoreService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -37,13 +35,7 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Resource
     private IAdminDao adminDao;
     @Resource
-    private ICsStoreService csStoreService;
-    @Resource
-    private ISysDeptService sysDeptService;
-    @Resource
     private ISysUserService sysUserService;
-    @Resource
-    private ICsStoreService storeService;
     @Resource
     private RedisUtils redisUtil;
     /**
@@ -66,17 +58,6 @@ public class CsAdminServiceImpl implements ICsAdminService {
      */
     @Override
     public List<Admin> getListByStoreId(Long storeId) {
-//        Store store = csStoreService.getById(storeId, true);
-//        if(store == null){
-//            return null;
-//        }
-//        ResultData<List<SelectUsersByRoleResp>> resultData = sysDeptService.getUsersByDeptId(store.getDeptId());
-//        if(ResultDataUtil.isEmpty(resultData)){
-//            return null;
-//        }
-//        Set<Long> userIds = resultData.getData().stream().map(SelectUsersByRoleResp::getUserId).collect(Collectors.toSet());
-//        List<Admin> admins = adminDao.findListByUserIds(userIds);
-//        return admins;
         return adminDao.findListByStoreId(storeId);
     }
 
