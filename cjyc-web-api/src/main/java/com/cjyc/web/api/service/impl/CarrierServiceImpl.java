@@ -18,7 +18,6 @@ import com.cjyc.common.model.enums.transport.*;
 import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
-import com.cjyc.common.model.vo.web.SettlementDetailsVo;
 import com.cjyc.common.model.vo.web.carrier.*;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
@@ -996,16 +995,5 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             result = false;
         }
         return result;
-    }
-
-    @Override
-    public ResultVo<List<SettlementDetailsVo>> getCarrierSettlementDetails(Long carrierId) {
-        List<SettlementDetailsVo> settlementDetailsVoList = carrierDao.getCarrierSettlementDetails(carrierId);
-        if(!CollectionUtils.isEmpty(settlementDetailsVoList)){
-            settlementDetailsVoList.forEach(e->{
-                e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
-            });
-        }
-        return BaseResultUtil.success(settlementDetailsVoList);
     }
 }

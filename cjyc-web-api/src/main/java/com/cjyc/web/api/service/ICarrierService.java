@@ -5,14 +5,12 @@ import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 
-import com.cjyc.common.model.vo.web.SettlementDetailsVo;
 import com.cjyc.common.model.vo.web.carrier.TransportDriverVo;
 import com.cjyc.common.model.vo.web.carrier.TransportVehicleVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  *  @author: zj
@@ -136,10 +134,4 @@ public interface ICarrierService {
     boolean importCarrierExcel(MultipartFile file, Long loginId);
 
     /*********************************韵车集成改版 ed*****************************/
-    /**
-     * 承运商结算明细
-     * @param carrierId
-     * @return
-     */
-    ResultVo<List<SettlementDetailsVo>> getCarrierSettlementDetails(Long carrierId);
 }
