@@ -363,6 +363,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                             log.info("【支付验证】到付订单车辆{0}未支付，需即时收款{1}", orderCarNo, amount);
                         }
                     }else{
+                        //99车圈允许放车
                         if(validateIsAllowRelease(orderCar)){
                             isNeedPay = 0;
                             log.info("【支付验证】到付订单车辆{0}未支付，客户允许不支付放车", orderCarNo, amount);

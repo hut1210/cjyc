@@ -1199,7 +1199,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
     public ResultVo receipt(BaseTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
-        Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
         Set<String> successSet = Sets.newHashSet();
         Set<String> lockSet = Sets.newHashSet();
         try {
@@ -1227,8 +1226,7 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
                 WaybillCar waybillCar = waybillCarDao.findByTaskCarId(taskCarId);
                 if (waybillCar == null) {
-                    failCarNoSet.add(new FailResultReasonVo(taskCarId, "任务ID为{0}关联的运单车辆不存在", taskCarId));
-                    continue;
+                    return BaseResultUtil.fail("任务ID为{0}关联的运单车辆不存在", taskCarId);
                 }
                 String lockKey = RedisKeys.getReceiptLockKey(waybillCar.getOrderCarNo());
                 if (!redisLock.lock(lockKey, 120000, 1, 150L)) {
@@ -1237,13 +1235,22 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 }
                 lockSet.add(lockKey);
                 if (waybill.getCarrierType() != WaybillCarrierTypeEnum.SELF.code && waybillCar.getState() < WaybillCarStateEnum.LOADED.code) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆还未装车", taskCarId));
-                    continue;
+                    return BaseResultUtil.fail("运单车辆{0}还未装车", waybillCar.getOrderCarNo());
                 }
                 if (waybillCar.getState() >= WaybillCarStateEnum.UNLOADED.code) {
-                    failCarNoSet.add(new FailResultReasonVo(waybillCar.getOrderCarNo(), "运单车辆已经签收过", taskCarId));
-                    continue;
+                    return BaseResultUtil.fail("运单车辆{0}已经签收过", waybillCar.getOrderCarNo());
                 }
+                Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
+                if(order == null){
+                    return BaseResultUtil.fail("运单车辆{0}关联订单不存在", waybillCar.getOrderCarNo());
+                }
+                customerPhoneSet.add()
+            }
+            if (customerPhoneSet.size() > 1) {
+                return BaseResultUtil.fail("批量收车不能同时包含多个收车人订单");
+            }
+
+            for(Long taskCarId : paramsDto.getTaskCarIdList()){
                 Order order = orderDao.findByCarId(waybillCar.getOrderCarId());
                 if (waybill.getType() == WaybillTypeEnum.BACK.code && waybill.getCarrierType() == WaybillCarrierTypeEnum.SELF.code) {
                     waybillCarDao.updateSelfCarryForFinish(waybillCar.getId());
@@ -1278,9 +1285,9 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 waybillCarIdSet.add(waybillCar.getId());
                 orderSet.add(order.getId());
             }
-            if (customerPhoneSet.size() > 1) {
-                return BaseResultUtil.fail("批量收车不能同时包含多个收车人订单");
-            }
+
+
+
             if (CollectionUtils.isEmpty(waybillCarIdSet)) {
                 resultReasonVo.setSuccessList(successSet);
                 resultReasonVo.setFailList(failCarNoSet);
