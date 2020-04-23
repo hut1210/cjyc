@@ -1325,6 +1325,10 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
                     return BaseResultUtil.fail("车辆{0}，已被签收", orderCarNo);
                 }
+                //99车圈交付不在韵车支付
+                if(validateIsAllowRelease(orderCar)){
+
+                }
                 if (PayStateEnum.PAID.code != orderCar.getWlPayState() && BigDecimal.ZERO.compareTo(orderCar.getTotalFee()) == 0) {
                     return BaseResultUtil.fail("车辆{0}，尚未支付", orderCarNo);
                 }
@@ -1380,7 +1384,20 @@ public class CsTaskServiceImpl implements ICsTaskService {
             redisUtils.delayDelete(lockSet);
         }
     }
-
+    @Override
+    public boolean validateIsAllowRelease(OrderCar orderCar) {
+        Integer releaseCarFlag = orderCar.getReleaseCarFlag();
+        switch (releaseCarFlag){
+            case -1:
+                return true;
+            case 1:
+                return true;
+            case 9:
+                return true;
+            default:
+                return false;
+        }
+    }
     private void validateAndFinishOrder(Long orderId, UserInfo userInfo) {
         int countUnFinish = orderCarDao.countUnFinishByOrderId(orderId);
         int countUnpay = orderCarDao.countUnPayByOrderId(orderId);

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -71,22 +72,10 @@ public class CsOrderCarLogServiceImpl implements ICsOrderCarLogService {
         }
     }
 
-    @Async
-    @Override
-    public void asyncSaveBatch(Set<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
-        if (CollectionUtils.isEmpty(orderCarList)) {
-            return;
-        }
-        try {
-            orderCarList.forEach(orderCar -> asyncSave(orderCar, logTypeEnum, log, userInfo));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Async
     @Override
-    public void asyncSaveBatch(List<WaybillCar> wcs, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
+    public void asyncSaveBatch(Collection<WaybillCar> wcs, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo) {
         if (CollectionUtils.isEmpty(wcs)) {
             return;
         }

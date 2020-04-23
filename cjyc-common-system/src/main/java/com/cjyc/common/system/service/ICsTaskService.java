@@ -4,6 +4,7 @@ import com.cjyc.common.model.dto.customer.order.ReceiptBatchDto;
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
 import com.cjyc.common.model.dto.web.task.AllotTaskDto;
 import com.cjyc.common.model.dto.web.task.BaseTaskDto;
+import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.Task;
 import com.cjyc.common.model.entity.Waybill;
 import com.cjyc.common.model.entity.WaybillCar;
@@ -44,6 +45,8 @@ public interface ICsTaskService {
     ResultVo receipt(BaseTaskDto reqDto);
 
     ResultVo<ResultReasonVo> receiptBatch(ReceiptBatchDto reqDto);
+
+    boolean validateIsAllowRelease(OrderCar orderCar);
 
     /**
      * 车辆完成更新订单、运单、任务状态
