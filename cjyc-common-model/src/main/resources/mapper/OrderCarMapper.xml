@@ -40,6 +40,10 @@
         <result column="release_car_flag_time" property="releaseCarFlagTime" />
     </resultMap>
 
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, now_update_time, state, pick_type, pick_state, trunk_state, back_state, back_type, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time, finish_time, release_car_flag, release_car_flag_time
+    </sql>
     <insert id="saveBatch">
         insert into w_order_car
         (order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id,
