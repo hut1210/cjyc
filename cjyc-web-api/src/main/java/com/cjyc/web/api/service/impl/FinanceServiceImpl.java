@@ -880,7 +880,7 @@ public class FinanceServiceImpl implements IFinanceService {
             map = new HashMap();
         }
         BigDecimal payableSummary = (BigDecimal) (map.get("freightFee") == null ? BigDecimal.ZERO : map.get("freightFee"));
-        BigDecimal payablePaidSummary = (BigDecimal) (map.get("totalFreightPay" == null ? BigDecimal.ZERO : map.get("totalFreightPay")));
+        BigDecimal payablePaidSummary = (BigDecimal) (map.get("totalFreightPay") == null ? BigDecimal.ZERO : map.get("totalFreightPay"));
         countInfo.put("payableSummary", MoneyUtil.fenToYuan(payableSummary));
         countInfo.put("payablePaidSummary", MoneyUtil.fenToYuan(payablePaidSummary));
         return BaseResultUtil.success(pageInfo, countInfo);
