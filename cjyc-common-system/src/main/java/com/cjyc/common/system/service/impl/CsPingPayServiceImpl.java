@@ -329,10 +329,21 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
 
                 //是否需要支付
+                Integer releaseCarFlag = orderCar.getReleaseCarFlag();
                 if (PayModeEnum.PERIOD.code == order.getPayType()) {
-                    //账期
-                    isNeedPay = 0;
-                    log.info("【支付验证】账期订单车辆{0}不需要即时收款", orderCarNo);
+                    if(releaseCarFlag == OrderCarReleaseEnum.UNLIMIT.code) {
+                        //账期
+                        isNeedPay = 0;
+                        log.info("【支付验证】账期订单车辆{0}不需要即时收款", orderCarNo);
+                    }else{
+                        //99车圈允许放车
+                        if(validateIsAllowRelease(orderCar)){
+                            isNeedPay = 0;
+                            log.info("【支付验证】到付订单车辆{0}未支付，客户允许不支付放车", orderCarNo, amount);
+                        }else{
+                            return BaseResultUtil.fail("车辆{0}未收到交车指令, 请联系{1}工作人员4009-199-266", orderCarNo, order.getCustomerName());
+                        }
+                    }
                 } else if (PayModeEnum.PREPAY.code == order.getPayType()) {
                     //预付
                     if (PayStateEnum.PAID.code != orderCar.getWlPayState()) {
@@ -342,7 +353,6 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.info("【支付验证】预付订单车辆{0}不需要即时收款", orderCarNo);
                 } else {
                     //到付
-                    Integer releaseCarFlag = orderCar.getReleaseCarFlag();
                     if(releaseCarFlag == OrderCarReleaseEnum.UNLIMIT.code){
                         if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
                             isNeedPay = 0;

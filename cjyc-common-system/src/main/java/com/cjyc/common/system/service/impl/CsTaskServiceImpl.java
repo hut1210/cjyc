@@ -1240,8 +1240,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
                 return BaseResultUtil.fail("批量收车不能同时包含多个收车人订单");
             }
 
-
-
             Set<Long> orderSet = Sets.newHashSet();
             List<PushInfo> pushList = Lists.newArrayList();
             Map<Long, List<String>> map = Maps.newHashMap();
