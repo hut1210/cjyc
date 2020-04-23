@@ -1037,7 +1037,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
     public ResultVo<ResultReasonVo> outStore(BaseTaskDto paramsDto) {
         //返回内容
         ResultReasonVo resultReasonVo = new ResultReasonVo();
-        Set<FailResultReasonVo> failCarNoSet = Sets.newHashSet();
         Set<String> successSet = Sets.newHashSet();
         UserInfo userInfo = new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone(), paramsDto.getLoginType());
         Set<String> lockSet = Sets.newHashSet();
@@ -1152,12 +1151,6 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             //更新实时运力信息
             vehicleRunningDao.updateOccupiedNum(task.getId());
-
-            resultReasonVo.setFailList(failCarNoSet);
-            resultReasonVo.setSuccessList(successSet);
-            if (CollectionUtils.isEmpty(successSet)) {
-                return BaseResultUtil.fail(resultReasonVo);
-            }
             //添加出库日志
             csStorageLogService.asyncSaveBatch(storageLogSet);
 
@@ -1170,6 +1163,8 @@ public class CsTaskServiceImpl implements ICsTaskService {
 
             firstLoadOrderSet.forEach(o -> o.setState(OrderStateEnum.TRANSPORTING.code));
             csAmqpService.sendOrderState(firstLoadOrderSet);
+
+            resultReasonVo.setSuccessList(successSet);
             return BaseResultUtil.success(resultReasonVo);
         } finally {
             redisUtils.delayDelete(lockSet);
