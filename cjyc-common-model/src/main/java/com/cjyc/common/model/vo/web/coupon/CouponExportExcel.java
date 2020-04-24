@@ -15,21 +15,21 @@ public class CouponExportExcel implements Serializable {
     private String name;
     @Excel(name = "优惠券类型" ,orderNum = "1",width = 25)
     private Integer type;
-    @Excel(name = "满额价" ,orderNum = "2",width = 25)
+    @Excel(name = "满额价" ,orderNum = "2",width = 25, type = 10)
     private BigDecimal fullAmount;
     @Excel(name = "减额值" ,orderNum = "3",width = 25)
     private BigDecimal cutAmount;
     @Excel(name = "折扣" ,orderNum = "4",width = 25)
     private BigDecimal discount;
-    @Excel(name = "发放张数" ,orderNum = "5",width = 25)
+    @Excel(name = "发放张数" ,orderNum = "5",width = 25, type = 10)
     private Integer grantNum;
-    @Excel(name = "领取张数" ,orderNum = "6",width = 25)
+    @Excel(name = "领取张数" ,orderNum = "6",width = 25, type = 10)
     private Integer receiveNum;
-    @Excel(name = "消耗张数" ,orderNum = "7",width = 25)
+    @Excel(name = "消耗张数" ,orderNum = "7",width = 25, type = 10)
     private Integer consumeNum;
-    @Excel(name = "到期作废张数" ,orderNum = "8",width = 25)
+    @Excel(name = "到期作废张数" ,orderNum = "8",width = 25, type = 10)
     private Integer expireDeleNum;
-    @Excel(name = "剩余可用张数" ,orderNum = "9",width = 25)
+    @Excel(name = "剩余可用张数" ,orderNum = "9",width = 25, type = 10)
     private Integer surplusAvailNum;
     @Excel(name = "是否永久" ,orderNum = "10",width = 25)
     private Integer isForever;
