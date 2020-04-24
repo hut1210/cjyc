@@ -482,6 +482,17 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     }
                 } else {//自动打款模式
                     log.info("【自动打款模式】运单Id {}", waybillId);
+                    /**
+                     * 限制测试人员在准生产环境打款金额超出1元
+                     */
+                    Config preSystem = configDao.getByItemKey("pre_system");
+                    if (preSystem != null && preSystem.getId() != null) {
+                        BigDecimal amtTemp = waybill.getFreightFee();
+                        if (amtTemp != null && new BigDecimal(100).compareTo(amtTemp) < 0) {
+                            log.info("准生产打款金额不能超过1元，运单号：{}", waybill.getNo());
+                            return;
+                        }
+                    }
                     if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
                         if (baseCarrierVo != null) {
                             if (waybillSettleType.getSettleType() == 0) {
@@ -678,6 +689,17 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 Long carrierId = waybill.getCarrierId();
                 BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                 log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
+                /**
+                 * 限制测试人员在准生产环境打款金额超出1元
+                 */
+                Config preSystem = configDao.getByItemKey("pre_system");
+                if (preSystem != null && preSystem.getId() != null) {
+                    BigDecimal amtTemp = waybill.getFreightFee();
+                    if (amtTemp != null && new BigDecimal(100).compareTo(amtTemp) < 0) {
+                        log.info("准生产打款金额不能超过1元，运单号：{}", waybill.getNo());
+                        return BaseResultUtil.fail("准生产打款金额不能超过1元");
+                    }
+                }
                 if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
                     if (baseCarrierVo != null) {
                         if (waybillSettleType.getSettleType() == 0) {
