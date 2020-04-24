@@ -996,4 +996,20 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
         }
         return result;
     }
+
+    /**
+     * 承运商结算明细
+     * @param carrierId
+     * @return
+     */
+    @Override
+    public ResultVo<List<SettlementDetailsVo>> getCarrierSettlementDetails(Long carrierId) {
+        List<SettlementDetailsVo> settlementDetailsVoList = carrierDao.getCarrierSettlementDetails(carrierId);
+        if (!CollectionUtils.isEmpty(settlementDetailsVoList)) {
+            settlementDetailsVoList.forEach(e -> {
+                e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
+            });
+        }
+        return BaseResultUtil.success(settlementDetailsVoList);
+    }
 }
