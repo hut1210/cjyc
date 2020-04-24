@@ -46,7 +46,7 @@ public class TrunkCarDetailExportVo implements Serializable {
 
     @ApiModelProperty(value = "运费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
-    @Excel(name = "下游运费(元)", orderNum = "5",width = 15)
+    @Excel(name = "下游运费(元)", orderNum = "5",width = 15, type = 10)
     private BigDecimal freightFee;
 
     @ApiModelProperty(value = "省")

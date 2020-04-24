@@ -72,7 +72,7 @@ public class OrderCar implements Serializable {
     private Integer isNew;
 
     @ApiModelProperty(value = "估值/万")
-    @Excel(name = "车值(万元)", orderNum = "12")
+    @Excel(name = "车值(万元)", orderNum = "12", type = 10)
     private Integer valuation;
 
     @ApiModelProperty(value = "当前所在地所属业务中心")
@@ -127,7 +127,7 @@ public class OrderCar implements Serializable {
     private BigDecimal addInsuranceFee;
 
     @ApiModelProperty(value = "保额/万")
-    @Excel(name = "追保额(万元)", orderNum = "13")
+    @Excel(name = "追保额(万元)", orderNum = "13", type = 10)
     private Integer addInsuranceAmount;
 
     @ApiModelProperty(value = "物流券抵消金额")

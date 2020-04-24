@@ -18,7 +18,7 @@ public class StoreExportExcel implements Serializable {
     @Excel(name = "业务中心名称" ,orderNum = "0",width = 15)
     private String name;
 
-    @Excel(name = "管辖范围" ,orderNum = "1",width = 15)
+    @Excel(name = "管辖范围" ,orderNum = "1",width = 15, type = 10)
     private Integer areaCount;
 
     @Excel(name = "所属大区" ,orderNum = "2",width = 15)
