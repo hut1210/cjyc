@@ -43,11 +43,11 @@ public class AdvancePaymentVo implements Serializable {
     @Excel(name = "实收运费" ,orderNum = "6",type = 10)
     private BigDecimal freightPay;
 
-    @ApiModelProperty(value = "支付时间")
+    @ApiModelProperty(value = "收款时间")
     private Long payTime;
 
-    @ApiModelProperty(value = "支付时间")
-    @Excel(name = "支付时间" ,orderNum = "7")
+    @ApiModelProperty(value = "收款时间")
+    @Excel(name = "收款时间" ,orderNum = "7")
     private String payTimeStr;
 
     public String getPayTimeStr() {
@@ -62,10 +62,10 @@ public class AdvancePaymentVo implements Serializable {
     @Excel(name = "订单编号" ,orderNum = "8")
     private String orderNo;
 
-    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    @ApiModelProperty(value = "支付方式：0到付（默认），1预付，2账期")
     private Integer payType;
 
-    @ApiModelProperty(value = "客户付款方式：0到付（默认），1预付，2账期")
+    @ApiModelProperty(value = "支付方式：0到付（默认），1预付，2账期")
     @Excel(name = "支付方式" ,orderNum = "9")
     private String payTypeStr;
 

@@ -140,4 +140,6 @@ public interface ITaskDao extends BaseMapper<Task> {
     int updateForCancel(Long id);
 
     int updateForOver(@Param("id") Long id, @Param("state") Integer state);
+
+    List<DriverCarCountVo> findDriverCarStatis(@Param("beforeEndDay") Long beforeEndDay);
 }

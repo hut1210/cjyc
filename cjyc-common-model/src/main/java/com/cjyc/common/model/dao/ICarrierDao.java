@@ -1,6 +1,5 @@
 package com.cjyc.common.model.dao;
 
-import com.cjyc.common.model.dto.driver.AppDriverDto;
 import com.cjyc.common.model.dto.web.carrier.*;
 import com.cjyc.common.model.dto.web.driver.DriverDto;
 import com.cjyc.common.model.dto.CarrierDriverDto;
@@ -213,5 +212,4 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     Integer existBusinessCarrierExcel(@Param("carrierId") Long carrierId,@Param("phone") String phone,@Param("idCard") String idCard);
-
 }
