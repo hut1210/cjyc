@@ -655,8 +655,11 @@ public class FinanceServiceImpl implements IFinanceService {
         PageInfo<PayablePaidVo> pageInfo = new PageInfo<>(payablePaidList);
         Map countInfo = getCountInfo();
         Map map = financeDao.payablePaidSummary(payablePaidQueryDto);
-        BigDecimal payableSummary = (BigDecimal) map.get("freightFee");
-        BigDecimal payablePaidSummary = (BigDecimal) map.get("totalFreightPay");
+        if (map == null) {
+            map = new HashMap();
+        }
+        BigDecimal payableSummary = (BigDecimal) (map.get("freightFee") == null ? BigDecimal.ZERO : map.get("freightFee"));
+        BigDecimal payablePaidSummary = (BigDecimal) (map.get("totalFreightPay") == null ? BigDecimal.ZERO : map.get("totalFreightPay"));
         countInfo.put("payableSummary", MoneyUtil.fenToYuan(payableSummary));
         countInfo.put("payablePaidSummary", MoneyUtil.fenToYuan(payablePaidSummary));
         return BaseResultUtil.success(pageInfo, countInfo);

@@ -76,4 +76,6 @@ public interface IOrderDao extends BaseMapper<Order> {
     int countUnArriveStore(Long id);
 
     int updateForPaid(Long orderId);
+
+    List<Order> findDayOrderStatis(@Param("beforeEndDay") Long beforeEndDay);
 }
