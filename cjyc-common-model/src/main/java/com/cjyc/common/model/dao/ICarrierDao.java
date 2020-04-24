@@ -212,4 +212,11 @@ public interface ICarrierDao extends BaseMapper<Carrier> {
      * @return
      */
     Integer existBusinessCarrierExcel(@Param("carrierId") Long carrierId,@Param("phone") String phone,@Param("idCard") String idCard);
+
+    /**
+     * 承运商结算明细
+     * @param carrierId
+     * @return
+     */
+    List<SettlementDetailsVo> getCarrierSettlementDetails(Long carrierId);
 }
