@@ -46,4 +46,16 @@ public class HandleDataController {
     public ResultVo deleteRoleAndUser(@PathVariable Long roleId) {
         return ycStatisticsService.deleteRoleAndUser(roleId);
     }
+
+    @ApiOperation(value = "统计司机运输数据")
+    @PostMapping("/driverStatis")
+    public ResultVo driverStatis() {
+        return ycStatisticsService.driverStatis();
+    }
+
+    @ApiOperation(value = "统计用户下单量")
+    @PostMapping("/customerOrderStatis")
+    public ResultVo customerOrderStatis() {
+        return ycStatisticsService.customerOrderStatis();
+    }
 }

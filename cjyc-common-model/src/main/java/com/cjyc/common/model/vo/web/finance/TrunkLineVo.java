@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,6 +21,8 @@ public class TrunkLineVo implements Serializable {
 
     @ApiModelProperty(value = "运单号")
     private String wayBillNo;
+    @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单")
+    private Integer type;
     @ApiModelProperty(value = "名称")
     private String name;
     @ApiModelProperty(value = "结算类型")

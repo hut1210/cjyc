@@ -10,8 +10,10 @@ import com.cjyc.common.model.dto.web.handleData.YcStatisticsDto;
 import com.cjyc.common.model.entity.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.util.BaseResultUtil;
+import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.PositionUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.task.DriverCarCountVo;
 import com.cjyc.common.system.feign.ISysRoleService;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.util.ResultDataUtil;
@@ -23,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +56,14 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
     private ICarrierDao carrierDao;
     @Resource
     private ICustomerDao customerDao;
+    @Resource
+    private ITaskDao taskDao;
+    @Resource
+    private IDriverCarCountDao driverCarCountDao;
+    @Resource
+    private IOrderDao orderDao;
+    @Resource
+    private ICustomerCountDao customerCountDao;
     @Resource
     private ISysRoleService sysRoleService;
     @Resource
@@ -201,4 +212,53 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
         roleDao.delete(new QueryWrapper<Role>().lambda().eq(Role::getRoleId,roleId));
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo driverStatis() {
+        //获取当天的开始时间
+        LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(System.currentTimeMillis());
+        //获取前一天结束时间
+        Long beforeEndDay = LocalDateTimeUtil.getMillisByLDT(dayStartByLong) - 1;
+        List<DriverCarCountVo> driverCars = taskDao.findDriverCarStatis(beforeEndDay);
+        if(!CollectionUtils.isEmpty(driverCars)){
+            for(DriverCarCountVo vo : driverCars){
+                DriverCarCount dcc = new DriverCarCount();
+                dcc.setCarNum(1);
+                dcc.setDriverId(vo.getDriverId());
+                dcc.setIncome(vo.getFreightFee());
+                dcc.setCreateTime(System.currentTimeMillis());
+                driverCarCountDao.insert(dcc);
+            }
+        }
+        return BaseResultUtil.success();
+    }
+
+    @Override
+    public ResultVo customerOrderStatis() {
+        List<Order> dayOrders = findBeforeDayOrder();
+        if(!CollectionUtils.isEmpty(dayOrders)){
+            for(Order order : dayOrders){
+                CustomerCount count = new CustomerCount();
+                count.setCustomerId(order.getCustomerId());
+                count.setOrderNo(order.getNo());
+                count.setCreateTime(System.currentTimeMillis());
+                customerCountDao.insert(count);
+            }
+        }
+        return BaseResultUtil.success();
+    }
+
+    /**
+     * 获取前一天所有订单
+     * @return
+     */
+    private List<Order> findBeforeDayOrder(){
+        //获取当天的开始时间
+        LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(System.currentTimeMillis());
+        //获取前一天结束时间
+        Long beforeEndDay = LocalDateTimeUtil.getMillisByLDT(dayStartByLong) - 1;
+        //查询前一天所有下的单
+        return orderDao.findDayOrderStatis(beforeEndDay);
+    }
+
 }

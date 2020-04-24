@@ -446,6 +446,9 @@
         <if test="customerName != null  and customerName.trim() != ''">
             and cc.name like concat('%',#{customerName},'%')
         </if>
+        <if test="contactPhone != null  and contactPhone.trim() != ''">
+            and cc.contact_phone = #{contactPhone}
+        </if>
         <if test="brand != null and brand.trim() != ''">
             and woc.brand = #{brand}
         </if>
@@ -479,6 +482,16 @@
         <if test="endAreaCode != null and endAreaCode.trim() != ''">
             and wo.end_area_code = #{endAreaCode}
         </if>
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time &gt;= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
+
     </sql>
     <sql id="payMentListHeader">
         select DISTINCT(woc.no),woc.vin,woc.brand,woc.model,
@@ -494,8 +507,9 @@
         wo.input_store_name as inputStoreName,
         wo.customer_name as customerName,
         wo.customer_contract_id as customerContractId,
-        woc.finish_time as deliveryDate,woc.finish_time,
-        woc.wl_pay_time as payTime
+        woc.finish_time as deliveryDate,
+        woc.wl_pay_time as payTime,
+        wo.pay_type as payType
         from w_order_car woc
         left join w_order wo on woc.order_id = wo.id
         left join c_customer cc on cc.id = wo.customer_id
@@ -561,7 +575,7 @@
         where wo.pay_type!=2 and wo.customer_type=2 and wo.state=100 and wo.customer_contract_id is null
         <include refid="payMentListCondition"></include>
         group by woc.no
-        ) t order by t.finish_time desc
+        ) t order by t.deliveryDate desc, t.payTime desc
     </select>
 
     <select id="getAdvancePayment" resultType="com.cjyc.common.model.vo.web.finance.AdvancePaymentVo">
@@ -589,6 +603,13 @@
         <if test="payType != null">
             and wo.pay_type = #{payType}
         </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
+
         union
 
         select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
@@ -615,6 +636,12 @@
         <if test="payType != null">
             and wo.pay_type = #{payType}
         </if>
+        <if test="receiveStartTime!= null">
+            and woc.wl_pay_time >= #{receiveStartTime}
+        </if>
+        <if test="receiveEndTime!= null">
+            and woc.wl_pay_time &lt;= #{receiveEndTime}
+        </if>
         order by payTime desc
     </select>
 
@@ -630,16 +657,17 @@
             resultType="com.cjyc.common.model.vo.web.finance.PaidVo">
         select ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
-        if(dc.settle_type=0,'时付','账期') as settleType,
+        if(wst.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
         wt.driver_phone as driverPhone,
         wt.vehicle_plate_no as vehiclePlateNo
         from w_waybill ww
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
-        where dc.settle_type=0 and ww.freight_pay_state=1
+        where wst.settle_type=0 and ww.freight_pay_state=1
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
@@ -674,7 +702,7 @@
             resultType="com.cjyc.common.model.vo.web.finance.PaidNewVo">
         select ww.id as waybillId,ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
-        if(dc.settle_type=0,'时付','账期') as settleType,
+        if(wst.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
@@ -684,9 +712,10 @@
         fep.operator
         from f_external_payment fep
         left join w_waybill ww on fep.waybill_id = ww.id
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
-        where dc.settle_type=0
+        where wst.settle_type=0
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
         </if>
@@ -728,7 +757,7 @@
         select DISTINCT(ww.id) as waybillId,ww.no as waybillNo,ww.complete_time as completeTime,
         ww.freight_fee as freightFee,ww.type,
         if(ww.freight_pay_state=1,ftb.amount,0) as freightFeePayable,
-        if(dc.settle_type=0,'时付','账期') as settleType,
+        if(wst.settle_type=0,'时付','账期') as settleType,
         ww.guide_line as guideLine,ww.carrier_id,
         ww.carrier_name as carrierName,
         wt.driver_name as driverName,
@@ -753,13 +782,14 @@
         sbcb.province_name as provinceName,
         sbcb.area_name as areaName
         from w_waybill ww
+        left join w_waybill_settle_type wst on wst.waybill_no=ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
         left join f_external_payment fep on fep.waybill_id=ww.id
         left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id=ftbd.trade_bill_id
-        where dc.settle_type=0 and ww.state=100 and wt.state &lt;= 100
+        where wst.settle_type=0 and ww.state=100 and wt.state &lt;= 100
         and ww.carrier_type in (1,2,4,5)
         <if test="waybillNo != null and waybillNo.trim() != ''">
             and ww.no like concat('%',#{waybillNo},'%')
@@ -793,7 +823,13 @@
         <if test="operator!= null and operator.trim() != ''">
             and fep.operator like concat('%',#{operator},'%')
         </if>
-        order by ww.complete_time desc
+        <if test="payStartTime!= null">
+            and ww.freight_pay_time &gt;= #{payStartTime}
+        </if>
+        <if test="payEndTime!= null">
+            and ww.freight_pay_time &lt;= #{payEndTime}
+        </if>
+        order by ww.complete_time desc, ww.freight_pay_time desc
     </select>
 
     <select id="getCollectReceiveList" parameterType="com.cjyc.common.model.dto.web.finance.CollectReceiveQueryDto"
@@ -835,14 +871,15 @@
         wt.driver_name as driverName,
         wt.driver_phone as driverPhone,
         wt.vehicle_plate_no as vehiclePlateNo,
-        if(dc.settle_type=0,'时付','账期') as settleTypeName,
+        if(wst.settle_type=0,'时付','账期') as settleTypeName,
         wt.car_num as carNum,
         ww.guide_line as transportLine,
-        dc.settle_period as settlePeriod
+        wst.settle_period as settlePeriod
         from w_task wt
         left join w_waybill ww on ww.no = wt.waybill_no
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id = ww.carrier_id
-        where dc.settle_type = 1
+        where wst.settle_type = 1
         and wt.complete_time &gt; 0
         and carrier_type in (1,2,4,5)
         and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
@@ -1050,7 +1087,7 @@
             and bd.name like concat('%',#{writeOffMan},'%')
         </if>
         <if test="invoiceNo !=null and invoiceNo.trim!=''">
-            and fp.invoice_no lifp.writeoff_timeke concat('%',#{invoiceNo},'%')
+            and fp.invoice_no like concat('%',#{invoiceNo},'%')
         </if>
         order by fp.writeoff_time desc
     </select>
@@ -1126,7 +1163,7 @@
         <if test="operator !=null and operator.trim() !=''">
             and fep.operator like concat('%',#{operator},'%')
         </if>
-        order by wo.finish_time desc
+        order by wo.finish_time desc, wo.service_fee_pay_time desc
     </select>
     <select id="getFinanceDetailList" resultType="com.cjyc.common.model.vo.web.finance.ExportFinanceDetailVo">
         select DISTINCT(woc.no),woc.brand,woc.model,woc.vin,wo.input_store_name as inputStoreName,
@@ -1136,7 +1173,7 @@
                 when ww.type=2 then '干线运单'
                 when ww.type=3 then '送车运单'
         END) as wayBillTypeName,
-        dc.settle_type as settleType,
+        wst.settle_type as settleType,
         wwc.freight_fee as freightFee,
         if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
         (CASE
@@ -1159,6 +1196,7 @@
         left join w_order wo on wo.id = woc.order_id
         LEFT JOIN w_waybill_car wwc on wwc.order_car_id = woc.id
         left join w_waybill ww on wwc.waybill_id = ww.id
+         left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id =ww.carrier_id
         left join f_trade_bill_detail ftbd on ftbd.source_no = ww.id
         left join f_trade_bill ftb on ftb.id = ftbd.trade_bill_id
@@ -1175,8 +1213,9 @@
         select wt.no
         from w_task wt
         left join w_waybill ww on ww.no = wt.waybill_no
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id = ww.carrier_id
-        where dc.settle_type = 1
+        where wst.settle_type = 1
         and wt.complete_time > 0
         and carrier_type in (1,2,4,5)
         and wt.no not in (select IFNULL(fpd.no,'') from f_payable_detail fpd)
@@ -1326,7 +1365,7 @@
             and bd.name like concat('%',#{writeOffMan},'%')
         </if>
         <if test="invoiceNo !=null and invoiceNo.trim!=''">
-            and fp.invoice_no lifp.writeoff_timeke concat('%',#{invoiceNo},'%')
+            and fp.invoice_no like concat('%',#{invoiceNo},'%')
         </if>) t
     </select>
     <!--账期应收账款列表查询开始-->
@@ -1480,5 +1519,37 @@
         SELECT fpd.no as taskNo,fp.writeoff_time as writeOffTime FROM f_payable_detail fpd
         LEFT JOIN f_payable fp on fpd.serial_number = fp.serial_number
         WHERE fpd.no like concat('%',#{wayBillNo},'%') and fp.state=2
+    </select>
+
+
+    <!-- 获取车辆成本类表数据-->
+    <select id="getCostList" resultType="com.cjyc.common.model.vo.web.finance.TrunkLineVo">
+        select ww.no as wayBillNo,
+        ww.carrier_name as name,ww.type,
+        wwc.freight_fee as freightFee,
+        if(ww.freight_pay_state=1,wwc.freight_fee,0) as paidFreightFee,
+        ww.freight_pay_time as payTime,
+        wst.settle_type as settleType,
+        (CASE
+            when ww.freight_pay_state=2 then '付款中'
+            when ww.freight_pay_state=1 then '已付款'
+            when ww.freight_pay_state=0 then '未付款'
+            when ww.freight_pay_state=-2 then '支付失败'
+        END) as payState,
+        (CASE
+            when dc.type=1 then '个人司机'
+            when dc.type=2 then '承运商'
+        END) as carrierType,
+        dc.linkman_phone as phone,
+        wwc.start_city as pickUpPlace,
+        wwc.end_city as deliveryPlace
+
+        from w_waybill_car wwc
+        left join w_waybill ww on wwc.waybill_no = ww.no
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
+        left join d_carrier dc on ww.carrier_id = dc.id
+        where wwc.order_car_no = #{orderCarNo}
+        and wwc.state = 100 and ww.carrier_type in (1,2,4,5)
+        order by ww.create_time desc
     </select>
 </mapper>

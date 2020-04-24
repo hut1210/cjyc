@@ -1,7 +1,6 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.annotations.MapV2K;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
@@ -176,9 +175,8 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int updateForReceiptBatch(@Param("collection") Collection<Long> orderCarIdSet);
 
     int updateForPaySuccess(@Param("orderCarId") Long orderCarId, @Param("areaCode") String areaCode);
-    int updateForPrePaySuccess(Long orderCarId);
 
-    List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
+    int updateForPrePaySuccess(Long orderCarId);
 
     List<WaitDispatchCarListVo> findWaitDispatchCarListForApp(@Param("param") DispatchListDto paramsDto);
 

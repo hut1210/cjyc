@@ -47,4 +47,16 @@ public interface IYcStatisticsService extends IService<YcStatistics> {
      */
     ResultVo deleteRoleAndUser(Long roleId);
 
+    /**
+     * 统计司机运输
+     * @return
+     */
+    ResultVo driverStatis();
+
+    /**
+     * 统计客户下单量
+     * @return
+     */
+    ResultVo customerOrderStatis();
+
 }

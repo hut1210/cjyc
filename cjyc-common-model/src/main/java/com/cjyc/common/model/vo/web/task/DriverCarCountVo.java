@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 @Data
 public class DriverCarCountVo implements Serializable {
     private static final long serialVersionUID = 8068240596162913108L;
@@ -18,4 +20,7 @@ public class DriverCarCountVo implements Serializable {
 
     @ApiModelProperty("订单车辆id")
     private Long orderCarId;
+
+    @ApiModelProperty("运费")
+    private BigDecimal freightFee;
 }
