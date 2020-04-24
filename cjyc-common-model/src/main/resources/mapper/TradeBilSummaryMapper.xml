@@ -376,6 +376,9 @@
         <if test="receiveEndTime!= null">
             and woc.wl_pay_time &lt;= #{receiveEndTime}
         </if>
+        <if test="payType != null">
+            and wo.pay_type = #{payType}
+        </if>
     </sql>
     <select id="receiptSummary" resultType="java.math.BigDecimal">
         select sum(total_fee) from
@@ -451,11 +454,12 @@
         select sum(t.freight_fee) from (select DISTINCT(ww.id) as waybillId,
         ww.freight_fee
         from w_waybill ww
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
         left join f_external_payment fep on fep.waybill_id=ww.id
         left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
-        where dc.settle_type=0 and ww.state=100
+        where wst.settle_type=0 and ww.state=100
         and ww.carrier_type in (1,2,4,5)
         <include refid="carrierSummary"></include>
         ) t
@@ -469,6 +473,12 @@
         </if>
         <if test="completeEndTime!= null">
             and ww.complete_time &lt;= #{completeEndTime}
+        </if>
+        <if test="payStartTime!= null">
+            and ww.freight_pay_time &gt;= #{payStartTime}
+        </if>
+        <if test="payEndTime!= null">
+            and ww.freight_pay_time &lt;= #{payEndTime}
         </if>
         <if test="waybillType!= null">
             and ww.type =#{waybillType}
@@ -506,11 +516,12 @@
         from f_trade_bill ftb
         left join f_trade_bill_detail ftbd on ftb.id = ftbd.trade_bill_id
         left join w_waybill ww on ww.id = ftbd.source_no
+        left join w_waybill_settle_type wst on wst.waybill_no = ww.no
         left join d_carrier dc on dc.id=ww.carrier_id
         left join w_task wt on wt.waybill_id = ww.id
         left join f_external_payment fep on fep.waybill_id=ww.id
         left join s_bank_card_bind sbcb on sbcb.user_id = ww.carrier_id
-        where dc.settle_type=0 and ww.state=100 and ftb.type=20 and ftb.state=2
+        where wst.settle_type=0 and ww.state=100 and ftb.type=20 and ftb.state=2
         and ww.carrier_type in (1,2,4,5)
         <include refid="carrierSummary"></include>
         )t
@@ -684,6 +695,7 @@
         left join w_order wo on wo.id= woc.order_id
         where (wo.state &lt; 100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=1
         <include refid="advancePaymentSummaryCondition"></include>
+
         union
 
         select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
@@ -716,6 +728,7 @@
         left join w_order wo on wo.id= woc.order_id
         where (wo.state &lt; 100 or wo.state=113) and woc.wl_pay_state=2 and wo.pay_type=1
         <include refid="advancePaymentSummaryCondition"></include>
+
         union
 
         select woc.no,woc.vin,woc.brand,woc.model,woc.total_fee as freightReceivable,
