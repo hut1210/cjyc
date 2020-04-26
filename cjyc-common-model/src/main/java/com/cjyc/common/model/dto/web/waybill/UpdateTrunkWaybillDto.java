@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.waybill;
 
 import com.cjyc.common.model.constant.ArgsConstant;
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,13 +10,7 @@ import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 @Data
-public class UpdateTrunkWaybillDto {
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "用户ID", required = true)
-    private Long loginId;
-
-    @ApiModelProperty(hidden = true)
-    private String loginName;
+public class UpdateTrunkWaybillDto extends BaseLoginDto {
 
     @NotNull(message = "运单id不能为空")
     @ApiModelProperty(value = "运单ID", required = true)

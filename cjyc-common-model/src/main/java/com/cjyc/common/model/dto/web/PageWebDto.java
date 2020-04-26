@@ -1,17 +1,30 @@
 package com.cjyc.common.model.dto.web;
 
-import com.cjyc.common.model.dto.BasePageDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Set;
-
 @Data
-public class PageWebDto extends BasePageDto {
-    @ApiModelProperty("登录人ID")
-    private Long loginId;
-    @ApiModelProperty("角色ID")
-    private Long roleId;
-    @ApiModelProperty(value = "业务范围(无需传参)", hidden = true)
-    private Set<Long> bizScope;
+public class PageWebDto extends BaseWebDto {
+
+    @ApiModelProperty(value = "当前页")
+    private Integer currentPage;
+
+    @ApiModelProperty(value = "每页条数")
+    private Integer pageSize;
+
+    public Integer getCurrentPage() {
+        return currentPage == null || currentPage == 0 ? 1 : currentPage;
+    }
+
+    public Integer getPageSize() {
+        return pageSize == null  || pageSize == 0 ? 20 : pageSize;
+    }
+
+    public void setCurrentPage(Integer currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
 }

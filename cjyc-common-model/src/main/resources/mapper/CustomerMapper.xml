@@ -21,6 +21,7 @@
         <result column="id_card_front_img" property="idCardFrontImg" />
         <result column="id_card_back_img" property="idCardBackImg" />
         <result column="type" property="type" />
+        <result column="release_car_limit" property="releaseCarLimit" />
         <result column="source" property="source" />
         <result column="company_id" property="companyId" />
         <result column="state" property="state" />
@@ -35,7 +36,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, source, company_id, state, pay_mode, settle_period, register_time, create_user_id, create_time, check_time, check_user_id
+        id, user_id, customer_no, name, alias, contact_man, contact_phone, contact_address, customer_nature, social_credit_code, initial, photo_img, sex, id_card, id_card_front_img, id_card_back_img, type, release_car_limit, source, company_id, state, pay_mode, settle_period, register_time, create_user_id, create_time, check_time, check_user_id
     </sql>
 
     <sql id="Base_Column_Customer_List">

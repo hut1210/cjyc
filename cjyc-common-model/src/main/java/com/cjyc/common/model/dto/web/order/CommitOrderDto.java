@@ -42,6 +42,8 @@ public class CommitOrderDto extends BaseLogin2Dto {
     private Integer customerType;
     @ApiModelProperty(value = "客户id")
     private Long customerId;
+    @ApiModelProperty(hidden = true)
+    private Boolean releaseCarFlag;
     //@NotBlank(message = "客户电话不能为空")
     @Pattern(regexp = "(^$)|(^[1]\\d{10}$)", message = "手机号格式不正确")
     @ApiModelProperty(value = "客户电话", required = true)

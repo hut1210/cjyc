@@ -1127,6 +1127,9 @@
         and r.role_name = '承运商超级管理员'
 
     </select>
+    <select id="getEnabledById" resultType="com.cjyc.common.model.entity.Driver">
+
+    </select>
 
 
 </mapper>
