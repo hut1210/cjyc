@@ -1,12 +1,7 @@
 package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.cjkj.common.redis.lock.RedisDistributedLock;
-import com.cjkj.common.redis.template.StringRedisUtil;
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.waybill.*;
@@ -237,7 +232,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setCarNum(1);
                 waybill.setState(getWaybillState(carrierInfo.getCarryType()));
                 //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
-                waybill.setFreightFee(getLocalWaybillFreightFee(waybill, orderCar));
+                waybill.setFreightFee(paramsDto.getFreightFee() == null ? getLocalWaybillFreightFee(waybill, orderCar) : paramsDto.getFreightFee());
+                //waybill.setFreightFee(getLocalWaybillFreightFee(waybill, orderCar));
                 waybill.setRemark(dto.getRemark());
                 waybill.setCreateTime(currentMillisTime);
                 waybill.setCreateUser(paramsDto.getLoginName());
@@ -481,7 +477,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierType(carrierInfo.getCarryType());
             waybill.setState(getWaybillState(carrierInfo.getCarryType()));
             //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
-            waybill.setFreightFee(getLocalWaybillFreightFee(waybill, orderCar));
+            waybill.setFreightFee(paramsDto.getFreightFee() == null ? getLocalWaybillFreightFee(waybill, orderCar) : paramsDto.getFreightFee());
             waybill.setRemark(paramsDto.getRemark());
             waybill.setFixedFreightFee(false);
             waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode(), null, 1));
