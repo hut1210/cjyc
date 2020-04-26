@@ -20,9 +20,11 @@ public class AppSettlementPayableDto {
     @ApiModelProperty(value = "操作人id", required = true)
     private Long loginId;
 
-    @ApiModelProperty(value = "运单单号集合")
-    private List<String> taskNo;
+    @ApiModelProperty(value = "应付账款-申请开票明细集合")
+    private List<AppSettlementPayableDetailsDto> listAppSettlementPayableDetails;
 
     @ApiModelProperty(value = "应付总运费")
     private BigDecimal freightFee;
+
+
 }
