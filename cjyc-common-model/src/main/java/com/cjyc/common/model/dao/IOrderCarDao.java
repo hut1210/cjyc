@@ -1,7 +1,6 @@
 package com.cjyc.common.model.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cjyc.common.model.annotations.MapV2K;
 import com.cjyc.common.model.dto.customer.invoice.InvoiceApplyQueryDto;
 import com.cjyc.common.model.dto.salesman.BaseSalesDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
@@ -176,17 +175,16 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int updateForReceiptBatch(@Param("collection") Collection<Long> orderCarIdSet);
 
     int updateForPaySuccess(@Param("orderCarId") Long orderCarId, @Param("areaCode") String areaCode);
-    int updateForPrePaySuccess(Long orderCarId);
 
-    List<OrderCarWaitDispatchVo> findWaitDispatchCarList(@Param("paramsDto") WaitDispatchListOrderCarDto paramsDto);
+    int updateForPrePaySuccess(Long orderCarId);
 
     List<WaitDispatchCarListVo> findWaitDispatchCarListForApp(@Param("param") DispatchListDto paramsDto);
 
     List<OrderCarWaitDispatchVo> findWaitDispatchTrunkCarList(@Param("paramsDto") WaitDispatchTrunkDto paramsDto);
 
-    List<OrderCar> findListByIds(@Param("list") List<Long> orderCarIdList);
+    List<OrderCar> findListByIds(@Param("list") Collection<Long> orderCarIdList);
 
-    List<OrderCar> findListByNos(@Param("list") List<String> orderCarNos);
+    List<OrderCar> findListByNos(@Param("list") Collection<String> orderCarNos);
 
     /**
      * 业务员端我的库存车辆
@@ -300,4 +298,9 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int countForChechRepeatPlateNo(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("plateNo") String plateNo);
 
     int countForChechRepeatVin(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("vin") String vin);
+
+    int updateReleaseFlagByOrderNos(@Param("collection") Collection<String> orderNoSet, @Param("releaseFlag") Integer releaseFlag);
+    int updateReleaseFlagByNos(@Param("collection") Collection<String> noSet, @Param("releaseFlag") Integer releaseFlag);
+
+    List<OrderCar> findListbyOrderNos(@Param("collection") Collection<String> orderNoSet);
 }

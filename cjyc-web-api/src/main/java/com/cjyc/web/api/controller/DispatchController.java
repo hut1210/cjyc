@@ -102,9 +102,11 @@ public class DispatchController {
      */
     @ApiOperation(value = "查询待调度车辆统计")
     @PostMapping(value = "/wait/count/list/{roleId}/{loginId}")
-    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@PathVariable Long loginId,
-                                                                          @PathVariable Long roleId) {
-        return orderService.waitDispatchCarCountListV2(new BaseWebDto(loginId, roleId));
+    public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@PathVariable Long loginId, @PathVariable Long roleId) {
+        BaseWebDto dto = new BaseWebDto();
+        dto.setLoginId(loginId);
+        dto.setLoginId(roleId);
+        return orderService.waitDispatchCarCountListV2(dto);
     }
 
     /**
@@ -169,7 +171,7 @@ public class DispatchController {
     /**
      * @author JPG
      */
-    @ApiOperation(value = "根据订单车辆ID查询可调度起始地和目的地")
+    @ApiOperation(value = "修改提送车方式")
     @PostMapping(value = "/car/carry/type/update")
     public ResultVo changeOrderCarCarryType(@Validated @RequestBody ChangeCarryTypeDto dtoList) {
         return csOrderService.changeOrderCarCarryType(dtoList);

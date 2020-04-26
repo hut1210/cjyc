@@ -5,7 +5,9 @@ import com.cjyc.common.model.dto.salesman.order.SalesOrderQueryDto;
 import com.cjyc.common.model.dto.salesman.order.SalesmanQueryDto;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.enums.AdminStateEnum;
 import com.cjyc.common.model.enums.PayModeEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.enums.order.OrderPickTypeEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
@@ -25,7 +27,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -101,14 +106,12 @@ public class OrderController {
     @ApiOperation(value = "直接提交并审核")
     @PostMapping(value = "/simple/commit")
     public ResultVo simpleCommitAndCheck(@Validated @RequestBody CheckOrderDto reqDto) {
-
-        //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-
+        ResultVo<CheckOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
         //发送短信
-        return csOrderService.simpleCommitAndCheck(reqDto);
+        return csOrderService.simpleCommitAndCheck(resVo.getData());
     }
     /**
      * 审核订单
@@ -117,11 +120,11 @@ public class OrderController {
     @ApiOperation(value = "审核订单")
     @PostMapping(value = "/check")
     public ResultVo check(@RequestBody CheckOrderDto reqDto) {
-        //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        return csOrderService.check(reqDto);
+        ResultVo<CheckOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csOrderService.check(resVo.getData());
     }
 
 
@@ -132,10 +135,11 @@ public class OrderController {
     @ApiOperation(value = "驳回订单")
     @PostMapping(value = "/reject")
     public ResultVo reject(@RequestBody RejectOrderDto reqDto) {
-        //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csOrderService.reject(reqDto);
+        ResultVo<RejectOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csOrderService.reject(resVo.getData());
     }
 
     /**
@@ -146,10 +150,15 @@ public class OrderController {
     @PostMapping(value = "/allot")
     public ResultVo allot(@Validated @RequestBody AllotOrderDto reqDto) {
         //验证用户存不存在
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        Admin toAdmin = csAdminService.validate(reqDto.getToAdminId());
-        reqDto.setToAdminName(toAdmin.getName());
+        ResultVo<AllotOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        Admin toAdmin = csAdminService.getById(reqDto.getToAdminId(), true);
+        if(toAdmin == null || AdminStateEnum.CHECKED.code != toAdmin.getState()){
+            return BaseResultUtil.fail("目标用户不存在或者已离职");
+        }
+        resVo.getData().setToAdminName(toAdmin.getName());
         return csOrderService.allot(reqDto);
     }
 
@@ -161,9 +170,11 @@ public class OrderController {
     @ApiOperation(value = "订单改价")
     @PostMapping(value = "/change/price")
     public ResultVo changePrice(@RequestBody ChangePriceOrderDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csOrderService.changePrice(reqDto);
+        ResultVo<ChangePriceOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csOrderService.changePrice(resVo.getData());
     }
 
 
@@ -174,11 +185,11 @@ public class OrderController {
     @ApiOperation(value = "取消订单")
     @PostMapping(value = "/cancel")
     public ResultVo cancel(@RequestBody CancelOrderDto reqDto) {
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        reqDto.setLoginPhone(admin.getPhone());
-        reqDto.setLoginType(UserTypeEnum.ADMIN);
-        return csOrderService.cancel(reqDto);
+        ResultVo<CancelOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csOrderService.cancel(resVo.getData());
     }
 
 

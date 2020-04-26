@@ -6,8 +6,10 @@ import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.OutterLogVo;
+import org.springframework.scheduling.annotation.Async;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 public interface ICsOrderCarLogService {
 
@@ -31,8 +33,7 @@ public interface ICsOrderCarLogService {
      * @param log 日志内容
      * @param userInfo 用户信息
      */
-    void asyncSaveBatch(List<OrderCar> orderCarList, OrderCarLogEnum logTypeEnum, String[] log, Object[] args, UserInfo userInfo);
-    void asyncSaveBatch(List<WaybillCar> wcs, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo);
+    void asyncSaveBatch(Collection<WaybillCar> wcs, OrderCarLogEnum logTypeEnum, String[] log, UserInfo userInfo);
 
     /**
      * 功能描述: 根据订单车辆编号查询车辆运输日志
@@ -42,4 +43,7 @@ public interface ICsOrderCarLogService {
      * @return com.cjyc.common.model.vo.ResultVo<com.cjyc.common.model.vo.customer.order.OutterLogVo>
      */
     ResultVo<OutterLogVo> getOrderCarLog(String orderCarNo);
+
+    @Async
+    void asyncSaveBatchForReleaseCar(Set<String> orderCarNoSet, Integer type);
 }

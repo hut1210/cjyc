@@ -5,6 +5,7 @@ import com.Pingxx.model.OrderRefund;
 import com.Pingxx.model.PingxxMetaData;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
@@ -14,6 +15,7 @@ import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
+import com.cjyc.common.model.enums.order.OrderCarReleaseEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.exception.CommonException;
 import com.cjyc.common.model.keys.RedisKeys;
@@ -113,6 +115,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     private IBankSubankRelationDao bankSubankRelationDao;
 
     private final Lock lock = new ReentrantLock();
+
+    @Resource
+    private IWaybillSettleTypeDao waybillSettleTypeDao;
 
     private static List<String> phoneList = Arrays.asList("15290809152", "18201026858", "13367786789", "18774973990", "13894416363", "18297278387");
 
@@ -303,15 +308,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 if (orderCar == null || orderCar.getNo() == null) {
                     return BaseResultUtil.fail("订单车辆信息丢失");
                 }
+                String orderCarNo = orderCar.getNo();
                 if (orderCar.getState() >= OrderCarStateEnum.SIGNED.code) {
-                    return BaseResultUtil.fail("订单车辆{0}已交付，请刷新后重试", orderCar.getNo());
+                    return BaseResultUtil.fail("订单车辆{0}已交付，请刷新后重试", orderCarNo);
+                }
+                //99车圈增加放车指令验证
+                if(!validateIsAllowRelease(orderCar)){
+                    BaseResultUtil.fail("车辆{0}未收到交车指令, 请联系{1}/{2}", orderCarNo, order.getCustomerName(), order.getCustomerPhone());
                 }
 
                 if (addLock) {
-                    String lockKey = RedisKeys.getWlPayLockKey(orderCar.getNo());
+                    String lockKey = RedisKeys.getWlPayLockKey(orderCarNo);
                     String value = redisUtils.get(lockKey);
                     if (value != null && !value.equals(validateSweepCodeDto.getTaskId().toString())) {
-                        return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCar.getNo());
+                        return BaseResultUtil.fail("订单车辆{0}正在支付中", orderCarNo);
                     }
                     if (value != null) {
                         redisUtils.delete(lockKey);
@@ -323,35 +333,60 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 }
 
                 //是否需要支付
+                Integer releaseCarFlag = orderCar.getReleaseCarFlag();
                 if (PayModeEnum.PERIOD.code == order.getPayType()) {
-                    //账期
-                    isNeedPay = 0;
+                    if(releaseCarFlag == OrderCarReleaseEnum.UNLIMIT.code) {
+                        //账期
+                        isNeedPay = 0;
+                        log.info("【支付验证】账期订单车辆{0}不需要即时收款", orderCarNo);
+                    }else{
+                        //99车圈允许放车
+                        if(validateIsAllowRelease(orderCar)){
+                            isNeedPay = 0;
+                            log.info("【支付验证】到付订单车辆{0}未支付，客户允许不支付放车", orderCarNo, amount);
+                        }else{
+                            return BaseResultUtil.fail("车辆{0}未收到交车指令, 请联系{1}工作人员4009-199-266", orderCarNo, order.getCustomerName());
+                        }
+                    }
                 } else if (PayModeEnum.PREPAY.code == order.getPayType()) {
                     //预付
                     if (PayStateEnum.PAID.code != orderCar.getWlPayState()) {
-                        return BaseResultUtil.fail("支付车辆{0}支付状态异常，预付未支付", orderCar.getNo());
+                        return BaseResultUtil.fail("支付车辆{0}支付状态异常，预付未支付", orderCarNo);
                     }
                     isNeedPay = 0;
+                    log.info("【支付验证】预付订单车辆{0}不需要即时收款", orderCarNo);
                 } else {
-                    //时付
-                    if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
-                        isNeedPay = 0;
-                    } else {
-                        isNeedPay = 1;
-                        if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
-                            amount = amount.add(orderCar.getTotalFee());
+                    //到付
+                    if(releaseCarFlag == OrderCarReleaseEnum.UNLIMIT.code){
+                        if (PayStateEnum.PAID.code == orderCar.getWlPayState()) {
+                            isNeedPay = 0;
+                            log.info("【支付验证】到付订单车辆{0}已支付，不需要收款", orderCarNo);
                         } else {
-                            amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
-                        }
+                            isNeedPay = 1;
+                            if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {
+                                amount = amount.add(orderCar.getTotalFee());
+                            } else {
+                                amount = amount.add(orderCar.getTotalFee()).subtract(orderCar.getCouponOffsetFee());
+                            }
 
-                        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                            //金额验证
-                            return BaseResultUtil.fail("获取金额失败");
-                            //isNeedPay = 0;
+                            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                                //金额验证
+                                return BaseResultUtil.fail("获取金额失败");
+                                //isNeedPay = 0;
+                            }
+                            log.info("【支付验证】到付订单车辆{0}未支付，需即时收款{1}", orderCarNo, amount);
+                        }
+                    }else{
+                        //99车圈允许放车
+                        if(validateIsAllowRelease(orderCar)){
+                            isNeedPay = 0;
+                            log.info("【支付验证】到付订单车辆{0}未支付，客户允许不支付放车", orderCarNo, amount);
+                        }else{
+                            return BaseResultUtil.fail("车辆{0}未收到交车指令, 请联系{1}/{2}", orderCarNo, order.getCustomerName(), order.getCustomerPhone());
                         }
                     }
                 }
-                orderCarNos.add(orderCar.getNo());
+                orderCarNos.add(orderCarNo);
             }
             if (CollectionUtils.isEmpty(orderCarNos)) {
                 return BaseResultUtil.fail("至少包含一辆车编号");
@@ -375,6 +410,20 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
             }
         }
 
+    }
+
+    private boolean validateIsAllowRelease(OrderCar orderCar) {
+        Integer releaseCarFlag = orderCar.getReleaseCarFlag();
+        switch (releaseCarFlag){
+            case -1:
+                return true;
+            case 1:
+                return true;
+            case 9:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -440,6 +489,23 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         return;
                     }
                 }
+                /**
+                 * 根据运单编号查询承运商结算类型
+                 */
+                WaybillSettleType waybillSettleType = waybillSettleTypeDao.selectOne(
+                        new QueryWrapper<WaybillSettleType>()
+                                .lambda()
+                                .eq(WaybillSettleType::getWaybillNo, waybill.getNo())
+                );
+                if(waybillSettleType == null){
+                    redisUtils.delete(lockKey);
+                    log.error("【自动打款模式，通联代付支付运费】结算类型信息不存在 waybillNo = {}", waybill.getNo());
+                    addPaymentErrorLog(waybill.getNo(), null, "【自动打款模式，通联代付支付运费】结算类型信息不存在");
+                    // 付款失败流水记录
+                    tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
+                    return;
+                }
+
                 Long carrierId = waybill.getCarrierId();
                 BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                 log.info("【通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
@@ -463,7 +529,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                     log.info("【自动打款模式】运单Id {}", waybillId);
                     if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
                         if (baseCarrierVo != null) {
-                            if (baseCarrierVo.getSettleType() == 0) {
+                            if (waybillSettleType.getSettleType() == 0) {
                                 if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
                                         && baseCarrierVo.getBankCode() != null) {
                                     //验证总收益>总打款+本次打款金额
@@ -636,12 +702,30 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         return BaseResultUtil.fail("通联代付失败,账单数据异常");
                     }
                 }
+
+                /**
+                 * 根据运单编号查询承运商结算类型
+                 */
+                WaybillSettleType waybillSettleType = waybillSettleTypeDao.selectOne(
+                        new QueryWrapper<WaybillSettleType>()
+                                .lambda()
+                                .eq(WaybillSettleType::getWaybillNo, waybill.getNo())
+                );
+                if(waybillSettleType == null){
+                    redisUtils.delete(lockKey);
+                    log.error("【对外支付模式，通联代付支付运费】结算类型信息不存在 waybillNo = {}", waybill.getNo());
+                    addPaymentErrorLog(waybill.getNo(), null,"【对外支付模式，通联代付支付运费】结算类型信息不存在");
+                    // 付款失败流水记录
+                    tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
+                    return BaseResultUtil.fail("通联代付失败, 结算类型信息不存在");
+                }
+
                 Long carrierId = waybill.getCarrierId();
                 BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                 log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
                 if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
                     if (baseCarrierVo != null) {
-                        if (baseCarrierVo.getSettleType() == 0) {
+                        if (waybillSettleType.getSettleType() == 0) {
                             if (baseCarrierVo.getCardName() != null && baseCarrierVo.getCardNo() != null
                                     && baseCarrierVo.getBankCode() != null) {
                                 //验证总收益>总打款+本次打款金额

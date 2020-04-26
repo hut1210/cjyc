@@ -4,6 +4,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
 import com.cjyc.foreign.api.dto.req.OrderSubmitReqDto;
+import com.cjyc.foreign.api.dto.req.ReleaseCarReqDto;
 import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 import com.cjyc.foreign.api.service.IOrderService;
 import io.swagger.annotations.Api;
@@ -64,6 +65,19 @@ public class OrderController {
     @PostMapping("/cancelOrder")
     public ResultVo<String> cancelOrder(@Valid @RequestBody CancelOrderReqDto reqDto) {
         return orderService.cancelOrder(reqDto);
+    }
+
+
+    /**
+     * 允许放车
+     * @author JPG
+     * @since 2020/4/21 9:48
+     * @param reqDto
+     */
+    @ApiOperation(value = "允许放车")
+    @PostMapping("/allow/release/car")
+    public ResultVo<String> allowReleaseCar(@Valid @RequestBody ReleaseCarReqDto reqDto) {
+        return orderService.allowReleaseCar(reqDto);
     }
 
 }

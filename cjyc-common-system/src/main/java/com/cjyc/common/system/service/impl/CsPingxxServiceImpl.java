@@ -48,10 +48,9 @@ public class CsPingxxServiceImpl implements ICsPingxxService {
         if (pingOrder != null) {
             pingOrder = payPingOrder(pm.getApp(), pm.getMetaDataEntiy().getChannel(), pm.getAmount(), pingOrder.getId());
         }
-        log.info("payOrderByModel pingOrder={}", pingOrder.toString());
+        log.info("payOrderByModel pingOrder={}", pingOrder == null ? "null" : pingOrder.toString());
         return pingOrder;
     }
-
 
     private Order payPingOrder(Object app, String channel, Integer amount, String pingOrderId) throws RateLimitException, APIException, ChannelException, InvalidRequestException, APIConnectionException, AuthenticationException, FileNotFoundException {
         initPingApiKey();
