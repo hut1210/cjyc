@@ -12,6 +12,7 @@ import com.cjyc.common.model.vo.web.order.OrderVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,9 +53,13 @@ public interface IOrderDao extends BaseMapper<Order> {
 
     int countUnReceipt(Long orderId);
 
-    List<Order> findListByCarIds(@Param("list") List<Long> orderCarIds);
+    List<Order> findListByCarIds(@Param("list")Collection<Long> orderCarIds);
 
-    List<Order> findListByCarNos(@Param("list")List<String> orderCarNos);
+    /**
+     * @param orderCarNos
+     * @return
+     */
+    List<Order> findListByCarNos(@Param("list")Collection<String> orderCarNos);
 
     /**
      * 查询业务员端接单和全部列表
@@ -76,6 +81,8 @@ public interface IOrderDao extends BaseMapper<Order> {
     int countUnArriveStore(Long id);
 
     int updateForPaid(Long orderId);
+
+    List<Order> findListByNos(@Param("collection") Collection<String> orderNos);
 
     List<Order> findDayOrderStatis(@Param("beforeEndDay") Long beforeEndDay);
 }

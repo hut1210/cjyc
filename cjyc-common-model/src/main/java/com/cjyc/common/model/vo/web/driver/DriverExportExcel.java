@@ -47,9 +47,9 @@ public class DriverExportExcel implements Serializable {
     private Integer source;
     @Excel(name = "运行状态" ,orderNum = "17",width = 25)
     private Integer businessState;
-    @Excel(name = "总运量(台)" ,orderNum = "18",width = 25)
+    @Excel(name = "总运量(台)" ,orderNum = "18",width = 25, type = 10)
     private Integer carNum;
-    @Excel(name = "总收入" ,orderNum = "19",width = 25)
+    @Excel(name = "总收入" ,orderNum = "19",width = 25, type = 10)
     private BigDecimal totalIncome;
     @Excel(name = "状态" ,orderNum = "20",width = 25)
     private Integer state;

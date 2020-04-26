@@ -1,6 +1,7 @@
 package com.cjyc.common.model.dto.web.waybill;
 
 import com.cjyc.common.model.constant.ArgsConstant;
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,15 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel
-public class SaveTrunkWaybillDto {
-
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "用户Id", required = true)
-    private Long loginId;
-
-    @ApiModelProperty(hidden = true)
-    private String loginName;
-
+public class SaveTrunkWaybillDto extends BaseLoginDto {
     @ApiModelProperty(value = "指导线路")
     private String guideLine;
 

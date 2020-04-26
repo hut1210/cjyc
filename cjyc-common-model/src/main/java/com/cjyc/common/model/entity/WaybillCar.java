@@ -51,7 +51,7 @@ public class WaybillCar implements Serializable {
     @ApiModelProperty(value = "车辆编号")
     private String orderCarNo;
 
-    @Excel(name = "运费(元)", orderNum = "9")
+    @Excel(name = "运费(元)", orderNum = "9", type = 10)
     @ApiModelProperty(value = "运费")
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal freightFee;

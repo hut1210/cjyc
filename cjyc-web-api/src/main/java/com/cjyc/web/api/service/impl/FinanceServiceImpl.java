@@ -286,7 +286,7 @@ public class FinanceServiceImpl implements IFinanceService {
             return null;
         } catch (IOException e) {
             log.error("导出财务总流水异常:", e);
-            return BaseResultUtil.fail("导出财务总流水异常" + e.getMessage());
+            return BaseResultUtil.fail("导出财务总流水异常");
         }
     }
 
@@ -860,7 +860,7 @@ public class FinanceServiceImpl implements IFinanceService {
             return null;
         } catch (Exception e) {
             log.error("导出应付账款异常:", e);
-            return BaseResultUtil.fail("导出应付账款异常" + e.getMessage());
+            return BaseResultUtil.fail("导出应付账款异常");
         }
     }
 
@@ -1154,7 +1154,7 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     public ResultVo<PageVo<DriverUpstreamPaidInfoVo>> listDriverUpstreamPaidInfo(String waybillNo) {
         if (StringUtils.isEmpty(waybillNo)) {
-            BaseResultUtil.fail("运单单号不能为空！");
+           return BaseResultUtil.fail("运单单号不能为空！");
         }
         // 根据运单号查看上游付款状态列表
         List<DriverUpstreamPaidInfoVo> listInfo = waybillCarDao.listDriverUpstreamPaidInfo(waybillNo);

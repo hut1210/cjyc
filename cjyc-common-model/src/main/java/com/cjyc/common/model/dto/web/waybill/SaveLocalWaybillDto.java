@@ -1,15 +1,15 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.cjyc.common.model.constant.ArgsConstant;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -38,6 +38,11 @@ public class SaveLocalWaybillDto implements Serializable {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @ApiModelProperty(value = "运费", required = true)
+    @Digits(integer = ArgsConstant.INT_MAX, fraction = ArgsConstant.FRACTION_MAX, message = "金额整数最多8位，小数最多2位")
+    @DecimalMin(value = ArgsConstant.DECIMAL_ZERO, message = "金额不能小于0")
+    private BigDecimal freightFee;
 
     /**车辆信息*/
     @NotNull(message = "车辆ID不能为空")

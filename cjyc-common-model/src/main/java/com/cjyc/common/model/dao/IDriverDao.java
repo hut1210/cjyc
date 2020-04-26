@@ -3,7 +3,6 @@ package com.cjyc.common.model.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjyc.common.model.dto.FreeDto;
 import com.cjyc.common.model.dto.driver.AppDriverDto;
-import com.cjyc.common.model.dto.driver.mine.CarrierDriverNameDto;
 import com.cjyc.common.model.dto.driver.mine.SocietyDriverDto;
 import com.cjyc.common.model.dto.driver.task.DriverQueryDto;
 import com.cjyc.common.model.dto.web.carrier.TransportDto;
@@ -13,6 +12,7 @@ import com.cjyc.common.model.dto.web.driver.SelectDriverDto;
 import com.cjyc.common.model.dto.web.mineCarrier.QueryMyDriverDto;
 import com.cjyc.common.model.dto.web.user.DriverListDto;
 import com.cjyc.common.model.entity.Driver;
+import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.driver.mine.DriverInfoVo;
 import com.cjyc.common.model.vo.driver.mine.DriverVehicleVo;
 import com.cjyc.common.model.vo.driver.mine.SocietyDriverVo;
@@ -23,7 +23,6 @@ import com.cjyc.common.model.vo.web.driver.DispatchDriverVo;
 import com.cjyc.common.model.vo.web.driver.DriverVo;
 import com.cjyc.common.model.vo.web.driver.ShowDriverVo;
 import com.cjyc.common.model.vo.web.mineCarrier.MyDriverVo;
-import com.cjyc.common.model.vo.FreeDriverVo;
 import com.cjyc.common.model.vo.web.user.DriverListVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -307,4 +306,6 @@ public interface IDriverDao extends BaseMapper<Driver> {
     List<TransportDriverVo> findTransportDriverNew(TransportDto dto);
 
     Driver findMasterByCarrierId(Long carrierId);
+
+    Driver getEnabledById(Long userId);
 }

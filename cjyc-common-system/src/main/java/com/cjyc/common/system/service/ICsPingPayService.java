@@ -1,18 +1,16 @@
 package com.cjyc.common.system.service;
 
-import com.cjyc.common.model.dto.UnlockDto;
+import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
+import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.SalesPrePayDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
-import com.cjyc.common.model.dto.customer.pingxx.SweepCodeDto;
-import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.order.ValidateSweepCodePayVo;
 import com.pingplusplus.exception.*;
 import com.pingplusplus.model.Charge;
 
 import java.io.FileNotFoundException;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
