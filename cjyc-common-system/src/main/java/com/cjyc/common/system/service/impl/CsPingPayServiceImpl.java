@@ -528,13 +528,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 } else {//自动打款模式
                     log.info("【自动打款模式】运单Id {}", waybillId);
                     /**
-                     * 限制测试人员在准生产环境打款金额超出1元
+                     * 限制测试人员在准生产环境自动打款金额超出1元
                      */
                     Config preSystem = configDao.getByItemKey("pre_system");
                     if (preSystem != null && preSystem.getId() != null) {
                         BigDecimal amtTemp = waybill.getFreightFee();
                         if (amtTemp != null && new BigDecimal(100).compareTo(amtTemp) < 0) {
-                            log.info("准生产打款金额不能超过1元，运单号：{}", waybill.getNo());
+                            log.info("准生产环境自动打款金额不能超过1元，运单号：{}", waybill.getNo());
                             return;
                         }
                     }
@@ -735,14 +735,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 BaseCarrierVo baseCarrierVo = carrierDao.showCarrierById(carrierId);
                 log.info("【对外支付模式，通联代付支付运费】运单Id{},支付状态 state {}", waybillId, waybill.getFreightPayState());
                 /**
-                 * 限制测试人员在准生产环境打款金额超出1元
+                 * 限制测试人员在准生产环境手动打款金额超出1元
                  */
                 Config preSystem = configDao.getByItemKey("pre_system");
                 if (preSystem != null && preSystem.getId() != null) {
                     BigDecimal amtTemp = waybill.getFreightFee();
                     if (amtTemp != null && new BigDecimal(100).compareTo(amtTemp) < 0) {
-                        log.info("准生产打款金额不能超过1元，运单号：{}", waybill.getNo());
-                        return BaseResultUtil.fail("准生产打款金额不能超过1元");
+                        log.info("准生产环境手动打款金额不能超过1元，运单号：{}", waybill.getNo());
+                        return BaseResultUtil.fail("准生产环境手动打款金额不能超过1元");
                     }
                 }
                 if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
@@ -892,11 +892,14 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 //给合伙人费用
                 BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));
                 log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
+                /**
+                 * 限制测试人员在准生产环境合伙人服务费超出1元
+                 */
                 Config preSystem = configDao.getByItemKey("pre_system");
                 if (preSystem != null && preSystem.getId() != null) {
                     if (new BigDecimal(100).compareTo(payableFee) < 0) {
-                        log.info("准生产合伙人服务费不能超过1元，订单号：{}", order.getNo());
-                        return BaseResultUtil.fail("准生产合伙人服务费不能超过1元");
+                        log.info("准生产环境合伙人服务费手动打款不能超过1元，订单号：{}", order.getNo());
+                        return BaseResultUtil.fail("准生产环境合伙人服务费手动打款不能超过1元");
                     }
                 }
                 if (payableFee.compareTo(BigDecimal.ZERO) > 0) {
@@ -1013,10 +1016,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 //给合伙人费用
                 BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));
                 log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
+                /**
+                 * 限制测试人员在准生产环境合伙人服务费自动打款超出1元
+                 */
                 Config preSystem = configDao.getByItemKey("pre_system");
                 if (preSystem != null && preSystem.getId() != null) {
                     if (new BigDecimal(100).compareTo(payableFee) < 0) {
-                        log.info("准生产合伙人服务费不能超过1元，订单号：{}", order.getNo());
+                        log.info("准生产合伙人服务费自动打款不能超过1元，订单号：{}", order.getNo());
                         return;
                     }
                 }
