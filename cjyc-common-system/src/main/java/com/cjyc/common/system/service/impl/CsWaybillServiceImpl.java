@@ -232,7 +232,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 waybill.setCarNum(1);
                 waybill.setState(getWaybillState(carrierInfo.getCarryType()));
                 //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
-                waybill.setFreightFee(paramsDto.getFreightFee() == null ? getLocalWaybillFreightFee(waybill, orderCar) : MoneyUtil.yuanToFen(paramsDto.getFreightFee()));
+                waybill.setFreightFee(dto.getFreightFee() == null ? getLocalWaybillFreightFee(waybill, orderCar) : MoneyUtil.yuanToFen(dto.getFreightFee()));
                 //waybill.setFreightFee(getLocalWaybillFreightFee(waybill, orderCar));
                 waybill.setRemark(dto.getRemark());
                 waybill.setCreateTime(currentMillisTime);
@@ -257,7 +257,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                         setSettlePeriod(carrier.getSettlePeriod());
                     }});
                 }
-
                 /**2、添加运单车辆信息*/
                 WaybillCar waybillCar = new WaybillCar();
                 BeanUtils.copyProperties(dto, waybillCar);
@@ -477,7 +476,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
             waybill.setCarrierType(carrierInfo.getCarryType());
             waybill.setState(getWaybillState(carrierInfo.getCarryType()));
             //提送车费用逻辑，调度时不允许修改提送车费用，需要到订单中修改提送车费用，多则返还，少则后补
-            waybill.setFreightFee(paramsDto.getFreightFee() == null ? getLocalWaybillFreightFee(waybill, orderCar) : MoneyUtil.yuanToFen(paramsDto.getFreightFee()));
+            waybill.setFreightFee(dto.getFreightFee() == null ? getLocalWaybillFreightFee(waybill, orderCar) : MoneyUtil.yuanToFen(dto.getFreightFee()));
             waybill.setRemark(paramsDto.getRemark());
             waybill.setFixedFreightFee(false);
             waybill.setGuideLine(computeGuideLine(dto.getStartAreaCode(), dto.getEndAreaCode(), null, 1));
@@ -956,7 +955,6 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                     setSettlePeriod(carrier.getSettlePeriod());
                 }});
             }
-
             for (SaveTrunkWaybillCarDto dto : dtoList) {
                 if (dto == null) {
                     continue;
