@@ -568,6 +568,15 @@
         and wc.state &lt; 100
         and (wc.now_store_id is null or wc.now_store_id != w.end_store_id)
     </select>
+    <select id="findListByNos" resultType="com.cjyc.common.model.entity.Order">
+        select * from w_order
+        where no in(
+          <foreach collection="collection" item="item" index="index" separator=",">
+              #{item}
+          </foreach>
+        )
+
+    </select>
 
     <!--获取前一天的所有订单-->
     <select id="findDayOrderStatis" resultType="com.cjyc.common.model.entity.Order">

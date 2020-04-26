@@ -1,5 +1,6 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,14 +18,7 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel
 @Validated
-public class SaveLocalDto {
-
-    @NotNull(message = "登录人不能为空")
-    @ApiModelProperty(value = "用户Id", required = true)
-    private Long loginId;
-
-    @ApiModelProperty(hidden = true)
-    private String loginName;
+public class SaveLocalDto extends BaseLoginDto {
 
     @NotNull(message = "调度类型不能为空")
     @ApiModelProperty(value = "运单类型：1提车运单，2干线运单，3送车运单", required = true)

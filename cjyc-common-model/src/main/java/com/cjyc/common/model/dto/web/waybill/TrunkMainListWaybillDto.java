@@ -1,18 +1,11 @@
 package com.cjyc.common.model.dto.web.waybill;
 
-import com.cjyc.common.model.dto.BasePageDto;
+import com.cjyc.common.model.dto.web.PageWebDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Set;
-
 @Data
-public class TrunkMainListWaybillDto extends BasePageDto {
-
-    private Long loginId;
-    private Long roleId;
-    @ApiModelProperty(hidden = true)
-    private Set<Long> bizScope;
+public class TrunkMainListWaybillDto extends PageWebDto {
     @ApiModelProperty(value = "运单单号", required = true)
     private String waybillNo;
 

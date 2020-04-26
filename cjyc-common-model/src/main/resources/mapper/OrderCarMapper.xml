@@ -36,14 +36,14 @@
         <result column="wl_pay_state" property="wlPayState" />
         <result column="wl_pay_time" property="wlPayTime" />
         <result column="finish_time" property="finishTime" />
+        <result column="release_car_flag" property="releaseCarFlag" />
+        <result column="release_car_flag_time" property="releaseCarFlagTime" />
     </resultMap>
-
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, state, pick_type, pick_state, trunk_state, back_state, back_type, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time, finish_time
+        id, order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id, now_area_code, now_update_time, state, pick_type, pick_state, trunk_state, back_state, back_type, description, pick_fee, trunk_fee, back_fee, add_insurance_fee, add_insurance_amount, coupon_offset_fee, agency_fee, total_fee, wl_pay_state, wl_pay_time, finish_time, release_car_flag, release_car_flag_time
     </sql>
-
     <insert id="saveBatch">
         insert into w_order_car
         (order_id, order_no, no, brand, model, plate_no, vin, is_move, is_new, valuation, now_store_id,
@@ -194,7 +194,29 @@
         set now_store_id = null
         where order_id = #{orderId}
     </update>
+    <update id="updateReleaseFlagByOrderNos">
+        update w_order_car
+        set release_flag = #{releaseFlag},
+        release_flag_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where state &lt;= 100
+        and order_no in(
+          <foreach collection="collection" item="item" index="index" separator=",">
+              #{item}
+          </foreach>
+        )
+    </update>
+    <update id="updateReleaseFlagByNos">
+        update w_order_car
+        set release_flag = #{releaseFlag},
+        release_flag_time = UNIX_TIMESTAMP(NOW()) * 1000
+        where state &lt;= 100
+        and no in(
+        <foreach collection="collection" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+        )
 
+    </update>
 
     <delete id="deleteBatchByOrderId">
         delete from w_order_car
@@ -1447,6 +1469,7 @@
         oc.model as model,
         oc.plate_no as plateNo,
         oc.vin as vin,
+        oc.plate_no as plateNo,
         oc.pick_type as pickType,
         (case when oc.pick_state = 0 then 1 else oc.pick_state end) as pickState,
         oc.trunk_state as trunkState,
@@ -2675,6 +2698,16 @@
         and order_no = #{orderNo}
         and id != #{orderCarId}
         and vin = #{vin}
+    </select>
+    <select id="findListbyOrderNos" resultType="com.cjyc.common.model.entity.OrderCar">
+        select * from
+        w_order_car
+        where state &lt; 100
+        and order_no in (
+          <foreach collection="collection" item="item" index="index" separator=",">
+              #{item}
+          </foreach>
+        )
     </select>
 
     <sql id="count_wait_list_for_web">

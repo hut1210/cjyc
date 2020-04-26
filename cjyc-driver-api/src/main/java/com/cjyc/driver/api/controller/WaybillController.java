@@ -1,10 +1,9 @@
 package com.cjyc.driver.api.controller;
 
 import com.cjyc.common.model.dto.driver.task.ReplenishInfoDto;
-import com.cjyc.common.model.dto.web.task.*;
-import com.cjyc.common.model.entity.Driver;
-import com.cjyc.common.model.enums.ClientEnum;
-import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.dto.web.task.AllotTaskDto;
+import com.cjyc.common.model.dto.web.task.BaseTaskDto;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.vo.ResultReasonVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -40,14 +39,11 @@ public class WaybillController {
     @PostMapping(value = "/replenish/info/update")
     public ResultVo replenishInfo(@Valid @RequestBody ReplenishInfoDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
-        if (driver == null) {
-            return BaseResultUtil.fail("当前用户不存在");
+        ResultVo<ReplenishInfoDto> resVo = csDriverService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
         }
-        reqDto.setLoginName(driver.getName());
-        reqDto.setLoginPhone(driver.getPhone());
-        reqDto.setLoginType(UserTypeEnum.DRIVER);
-        return csTaskService.replenishInfo(reqDto);
+        return csTaskService.replenishInfo(resVo.getData());
     }
 
 
@@ -59,12 +55,11 @@ public class WaybillController {
     @PostMapping(value = "/load/for/local")
     public ResultVo<ResultReasonVo> loadForLocal(@RequestBody @Validated ReplenishInfoDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
-        reqDto.setLoginPhone(driver.getPhone());
-        reqDto.setLoginType(UserTypeEnum.DRIVER);
-
-        return csTaskService.loadForLocal(reqDto);
+        ResultVo<ReplenishInfoDto> resVo = csDriverService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.loadForLocal(resVo.getData());
     }
     /**
      * 分配任务
@@ -74,12 +69,11 @@ public class WaybillController {
     @PostMapping(value = "/allot")
     public ResultVo allot(@RequestBody AllotTaskDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.getById(reqDto.getLoginId(), true);
-        if (driver == null) {
-            return BaseResultUtil.fail("当前用户不存在");
+        ResultVo<AllotTaskDto> resVo = csDriverService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
         }
-        reqDto.setLoginName(driver.getName());
-        return csTaskService.allot(reqDto);
+        return csTaskService.allot(resVo.getData());
     }
 
     /**
@@ -90,11 +84,11 @@ public class WaybillController {
     @PostMapping(value = "/car/load")
     public ResultVo<ResultReasonVo> load(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
-        reqDto.setLoginPhone(driver.getPhone());
-        reqDto.setLoginType(UserTypeEnum.DRIVER);
-        return csTaskService.load(reqDto);
+        ResultVo<BaseTaskDto> resVo = csDriverService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.load(resVo.getData());
     }
 
     /**
@@ -105,11 +99,11 @@ public class WaybillController {
     @PostMapping(value = "/car/unload")
     public ResultVo<ResultReasonVo> unload(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
-        reqDto.setLoginPhone(driver.getPhone());
-        reqDto.setLoginType(UserTypeEnum.DRIVER);
-        return csTaskService.unload(reqDto);
+        ResultVo<BaseTaskDto> resVo = csDriverService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.unload(resVo.getData());
     }
 
     /**
@@ -120,11 +114,11 @@ public class WaybillController {
     @PostMapping(value = "/car/unload/cancel")
     public ResultVo<ResultReasonVo> cancelUnload(@Validated @RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
-        reqDto.setLoginPhone(driver.getPhone());
-        reqDto.setLoginType(UserTypeEnum.DRIVER);
-        return csTaskService.cancelUnload(reqDto);
+        ResultVo<BaseTaskDto> resVo = csDriverService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csTaskService.cancelUnload(resVo.getData());
     }
 
     /**
@@ -133,14 +127,14 @@ public class WaybillController {
      */
     @ApiOperation(value = "签收-无需支付")
     @PostMapping(value = "/car/receipt")
-    public ResultVo receipt(@RequestBody ReceiptTaskDto reqDto) {
+    public ResultVo receipt(@RequestBody BaseTaskDto reqDto) {
         //验证用户
-        Driver driver = csDriverService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(driver.getName());
-        reqDto.setLoginPhone(driver.getPhone());
-        reqDto.setLoginType(UserTypeEnum.DRIVER);
-        reqDto.setClientEnum(ClientEnum.APP_DRIVER);
-        return csTaskService.receipt(reqDto);
+        ResultVo<BaseTaskDto> resVo = csDriverService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+
+        return csTaskService.receipt(resVo.getData());
     }
 
 

@@ -1,14 +1,15 @@
 package com.cjyc.common.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -78,6 +79,9 @@ public class Customer implements Serializable {
 
     @ApiModelProperty(value = "类型：1个人，2企业（大客户）3-合伙人")
     private Integer type;
+
+    @ApiModelProperty(value = "放车限制，下单时增加司机放车限制: 0无限制，1限制放车")
+    private Boolean releaseCarLimit;
 
     @ApiModelProperty(value = "账号来源：1：App注册，2：Applet注册，3：韵车后台 4：升级创建")
     private Integer source;

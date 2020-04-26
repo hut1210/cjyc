@@ -2,7 +2,6 @@ package com.cjyc.web.api.controller;
 
 import com.cjkj.log.monitor.LogUtil;
 import com.cjyc.common.model.dto.web.waybill.*;
-import com.cjyc.common.model.entity.Admin;
 import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.ExcelUtil;
@@ -59,9 +58,11 @@ public class WaybillController {
     @PostMapping("/local/save")
     public ResultVo saveLocal(@Valid @RequestBody SaveLocalDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csWaybillService.saveLocal(reqDto);
+        ResultVo<SaveLocalDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csWaybillService.saveLocal(resVo.getData());
     }
 
     /**
@@ -74,9 +75,11 @@ public class WaybillController {
     @PostMapping("/local/update")
     public ResultVo updateLocal(@Validated @RequestBody UpdateLocalDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csWaybillService.updateLocal(reqDto);
+        ResultVo<UpdateLocalDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csWaybillService.updateLocal(resVo.getData());
     }
 
     /**
@@ -89,9 +92,11 @@ public class WaybillController {
     @PostMapping("/trunk/save")
     public ResultVo saveTrunk(@Validated @RequestBody SaveTrunkWaybillDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csWaybillService.saveTrunk(reqDto);
+        ResultVo<SaveTrunkWaybillDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csWaybillService.saveTrunk(resVo.getData());
     }
 
     /**
@@ -104,9 +109,11 @@ public class WaybillController {
     @PostMapping("/trunk/update")
     public ResultVo updateTrunk(@Validated @RequestBody UpdateTrunkWaybillDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csWaybillService.updateTrunk(reqDto);
+        ResultVo<UpdateTrunkWaybillDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csWaybillService.updateTrunk(resVo.getData());
     }
 
     /**
@@ -119,9 +126,11 @@ public class WaybillController {
     @PostMapping("/trunk/midway/unload")
     public ResultVo trunkMidwayUnload(@Validated @RequestBody TrunkMidwayUnload reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csWaybillService.trunkMidwayUnload(reqDto);
+        ResultVo<TrunkMidwayUnload> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csWaybillService.trunkMidwayUnload(resVo.getData());
     }
 
 
@@ -135,9 +144,11 @@ public class WaybillController {
     @PostMapping("/cancel")
     public ResultVo<ListVo<BaseTipVo>> cancel(@Validated @RequestBody CancelWaybillDto reqDto) {
         //验证用户
-        Admin admin = csAdminService.validate(reqDto.getLoginId());
-        reqDto.setLoginName(admin.getName());
-        return csWaybillService.cancel(reqDto);
+        ResultVo<CancelWaybillDto> resVo = csAdminService.validateEnabled(reqDto);
+        if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
+            return BaseResultUtil.fail(resVo.getMsg());
+        }
+        return csWaybillService.cancel(resVo.getData());
     }
 
     /**
@@ -161,8 +172,7 @@ public class WaybillController {
     @Deprecated
     @ApiOperation(value = "导出分页同城运单列表")
     @GetMapping(value = "/local/exportPageList")
-    public ResultVo exportPageLocalList(LocalListWaybillCarDto reqDto,
-                                        HttpServletResponse response) {
+    public ResultVo exportPageLocalList(LocalListWaybillCarDto reqDto, HttpServletResponse response) {
         ResultVo<PageVo<LocalListWaybillCarVo>> vo = waybillService.locallist(reqDto);
         if (!isResultSuccess(vo)) {
             return BaseResultUtil.fail("导出数据异常");
