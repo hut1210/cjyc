@@ -42,7 +42,7 @@ public class StoreController {
         }
 
     }
-    @ApiOperation(value = "根据loginId查询业务中心列表")
+    @ApiOperation(value = "查询业务中心附带随机业务员")
     @PostMapping("/list/loop/admin")
     public ResultVo<JSONObject> getStoreListWithAdminByLoginId(@Valid @RequestBody StoreListLoopAdminDto dto) {
 

@@ -6,6 +6,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.foreign.api.dto.req.CancelOrderReqDto;
 import com.cjyc.foreign.api.dto.req.OrderDetailReqDto;
 import com.cjyc.foreign.api.dto.req.OrderSubmitReqDto;
+import com.cjyc.foreign.api.dto.req.ReleaseCarReqDto;
 import com.cjyc.foreign.api.dto.res.OrderDetailResDto;
 
 /**
@@ -38,4 +39,6 @@ public interface IOrderService extends IService<Order>{
      * @return com.cjyc.common.model.vo.ResultVo<java.lang.String>
      */
     ResultVo<String> cancelOrder(CancelOrderReqDto reqDto);
+
+    ResultVo<String> allowReleaseCar(ReleaseCarReqDto reqDto);
 }

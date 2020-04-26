@@ -536,7 +536,7 @@ public class PingPayServiceImpl implements IPingPayService {
             log.error(e.getMessage(), e);
         }
         if(order == null){
-            BaseResultUtil.fail("操作失败");
+            return BaseResultUtil.fail("操作失败");
         }
         transactionService.save(order);
         return BaseResultUtil.success(JSON.parseObject(order.toString()));

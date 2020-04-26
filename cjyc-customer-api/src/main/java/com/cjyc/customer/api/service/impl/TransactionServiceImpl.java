@@ -3,18 +3,6 @@ package com.cjyc.customer.api.service.impl;
 import com.Pingxx.model.MetaDataEntiy;
 import com.Pingxx.model.PingxxMetaData;
 import com.alibaba.fastjson.JSON;
-import com.cjyc.common.model.dto.web.WayBillCarrierDto;
-import com.cjyc.common.model.enums.UserTypeEnum;
-import com.cjyc.common.model.enums.log.OrderLogEnum;
-import com.cjyc.common.model.enums.message.PushMsgEnum;
-import com.cjyc.common.model.enums.order.OrderStateEnum;
-import com.cjyc.common.model.keys.RedisKeys;
-import com.cjyc.common.model.util.MoneyUtil;
-import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
-import com.cjyc.common.system.service.*;
-import com.cjyc.common.system.util.MiaoxinSmsUtil;
-import com.cjyc.customer.api.service.IOrderService;
-import com.pingplusplus.model.*;
 import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.entity.*;
 import com.cjyc.common.model.entity.defined.UserInfo;
@@ -23,17 +11,27 @@ import com.cjyc.common.model.enums.PayStateEnum;
 import com.cjyc.common.model.enums.Pingxx.ChannelEnum;
 import com.cjyc.common.model.enums.Pingxx.LiveModeEnum;
 import com.cjyc.common.model.enums.SendNoTypeEnum;
+import com.cjyc.common.model.enums.UserTypeEnum;
+import com.cjyc.common.model.enums.log.OrderLogEnum;
+import com.cjyc.common.model.enums.message.PushMsgEnum;
+import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillStateEnum;
+import com.cjyc.common.model.keys.RedisKeys;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.BeanMapUtil;
+import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.carrier.BaseCarrierVo;
+import com.cjyc.common.system.service.*;
+import com.cjyc.common.system.util.MiaoxinSmsUtil;
 import com.cjyc.common.system.util.RedisUtils;
+import com.cjyc.customer.api.service.IOrderService;
 import com.cjyc.customer.api.service.ITransactionService;
 import com.pingplusplus.model.Order;
 import com.pingplusplus.model.Refund;
+import com.pingplusplus.model.*;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -717,27 +715,4 @@ public class TransactionServiceImpl implements ITransactionService {
         return tradeBillDao.getAmountByOrderNo(orderNo);
     }
 
-    @Override
-    public void cancelExpireTrade() {
-        List<TradeBill> list = tradeBillDao.getAllExpireTradeBill();
-
-        if (list != null && list.size() > 0) {
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < list.size(); i++) {
-                        TradeBill tb = list.get(i);
-                        if (tb != null) {
-                            TradeBill tradeBill = new TradeBill();
-                            tradeBill.setPingPayId(tb.getPingPayId());
-                            tradeBill.setState(-1);
-                            tradeBill.setTradeTime(tb.getTradeTime());
-                            tradeBillDao.updateTradeBillByPingPayId(tradeBill);
-                        }
-
-                    }
-                }
-            });
-        }
-    }
 }

@@ -1,21 +1,14 @@
 package com.cjyc.common.model.dto.web.waybill;
 
+import com.cjyc.common.model.dto.BaseLoginDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UpdateLocalDto {
-
-    @NotNull(message = "loginId不能为空")
-    @ApiModelProperty(value = "用户Id", required = true)
-    private Long loginId;
-    @ApiModelProperty(hidden = true)
-    private String loginName;
+public class UpdateLocalDto extends BaseLoginDto {
 
     @NotNull(message = "id不能为空")
     @ApiModelProperty(value = "运单ID", required = true)

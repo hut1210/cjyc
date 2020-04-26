@@ -21,7 +21,6 @@ public interface ITransactionService {
 
     BigDecimal getAmountByOrderNo(String orderNo);
 
-    void cancelExpireTrade();
 
     //BigDecimal getAmountByOrderCarIds(String orderCarIds);
 

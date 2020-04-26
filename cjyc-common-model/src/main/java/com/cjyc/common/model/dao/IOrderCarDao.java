@@ -182,9 +182,9 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<OrderCarWaitDispatchVo> findWaitDispatchTrunkCarList(@Param("paramsDto") WaitDispatchTrunkDto paramsDto);
 
-    List<OrderCar> findListByIds(@Param("list") List<Long> orderCarIdList);
+    List<OrderCar> findListByIds(@Param("list") Collection<Long> orderCarIdList);
 
-    List<OrderCar> findListByNos(@Param("list") List<String> orderCarNos);
+    List<OrderCar> findListByNos(@Param("list") Collection<String> orderCarNos);
 
     /**
      * 业务员端我的库存车辆
@@ -298,4 +298,9 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
     int countForChechRepeatPlateNo(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("plateNo") String plateNo);
 
     int countForChechRepeatVin(@Param("orderNo") String orderNo, @Param("orderCarId") Long orderCarId, @Param("vin") String vin);
+
+    int updateReleaseFlagByOrderNos(@Param("collection") Collection<String> orderNoSet, @Param("releaseFlag") Integer releaseFlag);
+    int updateReleaseFlagByNos(@Param("collection") Collection<String> noSet, @Param("releaseFlag") Integer releaseFlag);
+
+    List<OrderCar> findListbyOrderNos(@Param("collection") Collection<String> orderNoSet);
 }
