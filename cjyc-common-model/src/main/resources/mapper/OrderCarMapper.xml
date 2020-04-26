@@ -1467,6 +1467,7 @@
         oc.no as orderCarNo,
         oc.brand as brand,
         oc.model as model,
+        oc.plate_no as plateNo,
         oc.vin as vin,
         oc.plate_no as plateNo,
         oc.pick_type as pickType,
@@ -1751,7 +1752,7 @@
             <if test="param.searchValue != null and param.searchValue != ''">
                 and (
                 tb.vin LIKE CONCAT('%', #{param.searchValue}, '%')
-                tb.plateNo LIKE CONCAT('%', #{param.searchValue}, '%')
+                or tb.plateNo LIKE CONCAT('%', #{param.searchValue}, '%')
                 or tb.orderCarNo LIKE CONCAT('%', #{param.searchValue}, '%')
                 or tb.waybillNo LIKE CONCAT('%', #{param.searchValue}, '%')
                 )
@@ -2196,6 +2197,7 @@
             o.expect_start_date as expectStartDate,
             o.start_store_id as orderStartStoreId,
             o.end_store_id as orderEndStoreId,
+            o.create_time as createTime,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
             from w_order o
             join w_order_car oc on oc.order_id = o.id
@@ -2293,6 +2295,7 @@
             o.end_city_code as orderEndCityCode,
             o.start_store_id as orderStartStoreId,
             o.end_store_id as orderEndStoreId,
+            o.create_time as createTime,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg
             from w_order o
             join w_order_car oc on oc.order_id = o.id
@@ -2373,6 +2376,7 @@
             o.end_city_code as orderEndCityCode,
             o.start_store_id as orderStartStoreId,
             o.end_store_id as orderEndStoreId,
+            o.create_time as createTime,
             <include refid="trunk_wait_dispatch_car_field"/>,
             CONCAT('${@com.cjyc.common.system.config.LogoImgProperty@logoImg}', cs.logo_img) as logoImg,
             (
@@ -2424,10 +2428,10 @@
                 ORDER BY shell.expectStartDate ASC, shell.orderCarId
             </when>
             <when test="sort == 2">
-                ORDER BY shell.createTime desc, shell.orderCarId
+                ORDER BY shell.expectStartDate desc, shell.orderCarId
             </when>
             <otherwise>
-                ORDER BY shell.expectStartDate DESC, shell.orderCarId
+                ORDER BY shell.createTime DESC, shell.orderCarId
             </otherwise>
         </choose>
     </sql>

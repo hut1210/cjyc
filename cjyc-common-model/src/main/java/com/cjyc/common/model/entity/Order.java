@@ -6,6 +6,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.io.Serializable;
 
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
@@ -29,7 +30,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("w_order")
-@ApiModel(value="Order对象", description="订单表(客户下单)")
+@ApiModel(value = "Order对象", description = "订单表(客户下单)")
 public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -150,7 +151,7 @@ public class Order implements Serializable {
     private Long expectEndDate;
 
     @ApiModelProperty(value = "车辆总数")
-    @Excel(name = "发车数量", orderNum = "2")
+    @Excel(name = "发车数量", orderNum = "2", type = 10)
     private Integer carNum;
 
     @ApiModelProperty(value = "线路ID")

@@ -169,13 +169,13 @@
             <where>
                 /*待提车*/
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@PICK_CAR_TASK">
-                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD.code},
-                                 ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code})
+                    car.state = ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD.code}
                 </if>
                 /*待交车*/
                 <if test="taskState != null and taskState == @com.cjyc.common.model.constant.FieldConstant@GIVE_CAR_TASK">
-                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code},
-                                 ${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
+                    car.state in(${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@LOADED.code}
+                    ,${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_LOAD_CONFIRM.code}
+                    ,${@com.cjyc.common.model.enums.waybill.WaybillCarStateEnum@WAIT_UNLOAD_CONFIRM.code})
                 </if>
             </where>
         GROUP BY t.id

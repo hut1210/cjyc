@@ -1,7 +1,6 @@
 package com.cjyc.driver.api.service.impl;
 
 import cn.hutool.core.text.StrBuilder;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -71,21 +70,25 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getWaitHandleTaskPage(BaseDriverDto dto) {
-        log.info("===>司机端-查询待分配任务列表,请求参数 :: "+ JSON.toJSONString(dto));
+        log.info("====>司机端-查询待分配任务列表,请求json数据 :: "+ JsonUtils.objectToJson(dto));
         // 分页查询待分配的运单信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = waybillDao.selectWaitHandleTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
+        // 填充指导线路
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
     @Override
     public ResultVo<PageVo<TaskBillVo>> getNoFinishTaskPage(NoFinishTaskQueryDto dto) {
-        log.info("===>司机端-分页查询-待提车,待交车-任务列表,请求参数 :: "+ JSON.toJSONString(dto));
+        log.info("====>司机端-分页查询提车,交车任务列表,请求json数据 :: "+JsonUtils.objectToJson(dto));
         // 分页查询提车，交车任务信息
         PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
         List<TaskBillVo> taskList = taskDao.selectNoFinishTaskPage(dto);
         PageInfo pageInfo = new PageInfo(taskList);
+        // 填充指导线路
+        //fillGuideLine(pageInfo);
         return BaseResultUtil.success(pageInfo);
     }
 
@@ -231,13 +234,7 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             taskDetailVo.setNo(waybill.getNo());
         }
 
-        // 查询任务单车辆信息
-        getWaybillCars(dto, taskDetailVo, waybill);
-
-        return BaseResultUtil.success(taskDetailVo);
-    }
-
-    private void getWaybillCars(DetailQueryDto dto, TaskDetailVo taskDetailVo, Waybill waybill) {
+        // 查询车辆信息
         LambdaQueryWrapper<TaskCar> queryWrapper = new QueryWrapper<TaskCar>().lambda().eq(TaskCar::getTaskId, dto.getTaskId());
         List<TaskCar> taskCarList = taskCarDao.selectList(queryWrapper);
         List<CarDetailVo> carDetailVoList = new ArrayList<>(10);
@@ -285,9 +282,12 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
                 }
             }
         }
-
+        /*if (FieldConstant.ALL_TASK == dto.getDetailType()) {
+            taskDetailVo.setState(task.getState());
+        }*/
         taskDetailVo.setFreightFee(freightFee);
         taskDetailVo.setCarDetailVoList(carDetailVoList);
+        return BaseResultUtil.success(taskDetailVo);
     }
 
     private WaybillCar getWaybillCar(String detailType, TaskCar taskCar) {
@@ -298,7 +298,8 @@ public class TaskServiceImpl extends ServiceImpl<ITaskDao, Task> implements ITas
             query = query.in(WaybillCar::getState, WaybillCarStateEnum.WAIT_LOAD.code,WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code);
         } else if(FieldConstant.WAIT_GIVE_CAR.equals(detailType)){
             // 待交车详情
-            query = query.in(WaybillCar::getState,WaybillCarStateEnum.LOADED.code,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
+            query = query.in(WaybillCar::getState,WaybillCarStateEnum.LOADED.code,
+                    WaybillCarStateEnum.WAIT_LOAD_CONFIRM.code,WaybillCarStateEnum.WAIT_UNLOAD_CONFIRM.code);
         } else if (FieldConstant.FINISH.equals(detailType)){
             // 已交付
             query = query.eq(WaybillCar::getState,WaybillCarStateEnum.UNLOADED.code);

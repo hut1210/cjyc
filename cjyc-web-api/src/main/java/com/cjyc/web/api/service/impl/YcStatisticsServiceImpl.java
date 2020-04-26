@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.PositionUtil;
-import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.task.DriverCarCountVo;
 import com.cjyc.common.system.feign.ISysRoleService;
@@ -61,6 +60,10 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
     private ITaskDao taskDao;
     @Resource
     private IDriverCarCountDao driverCarCountDao;
+    @Resource
+    private IOrderDao orderDao;
+    @Resource
+    private ICustomerCountDao customerCountDao;
     @Resource
     private ISysRoleService sysRoleService;
     @Resource
@@ -229,4 +232,33 @@ public class YcStatisticsServiceImpl extends ServiceImpl<IYcStatisticsDao, YcSta
         }
         return BaseResultUtil.success();
     }
+
+    @Override
+    public ResultVo customerOrderStatis() {
+        List<Order> dayOrders = findBeforeDayOrder();
+        if(!CollectionUtils.isEmpty(dayOrders)){
+            for(Order order : dayOrders){
+                CustomerCount count = new CustomerCount();
+                count.setCustomerId(order.getCustomerId());
+                count.setOrderNo(order.getNo());
+                count.setCreateTime(System.currentTimeMillis());
+                customerCountDao.insert(count);
+            }
+        }
+        return BaseResultUtil.success();
+    }
+
+    /**
+     * 获取前一天所有订单
+     * @return
+     */
+    private List<Order> findBeforeDayOrder(){
+        //获取当天的开始时间
+        LocalDateTime dayStartByLong = LocalDateTimeUtil.getDayStartByLong(System.currentTimeMillis());
+        //获取前一天结束时间
+        Long beforeEndDay = LocalDateTimeUtil.getMillisByLDT(dayStartByLong) - 1;
+        //查询前一天所有下的单
+        return orderDao.findDayOrderStatis(beforeEndDay);
+    }
+
 }

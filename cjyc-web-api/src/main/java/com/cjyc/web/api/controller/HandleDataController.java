@@ -52,4 +52,10 @@ public class HandleDataController {
     public ResultVo driverStatis() {
         return ycStatisticsService.driverStatis();
     }
+
+    @ApiOperation(value = "统计用户下单量")
+    @PostMapping("/customerOrderStatis")
+    public ResultVo customerOrderStatis() {
+        return ycStatisticsService.customerOrderStatis();
+    }
 }

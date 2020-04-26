@@ -16,36 +16,18 @@ import java.util.Map;
 public interface IFinanceService {
     ResultVo<PageVo<FinanceVo>> getFinanceList(FinanceQueryDto financeQueryDto);
 
-    Map exportExcel(FinanceQueryDto financeQueryDto);
-
-    ResultVo<PageVo<FinanceReceiptVo>> getFinanceReceiptList(FinanceQueryDto financeQueryDto);
-
-    void applySettlement(ApplySettlementDto applySettlementDto);
-
-    void confirmSettlement(String serialNumber,String invoiceNo);
-
-    ResultVo<PageVo<WaitInvoiceVo>> getWaitInvoiceList(WaitQueryDto waitInvoiceQueryDto);
-
-    void cancelSettlement(String serialNumber);
-
-    ResultVo<PageVo<WaitForBackVo>> getWaitForBackList(WaitQueryDto waitInvoiceQueryDto);
-
-    void writeOff(String serialNumber,String invoiceNo);
+    ResultVo exportExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 
     SettlementDetailVo detail(Long Id);
 
-    ResultVo<PageVo<ReceivableVo>> getReceivableList(WaitQueryDto waitInvoiceQueryDto);
-
     ResultVo<PageVo<PaymentVo>> getPaymentList(FinanceQueryDto financeQueryDto);
 
-    ResultVo<PageVo<PaidVo>> getPaidList(PayMentQueryDto payMentQueryDto);
-
-    ResultVo<PageVo<CollectReceiveVo>> getCollectReceiveList(CollectReceiveQueryDto collectReceiveQueryDto);
-
-    ResultVo<CashSettlementDetailVo> settleDetail(String wayBillNo);
-
-    ResultVo updateBackState(String wayBillNo);
-
+    /**
+     * <p>获取财务应付账款列表</p>
+     *
+     * @param payableQueryDto
+     * @return
+     */
     ResultVo<PageVo<FinancePayableVo>> getFinancePayableList(PayableQueryDto payableQueryDto);
 
     ResultVo getSettlementPayable(List<String> taskNo);
@@ -74,25 +56,30 @@ public interface IFinanceService {
 
     ResultVo externalPayment(ExternalPaymentDto externalPaymentDto);
 
-    List<PaymentVo> exportPaymentExcel(FinanceQueryDto financeQueryDto);
+    ResultVo<Object> exportPaymentExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 
-    List<FinancePayableVo> exportPayableAll(PayableQueryDto payableQueryDto);
+    /**
+     * <p>导出财务应付账款列表</p>
+     *
+     * @param response
+     * @param payableQueryDto
+     * @return
+     */
+    ResultVo exportPayableAll(HttpServletResponse response, PayableQueryDto payableQueryDto);
 
-    List<ExportPayableCollectVo> exportPayableCollect(WaitTicketCollectDto waitTicketCollectDto);
+    ResultVo exportPayableCollect(HttpServletResponse response, WaitTicketCollectDto waitTicketCollectDto);
 
-    List<ExportWaitPaymentVo> exportPayment(WaitPaymentDto waitPaymentDto);
+    ResultVo exportPayment(HttpServletResponse response, WaitPaymentDto waitPaymentDto);
 
-    List<ExportPayablePaidVo> exportPaid(PayablePaidQueryDto payablePaidQueryDto);
+    ResultVo exportPaid(HttpServletResponse response, PayablePaidQueryDto payablePaidQueryDto);
 
-    List<PaidNewVo> exportTimePaid(PayMentQueryDto payMentQueryDto);
+    ResultVo exportTimePaid(HttpServletResponse response, PayMentQueryDto payMentQueryDto);
 
     ResultVo<PageVo<CooperatorPaidVo>> getCooperatorPaidList(CooperatorSearchDto cooperatorSearchDto);
 
     ResultVo payToCooperator(CooperatorPaymentDto cooperatorPaymentDto);
 
-    List<CooperatorPaidVo> exportCooperator(CooperatorSearchDto cooperatorSearchDto);
-
-    ResultVo<List<ExportFinanceDetailVo>> getFinanceDetailList(String no);
+    ResultVo exportCooperator(HttpServletResponse response, CooperatorSearchDto cooperatorSearchDto);
 
     /**
      * <p>根据运单号查看上游付款状态列表</p>
@@ -136,7 +123,6 @@ public interface IFinanceService {
     ResultVo cancelReceiveSettlement(CancelInvoiceVo cancelInvoiceVo);
 
     /**
-     *
      * <p>应收账款-待开票-确认开票</p>
      * <ol>
      *     <li>修改结算状态为已确认</li>
@@ -227,6 +213,7 @@ public interface IFinanceService {
 
     /**
      * 预付未完结列表
+     *
      * @param financeQueryDto
      * @return
      */
@@ -234,8 +221,9 @@ public interface IFinanceService {
 
     /**
      * 导出预付未完结 Excel
+     *
      * @param financeQueryDto
      * @return
      */
-    List<AdvancePaymentVo> exportAdvancePaymentExcel(FinanceQueryDto financeQueryDto);
+    ResultVo exportAdvancePaymentExcel(HttpServletResponse response, FinanceQueryDto financeQueryDto);
 }

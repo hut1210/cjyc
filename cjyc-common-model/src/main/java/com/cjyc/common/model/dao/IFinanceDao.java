@@ -96,4 +96,6 @@ public interface IFinanceDao extends BaseMapper {
     FinanceSettlementDetailVo getSettlementDetail(String no);
 
     AccountPeriodVo getAccountPeriodInfo(String wayBillNo);
+
+    List<TrunkLineVo> getCostList(String orderCarNo);
 }

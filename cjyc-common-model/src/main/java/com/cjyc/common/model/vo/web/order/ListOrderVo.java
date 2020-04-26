@@ -74,11 +74,11 @@ public class ListOrderVo extends Order {
     private String createTimeStr;
     @Excel(name = "接单时间", orderNum = "32")
     private String checkTimeStr;
-    @Excel(name = "订单金额(元)", orderNum = "6")
+    @Excel(name = "订单金额(元)", orderNum = "6", type = 10)
     private String totalFeeStr;
-    @Excel(name = "总费用(元)", orderNum = "7")
+    @Excel(name = "总费用(元)", orderNum = "7", type = 10)
     private String wlTotalFeeStr;
-    @Excel(name = "合伙人服务费(元)",  orderNum = "8")
+    @Excel(name = "合伙人服务费(元)", orderNum = "8", type = 10)
     private String totalAgencyFeeStr;
 
     public String getTotalFeeStr() {
@@ -119,13 +119,17 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (backType) {
             case 1:
-                str = "自提"; break;
+                str = "自提";
+                break;
             case 2:
-                str = "代驾上门"; break;
+                str = "代驾上门";
+                break;
             case 3:
-                str = "拖车上门"; break;
+                str = "拖车上门";
+                break;
             case 4:
-                str = "物流上门"; break;
+                str = "物流上门";
+                break;
         }
         return str;
     }
@@ -146,13 +150,17 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (pickType) {
             case 1:
-                str = "自送"; break;
+                str = "自送";
+                break;
             case 2:
-                str = "代驾上门"; break;
+                str = "代驾上门";
+                break;
             case 3:
-                str = "拖车上门"; break;
+                str = "拖车上门";
+                break;
             case 4:
-                str = "物流上门"; break;
+                str = "物流上门";
+                break;
         }
         return str;
     }
@@ -173,11 +181,14 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (customerType) {
             case 1:
-                str = "C端"; break;
+                str = "C端";
+                break;
             case 2:
-                str = "大客户"; break;
+                str = "大客户";
+                break;
             case 3:
-                str = "合伙人"; break;
+                str = "合伙人";
+                break;
         }
         return str;
     }
@@ -190,11 +201,14 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (payType) {
             case 0:
-                str = "到付"; break;
+                str = "到付";
+                break;
             case 1:
-                str = "预付"; break;
+                str = "预付";
+                break;
             case 2:
-                str = "账期"; break;
+                str = "账期";
+                break;
         }
         return str;
     }
@@ -207,17 +221,23 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (source) {
             case 1:
-                str = "WEB管理后台"; break;
+                str = "WEB管理后台";
+                break;
             case 2:
-                str = "业务员APP"; break;
+                str = "业务员APP";
+                break;
             case 4:
-                str = "司机APP"; break;
+                str = "司机APP";
+                break;
             case 6:
-                str = "用户端APP"; break;
+                str = "用户端APP";
+                break;
             case 7:
-                str = "用户端小程序"; break;
+                str = "用户端小程序";
+                break;
             case 9:
-                str = "99车圈"; break;
+                str = "99车圈";
+                break;
         }
         return str;
     }
@@ -230,29 +250,41 @@ public class ListOrderVo extends Order {
         String str = "";
         switch (state) {
             case 0:
-                str = "预订单"; break;
+                str = "预订单";
+                break;
             case 2:
-                str = "待确认"; break;
+                str = "待确认";
+                break;
             case 5:
-                str = "待确认"; break;
+                str = "待确认";
+                break;
             case 10:
-                str = "待复确认"; break;
+                str = "待复确认";
+                break;
             case 15:
-                str = "待付款"; break;
+                str = "待付款";
+                break;
             case 25:
-                str = "待调度"; break;
+                str = "待调度";
+                break;
             case 55:
-                str = "运输中"; break;
+                str = "运输中";
+                break;
             case 88:
-                str = "待付款"; break;
+                str = "待付款";
+                break;
             case 100:
-                str = "已交付"; break;
+                str = "已交付";
+                break;
             case 112:
-                str = "异常结束"; break;
+                str = "异常结束";
+                break;
             case 113:
-                str = "已取消"; break;
+                str = "已取消";
+                break;
             case 114:
-                str = "已作废"; break;
+                str = "已作废";
+                break;
         }
         return str;
     }

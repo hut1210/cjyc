@@ -577,4 +577,12 @@
         )
 
     </select>
+
+    <!--获取前一天的所有订单-->
+    <select id="findDayOrderStatis" resultType="com.cjyc.common.model.entity.Order">
+        select
+            <include refid="Base_Column_List"/>
+        from w_order
+        where create_time &lt; #{beforeEndDay}
+    </select>
 </mapper>
