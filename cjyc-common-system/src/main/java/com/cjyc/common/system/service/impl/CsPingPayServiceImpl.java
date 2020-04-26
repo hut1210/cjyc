@@ -870,6 +870,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 //给合伙人费用
                 BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));
                 log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
+                Config preSystem = configDao.getByItemKey("pre_system");
+                if (preSystem != null && preSystem.getId() != null) {
+                    if (new BigDecimal(100).compareTo(payableFee) < 0) {
+                        log.info("准生产合伙人服务费不能超过1元，订单号：{}", order.getNo());
+                        return BaseResultUtil.fail("准生产合伙人服务费不能超过1元");
+                    }
+                }
                 if (payableFee.compareTo(BigDecimal.ZERO) > 0) {
                     if (showPartnerVo != null && showPartnerVo.getCardName() != null && showPartnerVo.getCardNo() != null
                             && showPartnerVo.getBankCode() != null) {
@@ -984,6 +991,13 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 //给合伙人费用
                 BigDecimal payableFee = MoneyUtil.nullToZero(order.getTotalFee()).subtract(MoneyUtil.nullToZero(wlFee)).add(MoneyUtil.nullToZero(order.getCouponOffsetFee()));
                 log.info("支付合伙人服务费 payableFee={},orderId ={}", payableFee, orderId);
+                Config preSystem = configDao.getByItemKey("pre_system");
+                if (preSystem != null && preSystem.getId() != null) {
+                    if (new BigDecimal(100).compareTo(payableFee) < 0) {
+                        log.info("准生产合伙人服务费不能超过1元，订单号：{}", order.getNo());
+                        return;
+                    }
+                }
                 if (payableFee.compareTo(BigDecimal.ZERO) > 0) {
                     if (showPartnerVo != null && showPartnerVo.getCardName() != null && showPartnerVo.getCardNo() != null
                             && showPartnerVo.getBankCode() != null) {
