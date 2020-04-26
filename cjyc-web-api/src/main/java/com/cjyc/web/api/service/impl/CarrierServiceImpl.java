@@ -15,6 +15,7 @@ import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.driver.DriverIdentityEnum;
 import com.cjyc.common.model.enums.task.TaskStateEnum;
 import com.cjyc.common.model.enums.transport.*;
+import com.cjyc.common.model.enums.waybill.WaybillPayStateEnum;
 import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -995,5 +996,39 @@ public class CarrierServiceImpl extends ServiceImpl<ICarrierDao, Carrier> implem
             result = false;
         }
         return result;
+    }
+
+    /**
+     * 承运商结算明细
+     *
+     * @param carrierId
+     * @return
+     */
+    @Override
+    public ResultVo<List<SettlementDetailsVo>> getCarrierSettlementDetails(Long carrierId) {
+        List<SettlementDetailsVo> settlementDetailsVoList = carrierDao.getCarrierSettlementDetails(carrierId);
+        if (!CollectionUtils.isEmpty(settlementDetailsVoList)) {
+            settlementDetailsVoList.forEach(e -> {
+                //应付运费分转元
+                e.setFreightFee(MoneyUtil.fenToYuan(e.getFreightFee()));
+                //付款状态 1已付款 2付款中 -2 付款失败 0未付款
+                switch (e.getPayState()) {
+                    case 1:
+                        e.setPayStateStr(WaybillPayStateEnum.PAID.name);
+                        break;
+                    case 2:
+                        e.setPayStateStr(WaybillPayStateEnum.INPAYMENT.name);
+                        break;
+                    case -2:
+                        e.setPayStateStr(WaybillPayStateEnum.FAILED.name);
+                        break;
+                    case 0:
+                        e.setPayStateStr(WaybillPayStateEnum.UNPAID.name);
+                        break;
+                    default:
+                }
+            });
+        }
+        return BaseResultUtil.success(settlementDetailsVoList);
     }
 }
