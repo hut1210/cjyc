@@ -1222,6 +1222,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         //作废订单
         @NotNull Long orderId = paramsDto.getOrderId();
         Order order = orderDao.selectById(orderId);
+        String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
         //验证
         ResultVo res = validateIsAllowObsolete(order, paramsDto.isForce());
         if(ResultEnum.SUCCESS.getCode() != res.getCode()){
@@ -1263,19 +1264,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
             msg.append(++count).append(".取消订单关联任务，共计").append(tasks.size()).append("个任务");
         }
 
-
-
-        String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
-
-        order.setState(OrderStateEnum.F_OBSOLETE.code);
-        orderDao.updateById(order);
-
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.OBSOLETE,
                 new String[]{oldStateName, OrderStateEnum.F_OBSOLETE.name, paramsDto.getReason()},
                 new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
 
-        return BaseResultUtil.success();
+        return BaseResultUtil.success(msg);
     }
 
     private ResultVo validateIsAllowObsolete(Order order, boolean isForce) {
@@ -1288,20 +1282,21 @@ public class CsOrderServiceImpl implements ICsOrderService {
         }
 
         boolean flag = true;
-        StringBuilder message = new StringBuilder();
+        StringBuilder msg = new StringBuilder();
+        int count = 0;
         //验证是否收取过物流费
         int r1 = orderCarDao.countPaidCar(order.getId());
         if(r1 > 0){
             flag = false;
-            message.append("订单已经产生物流费交易；");
+            msg.append(++count).append("订单已经产生物流费交易；");
         }
 
         int r2 = waybillCarDao.countPaidCar(order.getId());
         if(r2 > 0){
             flag = false;
-            message.append("订单关联运单已经产生运单交易；");
+            msg.append(++count).append("订单关联运单已经产生运单交易；");
         }
-        return flag ? BaseResultUtil.success() : BaseResultUtil.fail(message);
+        return flag ? BaseResultUtil.success() : BaseResultUtil.fail(msg);
     }
 
     @Override
@@ -1635,7 +1630,6 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2020/4/27 13:05
      * @param totalFee
-     * @param ocList
      */
     @Override
     public List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
