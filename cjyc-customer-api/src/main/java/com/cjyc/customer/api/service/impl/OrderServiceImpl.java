@@ -101,7 +101,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
                 return BaseResultUtil.fail("合伙人订单请输入支付订单金额");
             }
             BigDecimal totalWlFee = orderCarDao.sumTotalWlFee(order.getId());
-            if(totalFee.compareTo(totalWlFee) > 0){
+            if(totalFee.compareTo(totalWlFee) < 0){
                 return BaseResultUtil.fail("合伙人订单金额不能小于物流费({0}元)", MoneyUtil.fenToYuan(totalWlFee));
             }
             order.setTotalFee(totalFee);
