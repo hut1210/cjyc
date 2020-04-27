@@ -433,7 +433,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
     }
 
     @Override
-    public void allinpayToCarrier(Long waybillId) throws AuthenticationException, InvalidRequestException, APIConnectionException, APIException, ChannelException, RateLimitException, FileNotFoundException {
+    public void allinpayToCarrier(Long waybillId) {
         lock.lock();
         log.info("支付下游费用 waybillId={}", waybillId);
         Waybill waybill = waybillDao.selectById(waybillId);
