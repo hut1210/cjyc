@@ -240,4 +240,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     List<WaybillCar> findListByTaskCarIds(@Param("list") List<Long> list);
 
     int updateForCancelUnloadByIds(List<Long> collect);
+
+    int countPaidCar(Long orderId);
 }

@@ -71,7 +71,7 @@ public interface ICsOrderService {
      * @since 2019/11/5 16:51
      * @param paramsDto
      */
-    ResultVo obsolete(CancelOrderDto paramsDto);
+    ResultVo obsolete(ObsoleteOrderDto paramsDto);
 
     /**
      * 订单改价

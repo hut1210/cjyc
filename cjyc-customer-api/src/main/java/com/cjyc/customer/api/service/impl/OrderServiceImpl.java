@@ -15,10 +15,7 @@ import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
-import com.cjyc.common.model.util.BaseResultUtil;
-import com.cjyc.common.model.util.JsonUtils;
-import com.cjyc.common.model.util.RegexUtil;
-import com.cjyc.common.model.util.TimeStampUtil;
+import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.customer.invoice.InvoiceOrderVo;
@@ -96,6 +93,18 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
         fillOrderStoreInfoForSave(order);
         csOrderService.fillOrderInputStore(order);
         order.setState(OrderStateEnum.WAIT_CHECK.code);
+
+        //合伙人订单验证订单金额
+        if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
+            if(paramsDto.getTotalFee() == null){
+                return BaseResultUtil.fail("合伙人订单请输入支付订单金额");
+            }
+            BigDecimal totalWlFee = orderCarDao.sumTotalWlFee(order.getId());
+            if(totalWlFee.compareTo(paramsDto.getTotalFee()) > 0){
+                return BaseResultUtil.fail("合伙人订单金额不能小于物流费({0})", totalWlFee);
+            }
+            order.setTotalFee(paramsDto.getTotalFee());
+        }
         orderDao.updateById(order);
 
         //给客户发送消息

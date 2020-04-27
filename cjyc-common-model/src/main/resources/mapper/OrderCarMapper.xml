@@ -217,6 +217,11 @@
         )
 
     </update>
+    <update id="updateStateBatchByOrderId">
+        update w_order_car
+        set state = #{state}
+        where order_id = #{orderId}
+    </update>
 
     <delete id="deleteBatchByOrderId">
         delete from w_order_car
@@ -2708,6 +2713,18 @@
               #{item}
           </foreach>
         )
+    </select>
+    <select id="countPaidCar" resultType="java.lang.Integer">
+        select *
+        from w_order_car
+        where order_no = #{orderId}
+        and wl_pay_state = 2
+    </select>
+    <select id="sumTotalWlFee" resultType="java.math.BigDecimal">
+        select
+        sum(IFNULL(pick_fee,0) + IFNULL(trunk_fee,0) + IFNULL(back_fee,0) + IFNULL(add_insurance_fee,0)) as totalWlFee
+        from w_order_car
+        where order_id = #{orderId}
     </select>
 
     <sql id="count_wait_list_for_web">

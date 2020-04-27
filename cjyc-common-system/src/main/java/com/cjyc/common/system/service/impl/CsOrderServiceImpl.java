@@ -1219,15 +1219,18 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     @Override
-    public ResultVo obsolete(CancelOrderDto paramsDto) {
+    public ResultVo obsolete(ObsoleteOrderDto paramsDto) {
         //作废订单
         Order order = orderDao.selectById(paramsDto.getOrderId());
-        if (order == null) {
-            return BaseResultUtil.fail("订单不存在");
+        //验证
+        ResultVo res = validateIsAllowObsolete(order, paramsDto.isForce());
+        if(ResultEnum.SUCCESS.getCode() != res.getCode()){
+            return BaseResultUtil.fail(res.getMsg());
         }
-        if (order.getState() > OrderStateEnum.CHECKED.code) {
-            return BaseResultUtil.fail("订单运输中，不允许作废");
-        }
+
+        orderDao.updateStateById(OrderStateEnum.F_CANCEL.code, order.getId());
+        orderCarDao.updateStateBatchByOrderId(OrderStateEnum.F_CANCEL.code, order.getId());
+
         String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
 
         order.setState(OrderStateEnum.F_OBSOLETE.code);
@@ -1239,6 +1242,32 @@ public class CsOrderServiceImpl implements ICsOrderService {
                 new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
 
         return BaseResultUtil.success();
+    }
+
+    private ResultVo validateIsAllowObsolete(Order order, boolean isForce) {
+
+        if(order == null){
+            return BaseResultUtil.fail("订单不存在");
+        }
+        if(isForce){
+            return BaseResultUtil.success();
+        }
+
+        boolean flag = true;
+        StringBuilder message = new StringBuilder();
+        //验证是否收取过物流费
+        int r1 = orderCarDao.countPaidCar(order.getId());
+        if(r1 > 0){
+            flag = false;
+            message.append("订单已经产生物流费交易；");
+        }
+
+        int r2 = waybillCarDao.countPaidCar(order.getId());
+        if(r2 > 0){
+            flag = false;
+            message.append("订单关联运单已经产生运单交易；");
+        }
+        return flag ? BaseResultUtil.success() : BaseResultUtil.fail(message);
     }
 
     @Override
