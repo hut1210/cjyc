@@ -1228,6 +1228,7 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(ResultEnum.SUCCESS.getCode() != res.getCode()){
             return BaseResultUtil.fail(res.getMsg());
         }
+
         List<OrderCar> list = orderCarDao.findListByOrderId(orderId);
         int count = 0;
         //取消订单相关
@@ -1235,35 +1236,29 @@ public class CsOrderServiceImpl implements ICsOrderService {
         msg.append(++count).append(".取消订单").append(order.getNo()).append("成功；");
 
         //处理订单相关车辆
-        if(CollectionUtils.isEmpty(list)){
-            msg.append(++count).append(".订单无相关车辆，无后续处理");
-            return BaseResultUtil.success(msg.toString());
-        }
+        if(!CollectionUtils.isEmpty(list)) {
+            orderCarDao.updateStateBatchByOrderId(OrderStateEnum.F_CANCEL.code, order.getId());
+            msg.append(++count).append(".取消订单车辆，共计").append(list.size()).append("辆；");
 
-        orderCarDao.updateStateBatchByOrderId(OrderStateEnum.F_CANCEL.code, order.getId());
-        msg.append(++count).append(".取消订单车辆，共计").append(list.size()).append("辆");
-
-        //取消运单车辆
-        Set<Long> orderCarIds = list.stream().map(OrderCar::getId).collect(Collectors.toSet());
-        List<WaybillCar> waybillCarList = waybillCarDao.findListByOrderCarIds(orderCarIds);
-        if(CollectionUtils.isEmpty(waybillCarList)){
-            msg.append(++count).append(".订单无相关运单，无后续处理");
-            return BaseResultUtil.success(msg.toString());
+            //取消运单车辆
+            Set<Long> orderCarIds = list.stream().map(OrderCar::getId).collect(Collectors.toSet());
+            List<WaybillCar> waybillCarList = waybillCarDao.findListByOrderCarIds(orderCarIds);
+            if (!CollectionUtils.isEmpty(waybillCarList)) {
+                Set<Long> waybillCarIds = waybillCarList.stream().map(WaybillCar::getId).collect(Collectors.toSet());
+                waybillCarDao.updateStateBatchByIds(waybillCarIds, WaybillCarStateEnum.F_CANCEL.code);
+                msg.append(++count).append(".取消订单关联运单车辆，共计").append(waybillCarList.size()).append("辆；");
+                //取消运单
+                Set<Long> waybillIds = waybillCarList.stream().map(WaybillCar::getWaybillId).collect(Collectors.toSet());
+                waybillIds.forEach(id -> csWaybillService.validateAndFinishWaybill(id));
+                msg.append(++count).append(".取消订单关联运单，共计").append(waybillIds.size()).append("个运单；");
+                //取消任务相关
+                List<Task> tasks = taskDao.findListByWaybillCarIds(waybillCarIds);
+                if (CollectionUtils.isEmpty(tasks)) {
+                    tasks.forEach(task -> csTaskService.validateAndFinishTask(task));
+                    msg.append(++count).append(".取消订单关联任务，共计").append(tasks.size()).append("个任务；");
+                }
+            }
         }
-        Set<Long> waybillCarIds = waybillCarList.stream().map(WaybillCar::getId).collect(Collectors.toSet());
-        waybillCarDao.updateStateBatchByIds(waybillCarIds, WaybillCarStateEnum.F_CANCEL.code);
-        msg.append(++count).append(".取消订单关联运单车辆，共计").append(waybillCarList.size()).append("辆");
-        //取消运单
-        Set<Long> waybillIds = waybillCarList.stream().map(WaybillCar::getWaybillId).collect(Collectors.toSet());
-        waybillIds.forEach(id -> csWaybillService.validateAndFinishWaybill(id));
-        msg.append(++count).append(".取消订单关联运单，共计").append(waybillIds.size()).append("个运单");
-        //取消任务相关
-        List<Task> tasks = taskDao.findListByWaybillCarIds(waybillCarIds);
-        if(CollectionUtils.isEmpty(tasks)){
-            tasks.forEach(task -> csTaskService.validateAndFinishTask(task));
-            msg.append(++count).append(".取消订单关联任务，共计").append(tasks.size()).append("个任务");
-        }
-
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.OBSOLETE,
                 new String[]{oldStateName, OrderStateEnum.F_OBSOLETE.name, paramsDto.getReason()},
