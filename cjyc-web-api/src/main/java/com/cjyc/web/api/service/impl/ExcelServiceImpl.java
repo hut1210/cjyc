@@ -2,7 +2,8 @@ package com.cjyc.web.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.dao.IOrderChangeLogDao;
-import com.cjyc.common.model.dto.web.excel.ChangePriceExportDto;
+import com.cjyc.common.model.dto.web.excel.OrderChangePriceExportDto;
+import com.cjyc.common.model.dto.web.excel.WaybillPriceCompareExportDto;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.OrderChangeLog;
 import com.cjyc.common.model.entity.defined.FullOrder;
@@ -11,6 +12,7 @@ import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
 import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.excel.ImportOrderChangePriceVo;
+import com.cjyc.common.model.vo.web.excel.WaybillPriceCompareExportVo;
 import com.cjyc.web.api.service.IExcelService;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +30,7 @@ public class ExcelServiceImpl implements IExcelService {
     private IOrderChangeLogDao orderChangeLogDao;
 
     @Override
-    public ResultVo<List<ImportOrderChangePriceVo>> listOrderChangePriceSimple(ChangePriceExportDto reqDto) {
+    public ResultVo<List<ImportOrderChangePriceVo>> listOrderChangePriceSimple(OrderChangePriceExportDto reqDto) {
         List<ImportOrderChangePriceVo> resList = Lists.newArrayList();
         List<OrderChangeLog> list = orderChangeLogDao.findAll(reqDto);
         for (OrderChangeLog orderChangeLog : list) {
@@ -37,6 +39,11 @@ public class ExcelServiceImpl implements IExcelService {
             resList.add(iocp);
         }
         return BaseResultUtil.success(resList);
+    }
+
+    @Override
+    public ResultVo<List<WaybillPriceCompareExportVo>> listWaybillPriceCompare(WaybillPriceCompareExportDto reqDto) {
+        return null;
     }
 
     private ImportOrderChangePriceVo getByFullOrder(FullOrder[] fos, OrderChangeLog ocl) {
