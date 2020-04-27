@@ -4,7 +4,7 @@ import com.cjyc.common.model.vo.ResultVo;
 
 /**
  * 将银行的各种功能抽象成一个接口，请求这里面的方法就等于调用银行了
- *
+ * yyftest
  * @author RenPL 2020-3-15
  */
 public interface FundBankClient {
