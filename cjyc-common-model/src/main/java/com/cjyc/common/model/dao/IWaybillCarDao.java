@@ -199,7 +199,7 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     void updateForUnloadReplenishInfo(@Param("id") Long id, @Param("unloadPhotoImg") String unloadPhotoImg);
 
-    List<WaybillCar> findListByOrderCarIds(@Param("list") List<Long> orderCarIds);
+    List<WaybillCar> findListByOrderCarIds(@Param("list") Collection<Long> orderCarIds);
 
     WaybillCar findBackWaybill(Long orderCarId);
 

@@ -2,17 +2,12 @@ package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.constant.TimeConstant;
-import com.cjyc.common.model.dao.IOrderCarDao;
-import com.cjyc.common.model.dao.IOrderDao;
-import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dao.*;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.dto.web.waybill.SaveLocalDto;
 import com.cjyc.common.model.dto.web.waybill.SaveLocalWaybillDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.entity.defined.BizScope;
-import com.cjyc.common.model.entity.defined.FullCity;
-import com.cjyc.common.model.entity.defined.FullOrder;
-import com.cjyc.common.model.entity.defined.UserInfo;
+import com.cjyc.common.model.entity.defined.*;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -20,6 +15,7 @@ import com.cjyc.common.model.enums.log.OrderCarLogEnum;
 import com.cjyc.common.model.enums.log.OrderLogEnum;
 import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.*;
+import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarrierTypeEnum;
 import com.cjyc.common.model.enums.waybill.WaybillTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
@@ -102,13 +98,15 @@ public class CsOrderServiceImpl implements ICsOrderService {
     @Resource
     private ICsPushMsgService csPushMsgService;
     @Resource
-    private ICsSmsService csSmsService;
-    @Resource
     private ICsOrderChangeLogService csOrderChangeLogService;
     @Resource
     private ICsAmqpService csAmqpService;
     @Resource
     private ICsOrderCarLogService csOrderCarLogService;
+    @Resource
+    private ITaskDao taskDao;
+    @Resource
+    private ICsTaskService csTaskService;
 
     @Override
     public ResultVo save(SaveOrderDto paramsDto) {
@@ -1220,16 +1218,52 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo obsolete(ObsoleteOrderDto paramsDto) {
+        StringBuilder msg = new StringBuilder();
         //作废订单
-        Order order = orderDao.selectById(paramsDto.getOrderId());
+        @NotNull Long orderId = paramsDto.getOrderId();
+        Order order = orderDao.selectById(orderId);
         //验证
         ResultVo res = validateIsAllowObsolete(order, paramsDto.isForce());
         if(ResultEnum.SUCCESS.getCode() != res.getCode()){
             return BaseResultUtil.fail(res.getMsg());
         }
+        List<OrderCar> list = orderCarDao.findListByOrderId(orderId);
+        int count = 0;
+        //取消订单相关
+        orderDao.updateStateById(OrderStateEnum.F_CANCEL.code, orderId);
+        msg.append(++count).append(".取消订单").append(order.getNo()).append("成功；");
 
-        orderDao.updateStateById(OrderStateEnum.F_CANCEL.code, order.getId());
+        //处理订单相关车辆
+        if(CollectionUtils.isEmpty(list)){
+            msg.append(++count).append(".订单无相关车辆，无后续处理");
+            return BaseResultUtil.success(msg.toString());
+        }
+
         orderCarDao.updateStateBatchByOrderId(OrderStateEnum.F_CANCEL.code, order.getId());
+        msg.append(++count).append(".取消订单车辆，共计").append(list.size()).append("辆");
+
+        //取消运单车辆
+        Set<Long> orderCarIds = list.stream().map(OrderCar::getId).collect(Collectors.toSet());
+        List<WaybillCar> waybillCarList = waybillCarDao.findListByOrderCarIds(orderCarIds);
+        if(CollectionUtils.isEmpty(waybillCarList)){
+            msg.append(++count).append(".订单无相关运单，无后续处理");
+            return BaseResultUtil.success(msg.toString());
+        }
+        Set<Long> waybillCarIds = waybillCarList.stream().map(WaybillCar::getId).collect(Collectors.toSet());
+        waybillCarDao.updateStateBatchByIds(waybillCarIds, WaybillCarStateEnum.F_CANCEL.code);
+        msg.append(++count).append(".取消订单关联运单车辆，共计").append(waybillCarList.size()).append("辆");
+        //取消运单
+        Set<Long> waybillIds = waybillCarList.stream().map(WaybillCar::getWaybillId).collect(Collectors.toSet());
+        waybillIds.forEach(id -> csWaybillService.validateAndFinishWaybill(id));
+        msg.append(++count).append(".取消订单关联运单，共计").append(waybillIds.size()).append("个运单");
+        //取消任务相关
+        List<Task> tasks = taskDao.findListByWaybillCarIds(waybillCarIds);
+        if(CollectionUtils.isEmpty(tasks)){
+            tasks.forEach(task -> csTaskService.validateAndFinishTask(task));
+            msg.append(++count).append(".取消订单关联任务，共计").append(tasks.size()).append("个任务");
+        }
+
+
 
         String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
 
