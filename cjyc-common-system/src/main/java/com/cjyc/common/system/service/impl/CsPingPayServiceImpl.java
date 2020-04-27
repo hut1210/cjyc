@@ -528,16 +528,9 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 } else {//自动打款模式
                     log.info("【自动打款模式】运单Id {}", waybillId);
                     /**
-                     * 限制测试人员在准生产环境自动打款金额超出1元
+                     * 金额限制
                      */
-                    Config preSystem = configDao.getByItemKey("pre_system");
-                    if (preSystem != null && preSystem.getId() != null) {
-                        BigDecimal amtTemp = waybill.getFreightFee();
-                        if (amtTemp != null && new BigDecimal(100).compareTo(amtTemp) < 0) {
-                            log.info("准生产环境自动打款金额不能超过1元，运单号：{}", waybill.getNo());
-                            return;
-                        }
-                    }
+                    this.validateAutoLegalAmt(waybillId, waybill, lockKey);
                     if (waybill != null && waybill.getFreightPayState() != 1 && waybill.getFreightFee().compareTo(BigDecimal.ZERO) > 0) {
                         if (baseCarrierVo != null) {
                             if (waybillSettleType.getSettleType() == 0) {
@@ -613,6 +606,48 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
         } finally {
             lock.unlock();
             redisUtils.delete(lockKey);
+        }
+    }
+
+    /**
+     * 限制金额：
+     * 1.限制测试人员在准生产环境自动打款金额超出1元
+     * 2.下游付款金额大于上游付款的金额时，付款失败，只能通过手动【立即付款】
+     *
+     * @param waybillId
+     * @param waybill
+     * @param lockKey
+     */
+    private void validateAutoLegalAmt(Long waybillId, Waybill waybill, String lockKey) {
+        /**
+         * 限制测试人员在准生产环境自动打款金额超出1元
+         */
+        Config preSystem = configDao.getByItemKey("pre_system");
+        if (preSystem != null && preSystem.getId() != null) {
+            BigDecimal amtTemp = waybill.getFreightFee();
+            if (amtTemp != null && new BigDecimal(100).compareTo(amtTemp) < 0) {
+                redisUtils.delete(lockKey);
+                log.error("准生产环境自动打款金额不能超过1元，运单号：{}", waybill.getNo());
+                addPaymentErrorLog(waybill.getNo(), null, "准生产环境自动打款金额不能超过1元");
+                //付款失败
+                tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
+                return;
+            }
+        }
+        /**
+         * 增加付款失败的限制：
+         * 下游付款金额大于上游付款的金额时，付款失败，只能通过手动【立即付款】
+         */
+        // 获取上游付款的金额
+        List<BigDecimal> successOrderCarFeeList = waybillDao.listSuccessOrderCarFee(waybillId);
+        BigDecimal totalSuccessOrderCarFee = successOrderCarFeeList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        if(waybill.getFreightFee().compareTo(totalSuccessOrderCarFee) > 0 ){
+            redisUtils.delete(lockKey);
+            log.error("【自动打款模式，通联代付支付运费】付款金额不能大于上游付款的金额 waybillNo = {}", waybill.getNo());
+            addPaymentErrorLog(waybill.getNo(), null, "【自动打款模式，通联代付支付运费】付款金额不能大于上游付款的金额");
+            //付款失败
+            tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
+            return;
         }
     }
 
@@ -741,7 +776,11 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                 if (preSystem != null && preSystem.getId() != null) {
                     BigDecimal amtTemp = waybill.getFreightFee();
                     if (amtTemp != null && new BigDecimal(100).compareTo(amtTemp) < 0) {
-                        log.info("准生产环境手动打款金额不能超过1元，运单号：{}", waybill.getNo());
+                        redisUtils.delete(lockKey);
+                        log.error("准生产环境手动打款金额不能超过1元，运单号：{}", waybill.getNo());
+                        addPaymentErrorLog(waybill.getNo(), null, "准生产环境手动打款金额不能超过1元");
+                        //付款失败
+                        tradeBillDao.updateWayBillPayState(waybillId, null, System.currentTimeMillis(), "-2");
                         return BaseResultUtil.fail("准生产环境手动打款金额不能超过1元");
                     }
                 }
