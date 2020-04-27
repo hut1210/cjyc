@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -112,6 +113,8 @@ public interface ICsOrderService {
      * @param orderEndCityCode 订单目的地城市编码
      */
     boolean validateIsArriveStoreOrCityRange(Long endStoreId, String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode);
+
+    List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist);
 
     BigDecimal getCarWlFee(OrderCar orderCar);
 
