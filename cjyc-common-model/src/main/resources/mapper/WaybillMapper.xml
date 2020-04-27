@@ -799,5 +799,12 @@
         and (wc.end_store_id is null or wc.end_store_id = 0)
         and wc.state &lt;= 100
     </select>
+    <!--获取上游付款的金额-->
+    <select id="listSuccessOrderCarFee" resultType="java.math.BigDecimal">
+        SELECT oc.total_fee AS totalFee
+        FROM w_waybill_car wc
+        LEFT JOIN w_order_car oc ON wc.order_car_id = oc.id
+        WHERE oc.wl_pay_state = 2 AND wc.waybill_id = #{waybillId}
+    </select>
 
 </mapper>

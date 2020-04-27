@@ -33,6 +33,9 @@ public class ReceiveSettlementDetailVo implements Serializable {
     @ApiModelProperty(value = "客户名称", required = true)
     private String customerName;
 
+    @ApiModelProperty(value = "客户账号", required = true)
+    private String customerPhone;
+
     @ApiModelProperty(value = "车辆编码", required = true)
     private String no;
 

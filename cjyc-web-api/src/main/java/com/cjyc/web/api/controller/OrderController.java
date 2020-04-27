@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -293,7 +294,7 @@ public class OrderController {
         return orderService.list(reqDto);
     }
 
-    @ApiOperation(value = "分页导出订单列表")
+    /*@ApiOperation(value = "分页导出订单列表")
     @GetMapping(value = "/exportPageList")
     public ResultVo exportPageList(ListOrderDto reqDto, HttpServletResponse response) {
         ResultVo<PageVo<ListOrderVo>> resultVo = orderService.list(reqDto);
@@ -313,32 +314,37 @@ public class OrderController {
             return BaseResultUtil.fail("导出订单信息异常: " + e.getMessage());
         }
     }
-
+*/
     @ApiOperation(value = "导出全部订单列表")
     @GetMapping(value = "/exportAllList")
     public void exportAllList(ListOrderDto reqDto, HttpServletResponse response) throws IOException, InvalidFormatException {
         ResultVo<List<ListOrderVo>> orderRs = orderService.listAll(reqDto);
-        if (!isResultSuccess(orderRs)) {
-            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", orderRs.getMsg()),
-                    "导出异常.xls", response);
+        printExcel(orderRs, "订单信息导出", response);
+
+    }
+
+    private <T> void printExcel(ResultVo<List<T>> vo, String tip, HttpServletResponse response) {
+        Class <T> clazz = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        System.out.println("T的类型：" + clazz);
+        if (!isResultSuccess(vo)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", vo.getMsg()), "导出异常.xls", response);
             return;
         }
-        List<ListOrderVo> orderList = orderRs.getData();
-        if (CollectionUtils.isEmpty(orderList)) {
-            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),
-                    "结果为空.xls", response);
+        List<T> list = vo.getData();
+        if (CollectionUtils.isEmpty(list)) {
+            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),"结果为空.xls", response);
             return;
         }
-        orderList = orderList.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        list = list.stream().filter(Objects::nonNull).collect(Collectors.toList());
         try {
-            ExcelUtil.exportExcel(orderList, "订单信息", "订单信息",
-                    ListOrderVo.class, System.currentTimeMillis() + "订单信息.xls", response);
+            ExcelUtil.exportExcel(list, "订单信息", "订单信息", clazz, System.currentTimeMillis() + "订单信息.xls", response);
         } catch (Exception e) {
             LogUtil.error("导出订单信息异常", e);
             ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出订单信息异常: " + e.getMessage()),
                     "导出异常.xls", response);
         }
     }
+
 
     /**
      * 查询订单车辆列表
@@ -352,7 +358,7 @@ public class OrderController {
     }
 
 
-    @ApiOperation(value = "分页导出车辆信息列表")
+    /*@ApiOperation(value = "分页导出车辆信息列表")
     @GetMapping(value = "/car/exportPageList")
     public ResultVo exportPageCarList(ListOrderCarDto reqDto, HttpServletResponse response) {
         ResultVo<PageVo<ListOrderCarVo>> resultVo = orderService.carlist(reqDto);
@@ -371,7 +377,7 @@ public class OrderController {
             LogUtil.error("导出车辆信息异常", e);
             return BaseResultUtil.fail("导出车辆信息异常: " + e.getMessage());
         }
-    }
+    }*/
 
     @ApiOperation(value = "导出全部车辆信息列表")
     @GetMapping(value = "/car/exportAllList")

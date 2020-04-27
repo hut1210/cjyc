@@ -18,6 +18,7 @@ import com.cjyc.common.model.vo.web.mineCarrier.MyWaybillVo;
 import com.cjyc.common.model.vo.web.waybill.*;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
@@ -127,4 +128,12 @@ public interface IWaybillDao extends BaseMapper<Waybill> {
     int updateForOver(@Param("id") Long id, @Param("state") int state);
 
     int countMultiStepUnpassStore(Long waybillId);
+
+    /**
+     * 获取上游付款的金额
+     *
+     * @param waybillId
+     * @return
+     */
+    List<BigDecimal> listSuccessOrderCarFee(Long waybillId);
 }
