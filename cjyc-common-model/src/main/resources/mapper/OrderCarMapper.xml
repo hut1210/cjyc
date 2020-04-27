@@ -1476,7 +1476,6 @@
         oc.model as model,
         oc.plate_no as plateNo,
         oc.vin as vin,
-        oc.plate_no as plateNo,
         oc.pick_type as pickType,
         (case when oc.pick_state = 0 then 1 else oc.pick_state end) as pickState,
         oc.trunk_state as trunkState,
@@ -1763,9 +1762,6 @@
                 or tb.orderCarNo LIKE CONCAT('%', #{param.searchValue}, '%')
                 or tb.waybillNo LIKE CONCAT('%', #{param.searchValue}, '%')
                 )
-            </if>
-            <if test="param.waybillNo != null and param.waybillNo != ''">
-                and tb.waybillNo LIKE CONCAT('%', #{param.waybillNo}, '%')
             </if>
             <if test="param.brand != null and param.brand !=''">
                 and tb.brand LIKE CONCAT('%',#{param.brand},'%')
