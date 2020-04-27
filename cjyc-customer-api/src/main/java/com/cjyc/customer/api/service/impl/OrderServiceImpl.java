@@ -69,6 +69,7 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
     @Override
     public ResultVo simpleSubmit(SimpleSaveOrderDto paramsDto) {
+        BigDecimal totalFee = MoneyUtil.yuanToFen(paramsDto.getTotalFee());
         Order order = orderDao.selectById(paramsDto.getOrderId());
         if(order == null || order.getId() == null){
             return BaseResultUtil.fail("订单不存在");
@@ -96,14 +97,14 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         //合伙人订单验证订单金额
         if(CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()){
-            if(paramsDto.getTotalFee() == null){
+            if(totalFee == null){
                 return BaseResultUtil.fail("合伙人订单请输入支付订单金额");
             }
             BigDecimal totalWlFee = orderCarDao.sumTotalWlFee(order.getId());
-            if(totalWlFee.compareTo(paramsDto.getTotalFee()) > 0){
-                return BaseResultUtil.fail("合伙人订单金额不能小于物流费({0})", totalWlFee);
+            if(totalFee.compareTo(totalWlFee) > 0){
+                return BaseResultUtil.fail("合伙人订单金额不能小于物流费({0}元)", MoneyUtil.fenToYuan(totalWlFee));
             }
-            order.setTotalFee(paramsDto.getTotalFee());
+            order.setTotalFee(totalFee);
         }
         orderDao.updateById(order);
 
