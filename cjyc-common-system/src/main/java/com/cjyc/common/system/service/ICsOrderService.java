@@ -102,14 +102,37 @@ public interface ICsOrderService {
 
     ResultVo changeOrderCarCarryType(ChangeCarryTypeDto reqDto);
 
+    /**
+     * 验证是否到达业务中心或者城市范围
+     * @author JPG
+     * @since 2020/4/15 11:12
+     * @param endStoreId 目的地业务中心ID
+     * @param endAreaCode 目的地区编码
+     * @param endCityCode 目的地城市编码
+     * @param orderEndStoreId 订单目的地业务中心ID
+     * @param orderEndCityCode 订单目的地城市编码
+     */
     boolean validateIsArriveStoreOrCityRange(Long endStoreId, String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode);
-
-    List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist);
 
     BigDecimal getCarWlFee(OrderCar orderCar);
 
+    /**
+     * 验证是否重复车牌号，重复返回false
+     * @author JPG
+     * @since 2020/4/13 9:38
+     * @param orderNo 订单ID
+     * @param orderCarId 车辆ID
+     * @param plateNo 车牌号
+     */
     boolean validateIsNotRepeatPlateNo(String orderNo, Long orderCarId, String plateNo);
-
+    /**
+     * 验证是否重复Vin，重复返回false
+     * @author JPG
+     * @since 2020/4/13 9:38
+     * @param orderNo 订单ID
+     * @param orderCarId 车辆ID
+     * @param vin 车架号
+     */
     boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin);
 
     /**
