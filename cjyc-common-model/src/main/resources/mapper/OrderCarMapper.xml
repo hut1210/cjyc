@@ -1763,9 +1763,6 @@
                 or tb.waybillNo LIKE CONCAT('%', #{param.searchValue}, '%')
                 )
             </if>
-            <if test="param.waybillNo != null and param.waybillNo != ''">
-                and tb.waybillNo LIKE CONCAT('%', #{param.waybillNo}, '%')
-            </if>
             <if test="param.brand != null and param.brand !=''">
                 and tb.brand LIKE CONCAT('%',#{param.brand},'%')
             </if>
