@@ -188,4 +188,9 @@ public class CarrierController {
     }
 
     /*********************************韵车集成改版 ed*****************************/
+    @ApiOperation(value = "承运商结算明细")
+    @PostMapping(value = "/getCarrierSettlementDetails/{carrierId}")
+    public ResultVo<List<SettlementDetailsVo>> getCarrierSettlementDetails(@PathVariable @ApiParam(value = "承运商id", required = true) Long carrierId) {
+        return carrierService.getCarrierSettlementDetails(carrierId);
+    }
 }
