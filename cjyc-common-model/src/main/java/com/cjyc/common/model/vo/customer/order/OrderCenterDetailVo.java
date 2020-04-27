@@ -165,6 +165,10 @@ public class OrderCenterDetailVo implements Serializable {
     @ApiModelProperty(value = "线路ID")
     private Long lineId;
 
+    @ApiModelProperty(value = "线路费")
+    @JsonSerialize(using = BigDecimalSerizlizer.class)
+    private BigDecimal lineWlFreightFee;
+
     public BigDecimal getWlTotalFee() {
         return wlTotalFee == null ? new BigDecimal(0) : wlTotalFee;
     }
@@ -172,7 +176,7 @@ public class OrderCenterDetailVo implements Serializable {
         return agencyFee == null ? new BigDecimal(0) : agencyFee;
     }
     public Long getStartStoreId() {
-        return startStoreId == null ? 0 : startStoreId;
+        return startStoreId == null ? -5 : startStoreId;
     }
     public String getStartStoreName() {
         return StringUtils.isBlank(startStoreName) ? "" : startStoreName;
@@ -181,7 +185,7 @@ public class OrderCenterDetailVo implements Serializable {
         return StringUtils.isBlank(startStoreNameDetail) ? "" : startStoreNameDetail;
     }
     public Long getEndStoreId() {
-        return endStoreId == null ? 0 : endStoreId;
+        return endStoreId == null ? -5 : endStoreId;
     }
     public String getEndStoreName() {
         return StringUtils.isBlank(endStoreName) ? "" : endStoreName;
@@ -269,5 +273,9 @@ public class OrderCenterDetailVo implements Serializable {
     }
     public Integer getCarNum() {
         return carNum == null ? 0 : carNum;
+    }
+
+    public BigDecimal getLineWlFreightFee() {
+        return lineWlFreightFee == null ? BigDecimal.ZERO : lineWlFreightFee;
     }
 }
