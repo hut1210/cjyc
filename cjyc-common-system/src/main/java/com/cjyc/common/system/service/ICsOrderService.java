@@ -136,4 +136,6 @@ public interface ICsOrderService {
      * @param vin 车架号
      */
     boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin);
+
+    List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> ocList);
 }
