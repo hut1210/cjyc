@@ -1772,10 +1772,10 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
     }
 
     @Override
-    public void validateAndFinishWaybill(Long waybillId) {
+    public int validateAndFinishWaybill(Long waybillId) {
         BillCarNum wcNum = waybillCarDao.countUnFinishForState(waybillId);
         if (wcNum.getUnFinishCarNum() > 0) {
-            return;
+            return -1;
         }
         int newState = wcNum.getTotalCarNum().equals(wcNum.getCancelCarNum()) ? WaybillStateEnum.F_CANCEL.code : WaybillStateEnum.FINISHED.code;
         waybillDao.updateForOver(waybillId, newState);
@@ -1795,6 +1795,7 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
                 log.error(e.getMessage(), e);
             }
         }
+        return newState;
 
     }
 

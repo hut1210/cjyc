@@ -74,7 +74,7 @@ public interface ICsWaybillService {
      */
     ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto);
 
-    void validateAndFinishWaybill(Long waybillId);
+    int validateAndFinishWaybill(Long waybillId);
 
     void cancelWaybill(Waybill waybill);
 

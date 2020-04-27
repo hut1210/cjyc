@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -71,7 +72,7 @@ public interface ICsOrderService {
      * @since 2019/11/5 16:51
      * @param paramsDto
      */
-    ResultVo obsolete(CancelOrderDto paramsDto);
+    ResultVo obsolete(ObsoleteOrderDto paramsDto);
 
     /**
      * 订单改价
@@ -133,4 +134,13 @@ public interface ICsOrderService {
      * @param vin 车架号
      */
     boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin);
+
+    /**
+     * 均摊车辆费用
+     * @author JPG
+     * @since 2020/4/27 13:05
+     * @param totalFee
+     * @param ocList
+     */
+    List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> ocList);
 }
