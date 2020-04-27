@@ -1,5 +1,6 @@
 package com.cjyc.customer.api.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,6 +16,7 @@ import com.cjyc.common.model.enums.message.PushMsgEnum;
 import com.cjyc.common.model.enums.order.OrderCarStateEnum;
 import com.cjyc.common.model.enums.order.OrderStateEnum;
 import com.cjyc.common.model.enums.waybill.WaybillCarStateEnum;
+import com.cjyc.common.model.exception.ServerException;
 import com.cjyc.common.model.util.*;
 import com.cjyc.common.model.vo.PageVo;
 import com.cjyc.common.model.vo.ResultVo;
@@ -32,20 +34,19 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
-
 /**
- * @auther litan
- * @description: com.cjyc.customer.api.system.impl
- * @date:2019/10/8
+ * @author JPG
  */
 @Service
 @Slf4j
+@Transactional(rollbackFor = RuntimeException.class)
 public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IOrderService{
     @Resource
     private IOrderDao orderDao;
@@ -100,11 +101,24 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
             if(totalFee == null){
                 return BaseResultUtil.fail("合伙人订单请输入支付订单金额");
             }
+            List<OrderCar> ocList = orderCarDao.findListByOrderId(order.getId());
             BigDecimal totalWlFee = orderCarDao.sumTotalWlFee(order.getId());
-            if(totalFee.compareTo(totalWlFee) > 0){
+            if(totalFee.compareTo(totalWlFee) < 0){
                 return BaseResultUtil.fail("合伙人订单金额不能小于物流费({0}元)", MoneyUtil.fenToYuan(totalWlFee));
             }
             order.setTotalFee(totalFee);
+
+            //均分价格
+            csOrderService.shareTotalFee(totalFee, ocList);
+            //更新车辆信息
+            ocList.forEach(orderCar -> {
+                if (orderCar.getTotalFee() == null || orderCar.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
+                    log.error("【均摊费用】失败{}", JSON.toJSONString(paramsDto));
+                    throw new ServerException("订单车辆存在时，订单金额不能为零");
+                }
+                orderCarDao.updateById(orderCar);
+            });
+
         }
         orderDao.updateById(order);
 

@@ -1636,7 +1636,8 @@ public class CsOrderServiceImpl implements ICsOrderService {
      * @author JPG
      * @since 2019/10/29 8:30
      */
-    private List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
+    @Override
+    public List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
         totalFee = totalFee == null ? BigDecimal.ZERO : totalFee;
         if (CollectionUtils.isEmpty(orderCarlist)) {
             return orderCarlist;

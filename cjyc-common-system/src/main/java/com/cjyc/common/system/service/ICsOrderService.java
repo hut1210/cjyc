@@ -7,6 +7,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.order.DispatchAddCarVo;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -133,4 +134,6 @@ public interface ICsOrderService {
      * @param vin 车架号
      */
     boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin);
+
+    List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> ocList);
 }
