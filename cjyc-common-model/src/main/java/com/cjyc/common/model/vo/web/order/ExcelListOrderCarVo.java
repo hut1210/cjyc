@@ -31,6 +31,8 @@ public class ExcelListOrderCarVo implements Serializable {
     private Integer source;
     @Excel(name = "大区", orderNum = "8", width = 15)
     private String region;
+    @Excel(name = "所属业务中心", orderNum = "8", width = 15)
+    private String inputStoreName;
     @Excel(name = "订单状态", orderNum = "9", width = 15)
     private String outterState;
     private Integer customerType;

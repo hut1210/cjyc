@@ -1,14 +1,9 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
-
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-
-import java.io.Serializable;
-
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -17,6 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -63,6 +61,7 @@ public class Order implements Serializable {
     private Long inputStoreId;
 
     @ApiModelProperty(value = "订单所属业务中心名称")
+    @Excel(name = "所属业务中心", orderNum = "5")
     private String inputStoreName;
 
     @ApiModelProperty(value = "省")
