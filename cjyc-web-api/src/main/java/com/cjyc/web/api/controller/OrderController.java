@@ -41,7 +41,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -319,13 +318,11 @@ public class OrderController {
     @GetMapping(value = "/exportAllList")
     public void exportAllList(ListOrderDto reqDto, HttpServletResponse response) throws IOException, InvalidFormatException {
         ResultVo<List<ListOrderVo>> orderRs = orderService.listAll(reqDto);
-        printExcel(orderRs, "订单信息导出", response);
+        printExcel(orderRs, ListOrderVo.class, "订单信息导出", response);
 
     }
 
-    private <T> void printExcel(ResultVo<List<T>> vo, String tip, HttpServletResponse response) {
-        Class <T> clazz = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        System.out.println("T的类型：" + clazz);
+    private <T> void printExcel(ResultVo<List<T>> vo, Class clazz, String tip, HttpServletResponse response) {
         if (!isResultSuccess(vo)) {
             ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", vo.getMsg()), "导出异常.xls", response);
             return;
