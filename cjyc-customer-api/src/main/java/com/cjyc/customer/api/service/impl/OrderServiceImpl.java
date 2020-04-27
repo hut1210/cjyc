@@ -213,6 +213,10 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
     }
 
     private void fillFee(OrderCenterDetailVo detailVo, Order order) {
+        // 查询线路费
+        Line line1 = lineDao.selectById(order.getLineId());
+        detailVo.setLineWlFreightFee(line1.getDefaultWlFee());
+
         List<OrderCar> orderCarList = orderCarDao.selectList(new QueryWrapper<OrderCar>().lambda().eq(OrderCar::getOrderId, order.getId()));
         // 计算合伙人物流费 与 合伙人服务费
         if (CustomerTypeEnum.COOPERATOR.code == order.getCustomerType()) {

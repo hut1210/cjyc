@@ -55,6 +55,10 @@ public interface IOrderDao extends BaseMapper<Order> {
 
     List<Order> findListByCarIds(@Param("list")Collection<Long> orderCarIds);
 
+    /**
+     * @param orderCarNos
+     * @return
+     */
     List<Order> findListByCarNos(@Param("list")Collection<String> orderCarNos);
 
     /**
