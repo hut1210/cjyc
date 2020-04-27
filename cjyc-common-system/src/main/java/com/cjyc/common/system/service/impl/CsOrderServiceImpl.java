@@ -1631,10 +1631,11 @@ public class CsOrderServiceImpl implements ICsOrderService {
     }
 
     /**
-     * 均摊服务费
-     *
+     * 均摊车辆费用
      * @author JPG
-     * @since 2019/10/29 8:30
+     * @since 2020/4/27 13:05
+     * @param totalFee
+     * @param ocList
      */
     @Override
     public List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist) {
