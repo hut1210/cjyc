@@ -1539,7 +1539,8 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (WaybillTypeEnum.PICK.code == waybillType) {
             noc.setPickType(order.getPickType());
             //订单车辆状态
-            if (OrderCarStateEnum.WAIT_PICK.code == orderCar.getState()) {
+            if (OrderCarStateEnum.WAIT_PICK.code == orderCar.getState()
+                    || (WaybillCarrierTypeEnum.SELF.code == waybill.getCarrierType() && WaybillTypeEnum.PICK.code == waybill.getType())) {
                 noc.setState(OrderCarStateEnum.WAIT_PICK_DISPATCH.code);
             }
             //订单车辆提车状态
