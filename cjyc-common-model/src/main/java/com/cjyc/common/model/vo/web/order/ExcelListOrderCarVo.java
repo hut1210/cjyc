@@ -98,6 +98,8 @@ public class ExcelListOrderCarVo implements Serializable {
     private Long checkTime;
     @Excel(name = "接单人", orderNum = "41", width = 20)
     private String checkUserName;
+    @Excel(name = "所属业务中心")
+    private String inputStoreName;
 
     public String getWlPayState() {
         if (wlPayState == null) {

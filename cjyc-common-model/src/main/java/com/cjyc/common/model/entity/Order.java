@@ -61,7 +61,7 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "订单所属业务中心ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long inputStoreId;
-
+    @Excel(name = "所属业务中心")
     @ApiModelProperty(value = "订单所属业务中心名称")
     private String inputStoreName;
 
