@@ -138,7 +138,7 @@ public class Order implements Serializable {
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地业务中心名称")
-    @Excel(name = "送车业务中心", orderNum = "18", width = 10)
+    @Excel(name = "送车业务中心", orderNum = "18", width = 20)
     private String endStoreName;
 
     @JsonSerialize(using = ToStringSerializer.class)

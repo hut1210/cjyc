@@ -114,7 +114,6 @@ public interface ICsOrderService {
      */
     boolean validateIsArriveStoreOrCityRange(Long endStoreId, String endAreaCode, String endCityCode, Long orderEndStoreId, String orderEndCityCode);
 
-    List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> orderCarlist);
 
     BigDecimal getCarWlFee(OrderCar orderCar);
 

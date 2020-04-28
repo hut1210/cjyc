@@ -23,7 +23,7 @@ public class ListOrderVo extends Order {
     @ApiModelProperty("状态")
     private String outterState;
     @ApiModelProperty("出发地址（全）")
-    @Excel(name = "提车地址", orderNum = "24")
+    @Excel(name = "提车地址", orderNum = "24", width = 20)
     private String startFullAddress;
     @ApiModelProperty("目的地址（全）")
     @Excel(name = "交付地址", orderNum = "29", width = 20)
