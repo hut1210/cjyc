@@ -136,4 +136,13 @@ public interface ICsOrderService {
      * @param vin 车架号
      */
     boolean validateIsNotRepeatVin(String orderNo, Long orderCarId, String vin);
+
+    /**
+     * 均摊车辆费用
+     * @author JPG
+     * @since 2020/4/27 13:05
+     * @param totalFee
+     * @param ocList
+     */
+    List<OrderCar> shareTotalFee(BigDecimal totalFee, List<OrderCar> ocList);
 }

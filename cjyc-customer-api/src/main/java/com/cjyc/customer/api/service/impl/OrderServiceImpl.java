@@ -41,11 +41,9 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
-
 /**
- * @auther litan
- * @description: com.cjyc.customer.api.system.impl
- * @date:2019/10/8
+ * 订单
+ * @author JPG
  */
 @Service
 @Slf4j
@@ -124,7 +122,6 @@ public class OrderServiceImpl extends ServiceImpl<IOrderDao,Order> implements IO
 
         }
         orderDao.updateById(order);
-
         //给客户发送消息
         csPushMsgService.send(paramsDto.getLoginId(), UserTypeEnum.CUSTOMER, PushMsgEnum.C_COMMIT_ORDER, order.getNo());
         //TODO 给所属业务中心业务员发送消息
