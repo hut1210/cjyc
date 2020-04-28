@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.UnlockDto;
 import com.cjyc.common.model.dto.customer.pingxx.ValidateSweepCodeDto;
 import com.cjyc.common.model.dto.web.pingxx.WebOutOfStockDto;
 import com.cjyc.common.model.dto.web.pingxx.WebPrePayDto;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.StringUtil;
 import com.cjyc.common.model.vo.ResultVo;
@@ -71,9 +72,9 @@ public class PingxxController {
 
             map.put("imageUrl", QRcodeUtil.creatRrCode(qrcode, 200, 200));
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.info(e.getMessage());
+            return BaseResultUtil.success(ResultEnum.SUCCESS_NONE.getCode(), "订单正在支付中", map);
         }
-
         return BaseResultUtil.success(map);
     }
 
