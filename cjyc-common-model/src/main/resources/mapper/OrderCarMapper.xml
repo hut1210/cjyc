@@ -719,6 +719,7 @@
         o.customer_type as customerType,
         o.customer_name as customerName,
         o.customer_phone as customerPhone,
+        o.input_store_name as inputStoreName,
         o.start_city as startCity,
         o.end_city as endCity,
         o.pick_contact_name as pickContactName,
