@@ -519,14 +519,7 @@ public class FinanceServiceImpl implements IFinanceService {
     @Override
     @Transactional
     public ResultVo apply(AppSettlementPayableDto appSettlementPayableDto) {
-        Set<Long> customerPhoneSet = new HashSet<Long>();
-        List<AppSettlementPayableDetailsDto> listAppSettlementPayableDetails = appSettlementPayableDto.getListAppSettlementPayableDetails();
-        listAppSettlementPayableDetails.forEach(e -> {customerPhoneSet.add(e.getCarrierId());});
-        if(customerPhoneSet.size() > 1){
-            return BaseResultUtil.fail("请选择相同【承运商】的运单进行结算！");
-        }
-        // 用完之后清空set
-        customerPhoneSet.clear();
+        List<String> list = appSettlementPayableDto.getTaskNo();
         String serialNumber = csSendNoService.getNo(SendNoTypeEnum.PAYMENT);
         SettlementVo settlementVo = new SettlementVo();
         settlementVo.setSerialNumber(serialNumber);
@@ -535,10 +528,10 @@ public class FinanceServiceImpl implements IFinanceService {
         settlementVo.setFreightFee(MoneyUtil.yuanToFen(appSettlementPayableDto.getFreightFee()));
         settlementVo.setState("0");
         financeDao.apply(settlementVo);
-        for (AppSettlementPayableDetailsDto dto : listAppSettlementPayableDetails) {
+        for (String taskNo : list) {
             SettlementVo settlement = new SettlementVo();
             settlement.setSerialNumber(serialNumber);
-            settlement.setNo(dto.getWayBillNo());
+            settlement.setNo(taskNo);
             financeDao.applyDetail(settlement);
         }
         return BaseResultUtil.success();
@@ -1631,7 +1624,6 @@ public class FinanceServiceImpl implements IFinanceService {
         private ResultVo validateApplyReceiveSettlementParams(ApplyReceiveSettlementVo applyReceiveSettlementVo) {
             BigDecimal totalReceivableFee = applyReceiveSettlementVo.getTotalReceivableFee();
             BigDecimal totalInvoiceFee = applyReceiveSettlementVo.getTotalInvoiceFee();
-            Set<String> customerPhoneSet = new HashSet<String>();
             if (applyReceiveSettlementVo.getLoginId() == null) {
                 return BaseResultUtil.fail("申请人id不能为空！");
             }
@@ -1678,16 +1670,7 @@ public class FinanceServiceImpl implements IFinanceService {
                     if (e.getInvoiceFee() == null || e.getInvoiceFee().compareTo(BigDecimal.ZERO) < 0) {
                         return BaseResultUtil.fail("结算单明细-开票金额不能为空或负值");
                     }
-                    if (StringUtils.isEmpty(e.getCustomerPhone())) {
-                        return BaseResultUtil.fail("客户账号不能为空！");
-                    }
-                    customerPhoneSet.add(e.getCustomerPhone().trim());
                 }
-                if(customerPhoneSet.size() > 1){
-                    return BaseResultUtil.fail("请选择相同【客户】的订单车辆进行结算！");
-                }
-                // 用完之后清空set
-                customerPhoneSet.clear();
             }
             /**
              * 不需要开票下面的开票就不校验
