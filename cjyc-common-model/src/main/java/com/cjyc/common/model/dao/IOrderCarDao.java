@@ -304,7 +304,7 @@ public interface IOrderCarDao extends BaseMapper<OrderCar> {
 
     List<OrderCar> findListbyOrderNos(@Param("collection") Collection<String> orderNoSet);
 
-    int countPaidCar(Long orderId);
+    int countPaidCar(String orderNo);
 
     int updateStateBatchByOrderId(@Param("state") int code, @Param("orderId") Long orderId);
 

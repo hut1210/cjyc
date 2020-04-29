@@ -1843,11 +1843,11 @@
             #{item}
         </foreach>
     </select>
-    <select id="countPaidCar" resultType="java.lang.Integer">
+    <select id="countPaidCar" resultType="int">
         select count(0)
         from w_waybill_car wc
         join w_waybill w on w.id = wc.waybill_id
-        where order_car_no like concat(#{orderId},'%')
+        where order_car_no like concat(#{orderNo},'%')
         and freight_pay_state = 1
     </select>
 

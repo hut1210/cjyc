@@ -2713,9 +2713,9 @@
         )
     </select>
     <select id="countPaidCar" resultType="java.lang.Integer">
-        select *
+        select count(0)
         from w_order_car
-        where order_no = #{orderId}
+        where order_no = #{orderNo}
         and wl_pay_state = 2
     </select>
     <select id="sumTotalWlFee" resultType="java.math.BigDecimal">

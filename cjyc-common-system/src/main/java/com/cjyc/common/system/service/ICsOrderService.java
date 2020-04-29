@@ -69,7 +69,7 @@ public interface ICsOrderService {
     /**
      * 订单作废
      * @author JPG
-     * @since 2019/11/5 16:51
+     * @since 2020/4/29
      * @param paramsDto
      */
     ResultVo obsolete(ObsoleteOrderDto paramsDto);

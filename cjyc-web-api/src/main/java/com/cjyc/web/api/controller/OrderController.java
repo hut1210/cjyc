@@ -237,7 +237,7 @@ public class OrderController {
     @ApiOperation(value = "作废订单")
     @PostMapping(value = "/obsolete")
     public ResultVo obsolete(@RequestBody ObsoleteOrderDto reqDto) {
-        ResultVo<ObsoleteOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        ResultVo<ObsoleteOrderDto> resVo = csAdminService.validateEnabledAndBizscope(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }

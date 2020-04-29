@@ -241,5 +241,5 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
 
     int updateForCancelUnloadByIds(List<Long> collect);
 
-    int countPaidCar(Long orderId);
+    int countPaidCar(String orderNo);
 }
