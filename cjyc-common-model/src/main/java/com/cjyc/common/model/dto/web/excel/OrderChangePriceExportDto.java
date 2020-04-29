@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public class OrderChangePriceExportDto {
     @ApiModelProperty("开始时间")
-    private Long endDate;
-    @ApiModelProperty("结束时间")
     private Long startDate;
+    @ApiModelProperty("结束时间")
+    private Long endDate;
 
 }

@@ -6,6 +6,7 @@ import com.cjyc.common.model.dto.driver.task.DetailQueryDto;
 import com.cjyc.common.model.dto.salesman.dispatch.DispatchListDto;
 import com.cjyc.common.model.dto.salesman.mine.SalesAchieveDto;
 import com.cjyc.common.model.dto.web.WayBillCarrierDto;
+import com.cjyc.common.model.dto.web.excel.WaybillPriceCompareExportDto;
 import com.cjyc.common.model.dto.web.mineStore.StorageCarQueryDto;
 import com.cjyc.common.model.dto.web.waybill.GetDto;
 import com.cjyc.common.model.dto.web.waybill.LocalListWaybillCarDto;
@@ -18,6 +19,7 @@ import com.cjyc.common.model.vo.salesman.dispatch.DispatchListVo;
 import com.cjyc.common.model.vo.salesman.dispatch.DispatchRecordVo;
 import com.cjyc.common.model.vo.salesman.task.TaskInfo;
 import com.cjyc.common.model.vo.web.WayBillCarrierVo;
+import com.cjyc.common.model.vo.web.excel.WaybillPriceCompareExportVo;
 import com.cjyc.common.model.vo.web.finance.DriverUpstreamPaidInfoVo;
 import com.cjyc.common.model.vo.web.mineStore.StorageCarVo;
 import com.cjyc.common.model.vo.web.waybill.LocalListWaybillCarVo;
@@ -242,4 +244,6 @@ public interface IWaybillCarDao extends BaseMapper<WaybillCar> {
     int updateForCancelUnloadByIds(List<Long> collect);
 
     int countPaidCar(String orderNo);
+
+    List<WaybillPriceCompareExportVo> listWaybillPriceCompare(WaybillPriceCompareExportDto reqDto);
 }

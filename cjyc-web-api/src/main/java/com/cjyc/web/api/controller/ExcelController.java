@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-@Api(tags = "导入导出")
+@Api(tags = "Excel")
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/excel")
@@ -38,12 +38,19 @@ public class ExcelController {
     }
 
 
-    @ApiOperation(value = "导出订单改价记录")
+    @ApiOperation(value = "导出运单价格对比信息")
     @GetMapping(value = "/waybill/car/price/compare/export")
-    public void exportOrderChangePriceSimple(WaybillPriceCompareExportDto reqDto, HttpServletResponse response) {
+    public void exportWaybillPriceCompare(WaybillPriceCompareExportDto reqDto, HttpServletResponse response) {
         ResultVo<List<WaybillPriceCompareExportVo>> resultVo = excelService.listWaybillPriceCompare(reqDto);
-        returnExcel.printExcel(resultVo, WaybillPriceCompareExportVo.class, "订单改价信息", response);
+        returnExcel.printExcel(resultVo, WaybillPriceCompareExportVo.class, "运单价格对比信息", response);
     }
+
+    /*@ApiOperation(value = "导出司机登录信息")
+    @GetMapping(value = "/driver/login/count/export")
+    public void exportDriverLoginCount(DriverLoginCountExportDto reqDto, HttpServletResponse response) {
+        ResultVo<List<DriverLoginCountExportVo>> resultVo = excelService.ListDriverLoginCount(reqDto);
+        returnExcel.printExcel(resultVo, DriverLoginCountExportVo.class, "司机登录信息", response);
+    }*/
 
 
 }

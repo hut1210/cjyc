@@ -1850,5 +1850,48 @@
         where order_car_no like concat(#{orderNo},'%')
         and freight_pay_state = 1
     </select>
+    <select id="listWaybillPriceCompare"
+            resultType="com.cjyc.common.model.vo.web.excel.WaybillPriceCompareExportVo">
+        select
+        oc.no as orderCarNo,
+        oc.order_no as orderNo,
+        oc.brand as brand,
+        oc.model as model,
+        oc.vin as vin,
+        o.start_city as orderStartCity,
+        o.end_city as orderEndCity,
+        Format(IFNULL(lo.default_freight_fee, 0)/100, 2) as orderLineFreightFee,
+        FROM_UNIXTIME(o.create_time/1000, '%Y-%m-%d %H:%i:%s') as orderCreateTime,
+        w.no as waybillNo,
+        w.carrier_name as waybillCarrierName,
+        w.create_user as waybillCreateUser,
+        FROM_UNIXTIME(w.create_time/1000, '%Y-%m-%d %H:%i:%s') as waybillCreateTime,
+        wc.start_city as waybillStartCity,
+        wc.end_city as waybillEndCity,
+        case when o.start_area_code = wc.start_area_code and o.start_address = wc.start_address and o.pick_contact_phone = wc.load_link_phone then '√' else '' end as isPickFromHome,
+        case when o.end_area_code = wc.end_area_code and o.end_address = wc.end_address and o.back_contact_phone = wc.unload_link_phone then '√' else '' end as isBackToHome,
+        FORMAT(IFNULL(wc.freight_fee,0)/100, 2) as waybillRealFreightFee,
+        FORMAT(IFNULL(l.default_freight_fee,0)/100, 2) as waybillLineFreightFee,
+        FORMAT((IFNULL(wc.freight_fee, 0) - IFNULL(l.default_freight_fee,0))/100, 2) as waybillFreightFeeCha
+        from w_waybill w
+        join w_waybill_car wc on wc.waybill_id = w.id
+        join w_order_car oc on oc.id = wc.order_car_id
+        join w_order o on oc.order_id = o.id
+        left join s_line l on (l.from_code = wc.start_city_code and l.to_code = wc.end_city_code)
+        left join s_line lo on (lo.from_code = o.start_city_code and lo.to_code = o.end_city_code)
+        where wc.state &lt;= 100
+        and w.state &lt;= 100
+        and oc.state &lt;= 100
+        <if test="queryType != null and queryType != 0">
+          and w.type = #{queryType}
+        </if>
+        <if test="startDate != null">
+            and w.type >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            and w.type &lt;= #{endDate}
+        </if>
+        order by oc.id
+    </select>
 
 </mapper>

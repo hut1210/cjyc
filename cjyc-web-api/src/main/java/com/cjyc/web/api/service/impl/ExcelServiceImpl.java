@@ -1,7 +1,11 @@
 package com.cjyc.web.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.cjyc.common.model.constant.TimeConstant;
+import com.cjyc.common.model.constant.TimePatternConstant;
 import com.cjyc.common.model.dao.IOrderChangeLogDao;
+import com.cjyc.common.model.dao.IWaybillCarDao;
+import com.cjyc.common.model.dto.web.excel.DriverLoginCountExportDto;
 import com.cjyc.common.model.dto.web.excel.OrderChangePriceExportDto;
 import com.cjyc.common.model.dto.web.excel.WaybillPriceCompareExportDto;
 import com.cjyc.common.model.entity.OrderCar;
@@ -10,7 +14,9 @@ import com.cjyc.common.model.entity.defined.FullOrder;
 import com.cjyc.common.model.util.BaseResultUtil;
 import com.cjyc.common.model.util.LocalDateTimeUtil;
 import com.cjyc.common.model.util.MoneyUtil;
+import com.cjyc.common.model.util.TimeStampUtil;
 import com.cjyc.common.model.vo.ResultVo;
+import com.cjyc.common.model.vo.web.excel.DriverLoginCountExportVo;
 import com.cjyc.common.model.vo.web.excel.ImportOrderChangePriceVo;
 import com.cjyc.common.model.vo.web.excel.WaybillPriceCompareExportVo;
 import com.cjyc.web.api.service.IExcelService;
@@ -21,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +35,8 @@ public class ExcelServiceImpl implements IExcelService {
 
     @Resource
     private IOrderChangeLogDao orderChangeLogDao;
+    @Resource
+    private IWaybillCarDao waybillCarDao;
 
     @Override
     public ResultVo<List<ImportOrderChangePriceVo>> listOrderChangePriceSimple(OrderChangePriceExportDto reqDto) {
@@ -43,6 +52,63 @@ public class ExcelServiceImpl implements IExcelService {
 
     @Override
     public ResultVo<List<WaybillPriceCompareExportVo>> listWaybillPriceCompare(WaybillPriceCompareExportDto reqDto) {
+        List<WaybillPriceCompareExportVo> list = waybillCarDao.listWaybillPriceCompare(reqDto);
+        return BaseResultUtil.success(list);
+    }
+
+    @Override
+    public ResultVo<List<DriverLoginCountExportVo>> ListDriverLoginCount(DriverLoginCountExportDto paramsDto) {
+        //未设定日期
+        if (paramsDto.getStartDate() == null && paramsDto.getEndDate() == null) {
+            //默认90天内
+            paramsDto.setEndDate(LocalDateTimeUtil.getMillisByLDT(LocalDateTimeUtil.getDayEndByLDT(LocalDateTime.now())));
+            paramsDto.setStartDate(TimeStampUtil.addDays(paramsDto.getEndDate(), -90));
+        }
+        //未设定开始日期
+        if (paramsDto.getStartDate() == null && paramsDto.getEndDate() != null) {
+            paramsDto.setStartDate(TimeStampUtil.addDays(paramsDto.getEndDate(), -90));
+        }
+        //未设定结束日期
+        if (paramsDto.getStartDate() != null && paramsDto.getEndDate() == null) {
+            paramsDto.setEndDate(TimeStampUtil.addDays(paramsDto.getStartDate(), 90));
+        }
+        //设定日期范围过大
+        if (paramsDto.getStartDate() != null && paramsDto.getEndDate() != null) {
+            boolean f = (paramsDto.getEndDate() - paramsDto.getStartDate()) > (90 * TimeConstant.MILLS_OF_ONE_DAY);
+            if (f) {
+                paramsDto.setStartDate(TimeStampUtil.addDays(paramsDto.getEndDate(), -90));
+            }
+        }
+
+        paramsDto.setStartTime(LocalDateTimeUtil.formatLong(paramsDto.getStartDate(), TimePatternConstant.DATETIME));
+        paramsDto.setEndTime(LocalDateTimeUtil.formatLong(paramsDto.getEndDate(), TimePatternConstant.DATETIME));
+
+        if (paramsDto.getQueryType() == 0) {
+            if (StringUtils.isBlank(paramsDto.getInterfaceName())) {
+                return BaseResultUtil.fail("请输入接口名称");
+            }
+        } else {
+            String interfaceName;
+            switch (paramsDto.getQueryType()) {
+                case 1:
+                    interfaceName = "/api/api-oauth/oauth2/token";
+                    break;
+                case 2:
+                    interfaceName = "/cjyc-salesman/cjyc/salesman/login/pwd";
+                    break;
+                case 3:
+                    interfaceName = "/cjyc-driver/cjyc/driver/login/login";
+                    break;
+                case 4:
+                    interfaceName = "/cjyc-customer/cjyc/customer/login/login";
+                    break;
+                default:
+                    interfaceName = paramsDto.getInterfaceName();
+            }
+            paramsDto.setInterfaceName(interfaceName);
+        }
+
+
         return null;
     }
 
