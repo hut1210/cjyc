@@ -12,5 +12,4 @@ public class MQMessage<T> {
     private String type;
     private T data;
 
-
 }

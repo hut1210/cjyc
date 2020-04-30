@@ -3,7 +3,6 @@ package com.cjyc.common.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.constant.AccountConstant;
 import com.cjyc.common.model.constant.AmqpConstant;
-import com.cjyc.common.model.dao.IOrderDao;
 import com.cjyc.common.model.entity.Order;
 import com.cjyc.common.model.entity.OrderCar;
 import com.cjyc.common.model.entity.defined.MQMessage;
@@ -48,13 +47,15 @@ public class CsAmqpServiceImpl implements ICsAmqpService {
         }
         log.debug("【发送MQ消息】订单状态------------>" + JSON.toJSONString(orderSet));
         orderSet.forEach(o -> {
-            Map<Object, Object> dataMap = Maps.newHashMap();
+            Map<String, Object> dataMap = Maps.newHashMap();
             dataMap.put("orderNo", o.getNo());
             dataMap.put("state", o.getState());
             dataMap.put("createTime", System.currentTimeMillis());
             if(AccountConstant.ACCOUNT_99CC.equals(o.getCustomerPhone())){
                 log.info("【发送MQ消息】99车圈-订单状态------------> " + JSON.toJSONString(dataMap));
                 send(AmqpProperty.topicExchange, AmqpProperty.commonRoutingKey, new MQMessage<>(AmqpConstant.MQ_TYPE_99CC_ORDER_STATE, dataMap));
+            }else{
+                log.debug("【发送MQ消息】订单状态------------>不需要发送状态推送" );
             }
         });
     }

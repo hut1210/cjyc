@@ -1332,12 +1332,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
         if (n == 0) {
             //提干,APP 自送单起始地是业务中心，无法验证地址，只能验证手机号
             if (validateIsFromOrigin(waybillCar, order)) {
-                LogUtil.debug("【计算车辆状态】isFromOrigin");
+                LogUtil.debug("【计算车辆状态】isLoadFromHome");
                 noc.setState(OrderCarStateEnum.WAIT_TRUNK.code);
                 //验证是否存在提车运单
                 int i = waybillCarDao.countActiveWaybill(orderCarId, WaybillTypeEnum.PICK.code);
                 if (i <= 0) {
-                    LogUtil.debug("【计算车辆状态】isFromOrigin, 不存在提车运单");
+                    LogUtil.debug("【计算车辆状态】isLoadFromHome, 干线物流上门提车");
                     noc.setPickType(OrderPickTypeEnum.WL.code);
                     noc.setPickState(OrderCarLocalStateEnum.F_WL.code);
                 }
@@ -1346,12 +1346,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
         // 最后一段干线运单
         if (validateIsArriveEndStore(order.getEndStoreId(), waybillCar.getEndStoreId())) {
-            LogUtil.debug("【计算车辆状态】isArriveEndStore");
+            LogUtil.debug("【计算车辆状态】isUnloadToStore");
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
             //如果送车方式是物流上门变更为订单提送车方式
             if (OrderPickTypeEnum.WL.code == orderCar.getBackType()) {
                 if (OrderPickTypeEnum.WL.code != order.getBackType()) {
-                    LogUtil.debug("【计算车辆状态】isArriveEndStore, 订单是物流上门");
+                    LogUtil.debug("【计算车辆状态】isUnloadToStore, 干线送达目的地业务中心");
                     noc.setBackType(order.getBackType());
                 } else {
                     noc.setBackType(OrderPickTypeEnum.PILOT.code);
@@ -1361,11 +1361,12 @@ public class CsWaybillServiceImpl implements ICsWaybillService {
 
         //是否交付客户-干送运单
         if (validateIsArriveDest(waybillCar, order)) {
-            LogUtil.debug("【计算车辆状态】isArriveDest, 交付客户-干送运单");
+            LogUtil.debug("【计算车辆状态】isUnloadToHome");
             noc.setTrunkState(OrderCarTrunkStateEnum.DISPATCHED.code);
             //验证是否存在送车运单
             int i = waybillCarDao.countActiveWaybill(orderCarId, WaybillTypeEnum.BACK.code);
             if (i <= 0) {
+                LogUtil.debug("【计算车辆状态】isUnloadToHome, 干线物流上门送车");
                 noc.setBackState(OrderCarLocalStateEnum.F_WL.code);
                 noc.setBackType(OrderPickTypeEnum.WL.code);
             }
