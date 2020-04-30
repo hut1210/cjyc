@@ -61,7 +61,6 @@ public class Order implements Serializable {
     private Long inputStoreId;
     @Excel(name = "所属业务中心", orderNum = "5", width = 20)
     @ApiModelProperty(value = "订单所属业务中心名称")
-    @Excel(name = "所属业务中心", orderNum = "5")
     private String inputStoreName;
 
     @ApiModelProperty(value = "省")
