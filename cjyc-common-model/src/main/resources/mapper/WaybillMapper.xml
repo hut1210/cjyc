@@ -527,6 +527,7 @@
         select
         <include refid="task_inner_state"/>,
         w.carrier_name as carrierName,
+        w.freight_fee as freightFee,
         t.no as wtNo,
         t.car_num as carNum,
         t.guide_line as guideLine,
