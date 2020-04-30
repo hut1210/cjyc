@@ -343,7 +343,7 @@ public class CsPingPayServiceImpl implements ICsPingPayService {
                         //99车圈允许放车
                         if(validateIsAllowRelease(orderCar)){
                             isNeedPay = 0;
-                            log.info("【支付验证】到付订单车辆{0}未支付，客户允许不支付放车", orderCarNo, amount);
+                            log.info("【支付验证】到付订单车辆{0}未支付,金额{1}，客户允许不支付放车", orderCarNo, amount);
                         }else{
                             return BaseResultUtil.fail("车辆{0}未收到交车指令, 请联系{1}工作人员4009-199-266", orderCarNo, order.getCustomerName());
                         }
