@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class ReleaseCarReqDto {
     @ApiModelProperty(value = "客户电话默认传16000000001", required = true)
     private String customerPhone;
 
-    @NotBlank(message = "处理类型")
+    @NotNull(message = "处理类型")
     @ApiModelProperty(value = "0未付款不允许放车，1未付款允许放车，2已付款不允许放车，9已付款允许放车", required = true)
     private Integer type;
 
