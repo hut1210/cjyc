@@ -105,7 +105,7 @@ public class DispatchController {
     public ResultVo<ListVo<Map<String, Object>>> waitDispatchCarCountList(@PathVariable Long loginId, @PathVariable Long roleId) {
         BaseWebDto dto = new BaseWebDto();
         dto.setLoginId(loginId);
-        dto.setLoginId(roleId);
+        dto.setRoleId(roleId);
         return orderService.waitDispatchCarCountListV2(dto);
     }
 

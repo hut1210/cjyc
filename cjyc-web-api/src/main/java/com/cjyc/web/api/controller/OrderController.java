@@ -21,10 +21,7 @@ import com.cjyc.common.system.service.ICsAdminService;
 import com.cjyc.common.system.service.ICsCustomerService;
 import com.cjyc.common.system.service.ICsOrderService;
 import com.cjyc.web.api.service.IOrderService;
-import com.cjyc.web.api.util.CustomerOrderExcelVerifyHandler;
-import com.cjyc.web.api.util.ExcelUtil;
-import com.cjyc.web.api.util.KeyCustomerOrderExcelVerifyHandler;
-import com.cjyc.web.api.util.PatCustomerOrderExcelVerifyHandler;
+import com.cjyc.web.api.util.*;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,6 +55,8 @@ public class OrderController {
 
     @Resource
     private IOrderService orderService;
+    @Resource
+    private ReturnExcel returnExcel;
     @Resource
     private ICsOrderService csOrderService;
     @Resource
@@ -238,7 +237,7 @@ public class OrderController {
     @ApiOperation(value = "作废订单")
     @PostMapping(value = "/obsolete")
     public ResultVo obsolete(@RequestBody ObsoleteOrderDto reqDto) {
-        ResultVo<ObsoleteOrderDto> resVo = csAdminService.validateEnabled(reqDto);
+        ResultVo<ObsoleteOrderDto> resVo = csAdminService.validateEnabledAndBizscope(reqDto);
         if(ResultEnum.SUCCESS.getCode() != resVo.getCode()){
             return BaseResultUtil.fail(resVo.getMsg());
         }
@@ -318,28 +317,8 @@ public class OrderController {
     @GetMapping(value = "/exportAllList")
     public void exportAllList(ListOrderDto reqDto, HttpServletResponse response) throws IOException, InvalidFormatException {
         ResultVo<List<ListOrderVo>> orderRs = orderService.listAll(reqDto);
-        printExcel(orderRs, ListOrderVo.class, "订单信息导出", response);
+        returnExcel.printExcel(orderRs, ListOrderVo.class, "订单信息", response);
 
-    }
-
-    private <T> void printExcel(ResultVo<List<T>> vo, Class clazz, String tip, HttpServletResponse response) {
-        if (!isResultSuccess(vo)) {
-            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", vo.getMsg()), "导出异常.xls", response);
-            return;
-        }
-        List<T> list = vo.getData();
-        if (CollectionUtils.isEmpty(list)) {
-            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "未查询到结果信息"),"结果为空.xls", response);
-            return;
-        }
-        list = list.stream().filter(Objects::nonNull).collect(Collectors.toList());
-        try {
-            ExcelUtil.exportExcel(list, "订单信息", "订单信息", clazz, System.currentTimeMillis() + "订单信息.xls", response);
-        } catch (Exception e) {
-            LogUtil.error("导出订单信息异常", e);
-            ExcelUtil.printExcelResult(ExcelUtil.getWorkBookForShowMsg("提示信息", "导出订单信息异常: " + e.getMessage()),
-                    "导出异常.xls", response);
-        }
     }
 
 
@@ -555,18 +534,7 @@ public class OrderController {
         }
     }
 
-    /**
-     * 检查返回结果是否成功
-     *
-     * @param resultVo
-     * @return
-     */
-    private boolean isResultSuccess(ResultVo resultVo) {
-        if (null == resultVo) {
-            return false;
-        }
-        return resultVo.getCode() == ResultEnum.SUCCESS.getCode();
-    }
+
 
     /**
      * 响应json格式信息

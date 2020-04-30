@@ -33,12 +33,26 @@ public interface ICsAdminService {
     Admin validate(Long adminId);
 
     /**
-     * 
+     * 验证用户是否可用
      * @author JPG
      * @since 2020/4/15 14:10
      * @param t
      */
     <T extends BaseLoginDto> ResultVo<T> validateEnabled(T t);
+    /**
+     * 验证用户业务范围
+     * @author JPG
+     * @since 2020/4/15 14:10
+     * @param t
+     */
+    <T extends BaseLoginDto> ResultVo<T> validateBizscope(T t);
+    /**
+     * 验证用户是否可用和用户业务范围
+     * @author JPG
+     * @since 2020/4/15 14:10
+     * @param t
+     */
+    <T extends BaseLoginDto> ResultVo<T> validateEnabledAndBizscope(T t);
 
     /**
      * 仅查询业务员信息

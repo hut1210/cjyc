@@ -1,14 +1,9 @@
 package com.cjyc.common.model.entity;
 
-import java.math.BigDecimal;
-
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-
-import java.io.Serializable;
-
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.cjyc.common.model.serizlizer.BigDecimalSerizlizer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -17,6 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -40,7 +38,7 @@ public class Order implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "订单编号")
-    @Excel(name = "订单编号", orderNum = "0")
+    @Excel(name = "订单编号", orderNum = "0", width = 20)
     private String no;
 
     @ApiModelProperty(value = "客户ID")
@@ -48,11 +46,11 @@ public class Order implements Serializable {
     private Long customerId;
 
     @ApiModelProperty(value = "客户名称")
-    @Excel(name = "客户名称", orderNum = "11")
+    @Excel(name = "客户名称", orderNum = "12", width = 15)
     private String customerName;
 
     @ApiModelProperty(value = "客户电话")
-    @Excel(name = "下单客户", orderNum = "10")
+    @Excel(name = "下单客户", orderNum = "11", width = 15)
     private String customerPhone;
 
     @ApiModelProperty(value = "客户类型：1个人，2企业，3合伙人")
@@ -61,8 +59,9 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "订单所属业务中心ID")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long inputStoreId;
-
+    @Excel(name = "所属业务中心", orderNum = "5", width = 20)
     @ApiModelProperty(value = "订单所属业务中心名称")
+    @Excel(name = "所属业务中心", orderNum = "5")
     private String inputStoreName;
 
     @ApiModelProperty(value = "省")
@@ -72,7 +71,7 @@ public class Order implements Serializable {
     private String startProvinceCode;
 
     @ApiModelProperty(value = "市")
-    @Excel(name = "始发城市", orderNum = "13")
+    @Excel(name = "始发城市", orderNum = "14", width = 10)
     private String startCity;
 
     @ApiModelProperty(value = "市编号")
@@ -98,7 +97,7 @@ public class Order implements Serializable {
     private Long startStoreId;
 
     @ApiModelProperty(value = "出发地业务中心名称")
-    @Excel(name = "收车业务中心", orderNum = "15")
+    @Excel(name = "收车业务中心", orderNum = "16", width = 20)
     private String startStoreName;
 
     @ApiModelProperty(value = "出发地业务所属中心名称")
@@ -112,7 +111,7 @@ public class Order implements Serializable {
     private String endProvinceCode;
 
     @ApiModelProperty(value = "市")
-    @Excel(name = "目的城市", orderNum = "14")
+    @Excel(name = "目的城市", orderNum = "15", width = 10)
     private String endCity;
 
     @ApiModelProperty(value = "市编号")
@@ -138,7 +137,7 @@ public class Order implements Serializable {
     private Long endStoreId;
 
     @ApiModelProperty(value = "目的地业务中心名称")
-    @Excel(name = "送车业务中心", orderNum = "17")
+    @Excel(name = "送车业务中心", orderNum = "18", width = 20)
     private String endStoreName;
 
     @JsonSerialize(using = ToStringSerializer.class)
@@ -161,22 +160,22 @@ public class Order implements Serializable {
     private Integer pickType;
 
     @ApiModelProperty(value = "发车人")
-    @Excel(name = "提车联系人", orderNum = "21")
+    @Excel(name = "提车联系人", orderNum = "22", width = 15)
     private String pickContactName;
 
     @ApiModelProperty(value = "发车人联系方式")
-    @Excel(name = "提车电话", orderNum = "22")
+    @Excel(name = "提车电话", orderNum = "23", width = 15)
     private String pickContactPhone;
 
     @ApiModelProperty(value = "送车方式： 1 自提，2代驾上门，3拖车上门，4物流上门")
     private Integer backType;
 
     @ApiModelProperty(value = "收车人")
-    @Excel(name = "交付联系人", orderNum = "26")
+    @Excel(name = "交付联系人", orderNum = "27", width = 15)
     private String backContactName;
 
     @ApiModelProperty(value = "收车人联系方式")
-    @Excel(name = "交付电话", orderNum = "27")
+    @Excel(name = "交付电话", orderNum = "28", width = 15)
     private String backContactPhone;
 
     @ApiModelProperty(value = "加急")
@@ -189,7 +188,7 @@ public class Order implements Serializable {
     private Long createTime;
 
     @ApiModelProperty(value = "创建人：客户/业务员")
-    @Excel(name = "下单人", orderNum = "31")
+    @Excel(name = "下单人", orderNum = "32", width = 15)
     private String createUserName;
 
     @ApiModelProperty(value = "创建人userid")
@@ -207,7 +206,7 @@ public class Order implements Serializable {
     private Long checkTime;
 
     @ApiModelProperty(value = "确认人：业务员")
-    @Excel(name = "接单人", orderNum = "33")
+    @Excel(name = "接单人", orderNum = "34", width = 15)
     private String checkUserName;
 
     @ApiModelProperty(value = "确认人userid")
@@ -218,7 +217,7 @@ public class Order implements Serializable {
     private Integer state;
 
     @ApiModelProperty(value = "备注")
-    @Excel(name = "订单备注", orderNum = "29")
+    @Excel(name = "订单备注", orderNum = "30", width = 20)
     private String remark;
 
     @ApiModelProperty(value = "是否开票：0否（默认根据设置），1是")

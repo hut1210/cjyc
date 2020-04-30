@@ -5,7 +5,10 @@ import com.cjkj.usercenter.dto.common.UserResp;
 import com.cjyc.common.model.dao.IAdminDao;
 import com.cjyc.common.model.dto.BaseLoginDto;
 import com.cjyc.common.model.entity.Admin;
+import com.cjyc.common.model.entity.defined.BizScope;
 import com.cjyc.common.model.enums.AdminStateEnum;
+import com.cjyc.common.model.enums.BizScopeEnum;
+import com.cjyc.common.model.enums.ResultEnum;
 import com.cjyc.common.model.enums.UserTypeEnum;
 import com.cjyc.common.model.exception.ParameterException;
 import com.cjyc.common.model.keys.RedisKeys;
@@ -14,6 +17,7 @@ import com.cjyc.common.model.vo.ResultVo;
 import com.cjyc.common.model.vo.web.admin.AdminVo;
 import com.cjyc.common.system.feign.ISysUserService;
 import com.cjyc.common.system.service.ICsAdminService;
+import com.cjyc.common.system.service.sys.ICsSysService;
 import com.cjyc.common.system.util.RedisUtils;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +42,8 @@ public class CsAdminServiceImpl implements ICsAdminService {
     private ISysUserService sysUserService;
     @Resource
     private RedisUtils redisUtil;
+    @Resource
+    private ICsSysService csSysService;
     /**
      * @param userId
      * @param isSearchCache
@@ -93,17 +99,45 @@ public class CsAdminServiceImpl implements ICsAdminService {
     @Override
     public <T extends BaseLoginDto> ResultVo<T> validateEnabled(T t){
         if(t == null || t.getLoginId() == null){
-            return BaseResultUtil.fail("登录用户存不在");
+            return BaseResultUtil.fail("用户不存在");
         }
         Admin admin = getById(t.getLoginId(), true);
-        if(admin == null || AdminStateEnum.CHECKED.code != admin.getState()){
-            return BaseResultUtil.fail("用户不存在或者已离职");
+        if(admin == null){
+            return BaseResultUtil.fail("用户不存在");
+        }
+        if(AdminStateEnum.CHECKED.code != admin.getState()){
+            return BaseResultUtil.fail("用户不可用");
         }
         t.setLoginName(admin.getName());
         t.setLoginPhone(admin.getPhone());
         t.setLoginType(UserTypeEnum.ADMIN);
         return BaseResultUtil.success(t);
     }
+    @Override
+    public <T extends BaseLoginDto> ResultVo<T> validateBizscope(T t){
+        //验证业务范围
+        BizScope bizScope = csSysService.getBizScopeByLoginIdNew(t.getLoginId(), true);
+        if (BizScopeEnum.NONE.code == bizScope.getCode()) {
+            return BaseResultUtil.fail("用户权限不足");
+        }
+        t.setBizScope(bizScope.getStoreIds());
+        return BaseResultUtil.success(t);
+    }
+    @Override
+    public <T extends BaseLoginDto> ResultVo<T> validateEnabledAndBizscope(T t){
+        ResultVo<T> resVo1 = validateEnabled(t);
+        if(ResultEnum.SUCCESS.getCode() != resVo1.getCode()){
+            return BaseResultUtil.fail(resVo1.getMsg());
+        }
+
+        ResultVo<T> resVo2 = validateBizscope(resVo1.getData());
+        if(ResultEnum.SUCCESS.getCode() != resVo2.getCode()){
+            return BaseResultUtil.fail(resVo2.getMsg());
+        }
+        return BaseResultUtil.success(resVo2.getData());
+    }
+
+
     @Override
     public Admin getAdminByPhone(String phone, boolean isSearchCache) {
         return adminDao.findByPhone(phone);

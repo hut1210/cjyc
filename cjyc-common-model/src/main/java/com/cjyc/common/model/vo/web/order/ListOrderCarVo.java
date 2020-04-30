@@ -53,7 +53,6 @@ public class ListOrderCarVo extends OrderCar {
     private Long inputStoreId;
 
     @ApiModelProperty(value = "订单所属业务中心名称")
-    @Excel(name = "所属业务中心", orderNum = "9")
     private String inputStoreName;
 
     @ApiModelProperty(value = "省")

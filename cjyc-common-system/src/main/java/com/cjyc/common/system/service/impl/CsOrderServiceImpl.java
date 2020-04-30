@@ -2,12 +2,18 @@ package com.cjyc.common.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.cjyc.common.model.constant.TimeConstant;
-import com.cjyc.common.model.dao.*;
+import com.cjyc.common.model.dao.IOrderCarDao;
+import com.cjyc.common.model.dao.IOrderDao;
+import com.cjyc.common.model.dao.ITaskDao;
+import com.cjyc.common.model.dao.IWaybillCarDao;
 import com.cjyc.common.model.dto.web.order.*;
 import com.cjyc.common.model.dto.web.waybill.SaveLocalDto;
 import com.cjyc.common.model.dto.web.waybill.SaveLocalWaybillDto;
 import com.cjyc.common.model.entity.*;
-import com.cjyc.common.model.entity.defined.*;
+import com.cjyc.common.model.entity.defined.BizScope;
+import com.cjyc.common.model.entity.defined.FullCity;
+import com.cjyc.common.model.entity.defined.FullOrder;
+import com.cjyc.common.model.entity.defined.UserInfo;
 import com.cjyc.common.model.enums.*;
 import com.cjyc.common.model.enums.city.CityLevelEnum;
 import com.cjyc.common.model.enums.customer.CustomerTypeEnum;
@@ -1218,12 +1224,13 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
     @Override
     public ResultVo obsolete(ObsoleteOrderDto paramsDto) {
+        //返回提示
         StringBuilder msg = new StringBuilder();
-        //作废订单
-        @NotNull Long orderId = paramsDto.getOrderId();
+        //查询订单
+        Long orderId = paramsDto.getOrderId();
         Order order = orderDao.selectById(orderId);
-        String oldStateName = OrderStateEnum.valueOf(order.getState()).name;
-        //验证
+        String oldStateStr = OrderStateEnum.valueOf(order.getState()).name;
+        /*验证是否可以作废*/
         ResultVo res = validateIsAllowObsolete(order, paramsDto.isForce());
         if(ResultEnum.SUCCESS.getCode() != res.getCode()){
             return BaseResultUtil.fail(res.getMsg());
@@ -1231,37 +1238,53 @@ public class CsOrderServiceImpl implements ICsOrderService {
 
         List<OrderCar> list = orderCarDao.findListByOrderId(orderId);
         int count = 0;
-        //取消订单相关
+        //TODO 作废订单（目前作废后是取消，后续添加作废状态）
         orderDao.updateStateById(OrderStateEnum.F_CANCEL.code, orderId);
         msg.append(++count).append(".取消订单").append(order.getNo()).append("成功；");
 
-        //处理订单相关车辆
+        //作废订单车辆
         if(!CollectionUtils.isEmpty(list)) {
             orderCarDao.updateStateBatchByOrderId(OrderStateEnum.F_CANCEL.code, order.getId());
             msg.append(++count).append(".取消订单车辆，共计").append(list.size()).append("辆；");
 
-            //取消运单车辆
+            //作废运单车辆
             Set<Long> orderCarIds = list.stream().map(OrderCar::getId).collect(Collectors.toSet());
             List<WaybillCar> waybillCarList = waybillCarDao.findListByOrderCarIds(orderCarIds);
             if (!CollectionUtils.isEmpty(waybillCarList)) {
                 Set<Long> waybillCarIds = waybillCarList.stream().map(WaybillCar::getId).collect(Collectors.toSet());
                 waybillCarDao.updateStateBatchByIds(waybillCarIds, WaybillCarStateEnum.F_CANCEL.code);
-                msg.append(++count).append(".取消订单关联运单车辆，共计").append(waybillCarList.size()).append("辆；");
-                //取消运单
+                msg.append(++count).append(".取消订单关联运单车辆成功");
+                //修改运单状态
                 Set<Long> waybillIds = waybillCarList.stream().map(WaybillCar::getWaybillId).collect(Collectors.toSet());
-                waybillIds.forEach(id -> csWaybillService.validateAndFinishWaybill(id));
-                msg.append(++count).append(".取消订单关联运单，共计").append(waybillIds.size()).append("个运单；");
-                //取消任务相关
+                int waybillCount = 0;
+                for (Long waybillId : waybillIds) {
+                    int i = csWaybillService.validateAndFinishWaybill(waybillId);
+                    if(i > 0){
+                        ++waybillCount;
+                    }
+                }
+                if(waybillCount > 0){
+                    msg.append(++count).append(".取消订单关联的").append(waybillCount).append("个运单；");
+                }
+                //修改任务状态
                 List<Task> tasks = taskDao.findListByWaybillCarIds(waybillCarIds);
                 if (CollectionUtils.isEmpty(tasks)) {
-                    tasks.forEach(task -> csTaskService.validateAndFinishTask(task));
-                    msg.append(++count).append(".取消订单关联任务，共计").append(tasks.size()).append("个任务；");
+                    int taskCount = 0;
+                    for (Task task : tasks) {
+                        int i = csTaskService.validateAndFinishTask(task);
+                        if(i > 0){
+                            ++taskCount;
+                        }
+                    }
+                    if(taskCount > 0){
+                        msg.append(++count).append(".作废订单关联的").append(taskCount).append("个任务；");
+                    }
                 }
             }
         }
         //添加操作日志
         orderChangeLogService.asyncSave(order, OrderChangeTypeEnum.OBSOLETE,
-                new String[]{oldStateName, OrderStateEnum.F_OBSOLETE.name, paramsDto.getReason()},
+                new String[]{oldStateStr, OrderStateEnum.F_OBSOLETE.name, paramsDto.getReason()},
                 new UserInfo(paramsDto.getLoginId(), paramsDto.getLoginName(), paramsDto.getLoginPhone()));
 
         return BaseResultUtil.success(msg);
@@ -1272,6 +1295,12 @@ public class CsOrderServiceImpl implements ICsOrderService {
         if(order == null){
             return BaseResultUtil.fail("订单不存在");
         }
+        if(order.getState() < OrderStateEnum.TRANSPORTING.code){
+            return BaseResultUtil.fail("订单未运输请使用取消功能");
+        }
+        if(order.getState() >= OrderStateEnum.FINISHED.code){
+            return BaseResultUtil.fail("订单已完结，不能取消");
+        }
         if(isForce){
             return BaseResultUtil.success();
         }
@@ -1280,18 +1309,18 @@ public class CsOrderServiceImpl implements ICsOrderService {
         StringBuilder msg = new StringBuilder();
         int count = 0;
         //验证是否收取过物流费
-        int r1 = orderCarDao.countPaidCar(order.getId());
+        int r1 = orderCarDao.countPaidCar(order.getNo());
         if(r1 > 0){
             flag = false;
-            msg.append(++count).append("订单已经产生物流费交易；");
+            msg.append(++count).append(".订单已经产生物流费交易；");
         }
 
-        int r2 = waybillCarDao.countPaidCar(order.getId());
+        int r2 = waybillCarDao.countPaidCar(order.getNo());
         if(r2 > 0){
             flag = false;
-            msg.append(++count).append("订单关联运单已经产生运单交易；");
+            msg.append(++count).append(".订单关联运单已经产生运单交易；");
         }
-        return flag ? BaseResultUtil.success() : BaseResultUtil.fail(msg);
+        return flag ? BaseResultUtil.success() : BaseResultUtil.fail(msg.toString());
     }
 
     @Override

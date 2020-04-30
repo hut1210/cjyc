@@ -23,10 +23,10 @@ public class ListOrderVo extends Order {
     @ApiModelProperty("状态")
     private String outterState;
     @ApiModelProperty("出发地址（全）")
-    @Excel(name = "提车地址", orderNum = "23")
+    @Excel(name = "提车地址", orderNum = "24", width = 20)
     private String startFullAddress;
     @ApiModelProperty("目的地址（全）")
-    @Excel(name = "交付地址", orderNum = "28")
+    @Excel(name = "交付地址", orderNum = "29", width = 20)
     private String endFullAddress;
 
 
@@ -34,20 +34,20 @@ public class ListOrderVo extends Order {
     @JsonSerialize(using = BigDecimalSerizlizer.class)
     private BigDecimal wlTotalFee;
     @ApiModelProperty("大区")
-    @Excel(name = "归属大区", orderNum = "4")
+    @Excel(name = "归属大区", orderNum = "4", width = 10)
     private String region;
     @ApiModelProperty("大区编码")
     private String regionCode;
     @ApiModelProperty("所属业务中心地址")
     private String inputStoreAddress;
     @ApiModelProperty("出发业务中心地址")
-    @Excel(name = "收车业务中心地址", orderNum = "16")
+    @Excel(name = "收车业务中心地址", orderNum = "17", width = 20)
     private String startStoreAddress;
     @ApiModelProperty("目的业务中心地址")
-    @Excel(name = "送车业务中心地址", orderNum = "18")
+    @Excel(name = "送车业务中心地址", orderNum = "19", width = 20)
     private String endStoreAddress;
     @ApiModelProperty("合同编号")
-    @Excel(name = "合同编号", orderNum = "12")
+    @Excel(name = "合同编号", orderNum = "13", width = 15)
     private String contractNo;
     @ApiModelProperty("账期/天")
     private String settlePeriod;
@@ -56,29 +56,29 @@ public class ListOrderVo extends Order {
     private BigDecimal totalAgencyFee;
     @Excel(name = "订单状态", orderNum = "1")
     private String stateStr;
-    @Excel(name = "订单来源", orderNum = "3")
+    @Excel(name = "订单来源", orderNum = "3", width = 15)
     private String sourceStr;
-    @Excel(name = "支付方式", orderNum = "5")
+    @Excel(name = "支付方式", orderNum = "6", width = 10)
     private String payTypeStr;
-    @Excel(name = "客户类型", orderNum = "9")
+    @Excel(name = "客户类型", orderNum = "10", width = 10)
     private String customerTypeStr;
-    @Excel(name = "提车日期", orderNum = "19")
+    @Excel(name = "提车日期", orderNum = "20", width = 20)
     private String expectStartDateStr;
-    @Excel(name = "提车方式", orderNum = "20")
+    @Excel(name = "提车方式", orderNum = "21", width = 10)
     private String pickTypeStr;
-    @Excel(name = "预计到达", orderNum = "24")
+    @Excel(name = "预计到达", orderNum = "25", width = 20)
     private String expectEndDateStr;
-    @Excel(name = "交付方式", orderNum = "25")
+    @Excel(name = "交付方式", orderNum = "26", width = 15)
     private String backTypeStr;
-    @Excel(name = "下单时间", orderNum = "30")
+    @Excel(name = "下单时间", orderNum = "31", width = 20)
     private String createTimeStr;
-    @Excel(name = "接单时间", orderNum = "32")
+    @Excel(name = "接单时间", orderNum = "33", width = 20)
     private String checkTimeStr;
-    @Excel(name = "订单金额(元)", orderNum = "6", type = 10)
+    @Excel(name = "订单金额(元)", orderNum = "7", type = 10, width = 15)
     private String totalFeeStr;
-    @Excel(name = "总费用(元)", orderNum = "7", type = 10)
+    @Excel(name = "总费用(元)", orderNum = "8", type = 10, width = 10)
     private String wlTotalFeeStr;
-    @Excel(name = "合伙人服务费(元)", orderNum = "8", type = 10)
+    @Excel(name = "合伙人服务费(元)", orderNum = "9", type = 10, width = 15)
     private String totalAgencyFeeStr;
 
     public String getTotalFeeStr() {

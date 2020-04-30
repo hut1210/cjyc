@@ -74,6 +74,13 @@ public interface ICsWaybillService {
      */
     ResultVo trunkMidwayUnload(TrunkMidwayUnload paramsDto);
 
+    /**
+     * 验证并完成运单
+     * @author JPG
+     * @since 2020/4/29 13:57
+     * @param waybillId
+     * @return state 处理后的运单状态：-1未完成，100已完成，113已取消
+     */
     int validateAndFinishWaybill(Long waybillId);
 
     void cancelWaybill(Waybill waybill);
